@@ -26,6 +26,7 @@ A `<aside>` complementary landmark named by its own heading, in normal flow. Not
 - **The heading level is the caller's, because only they know it** — A complementary landmark should be headed, and the heading names the landmark through `aria-labelledby`. But a panel sits inside the page's existing outline and cannot know its depth — the same problem Notice has, which Notice solves by not being a heading at all. A panel cannot take that way out because it needs the name, so the level is stated instead of guessed. Dialog can hardcode `<h2>` only because everything behind a modal is inert and its outline genuinely starts fresh.
 - **Closing is optional, and its absence means persistent** — A panel that is always there — a properties rail, a filter column — has nothing to close, and rendering a close button that the caller has to ignore invites them to wire it to nothing. Omitting `onClose` omits the control.
 - **The body scrolls, the head does not** — Same construction as Dialog's. A panel is tall and narrow by nature, so the title is the first thing to scroll away and the close control goes with it — leaving the reader inside a region with no name in view and no way out of it.
+- **Gate 2 is where `edge` appeared** — The token mapping called for a border on "the edge it sits against" and the API approved at gate 1 gave the component no way to know which edge that was. A caller could have set it through `className`, but a border is styling rather than placement and that prop's contract says so. Recording it because the gated order is the reason this was caught on paper instead of in CSS: writing the recipe state by state is what asks the question.
 
 ## Props
 
@@ -34,6 +35,7 @@ A `<aside>` complementary landmark named by its own heading, in normal flow. Not
 | `title` | `ReactNode` | — | The panel's name. Required. |
 | `children` | `ReactNode` | — | The panel's content. |
 | `headingLevel?` | `2 \| 3 \| 4 \| 5 \| 6` | `2` | Where the title sits in the page's outline. |
+| `edge?` | `PanelEdge` | `"inline-end"` | Which side of the content the panel is attached to. |
 | `onClose?` | `() => void` | — | Called when the reader closes the panel. Omitting it makes the panel persistent. |
 | `closeLabel?` | `string` | `"Close"` | Accessible name for the close button. |
 | `className?` | `string` | — | Extra classes on the panel, for placement and measure — not for restyling it. |
@@ -91,6 +93,25 @@ Where the title sits in the page's outline.
 - Picking it for type size. The size comes from the recipe; this is the outline only.
 
 **Accessibility** A skipped level breaks heading navigation, which is how many readers move through a page. Only the caller knows the depth, which is why there is no sensible default beyond the commonest case.
+
+### `edge`
+
+```ts
+edge?: PanelEdge = "inline-end"
+```
+
+Which side of the content the panel is attached to.
+
+**Use when**
+
+- `inline-end` for a detail or inspector panel, which is where a reader expects one — and the same side Sheet's `inline-end` drawer comes from, so the two are interchangeable as the viewport changes.
+- `inline-start` for a filter or tree column.
+
+**Don't use for**
+
+- Using it to move the panel. It states which edge the panel meets so the border and the corners land on the right side; where the panel sits is the page's layout.
+
+**Accessibility** Presentational only — it changes no roles and no announcement. Logical, not physical: `inline-start` is the left in a left-to-right document and the right in a right-to-left one.
 
 ### `onClose`
 
@@ -154,10 +175,10 @@ A bordered surface inside the layout. No elevation and no scrim: it is not float
 |---|---|
 | background | `theme.bg.surface` |
 | color | `theme.fg.primary` |
-| border on the edge it sits against | `theme.border.default at border.default` |
-| border-radius | `radius.none — it meets the page's edge, and a corner radius on a flush edge reads as a gap` |
+| border-radius | `radius.none — it is flush against the content on one side and the viewport on the other three, and a radius on a flush edge shows as a gap rather than a corner` |
 | padding | `space.padding.md` |
 | gap between head and body | `space.stack.sm` |
+| border on the edge it meets the content | `theme.border.default at border.default, on the inline-start edge for edge="inline-end" and the inline-end edge for edge="inline-start"` |
 
 ### head
 

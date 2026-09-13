@@ -1452,10 +1452,10 @@ A bordered surface inside the layout. No elevation and no scrim: it is not float
 |---|---|
 | background | `theme.bg.surface` |
 | color | `theme.fg.primary` |
-| border on the edge it sits against | `theme.border.default` at `border.default` |
-| border-radius | `radius.none` — it meets the page's edge, and a corner radius on a flush edge reads as a gap |
+| border-radius | `radius.none` — it is flush against the content on one side and the viewport on the other three, and a radius on a flush edge shows as a gap rather than a corner |
 | padding | `space.padding.md` |
 | gap between head and body | `space.stack.sm` |
+| border on the edge it meets the content | `theme.border.default` at `border.default`, on the inline-start edge for edge="inline-end" and the inline-end edge for edge="inline-start" |
 
 ### panel-head
 
@@ -1668,8 +1668,8 @@ One measure across the sheet's own axis: block-size for a sheet on a horizontal 
 | sm | `size.control.lg` multiplied by 8 |
 | md | `size.control.lg` multiplied by 12 |
 | lg | `size.control.lg` multiplied by 18 |
-| cap across its own axis | the viewport on that axis, less `space.padding.lg` — so a sheet never covers the edge it slid from |
-| measure across the other axis | the full viewport — a sheet spans the edge it is anchored to |
+| cap across its own axis | 100% of the dialog's containing block less `space.padding.lg` — stated as a percentage rather than in viewport units on purpose: vh and vw are the LARGE viewport, so a bottom sheet measured in vh is taller than the screen whenever the mobile address bar is showing. Dialog's insets are percentages for the same reason. |
+| measure across the other axis | the full containing block — a sheet spans the edge it is anchored to. Not capped on wide viewports in this version; a bottom sheet that stops short of both sides is a different shape and would need its own entry here. |
 
 ### sheet-footer
 
