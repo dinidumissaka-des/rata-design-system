@@ -5596,6 +5596,10 @@
         {
           "decision": "No destinations means no navigation landmark",
           "why": "An empty `<nav>` is worse than none: it appears in a landmark list promising places to go and delivers none, which wastes the one tool that exists for skipping straight to the navigation. Found by using this component for the playground's own banner, whose navigation lives in the rail — the first version passed `items={[]}` and produced exactly that empty landmark, alongside a rail with the same name, which is the collision this contract already warned about two decisions above."
+        },
+        {
+          "decision": "The actions are pushed to the end by their own margin",
+          "why": "The nav takes the slack when there is one, which was doing the job invisibly — and then `items` became optional, a banner with its navigation in a side rail rendered no nav at all, and the actions sat against the brand in the middle of the bar. An auto margin on the actions is correct either way: with a nav it adds nothing, without one it does the whole job."
         }
       ]
     },
@@ -5608,7 +5612,8 @@
           "padding-block": "space.padding.sm",
           "padding-inline": "space.padding.lg",
           "gap between brand, nav and actions": "space.gap.lg",
-          "minimum height of the row": "size.control.lg"
+          "minimum height of the row": "size.control.lg",
+          "actions alignment": "pushed to the inline end by an auto margin, so they sit at the end of the bar whether or not there are destinations between them and the brand"
         }
       },
       "item": {

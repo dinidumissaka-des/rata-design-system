@@ -102,6 +102,20 @@ describe("TopNav", () => {
     expect(banner.contains(screen.getByRole("button", { name: "New invoice" }))).toBe(true);
   });
 
+  test("brand and actions both render with no destinations between them", () => {
+    // The layout itself is CSS and jsdom has none — an assertion on the
+    // computed margin here would pass whatever the stylesheet said, which is
+    // worse than no test. What this pins is the structure the CSS depends on:
+    // the actions are their own element, present without a nav, so the auto
+    // margin that pushes them to the end of the bar has something to sit on.
+    const { container } = render(
+      <TopNav brand={<strong>Ratā</strong>} actions={<Button>New</Button>} />
+    );
+    expect(container.querySelector("nav")).toBeNull();
+    expect(container.querySelector(".rata-top-nav-brand")).toBeTruthy();
+    expect(container.querySelector(".rata-top-nav-actions")).toBeTruthy();
+  });
+
   test("no brand or actions renders no empty slots", () => {
     const { container } = render(<TopNav items={ITEMS} />);
     expect(container.querySelector(".rata-top-nav-brand")).toBeNull();

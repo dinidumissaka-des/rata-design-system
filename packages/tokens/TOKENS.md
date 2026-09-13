@@ -1866,6 +1866,7 @@ The bar. Its height comes from its padding and the controls inside it rather tha
 | padding-inline | `space.padding.lg` |
 | gap between brand, nav and actions | `space.gap.lg` |
 | minimum height of the row | `size.control.lg` |
+| actions alignment | pushed to the inline end by an auto margin, so they sit at the end of the bar whether or not there are destinations between them and the brand |
 
 ### top-nav-item
 

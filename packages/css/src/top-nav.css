@@ -104,6 +104,13 @@
   align-items: center;
   gap: var(--rata-space-gap-sm);
   flex-shrink: 0;
+  /* Pushed to the end by its own margin rather than by the nav taking the
+     slack. The nav does take it when there is one — but `items` is optional,
+     and a banner whose navigation lives in a side rail renders no nav at all,
+     which left the actions sitting against the brand instead of at the end of
+     the bar. An auto margin is right either way: with a nav it adds nothing,
+     without one it does the whole job. */
+  margin-inline-start: auto;
 }
 
 /* A destination with sub-destinations. The trigger looks like a link because
