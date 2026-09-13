@@ -91,13 +91,19 @@
   color: var(--rata-theme-fg-primary);
 }
 
-.rata-tabs-tab[aria-selected="true"]::after {
+/* ::before, NOT ::after — and this is load-bearing. The tab composes
+   .rata-state-layer, which owns ::after and parks it at `opacity: 0` until
+   hover. An element has only one ::after, so a marker drawn there inherits
+   that zero and is invisible: the selected tab had no visible indicator at
+   all. Any component composing the state layer has to leave ::after alone.
+   top-nav and side-nav already do. */
+.rata-tabs-tab[aria-selected="true"]::before {
   content: "";
   position: absolute;
   background: var(--rata-theme-accent-role-bg);
 }
 
-.rata-tabs--underline.rata-tabs--horizontal .rata-tabs-tab[aria-selected="true"]::after {
+.rata-tabs--underline.rata-tabs--horizontal .rata-tabs-tab[aria-selected="true"]::before {
   inset-inline: var(--rata-space-control-padding-inline-sm);
   /* On the list's rule, not the tab's own edge — the offset is the rule's own
      width, so the marker covers it rather than sitting above it. */
@@ -107,7 +113,7 @@
   border-start-end-radius: var(--rata-radius-inner);
 }
 
-.rata-tabs--underline.rata-tabs--vertical .rata-tabs-tab[aria-selected="true"]::after {
+.rata-tabs--underline.rata-tabs--vertical .rata-tabs-tab[aria-selected="true"]::before {
   inset-block: var(--rata-space-1);
   inset-inline-end: calc(-1 * var(--rata-border-default));
   inline-size: var(--rata-border-2);
@@ -140,7 +146,7 @@
    alike, which would be worse than either choice.
 
    No marker bar: the filled segment IS the indicator here, which is why the
-   ::after above is scoped to the underline appearance. The selection is still
+   ::before above is scoped to the underline appearance. The selection is still
    announced through aria-selected, so it is not carried by colour alone. */
 .rata-tabs--segmented > .rata-tabs-list {
   gap: var(--rata-space-0);
