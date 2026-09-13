@@ -80,3 +80,63 @@
   color: var(--rata-theme-fg-primary);
 }
 
+/* A destination with pages nested under it. Looks like the links around it
+   because to the reader it is one of them; it is a button because it expands
+   rather than navigates. */
+.rata-side-nav-trigger {
+  inline-size: 100%;
+  border: var(--rata-space-0);
+  background: transparent;
+  font-family: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+/* Takes the slack so the chevron sits against the rail's end, however short
+   the label is. */
+.rata-side-nav-trigger-label {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+/* The parent of the current page. A weight change rather than the tint the
+   page itself gets — you are not on this one, you are inside what it leads
+   to, and the two states should not look identical. */
+.rata-side-nav-trigger[aria-current="true"] {
+  color: var(--rata-theme-fg-primary);
+}
+
+.rata-side-nav-chevron {
+  flex-shrink: 0;
+  transition: rotate var(--rata-motion-interactive-duration)
+    var(--rata-motion-interactive-easing);
+}
+
+.rata-side-nav-trigger[aria-expanded="true"] .rata-side-nav-chevron {
+  rotate: 180deg;
+}
+
+/* The nested list, expanded in place. Indented from its parent so the nesting
+   is visible rather than implied by order alone — the same reasoning the
+   playground's own nested checkbox rows follow. */
+.rata-side-nav-sublist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-stack-2xs);
+  margin: var(--rata-space-0);
+  margin-block-start: var(--rata-space-stack-2xs);
+  margin-inline-start: var(--rata-space-control-padding-inline-md);
+  padding: var(--rata-space-0);
+  list-style: none;
+  /* A rule down the group, so the nested rows read as belonging to the
+     trigger above them even when scrolled away from it. */
+  border-inline-start: var(--rata-border-default) solid
+    var(--rata-theme-border-default);
+  padding-inline-start: var(--rata-space-gap-sm);
+}
+
+/* A step smaller than its parent: the nesting is the hierarchy, and repeating
+   it in the type would say the same thing twice. */
+.rata-side-nav-sublink {
+  block-size: var(--rata-size-control-sm);
+}

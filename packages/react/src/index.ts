@@ -37,7 +37,12 @@ export type { MenuProps, MenuItemProps } from "./menu.js";
 export { Notice } from "./notice.js";
 export type { NoticeProps, NoticeVariant, NoticeLive } from "./notice.js";
 export { SideNav } from "./side-nav.js";
-export type { SideNavProps, SideNavItem, SideNavSection } from "./side-nav.js";
+export type {
+  SideNavProps,
+  SideNavItem,
+  SideNavSubItem,
+  SideNavSection,
+} from "./side-nav.js";
 export { TopNav } from "./top-nav.js";
 export type { TopNavProps, TopNavItem, TopNavSubItem } from "./top-nav.js";
 export { Search } from "./search.js";

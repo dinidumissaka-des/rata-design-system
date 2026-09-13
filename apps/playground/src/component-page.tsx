@@ -382,6 +382,28 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
         ]}
       />
     ),
+    "A group with pages nested under it": () => (
+      <SideNav
+        className="pg-rail"
+        label="Invoices"
+        sections={[
+          {
+            items: [
+              { label: "All invoices", href: "#" },
+              {
+                label: "Reports",
+                items: [
+                  { label: "Revenue", href: "#", current: true },
+                  { label: "Ageing", href: "#" },
+                  { label: "Tax summary", href: "#" },
+                ],
+              },
+              { label: "Credit notes", href: "#" },
+            ],
+          },
+        ]}
+      />
+    ),
     "A flat rail, with nothing to group": () => (
       <SideNav
         className="pg-rail"

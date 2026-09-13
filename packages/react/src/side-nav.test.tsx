@@ -1,4 +1,5 @@
 import { describe, expect, test, afterEach } from "vitest";
+import userEvent from "@testing-library/user-event";
 import { cleanup, render, screen } from "@testing-library/react";
 import { Star } from "@rata/icons";
 import { SideNav } from "./side-nav.js";
@@ -97,5 +98,142 @@ describe("SideNav", () => {
     const nav = screen.getByRole("navigation");
     expect(nav.id).toBe("rail");
     expect(nav.getAttribute("data-testid")).toBe("r");
+  });
+
+  describe("a group with pages nested under it", () => {
+    const NESTED = [
+      {
+        items: [
+          { label: "All invoices", href: "/invoices" },
+          {
+            label: "Reports",
+            items: [
+              { label: "Revenue", href: "/reports/revenue", current: true },
+              { label: "Ageing", href: "/reports/ageing" },
+            ],
+          },
+        ],
+      },
+    ];
+
+    test("is a disclosure button, NOT a menu", () => {
+      render(<SideNav sections={NESTED} />);
+      const trigger = screen.getByRole("button", { name: /Reports/ });
+      expect(trigger.getAttribute("aria-expanded")).toBeTruthy();
+      expect(trigger.getAttribute("aria-controls")).toBeTruthy();
+      expect(trigger.getAttribute("role")).toBeNull();
+      expect(screen.queryByRole("menu")).toBeNull();
+    });
+
+    test("opens by itself when one of its children is the current page", () => {
+      // A reader whose page sits inside a collapsed group cannot see where
+      // they are, which is the one question a nav exists to answer.
+      render(<SideNav sections={NESTED} />);
+      expect(screen.getByRole("button", { name: /Reports/ }).getAttribute("aria-expanded")).toBe(
+        "true"
+      );
+      expect(screen.getByRole("link", { name: "Revenue" })).toBeTruthy();
+    });
+
+    test("stays shut when nothing inside it is current", () => {
+      render(
+        <SideNav
+          sections={[
+            { items: [{ label: "Reports", items: [{ label: "Revenue", href: "/r" }] }] },
+          ]}
+        />
+      );
+      expect(screen.getByRole("button", { name: /Reports/ }).getAttribute("aria-expanded")).toBe(
+        "false"
+      );
+      expect(screen.queryByRole("link", { name: "Revenue" })).toBeNull();
+    });
+
+    test("defaultExpanded overrides both defaults", () => {
+      render(
+        <SideNav
+          sections={[
+            {
+              items: [
+                {
+                  label: "Reports",
+                  defaultExpanded: false,
+                  items: [{ label: "Revenue", href: "/r", current: true }],
+                },
+              ],
+            },
+          ]}
+        />
+      );
+      expect(screen.getByRole("button", { name: /Reports/ }).getAttribute("aria-expanded")).toBe(
+        "false"
+      );
+    });
+
+    test("the nested list is unmounted while shut, not merely hidden", async () => {
+      // A hidden list is one more thing a find-in-page can reach while the
+      // group claims to be collapsed.
+      const { container } = render(
+        <SideNav
+          sections={[
+            { items: [{ label: "Reports", items: [{ label: "Revenue", href: "/r" }] }] },
+          ]}
+        />
+      );
+      expect(container.querySelector(".rata-side-nav-sublist")).toBeNull();
+      await userEvent.click(screen.getByRole("button", { name: /Reports/ }));
+      expect(container.querySelector(".rata-side-nav-sublist")).toBeTruthy();
+    });
+
+    test("the nested list is named by its trigger", async () => {
+      render(<SideNav sections={NESTED} />);
+      const trigger = screen.getByRole("button", { name: /Reports/ });
+      const panel = document.getElementById(trigger.getAttribute("aria-controls")!)!;
+      expect(panel.getAttribute("aria-labelledby")).toBe(trigger.id);
+    });
+
+    test("the trigger toggles it, and Escape closes it with focus returned", async () => {
+      render(<SideNav sections={NESTED} />);
+      const trigger = screen.getByRole("button", { name: /Reports/ });
+      await userEvent.click(trigger);
+      expect(trigger.getAttribute("aria-expanded")).toBe("false");
+      await userEvent.click(trigger);
+      expect(trigger.getAttribute("aria-expanded")).toBe("true");
+
+      trigger.focus();
+      await userEvent.keyboard("{Escape}");
+      expect(trigger.getAttribute("aria-expanded")).toBe("false");
+      expect(document.activeElement).toBe(trigger);
+    });
+
+    test("two kinds of current: the page, and the group leading to it", () => {
+      render(
+        <SideNav
+          sections={[
+            {
+              items: [
+                {
+                  label: "Reports",
+                  current: true,
+                  items: [{ label: "Revenue", href: "/r", current: true }],
+                },
+              ],
+            },
+          ]}
+        />
+      );
+      expect(screen.getByRole("button", { name: /Reports/ }).getAttribute("aria-current")).toBe(
+        "true"
+      );
+      expect(screen.getByRole("link", { name: "Revenue" }).getAttribute("aria-current")).toBe(
+        "page"
+      );
+    });
+
+    test("an empty items array is still just a link", () => {
+      render(<SideNav sections={[{ items: [{ label: "Reports", href: "/r", items: [] }] }]} />);
+      expect(screen.getByRole("link", { name: "Reports" })).toBeTruthy();
+      expect(screen.queryByRole("button")).toBeNull();
+    });
   });
 });

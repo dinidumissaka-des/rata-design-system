@@ -25,6 +25,8 @@ A `<nav>` containing one list per section. No primitive and no keyboard handling
 - **A section's label names its list rather than being a heading** — Same reasoning as Notice's title: a nav cannot know what heading level it sits under, and a wrong one breaks heading navigation for the whole page. The label is a plain element with an id, and the list points at it with `aria-labelledby` — so the group is announced with its name and the document outline is untouched.
 - **Collapsing to an icon-only rail is out of scope** — A collapsed rail hides the labels, which is the point of collapsing and also the problem: a sighted reader then needs the name on hover, and this system has no Tooltip. Shipping the collapse without one would trade an accessible nav for a row of unexplained glyphs. It belongs with a Tooltip, not before one.
 - **The current page is stated per item, as in TopNav** — Only the caller knows whether /invoices/123 counts as being on /invoices. Matching a path here would have to guess between exact and prefix and would be silently wrong for someone either way. It is shown as a tinted row rather than an edge marker: the marker was removed on request, which leaves the visual cue entirely colour and `aria-current` as the only cue that is not.
+- **A nested group is a disclosure expanded in place, not a popover** — An item with `items` becomes a button that expands a list beneath it. Not a menu, for the reason getDisclosureProps documents: `role="menu"` announces a keyboard model a list of links does not have. And not a popover either, unlike TopNav's — a rail scrolls vertically, so a nested list pushes what follows it down and nothing has to escape an overflow. Keeping it inline also keeps the nesting visible, which is most of what a rail is for.
+- **A group holding the current page starts open** — Not a convenience: a reader whose page sits inside a collapsed group cannot see where they are, which is the one question a nav exists to answer. `defaultExpanded` overrides it for the rare case where a group is long enough that opening it costs more than it explains.
 
 ## Props
 
@@ -48,13 +50,14 @@ The destinations, grouped. One unlabelled section is a flat nav.
 
 - A named section per group of related pages: "Billing", "Settings".
 - A single section with no `label` when there is nothing to group.
+- `items` on an entry for pages nested under it — it becomes a disclosure button rather than a link, and opens by default when one of its children is current.
 
 **Don't use for**
 
 - A section per item. A group of one is a heading over nothing, and it reads as a mistake.
 - Actions. Everything here is announced as a destination and rendered as a link.
 
-**Accessibility** Each section is a list; a labelled one is pointed at its own label with `aria-labelledby`, so the group is announced with its name. The count and order within each come free with the list. The current item carries `aria-current="page"` — which is the only non-colour cue it has, since the visual distinction is a background tint and a text tone.
+**Accessibility** Each section is a list; a labelled one is pointed at its own label with `aria-labelledby`, so the group is announced with its name. The current item carries `aria-current="page"` — the only non-colour cue it has, since the visual distinction is a background tint and a text tone. An entry with `items` becomes a disclosure button with `aria-expanded` and `aria-controls`, and its parent-of-the-current-page state is `aria-current="true"` rather than `"page"`, because you are not on it. The nested list is unmounted while collapsed rather than hidden, so nothing in it can be reached by a find-in-page while the group claims to be shut.
 
 ### `label`
 
@@ -141,6 +144,32 @@ Few enough destinations that a heading over them would be noise.
 ```
 
 One section with no `label`. The braces are the cost of there being a single shape rather than two props that cannot both be used — the contract's reasoning for that is in the behaviour notes.
+
+### A group with pages nested under it
+
+A destination that is itself a section of several pages.
+
+```tsx
+<SideNav
+  label="Invoices"
+  sections={[
+    {
+      items: [
+        { label: "All invoices", href: "/invoices" },
+        {
+          label: "Reports",
+          items: [
+            { label: "Revenue", href: "/reports/revenue", current: true },
+            { label: "Ageing", href: "/reports/ageing" },
+          ],
+        },
+      ],
+    },
+  ]}
+/>
+```
+
+The group opens by itself because one of its children is current — a reader whose page is inside a collapsed group cannot see where they are. Note the two kinds of current again: the child is `aria-current="page"`, and its parent is `"true"` because you are only inside the area it leads to.
 
 ### Don't: a section for every item
 
