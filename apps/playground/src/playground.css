@@ -227,7 +227,7 @@ code {
 }
 
 .pg-bar-label {
-  width: 140px;
+  inline-size: calc(var(--rata-size-control-lg) * 4 - var(--rata-space-1));
   flex-shrink: 0;
   font-size: var(--rata-type-label-size);
   color: var(--rata-theme-fg-muted);
@@ -238,7 +238,7 @@ code {
   background: var(--rata-theme-bg-muted);
   border-radius: var(--rata-radius-inner);
   overflow: hidden;
-  height: 12px;
+  block-size: var(--rata-space-3);
 }
 
 .pg-bar {
@@ -249,7 +249,7 @@ code {
 }
 
 .pg-bar-value {
-  width: 72px;
+  inline-size: calc(var(--rata-size-control-lg) * 2);
   flex-shrink: 0;
   font-size: var(--rata-type-label-size);
   color: var(--rata-theme-fg-muted);
@@ -264,13 +264,17 @@ code {
   margin-bottom: var(--rata-space-stack-md);
 }
 
+/* rata-allow: hardcoded-dimension — a preview tile's size is a demo artifact,
+   not a design value: nothing in the product is 64px because of this, and
+   snapping it to the space scale would either change what the sample shows or
+   need a contrived sum of steps to land on the same number. */
 .pg-radius-item {
-  width: 88px;
+  inline-size: 88px;
 }
 
 .pg-radius-preview {
-  width: 64px;
-  height: 64px;
+  inline-size: 64px;
+  block-size: 64px;
   background: var(--rata-theme-bg-muted);
   border: var(--rata-border-1) solid var(--rata-theme-border-default);
 }
@@ -303,10 +307,18 @@ code {
   margin-bottom: var(--rata-space-gap-xs);
 }
 
+/* Fills the row, like .pg-bar-track beside it. It was a fixed 160px in a flex
+   row that had room for three times that, which is why these read as short
+   stubs in a wide column while the spacing and radius bars filled properly —
+   same markup, one missing `flex`.
+
+   The size is the control scale's small step with the chip inset by one space
+   step on each side, so 28 = 20 + 4 + 4 falls out of the tokens rather than
+   being three numbers that happen to add up. */
 .pg-motion-track {
   position: relative;
-  width: 160px;
-  height: 28px;
+  flex: 1;
+  block-size: var(--rata-size-control-sm);
   background: var(--rata-theme-bg-muted);
   border-radius: var(--rata-radius-pill);
   overflow: hidden;
@@ -314,17 +326,22 @@ code {
 
 .pg-motion-chip {
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 22px;
-  height: 22px;
+  inset-block-start: var(--rata-space-1);
+  inset-inline-start: var(--rata-space-1);
+  inline-size: var(--rata-size-icon-md);
+  block-size: var(--rata-size-icon-md);
   border-radius: var(--rata-radius-pill);
   background: var(--rata-theme-accent-role-bg);
-  transition-property: transform;
+  /* Not `transform`: translateX is a percentage of the CHIP, so a fluid track
+     cannot express "travel to the far end" that way — the old rule hardcoded
+     132px, which was 160 minus 28, two magic numbers agreeing with a third.
+     A percentage inset resolves against the track, so the distance derives
+     itself and stays right at any width. */
+  transition-property: inset-inline-start;
 }
 
 .pg-motion-track:hover .pg-motion-chip {
-  transform: translateX(132px);
+  inset-inline-start: calc(100% - var(--rata-size-icon-md) - var(--rata-space-1));
 }
 
 /* Elevation previews */
@@ -334,13 +351,17 @@ code {
   margin-bottom: var(--rata-space-stack-md);
 }
 
+/* rata-allow: hardcoded-dimension — a preview tile's size is a demo artifact,
+   not a design value: nothing in the product is 64px because of this, and
+   snapping it to the space scale would either change what the sample shows or
+   need a contrived sum of steps to land on the same number. */
 .pg-elevation-item {
-  width: 88px;
+  inline-size: 88px;
 }
 
 .pg-elevation-preview {
-  width: 64px;
-  height: 64px;
+  inline-size: 64px;
+  block-size: 64px;
   background: var(--rata-theme-bg-surface);
   border-radius: var(--rata-radius-element);
 }
@@ -907,8 +928,8 @@ code {
 
 .pg-visually-hidden {
   position: absolute;
-  width: 1px;
-  height: 1px;
+  inline-size: var(--rata-border-1);
+  block-size: var(--rata-border-1);
   margin: -1px;
   padding: 0;
   overflow: hidden;
