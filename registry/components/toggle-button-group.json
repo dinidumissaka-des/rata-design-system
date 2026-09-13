@@ -4,7 +4,6 @@
   "family": "buttons",
   "description": "A set of toggle buttons that holds a value: one choice out of several, or any number of independent states.",
   "alsoKnownAs": [
-    "segmented-control",
     "segmented-button",
     "button-toggle-group"
   ],
@@ -49,6 +48,10 @@
     "primitive": "getToggleButtonGroupProps",
     "summary": "Selection state, the ARIA pattern that state implies, and — in single mode — roving focus with arrow-key navigation. Nothing here touches the DOM: where the radio pattern requires focus to move, the primitive reports which value should receive it and the wrapper does the focusing.",
     "decisions": [
+      {
+        "decision": "Which of three, when they all look like one bar of options",
+        "why": "Three components here can look like one enclosed bar of options, so each one's contract says which is which. SegmentedControl is a question with a short fixed set of answers: single, always filled, cannot be cleared. ToggleButtonGroup is the same ARIA pattern with a wider API — multiple selection, deselection, vertical orientation, the toggle-button variants — so reach for it when you need any of those. Tabs is a different pattern entirely: tabs reveal a region, each naming a panel and each panel naming its tab, and if what is being chosen is which content is shown rather than what gets submitted, it is Tabs — which can be drawn to look exactly like the other two and is still announced as a tablist."
+      },
       {
         "decision": "The selection mode picks the ARIA pattern: `single` is a radiogroup, `multiple` is a group of pressed toggles",
         "why": "They are different controls wearing the same clothes. \"One of these\" is a radio group, and announcing it as one is what tells a screen-reader user how many options there are and which is chosen. \"Any of these\" is a set of independent toggles, and forcing it into radio semantics would claim the options are mutually exclusive when they are not."

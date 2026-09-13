@@ -33,6 +33,7 @@ this path is the honest answer to when it last actually moved.
 | [radio](../docs/components/radio.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [radio-group](../docs/components/radio-group.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [search](../docs/components/search.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [segmented-control](../docs/components/segmented-control.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [side-nav](../docs/components/side-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [spinner](../docs/components/spinner.md) | `@rata/react` | loading | latest / latest / future | free |
 | [state-layer](../docs/components/state-layer.md) | `@rata/react` | foundations | latest / na / future | free |
@@ -470,6 +471,38 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/search.md](../docs/components/search.md)
 
+### SegmentedControl (`@rata/react`)
+
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children" | "role" | "onChange">`
+
+- `options: SegmentedControlOption[]`
+  The options, in the order they are read.
+- `value?: string`
+  The current answer. Makes the component controlled.
+- `defaultValue?: string`
+  Starting answer for an uncontrolled control. Defaults to the first option.
+- `onValueChange?: (value: string) => void`
+- `label?: string`
+  Accessible name. Required unless `labelledBy` names an element.
+- `labelledBy?: string`
+- `size?: SegmentedControlSize` — default: `"md"`
+- `fullWidth?: boolean`
+  Fills its container instead of hugging its options.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<SegmentedControl
+          label="Billing period"
+          options={[
+            { value: "monthly", label: "Monthly" },
+            { value: "annual", label: "Annual" },
+          ]}
+        />
+```
+
+Contract: [docs/components/segmented-control.md](../docs/components/segmented-control.md)
+
 ### SideNav (`@rata/react`)
 
 Extends: `Omit<HTMLAttributes<HTMLElement>, "children">`
@@ -655,10 +688,15 @@ Extends: `Omit<HTMLAttributes<HTMLDivElement>, "role" | "onChange" | "defaultVal
 
 Real usage (from `apps/`):
 ```tsx
-<ToggleButtonGroup label="Billing period" defaultValue="monthly">
-          <ToggleButton value="monthly">Monthly</ToggleButton>
-          <ToggleButton value="annual">Annual</ToggleButton>
-        </ToggleButtonGroup>
+<ToggleButtonGroup
+      label="Status filter"
+      deselectable
+      value={status}
+      onValueChange={(next) => setStatus(next as string | null)}
+    >
+      <ToggleButton value="open">Open</ToggleButton>
+      <ToggleButton value="closed">Closed</ToggleButton>
+    </ToggleButtonGroup>
 ```
 
 Contract: [docs/components/toggle-button-group.md](../docs/components/toggle-button-group.md)

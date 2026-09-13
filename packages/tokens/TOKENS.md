@@ -1542,6 +1542,45 @@ The trailing clear control, present only when there is a query. Same constructio
 | hover / press | compose the .rata-state-layer class |
 | focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
 
+### segmented-control
+
+The well: a recessed track the chosen option is raised out of, which is what makes the bar read as one control with a part selected rather than as buttons that happen to touch. That is the difference from toggle-button-group, which draws the same pattern as attached bordered buttons.
+
+| Property | Token |
+|---|---|
+| track background | `theme.bg.muted` |
+| track padding | `space.0-5` |
+| track border-radius | `radius.element` |
+| sizing | hugs its options; fullWidth fills the container |
+
+### segmented-control-option
+
+One answer. Equal widths, so the bar does not reflow as the answer moves.
+
+| Property | Token |
+|---|---|
+| colour | `theme.fg.secondary` |
+| block-size sm / md | `size.control.sm` / `size.control.md`, each less `space.1` for the track's padding |
+| padding-inline | `space.control.padding-inline.sm` |
+| border-radius | `radius.inner` |
+| font-size | `type.control.size.sm` |
+| font-weight | `type.control.weight` |
+| gap between icon and label | `space.gap.sm` |
+| icon size | `size.icon.text` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+| disabled | `state.disabled-opacity` |
+
+### segmented-control-option-selected
+
+The answer, raised out of the track. Marked twice over: the surface is the visual cue and aria-checked is the announced one.
+
+| Property | Token |
+|---|---|
+| background | `theme.bg.surface` |
+| colour | `theme.fg.primary` |
+| elevation | `theme.elevation.raised` |
+
 ### side-nav
 
 The rail. No background of its own: it sits on whatever surface the page gives it, so the same component works against the canvas and inside a panel. Its width is the page's to set.

@@ -23,6 +23,7 @@ Selection state, the ARIA pattern that state implies, and — in single mode —
 
 Headless contract: `getToggleButtonGroupProps` in `packages/primitives/src/toggle-button-group.ts` — importable from `@rata/primitives` without the React wrapper or any CSS.
 
+- **Which of three, when they all look like one bar of options** — Three components here can look like one enclosed bar of options, so each one's contract says which is which. SegmentedControl is a question with a short fixed set of answers: single, always filled, cannot be cleared. ToggleButtonGroup is the same ARIA pattern with a wider API — multiple selection, deselection, vertical orientation, the toggle-button variants — so reach for it when you need any of those. Tabs is a different pattern entirely: tabs reveal a region, each naming a panel and each panel naming its tab, and if what is being chosen is which content is shown rather than what gets submitted, it is Tabs — which can be drawn to look exactly like the other two and is still announced as a tablist.
 - **The selection mode picks the ARIA pattern: `single` is a radiogroup, `multiple` is a group of pressed toggles** — They are different controls wearing the same clothes. "One of these" is a radio group, and announcing it as one is what tells a screen-reader user how many options there are and which is chosen. "Any of these" is a set of independent toggles, and forcing it into radio semantics would claim the options are mutually exclusive when they are not.
 - **Focus behaviour differs between the two modes, deliberately** — Single mode is one tab stop with arrow keys between options, because that is the radio pattern and users of radio groups expect it. Multiple mode gives every item its own tab stop, consistent with `button-group` and with every other button in this system. The inconsistency is the ARIA patterns', not ours — matching them is what makes each mode behave the way its users already know.
 - **Roving tabindex is derived from the value, never stored** — In a radio group the selected option is the tab stop, and an empty group is entered at its first option. Deriving it means focus position and value cannot disagree, because there is no second piece of state to fall out of step.
@@ -346,10 +347,15 @@ Don't. Navigation between panels is a tab list: it announces itself as one, owns
 ## Real usage in this repo
 
 ```tsx
-<ToggleButtonGroup label="Billing period" defaultValue="monthly">
-          <ToggleButton value="monthly">Monthly</ToggleButton>
-          <ToggleButton value="annual">Annual</ToggleButton>
-        </ToggleButtonGroup>
+<ToggleButtonGroup
+      label="Status filter"
+      deselectable
+      value={status}
+      onValueChange={(next) => setStatus(next as string | null)}
+    >
+      <ToggleButton value="open">Open</ToggleButton>
+      <ToggleButton value="closed">Closed</ToggleButton>
+    </ToggleButtonGroup>
 ```
 
 ## Token recipe

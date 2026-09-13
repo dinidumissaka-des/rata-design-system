@@ -1187,6 +1187,11 @@ code {
 /* A plain vertical stack for full-width examples — notices, and anything else
    that fills its line. Deliberately not .pg-example-stack, which indents each
    sibling to show a parent/child relationship these do not have. */
+/* A narrow column, for the fullWidth example — the case that prop is for. */
+.pg-rail-width {
+  inline-size: calc(var(--rata-size-control-lg) * 6);
+}
+
 /* The rail's width is the page's decision, not the component's, so the
    examples state one here rather than SideNav shipping it. */
 .pg-rail {

@@ -27,6 +27,7 @@ import {
   RadioGroup,
   MobileNav,
   Search,
+  SegmentedControl,
   SideNav,
   Tabs,
   TopNav,
@@ -53,7 +54,7 @@ import type {
   ToggleButtonVariant,
 } from "@rata/react";
 import type { TabsActivation, TabsOrientation } from "@rata/primitives";
-import type { TabsVariant } from "@rata/react";
+import type { SegmentedControlSize, TabsVariant } from "@rata/react";
 import type { IconSize, LucideIcon } from "@rata/icons";
 import {
   Icon,
@@ -468,6 +469,23 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     ),
   },
 
+  "segmented-control": {
+    "A view mode, chosen from three": () => <SegmentedRangeStage />,
+    "Filling a narrow column": () => (
+      <div className="pg-rail-width">
+        <SegmentedControl
+          label="Sort"
+          fullWidth
+          size="sm"
+          options={[
+            { value: "newest", label: "Newest" },
+            { value: "oldest", label: "Oldest" },
+          ]}
+        />
+      </div>
+    ),
+  },
+
   tabs: {
     "One thing seen several ways": () => (
       <Tabs
@@ -491,12 +509,16 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
             { value: "quarter", label: "Quarter", content: "Three months." },
           ]}
         />
-        {/* The real segmented control, directly below, so the resemblance is
-            visible — and so is the fact that only one of them is a tablist. */}
-        <ToggleButtonGroup label="Billing period" defaultValue="monthly">
-          <ToggleButton value="monthly">Monthly</ToggleButton>
-          <ToggleButton value="annual">Annual</ToggleButton>
-        </ToggleButtonGroup>
+        {/* The real segmented control directly below, so the resemblance is
+            visible — and so is the fact that only one of the two is a
+            tablist. Same shape, different pattern. */}
+        <SegmentedControl
+          label="Billing period"
+          options={[
+            { value: "monthly", label: "Monthly" },
+            { value: "annual", label: "Annual" },
+          ]}
+        />
       </div>
     ),
   },
@@ -915,6 +937,26 @@ function DialogStage({
  * passed through fires a load — which over a real request is three the reader
  * never asked for.
  */
+/** Controlled, so the answer is visibly state the rest of the page reads. */
+function SegmentedRangeStage() {
+  const [range, setRange] = useState("month");
+  return (
+    <div className="pg-block-stack">
+      <SegmentedControl
+        label="Range"
+        value={range}
+        onValueChange={setRange}
+        options={[
+          { value: "week", label: "Week" },
+          { value: "month", label: "Month" },
+          { value: "quarter", label: "Quarter" },
+        ]}
+      />
+      <p className="pg-search-status">Showing the {range}.</p>
+    </div>
+  );
+}
+
 function TabsManualStage() {
   const [loads, setLoads] = useState<string[]>([]);
   return (
@@ -1356,6 +1398,22 @@ const INTERACTIVE: Record<string, Interactive> = {
             ],
           },
           { label: "Setup", items: [{ label: "Tax rates", href: "#" }] },
+        ]}
+      />
+    ),
+  },
+
+  "segmented-control": {
+    controls: ["label", "size", "fullWidth"],
+    render: (state) => (
+      <SegmentedControl
+        label={String(state.label || "Range")}
+        size={state.size as SegmentedControlSize}
+        fullWidth={Boolean(state.fullWidth)}
+        options={[
+          { value: "week", label: "Week" },
+          { value: "month", label: "Month" },
+          { value: "quarter", label: "Quarter" },
         ]}
       />
     ),

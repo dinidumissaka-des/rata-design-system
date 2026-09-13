@@ -1,0 +1,78 @@
+/* Segmented control — one answer out of a few, in one enclosed bar.
+
+   The well-and-thumb look: a recessed track with the chosen option raised out
+   of it, which is what makes the whole thing read as ONE control with a part
+   selected rather than as several buttons that happen to touch. That is the
+   difference from .rata-toggle-button-group, which draws the same pattern as
+   attached bordered buttons.
+
+   Hugs its options by default rather than filling its container, because a
+   question with three short answers should be as wide as those answers. */
+.rata-segmented-control {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rata-space-0);
+  padding: var(--rata-space-0-5);
+  border-radius: var(--rata-radius-element);
+  background: var(--rata-theme-bg-muted);
+  font-family: var(--rata-font-family-sans);
+}
+
+.rata-segmented-control--full {
+  display: flex;
+  inline-size: 100%;
+}
+
+/* Equal widths, so the bar does not shuffle as the answer changes: with the
+   options sized to content the selected one's weight change would reflow the
+   rest under the reader's cursor. */
+.rata-segmented-control-option {
+  box-sizing: border-box;
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rata-space-gap-sm);
+  padding-inline: var(--rata-space-control-padding-inline-sm);
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-inner);
+  background: transparent;
+  color: var(--rata-theme-fg-secondary);
+  font-family: inherit;
+  font-size: var(--rata-type-control-size-sm);
+  font-weight: var(--rata-type-control-weight);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.rata-segmented-control--sm .rata-segmented-control-option {
+  block-size: calc(var(--rata-size-control-sm) - var(--rata-space-1));
+}
+
+.rata-segmented-control--md .rata-segmented-control-option {
+  block-size: calc(var(--rata-size-control-md) - var(--rata-space-1));
+}
+
+/* The chosen option, raised out of the track. Marked twice over: this surface
+   is the visual cue and aria-checked in the markup is the announced one, so
+   the answer is never carried by colour alone. */
+.rata-segmented-control-option[aria-checked="true"] {
+  background: var(--rata-theme-bg-surface);
+  color: var(--rata-theme-fg-primary);
+  box-shadow: var(--rata-theme-elevation-raised);
+}
+
+/* A focused option's ring would otherwise be clipped by the neighbour it sits
+   against — the same reason the attached toggle group lifts its focused one. */
+.rata-segmented-control-option:focus-visible {
+  z-index: 1;
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style)
+    var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+.rata-segmented-control-option[aria-disabled="true"] {
+  opacity: var(--rata-state-disabled-opacity);
+  cursor: default;
+}

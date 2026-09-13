@@ -45,6 +45,12 @@ export type {
   SideNavSubItem,
   SideNavSection,
 } from "./side-nav.js";
+export { SegmentedControl } from "./segmented-control.js";
+export type {
+  SegmentedControlProps,
+  SegmentedControlOption,
+  SegmentedControlSize,
+} from "./segmented-control.js";
 export { Tabs } from "./tabs.js";
 export type { TabsProps, TabItem, TabsVariant } from "./tabs.js";
 export { TopNav } from "./top-nav.js";

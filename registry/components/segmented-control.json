@@ -1,0 +1,216 @@
+{
+  "name": "segmented-control",
+  "title": "SegmentedControl",
+  "alsoKnownAs": [
+    "segmented-button",
+    "segment-group"
+  ],
+  "family": "inputs",
+  "description": "One answer out of a few, shown all at once in a single enclosed bar.",
+  "status": {
+    "css": {
+      "state": "latest"
+    },
+    "react": {
+      "state": "latest"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "state-layer",
+    "icon"
+  ],
+  "files": [
+    {
+      "source": "packages/css/src/segmented-control.css",
+      "target": "styles/segmented-control.css"
+    },
+    {
+      "source": "packages/react/src/segmented-control.tsx",
+      "target": "components/segmented-control.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
+  "tier": "free",
+  "behavior": {
+    "primitive": "getSegmentedControlProps",
+    "summary": "A `radiogroup` of `radio` options with one tab stop and arrow keys that select as they move. The radio pattern, because a segmented control is a question being answered and its value is submitted with the rest of a form.",
+    "decisions": [
+      {
+        "decision": "Which of three — and this is the question to settle first",
+        "why": "Three components in this system can look like one enclosed bar of options, which is why each one's contract says the same thing.\n\nSegmentedControl is a question with a short fixed set of answers, where showing them all is the point: single, always filled, cannot be cleared.\n\nToggleButtonGroup is the SAME ARIA pattern with a wider API — multiple selection, deselection, vertical orientation, the toggle-button variants. Reach for it when you need any of those, because this component deliberately cannot express them.\n\nTabs is a different pattern: tabs reveal a region, each naming a panel and each panel naming its tab. If what is being chosen is which content is shown rather than what gets submitted, it is Tabs — which can be drawn to look exactly like this, and is still announced as a tablist."
+      },
+      {
+        "decision": "It is narrower than ToggleButtonGroup on purpose, not by omission",
+        "why": "A segmented control has one shape: single selection, always filled, never empty. Every option the toggle group carries is one this cannot honour, so the narrow contract is the feature — an API that cannot express a cleared segmented control cannot produce one by accident. The cost is real and worth stating: this is a second implementation of a pattern the toggle group already covers, and the two can drift. These contracts are the mitigation, which is why both name the other."
+      },
+      {
+        "decision": "Re-picking the current answer is not a change",
+        "why": "There is no deselected state to fall into, so a click on the chosen option reports nothing rather than firing a change with the same value. A handler that refetches on every change would otherwise do so every time someone clicked where they already were."
+      },
+      {
+        "decision": "No aria-orientation, and both axes' arrow keys work",
+        "why": "The bar is horizontal by construction, so announcing an orientation would promise that only one pair of arrows moves. Accepting both leaves a reader who tries the wrong pair unstuck, and claims nothing."
+      },
+      {
+        "decision": "Equal-width options",
+        "why": "Sized to content, the selected option's weight change would reflow its neighbours under the reader's cursor every time the answer moved."
+      }
+    ]
+  },
+  "props": {
+    "options": {
+      "summary": "The answers, in the order they are read.",
+      "use": [
+        "Two to about five short answers — a word each, ideally."
+      ],
+      "dont": [
+        "More than five, or long labels. The bar stops being scannable and a `RadioGroup` or a select reads better.",
+        "Anything that navigates. These are answers, not destinations.",
+        "Options that can all be off at once. This control always has an answer; that is a `ToggleButtonGroup` with `deselectable`."
+      ],
+      "a11y": "Each becomes a `radio` inside the `radiogroup`, with `aria-checked` on the chosen one. One tab stop for the group; the arrow keys move and select within it."
+    },
+    "value": {
+      "summary": "The current answer. Makes the component controlled.",
+      "use": [
+        "Driving it from state the rest of the page reads — a filter, a view mode."
+      ],
+      "dont": [
+        "Passing it alongside `defaultValue`."
+      ],
+      "conflicts": [
+        "defaultValue"
+      ]
+    },
+    "defaultValue": {
+      "summary": "Starting answer. Defaults to the first option.",
+      "use": [
+        "Opening on something other than the first answer."
+      ],
+      "dont": [
+        "A value that is not one of the options — nothing would be selected, which this control has no state for."
+      ],
+      "conflicts": [
+        "value"
+      ]
+    },
+    "onValueChange": {
+      "summary": "Called when the answer changes.",
+      "use": [
+        "Controlled mode, to set `value`.",
+        "Refetching for the new answer."
+      ],
+      "dont": [
+        "Expecting it on every click. Re-picking the current answer is not a change and reports nothing, so a refetch here does not fire twice for one answer."
+      ]
+    },
+    "label": {
+      "summary": "Accessible name for the group.",
+      "use": [
+        "Naming the question the options answer: \"Billing period\", not \"Options\"."
+      ],
+      "dont": [
+        "Leaving it out. A radiogroup with no name is announced as a bare group, and the options alone do not say what is being asked."
+      ],
+      "a11y": "Becomes the group's `aria-label`. Required unless `labelledBy` names an element."
+    },
+    "labelledBy": {
+      "summary": "Names the group from an element the reader can see.",
+      "use": [
+        "Pointing at the visible question above the bar, so the name changes with it."
+      ],
+      "dont": [
+        "Passing it alongside `label` and expecting both. This one wins."
+      ],
+      "a11y": "Wins over `label`, because it points at text on screen."
+    },
+    "size": {
+      "summary": "Which control height it matches.",
+      "use": [
+        "`md` by default; `sm` in a toolbar beside other small controls."
+      ],
+      "dont": [
+        "Expecting the text to grow with it — size changes the box, as everywhere else here."
+      ]
+    },
+    "fullWidth": {
+      "summary": "Fills its container instead of hugging its options.",
+      "use": [
+        "A narrow column, or a mobile layout where the bar should span the width."
+      ],
+      "dont": [
+        "A wide page. Three short answers stretched across it read as three buttons, which is the impression the enclosed bar exists to avoid."
+      ]
+    },
+    "className": {
+      "summary": "Extra classes on the group, for placement — not for restyling it.",
+      "use": [
+        "Spacing it from what surrounds it."
+      ],
+      "dont": [
+        "Making it look like Tabs. They are different patterns, and the appearance is the only cue a sighted reader gets."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "A view mode, chosen from three",
+      "when": "The commonest case: a short fixed set where showing them all is the point.",
+      "example": "<SegmentedControl\n  label=\"Range\"\n  value={range}\n  onValueChange={setRange}\n  options={[\n    { value: \"week\", label: \"Week\" },\n    { value: \"month\", label: \"Month\" },\n    { value: \"quarter\", label: \"Quarter\" },\n  ]}\n/>",
+      "notes": "`label` names the question, not the control — \"Range\", so a screen reader says \"Range, Month, selected\" rather than leaving the options unexplained. There is no cleared state to handle, which is the reason this exists rather than a `ToggleButtonGroup`."
+    },
+    {
+      "case": "Filling a narrow column",
+      "when": "A sidebar or a phone layout, where hugging the options leaves the bar adrift.",
+      "example": "<SegmentedControl\n  label=\"Sort\"\n  fullWidth\n  size=\"sm\"\n  options={[\n    { value: \"newest\", label: \"Newest\" },\n    { value: \"oldest\", label: \"Oldest\" },\n  ]}\n/>",
+      "notes": "`fullWidth` is for narrow containers specifically. Across a wide page the same bar reads as two stretched buttons, which is the impression the enclosed shape exists to avoid."
+    },
+    {
+      "case": "Don't: using it to switch which content is shown",
+      "when": "Never — this is the shape to recognise and avoid.",
+      "example": "{/* Don't: this is revealing a region, not answering a question. */}\n<SegmentedControl\n  label=\"View\"\n  value={view}\n  onValueChange={setView}\n  options={[\n    { value: \"details\", label: \"Details\" },\n    { value: \"history\", label: \"History\" },\n  ]}\n/>\n{view === \"details\" ? <Details /> : <History />}",
+      "notes": "Don't. Swapping content below it is what `Tabs` is: each tab names its panel and each panel names its tab, so a screen reader can move between them as regions. Written this way the relationship is invisible — a radiogroup says a form is being filled in, and the content that changed says nothing about why. `Tabs` with `variant=\"segmented\"` looks identical and is announced correctly."
+    }
+  ],
+  "tokens": {
+    "base": {
+      "summary": "The well: a recessed track the chosen option is raised out of, which is what makes the bar read as one control with a part selected rather than as buttons that happen to touch. That is the difference from toggle-button-group, which draws the same pattern as attached bordered buttons.",
+      "tokens": {
+        "track background": "theme.bg.muted",
+        "track padding": "space.0-5",
+        "track border-radius": "radius.element",
+        "sizing": "hugs its options; fullWidth fills the container"
+      }
+    },
+    "option": {
+      "summary": "One answer. Equal widths, so the bar does not reflow as the answer moves.",
+      "tokens": {
+        "colour": "theme.fg.secondary",
+        "block-size sm / md": "size.control.sm / size.control.md, each less space.1 for the track's padding",
+        "padding-inline": "space.control.padding-inline.sm",
+        "border-radius": "radius.inner",
+        "font-size": "type.control.size.sm",
+        "font-weight": "type.control.weight",
+        "gap between icon and label": "space.gap.sm",
+        "icon size": "size.icon.text",
+        "hover / press": "compose the .rata-state-layer class",
+        "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible",
+        "disabled": "state.disabled-opacity"
+      }
+    },
+    "option-selected": {
+      "summary": "The answer, raised out of the track. Marked twice over: the surface is the visual cue and aria-checked is the announced one.",
+      "tokens": {
+        "background": "theme.bg.surface",
+        "colour": "theme.fg.primary",
+        "elevation": "theme.elevation.raised"
+      }
+    }
+  }
+}
