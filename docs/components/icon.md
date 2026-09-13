@@ -145,7 +145,7 @@ This is the only case that takes a `label`. Without one the row would announce n
 ## Real usage in this repo
 
 ```tsx
-<Icon icon={Bold} />
+<Icon icon={User} />
 ```
 
 ## Token recipe

@@ -36,6 +36,21 @@ export { Menu, MenuItem, MenuSeparator } from "./menu.js";
 export type { MenuProps, MenuItemProps } from "./menu.js";
 export { Notice } from "./notice.js";
 export type { NoticeProps, NoticeVariant, NoticeLive } from "./notice.js";
+export { MobileNav } from "./mobile-nav.js";
+export type { MobileNavProps } from "./mobile-nav.js";
+export { SideNav } from "./side-nav.js";
+export type {
+  SideNavProps,
+  SideNavItem,
+  SideNavSubItem,
+  SideNavSection,
+} from "./side-nav.js";
+export { Tabs } from "./tabs.js";
+export type { TabsProps, TabItem, TabsVariant } from "./tabs.js";
+export { TopNav } from "./top-nav.js";
+export type { TopNavProps, TopNavItem, TopNavSubItem } from "./top-nav.js";
+export { Search } from "./search.js";
+export type { SearchProps, SearchSize } from "./search.js";
 export { Spinner } from "./spinner.js";
 export type { SpinnerProps } from "./spinner.js";
 export { cx } from "./cx.js";

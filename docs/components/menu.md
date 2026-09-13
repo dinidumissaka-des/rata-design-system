@@ -230,16 +230,16 @@ Don't. A menu is a list of actions; a choice with a current answer is a `RadioGr
 
 ```tsx
 <Menu
-        label="Row actions"
-        trigger={
-          <Button iconOnly aria-label="Row actions" variant="tertiary">
-            <Icon icon={Ellipsis} />
-          </Button>
-        }
-      >
-        <MenuItem icon={Pencil} onSelect={() => {}}>Edit</MenuItem>
-        <MenuItem destructive icon={Trash2} onSelect={() => {}}>Delete</MenuItem>
-      </Menu>
+            label="Account"
+            trigger={
+              <Button iconOnly aria-label="Account" variant="tertiary">
+                <Icon icon={User} />
+              </Button>
+            }
+          >
+            <MenuItem icon={Settings} onSelect={() => {}}>Settings</MenuItem>
+            <MenuItem onSelect={() => {}}>Sign out</MenuItem>
+          </Menu>
 ```
 
 ## Token recipe

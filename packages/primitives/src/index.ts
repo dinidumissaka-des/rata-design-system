@@ -19,6 +19,13 @@ export { getCheckboxProps } from "./checkbox.js";
 export type { CheckboxOptions, CheckboxProps, CheckboxState } from "./checkbox.js";
 export { getRadioGroupProps } from "./radio-group.js";
 export type { RadioGroupOptions, RadioGroupItemProps, RadioGroupProps } from "./radio-group.js";
+export { getDisclosureProps } from "./disclosure.js";
+export type {
+  DisclosureOptions,
+  DisclosureProps,
+  DisclosureKeyEvent,
+  DisclosureCloseReason,
+} from "./disclosure.js";
 export { getMenuProps } from "./menu.js";
 export type {
   MenuOptions,
@@ -29,6 +36,19 @@ export type {
   MenuCloseReason,
   MenuKeyEvent,
 } from "./menu.js";
+export { getSearchProps } from "./search.js";
+export type { SearchOptions, SearchProps, SearchKeyEvent } from "./search.js";
+export { getTabsProps } from "./tabs.js";
+export type {
+  TabsOptions,
+  TabsProps,
+  TabProps,
+  TabPanelProps,
+  TabDescriptor,
+  TabsKeyEvent,
+  TabsOrientation,
+  TabsActivation,
+} from "./tabs.js";
 export { getSwitchProps } from "./switch.js";
 export type { SwitchOptions, SwitchProps } from "./switch.js";
 export { getTextFieldProps } from "./text-field.js";

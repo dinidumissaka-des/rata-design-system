@@ -1330,6 +1330,54 @@ A rule between groups of actions.
 | border-block-start | `border.default` solid `theme.border.default` |
 | margin-block | `space.1` |
 
+### mobile-nav-trigger
+
+The control that opens the drawer. Same construction as the other icon-only controls here: transparent, taking its colour from the text.
+
+| Property | Token |
+|---|---|
+| glyph size | `size.icon.md` |
+| target inline-size / block-size | `size.control.md` |
+| border-radius | `radius.element` |
+| colour | `theme.fg.primary` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+
+### mobile-nav-drawer
+
+The panel itself: full height, against the inline-start edge, at a width that leaves the page visible behind the scrim so it still reads as a layer over it.
+
+| Property | Token |
+|---|---|
+| background | `theme.bg.surface` |
+| box-shadow | `theme.elevation.modal` |
+| max-inline-size | `size.control.lg` multiplied by 8, or the viewport less one large control |
+| padding-block | `space.padding.md` |
+| padding-inline | `space.padding.sm` |
+| gap between header, nav and footer | `space.stack.md` |
+| enter transition | `motion.modal.duration` with `motion.easing.enter` |
+| exit transition | `motion.modal.duration` with `motion.easing.exit` |
+
+### mobile-nav-backdrop
+
+The wash over the inert page behind it — the same token and the same reasoning as Dialog's.
+
+| Property | Token |
+|---|---|
+| background | `theme.scrim` |
+| fade | `motion.modal.duration` with `motion.easing.enter` |
+
+### mobile-nav-header
+
+The drawer's name and its close control.
+
+| Property | Token |
+|---|---|
+| title font-size | `type.heading.size` |
+| title font-weight | `type.heading.weight` |
+| gap | `space.gap.sm` |
+| close target | `size.control.sm` |
+
 ### notice
 
 The shared frame. Only the tinted subtle backgrounds carry text; the saturated role fills are not used here at all — they are non-text indicator tones, and text on them is a recorded contrast gap.
@@ -1444,6 +1492,105 @@ One option in a radio group. Circular, so its shape says 'one of these' before t
 | border-radius | `radius.pill` — a circle, which is the one thing that tells a radio from a checkbox before either is read |
 | checked mark | `theme.fg.on-accent` as a centred dot; a radio is filled, not ticked |
 
+### search
+
+The field itself, matching text-field step for step so the two line up in a row — including its focus treatment, which is that component's documented departure from the system ring.
+
+| Property | Token |
+|---|---|
+| border | `border.default` solid `theme.border.strong` |
+| border-radius | `radius.element` |
+| background | `theme.bg.surface` |
+| color | `theme.fg.primary` |
+| font-size | `type.control.size.md` — constant across sizes, as size changes the box not the text |
+| line-height | `type.control.line-height.md` |
+| placeholder colour | `theme.fg.muted` |
+| hover | inset band of `theme.bg.muted` at `border.2` |
+| focus | outline `theme.fg.primary` at `focus.ring-width`, offset `space.0`, border darkened to match |
+| transition | `motion.interactive.duration` with `motion.interactive.easing` |
+
+### search-size
+
+Height and inline padding only, matching button and text-field step for step.
+
+| Property | Token |
+|---|---|
+| sm block-size / padding-inline | `size.control.sm` / `space.control.padding-inline.sm` |
+| md block-size / padding-inline | `size.control.md` / `space.control.padding-inline.md` |
+| lg block-size / padding-inline | `size.control.lg` / `space.control.padding-inline.lg` |
+
+### search-glyph
+
+The leading magnifier, and the spinner that replaces it in flight. Decorative: the label names the field.
+
+| Property | Token |
+|---|---|
+| size | `size.icon.text` |
+| colour | `theme.fg.muted` |
+| gap to the text | `space.gap.sm` |
+
+### search-clear
+
+The trailing clear control, present only when there is a query. Same construction as Notice's and Dialog's dismiss: currentColor on a transparent background.
+
+| Property | Token |
+|---|---|
+| glyph size | `size.icon.text` |
+| target inline-size / block-size | `size.control.sm` |
+| border-radius | `radius.inner` |
+| colour | `theme.fg.secondary` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+
+### side-nav
+
+The rail. No background of its own: it sits on whatever surface the page gives it, so the same component works against the canvas and inside a panel. Its width is the page's to set.
+
+| Property | Token |
+|---|---|
+| padding-block | `space.padding.sm` |
+| padding-inline | `space.padding.sm` |
+| gap between sections | `space.stack.md` |
+
+### side-nav-section
+
+A named group. The label is the list's accessible name, not a heading — a nav cannot know what heading level it sits under.
+
+| Property | Token |
+|---|---|
+| label colour | `theme.fg.muted` |
+| label font-size | `type.supporting.size` |
+| label font-weight | `type.label.weight` |
+| label text-transform | `type.label.text-transform` |
+| gap between label and items | `space.stack.2xs` |
+| gap between items | `space.stack.2xs` |
+
+### side-nav-item
+
+One destination, filling the rail's width so the whole row is the target.
+
+| Property | Token |
+|---|---|
+| colour | `theme.fg.secondary` |
+| font-size | `type.control.size.sm` |
+| font-weight | `type.control.weight` |
+| block-size | `size.control.md` |
+| padding-inline | `space.control.padding-inline.sm` |
+| border-radius | `radius.element` |
+| gap between icon and label | `space.gap.sm` |
+| icon size | `size.icon.text` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+
+### side-nav-item-current
+
+The page you are on: a tinted row, plus aria-current in the markup. The tint is the role's subtle step with fg.primary on it — a pairing the token contracts verify for text at any size — not the saturated fill, which is a non-text indicator tone.
+
+| Property | Token |
+|---|---|
+| background | `theme.accent-role.subtle` |
+| colour | `theme.fg.primary` |
+
 ### switch
 
 A track the thumb slides along. The track's fill is the state, and the thumb's position says the same thing a second way, so the setting is never carried by colour alone.
@@ -1472,6 +1619,67 @@ A track the thumb slides along. The track's fill is the state, and the thumb's p
 | outline (focus-visible) | `focus.ring-width` solid `theme.focus-ring`, offset `focus.ring-offset` — drawn on the track, and the offset is kept: a pill this small has no room for a flush ring to read as separate from its own edge |
 | opacity (aria-disabled) | `state.disabled-opacity` |
 | transition | `motion.interactive.duration` with `motion.interactive.easing`, on the thumb's transform and the track's fill |
+
+### tabs
+
+The set, in either appearance. `underline` reads as an edge with a marker on it; `segmented` reads as one enclosed bar. The segmented form borrows the tokens the real segmented control uses rather than picking its own, so the two cannot drift into looking nearly-but-not-quite alike.
+
+| Property | Token |
+|---|---|
+| rule under the tabs | `border.default` solid `theme.border.default` |
+| gap between tabs | `space.gap.xs` |
+| gap between the list and the panel | `space.padding.md` |
+| gap between a vertical list and its panel | `space.gap.lg` |
+
+### tabs-tab
+
+One tab. The resting tone is the secondary text colour, so the selected one reads as emphasised rather than the rest reading as dimmed.
+
+| Property | Token |
+|---|---|
+| colour | `theme.fg.secondary` |
+| block-size | `size.control.md` |
+| padding-inline | `space.control.padding-inline.sm` |
+| border-radius | `radius.element` |
+| font-size | `type.control.size.sm` |
+| font-weight | `type.control.weight` |
+| gap between icon and label | `space.gap.sm` |
+| icon size | `size.icon.text` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+| disabled | `state.disabled-opacity` |
+
+### tabs-tab-selected
+
+The panel you are looking at. Marked twice over: the bar is the visual cue and aria-selected is the announced one, so the state is never carried by colour alone.
+
+| Property | Token |
+|---|---|
+| colour | `theme.fg.primary` |
+| indicator | `theme.accent-role.bg` at `border.2`, straddling the list's rule so the tab reads as joined to its panel |
+
+### tabs-panel
+
+The region a tab reveals. Focusable even with nothing focusable inside, so Tab from the tablist reaches it.
+
+| Property | Token |
+|---|---|
+| padding-block-start | `space.padding.md` |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+
+### tabs-variant-segmented
+
+The enclosed bar. No marker: the filled segment is the indicator, which is why the underline's marker is scoped away here. The selection is still announced through aria-selected.
+
+| Property | Token |
+|---|---|
+| well background | `theme.bg.muted` |
+| well padding | `space.0-5` |
+| well border-radius | `radius.element` |
+| segment border-radius | `radius.inner` |
+| selected background | `theme.bg.surface` |
+| selected colour | `theme.fg.primary` |
+| selected elevation | `theme.elevation.raised` |
 
 ### text-field
 
@@ -1620,6 +1828,45 @@ The on state of a borderless toggle: the tint alone separates it from its unpres
 | outline (focus-visible) | `focus.ring-width` solid `theme.focus-ring`, offset `focus.ring-offset` |
 | hover/press | compose the .rata-state-layer class — do not swap the background |
 | opacity (aria-disabled) | `state.disabled-opacity` |
+
+### top-nav
+
+The bar. Its height comes from its padding and the controls inside it rather than a stated number, so a nav with a taller control in its actions slot grows instead of clipping.
+
+| Property | Token |
+|---|---|
+| background | `theme.bg.surface` |
+| border-block-end | `border.default` solid `theme.border.default` |
+| padding-block | `space.padding.sm` |
+| padding-inline | `space.padding.lg` |
+| gap between brand, nav and actions | `space.gap.lg` |
+| minimum height of the row | `size.control.lg` |
+
+### top-nav-item
+
+One destination. The resting colour is the secondary text tone, so the current page reads as the emphasised one rather than the others reading as dimmed.
+
+| Property | Token |
+|---|---|
+| colour | `theme.fg.secondary` |
+| font-size | `type.control.size.sm` |
+| font-weight | `type.control.weight` |
+| padding-inline | `space.control.padding-inline.sm` |
+| block-size | `size.control.md` |
+| border-radius | `radius.element` |
+| gap between icon and label | `space.gap.sm` |
+| icon size | `size.icon.text` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+
+### top-nav-item-current
+
+The page you are on. Marked twice over: the accent bar is the visual cue and aria-current is the announced one, so the state is never carried by colour alone.
+
+| Property | Token |
+|---|---|
+| colour | `theme.fg.primary` |
+| indicator | `theme.accent-role.bg` at `border.2`, along the block-end edge |
 
 ### visually-hidden
 

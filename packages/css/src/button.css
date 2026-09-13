@@ -102,18 +102,3 @@
   width: var(--rata-size-control-lg);
 }
 
-/* Link button — button semantics, link appearance */
-.rata-link-button.rata-state-layer::after {
-  /* No border to bleed over, so the layer must stop at the element. */
-  inset: 0;
-}
-
-.rata-link-button {
-  background: none;
-  border: none;
-  height: auto;
-  padding: 0;
-  color: var(--rata-theme-accent-role-fg);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}

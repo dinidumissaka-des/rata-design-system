@@ -346,15 +346,10 @@ Don't. Navigation between panels is a tab list: it announces itself as one, owns
 ## Real usage in this repo
 
 ```tsx
-<ToggleButtonGroup
-      label="Status filter"
-      deselectable
-      value={status}
-      onValueChange={(next) => setStatus(next as string | null)}
-    >
-      <ToggleButton value="open">Open</ToggleButton>
-      <ToggleButton value="closed">Closed</ToggleButton>
-    </ToggleButtonGroup>
+<ToggleButtonGroup label="Billing period" defaultValue="monthly">
+          <ToggleButton value="monthly">Monthly</ToggleButton>
+          <ToggleButton value="annual">Annual</ToggleButton>
+        </ToggleButtonGroup>
 ```
 
 ## Token recipe

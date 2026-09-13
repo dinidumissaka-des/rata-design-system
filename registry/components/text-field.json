@@ -3,6 +3,10 @@
   "title": "Input: Text field",
   "family": "inputs",
   "description": "Single-line text input with label, helper text, and validation states.",
+  "alsoKnownAs": [
+    "input",
+    "textbox"
+  ],
   "status": {
     "css": {
       "state": "latest",

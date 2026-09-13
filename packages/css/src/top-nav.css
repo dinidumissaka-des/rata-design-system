@@ -1,0 +1,213 @@
+/* TopNav — the page's banner: a brand, the primary navigation, and actions.
+
+   Its height is not stated. It comes from the padding plus whatever is
+   tallest in the row, with a minimum of one large control, so a nav whose
+   actions slot holds a search field or a button grows to fit instead of
+   clipping it. A stated height is the usual way a header ends up cropping
+   the one control someone added last. */
+.rata-top-nav {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--rata-space-gap-lg);
+  min-block-size: var(--rata-size-control-lg);
+  padding-block: var(--rata-space-padding-sm);
+  padding-inline: var(--rata-space-padding-lg);
+  border-block-end: var(--rata-border-default) solid var(--rata-theme-border-default);
+  background: var(--rata-theme-bg-surface);
+  font-family: var(--rata-font-family-sans);
+}
+
+.rata-top-nav-brand {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Takes the slack, so the actions sit against the end of the bar however few
+   destinations there are. */
+.rata-top-nav-nav {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.rata-top-nav-list {
+  display: flex;
+  align-items: center;
+  gap: var(--rata-space-gap-xs);
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+  /* The list semantics are for assistive technology; the bullets are not. */
+  list-style: none;
+  /* Scrolls rather than wrapping: a banner that grows to two rows moves
+     everything below it, and a wrapped nav reads as a mistake. Narrow
+     viewports are the mobile nav's problem, not this one's. */
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.rata-top-nav-list::-webkit-scrollbar {
+  display: none;
+}
+
+.rata-top-nav-item {
+  flex-shrink: 0;
+}
+
+/* The resting tone is the secondary text colour, so the current page reads as
+   the emphasised one rather than every other destination reading as dimmed. */
+.rata-top-nav-link {
+  box-sizing: border-box;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rata-space-gap-sm);
+  block-size: var(--rata-size-control-md);
+  padding-inline: var(--rata-space-control-padding-inline-sm);
+  border-radius: var(--rata-radius-element);
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-control-size-sm);
+  font-weight: var(--rata-type-control-weight);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.rata-top-nav-link:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style)
+    var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* The page you are on, marked twice over: this bar is the visual cue and
+   aria-current in the markup is the announced one, so the state is never
+   carried by colour alone. */
+.rata-top-nav-link[aria-current="page"] {
+  color: var(--rata-theme-fg-primary);
+}
+
+.rata-top-nav-link[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  inset-inline: var(--rata-space-control-padding-inline-sm);
+  /* Sits on the bar's own bottom edge rather than the link's, which is what
+     makes it read as a tab marker instead of an underline. The offset is the
+     bar's block padding, so the two stay in step if that changes. */
+  inset-block-end: calc(-1 * var(--rata-space-padding-sm));
+  block-size: var(--rata-border-2);
+  background: var(--rata-theme-accent-role-bg);
+  border-start-start-radius: var(--rata-radius-inner);
+  border-start-end-radius: var(--rata-radius-inner);
+}
+
+.rata-top-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--rata-space-gap-sm);
+  flex-shrink: 0;
+}
+
+/* A destination with sub-destinations. The trigger looks like a link because
+   it is one as far as the reader is concerned; it is a button because it
+   reveals rather than navigates. */
+.rata-top-nav-trigger {
+  border: var(--rata-space-0);
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+  /* rata-allow: unknown-token — not a design token but component plumbing:
+     CSS cannot generate a unique ident, so the component passes one in. */
+  anchor-name: var(--rata-top-nav-anchor);
+}
+
+/* The parent of the current page, with the panel shut. A weight change rather
+   than the accent bar the current page gets — you are not on this page, you
+   are in the area it leads to, and the two states should not look identical. */
+.rata-top-nav-trigger[aria-current="true"] {
+  color: var(--rata-theme-fg-primary);
+}
+
+/* Turns with the panel. aria-expanded already says which way it points, so
+   the glyph is decorative and the rotation is the sighted half of the same
+   fact. */
+.rata-top-nav-chevron {
+  transition: rotate var(--rata-motion-interactive-duration)
+    var(--rata-motion-interactive-easing);
+}
+
+.rata-top-nav-trigger[aria-expanded="true"] .rata-top-nav-chevron {
+  rotate: 180deg;
+}
+
+/* The panel. In the top layer because the nav list scrolls its overflow, and
+   an overflow container clips its absolutely positioned descendants — a panel
+   drawn inside the list would be cut off or scroll away with it. */
+/* rata-allow: unknown-token — --rata-top-nav-anchor is the per-instance
+   anchor name the component passes in, not a value from the token set. */
+.rata-top-nav-panel {
+  box-sizing: border-box;
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-1);
+  border: var(--rata-border-default) solid var(--rata-theme-border-default);
+  position-anchor: var(--rata-top-nav-anchor);
+  position: absolute;
+  position-area: block-end span-inline-end;
+  position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  margin-block-start: var(--rata-space-gap-xs);
+  min-inline-size: calc(var(--rata-size-control-lg) * 4);
+  border-radius: var(--rata-radius-container);
+  background: var(--rata-theme-bg-surface);
+  box-shadow: var(--rata-theme-elevation-overlay);
+  font-family: var(--rata-font-family-sans);
+}
+
+.rata-top-nav-panel:popover-open {
+  display: block;
+}
+
+.rata-top-nav-panel-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-stack-2xs);
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+  list-style: none;
+}
+
+.rata-top-nav-panel-link {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--rata-space-gap-sm);
+  block-size: var(--rata-size-control-sm);
+  padding-inline: var(--rata-space-control-padding-inline-sm);
+  border-radius: var(--rata-radius-inner);
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-control-size-sm);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.rata-top-nav-panel-link[aria-current="page"] {
+  background: var(--rata-theme-accent-role-subtle);
+  color: var(--rata-theme-fg-primary);
+}
+
+.rata-top-nav-panel-link:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style)
+    var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* Engines without anchor positioning — everything before the early-2026
+   Baseline. A popover is painted in the top layer, whose containing block is
+   the viewport, so CSS alone cannot put it under its trigger there. It becomes
+   a sheet pinned below the bar instead: never clipped, never off-screen, and
+   identical in content and keyboard behaviour. */
+@supports not (anchor-name: --rata-top-nav-probe) {
+  .rata-top-nav-panel {
+    position: fixed;
+    inset-block-start: var(--rata-size-control-lg);
+    inset-inline: var(--rata-space-padding-lg);
+    margin: var(--rata-space-0);
+  }
+}

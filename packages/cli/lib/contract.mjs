@@ -35,7 +35,7 @@
 
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { repoRoot, getComponentProps, unionValues } from "./index.mjs";
+import { repoRoot, getComponentProps, unionValues, resolveComponent } from "./index.mjs";
 
 /** Fields a written prop entry may carry. Anything else is a typo — we fail on it. */
 const PROP_FIELDS = new Set(["summary", "use", "dont", "conflicts", "a11y", "type", "default", "required"]);
@@ -51,7 +51,16 @@ const asArray = (value) => (value === undefined ? [] : Array.isArray(value) ? va
  *   is empty when written and derived agree
  */
 export async function getComponentContract(name, registry) {
-  const entry = registry[name];
+  // Follows alsoKnownAs, so asking for `modal` or `segmented-control` answers
+  // with the component that implements it rather than "Unknown". The contract
+  // is the command CLAUDE.md points at first, so it has to resolve the same
+  // names `props` does.
+  const resolved = resolveComponent(name, registry);
+  if (resolved.via !== undefined) {
+    console.log(`"${resolved.via}" is ${resolved.name} in this system — showing that.\n`);
+    name = resolved.name;
+  }
+  const entry = resolved.entry;
   if (!entry) {
     return { name, issues: [`Unknown component: "${name}". Run \`rata list\` — don't guess.`] };
   }

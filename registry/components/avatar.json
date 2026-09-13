@@ -3,6 +3,9 @@
   "title": "Avatar",
   "family": "content",
   "description": "A person or entity's image, falling back to initials when there is none.",
+  "alsoKnownAs": [
+    "profile-picture"
+  ],
   "status": {
     "css": {
       "state": "latest",

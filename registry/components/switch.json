@@ -3,6 +3,9 @@
   "title": "Switch",
   "family": "inputs",
   "description": "An on/off setting that takes effect the moment it moves.",
+  "alsoKnownAs": [
+    "toggle"
+  ],
   "status": {
     "css": {
       "state": "latest",

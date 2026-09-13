@@ -28,15 +28,20 @@ this path is the honest answer to when it last actually moved.
 | [icon](../docs/components/icon.md) | `@rata/react` | content | latest / latest / future | free |
 | [menu](../docs/components/menu.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [menu-item](../docs/components/menu-item.md) | `@rata/react` | overlays | latest / latest / future | free |
+| [mobile-nav](../docs/components/mobile-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [notice](../docs/components/notice.md) | `@rata/react` | feedback | latest / latest / future | free |
 | [radio](../docs/components/radio.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [radio-group](../docs/components/radio-group.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [search](../docs/components/search.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [side-nav](../docs/components/side-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [spinner](../docs/components/spinner.md) | `@rata/react` | loading | latest / latest / future | free |
 | [state-layer](../docs/components/state-layer.md) | `@rata/react` | foundations | latest / na / future | free |
 | [switch](../docs/components/switch.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [tabs](../docs/components/tabs.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [text-field](../docs/components/text-field.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [toggle-button](../docs/components/toggle-button.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [toggle-button-group](../docs/components/toggle-button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
+| [top-nav](../docs/components/top-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [visually-hidden](../docs/components/visually-hidden.md) | `@rata/react` | foundations | latest / na / na | free |
 
 ## Props
@@ -240,7 +245,7 @@ Contract: [docs/components/dialog.md](../docs/components/dialog.md)
 
 Real usage (from `apps/`):
 ```tsx
-<Icon icon={Bold} />
+<Icon icon={User} />
 ```
 
 Contract: [docs/components/icon.md](../docs/components/icon.md)
@@ -264,16 +269,16 @@ Extends: `Omit<`
 Real usage (from `apps/`):
 ```tsx
 <Menu
-        label="Row actions"
-        trigger={
-          <Button iconOnly aria-label="Row actions" variant="tertiary">
-            <Icon icon={Ellipsis} />
-          </Button>
-        }
-      >
-        <MenuItem icon={Pencil} onSelect={() => {}}>Edit</MenuItem>
-        <MenuItem destructive icon={Trash2} onSelect={() => {}}>Delete</MenuItem>
-      </Menu>
+            label="Account"
+            trigger={
+              <Button iconOnly aria-label="Account" variant="tertiary">
+                <Icon icon={User} />
+              </Button>
+            }
+          >
+            <MenuItem icon={Settings} onSelect={() => {}}>Settings</MenuItem>
+            <MenuItem onSelect={() => {}}>Sign out</MenuItem>
+          </Menu>
 ```
 
 Contract: [docs/components/menu.md](../docs/components/menu.md)
@@ -296,10 +301,45 @@ Extends: `Omit<ButtonHTMLAttributes<HTMLButtonElement>, "disabled" | "role" | "o
 
 Real usage (from `apps/`):
 ```tsx
-<MenuItem icon={Pencil} onSelect={() => {}}>Edit</MenuItem>
+<MenuItem onSelect={() => {}}>Sign out</MenuItem>
 ```
 
 Contract: [docs/components/menu-item.md](../docs/components/menu-item.md)
+
+### MobileNav (`@rata/react`)
+
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children" | "title">`
+
+- `sections: SideNavSection[]`
+  The destinations, grouped — the same shape SideNav takes.
+- `label?: string` — default: `"Main"`
+  Accessible name for the navigation landmark inside the drawer.
+- `title?: ReactNode` — default: `"Menu"`
+  The drawer's own name, shown at its top.
+- `triggerLabel?: string` — default: `"Menu"`
+  Accessible name for the control that opens the drawer.
+- `open?: boolean`
+  Whether the drawer is showing. Makes the component controlled.
+- `defaultOpen?: boolean`
+  Starting state for an uncontrolled drawer. Conflicts with `open`.
+- `onOpenChange?: (open: boolean) => void`
+- `closeLabel?: string` — default: `"Close"`
+  Accessible name for the drawer's close control.
+- `footer?: ReactNode`
+  Content pinned below the destinations — an account link, a sign-out.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<MobileNav
+              className="pg-drawer-trigger"
+              title="Ratā"
+              label="Sections"
+              sections={navSections}
+            />
+```
+
+Contract: [docs/components/mobile-nav.md](../docs/components/mobile-nav.md)
 
 ### Notice (`@rata/react`)
 
@@ -387,6 +427,66 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/radio-group.md](../docs/components/radio-group.md)
 
+### Search (`@rata/react`)
+
+Extends: `Omit<`
+
+- `label: ReactNode`
+  The field's accessible name. Required.
+- `labelHidden?: boolean` — default: `true`
+  Whether the label is off screen. Defaults to true, unlike every other field here.
+- `value?: string`
+  The query. Makes the component controlled.
+- `defaultValue?: string`
+  Starting query for an uncontrolled field. Conflicts with `value`.
+- `onValueChange?: (value: string) => void`
+  Called on every keystroke, and when the field is cleared.
+- `onSearch?: (value: string) => void`
+  Called when the reader commits the query, by pressing Enter.
+- `loading?: boolean`
+  A query is in flight. The leading glyph becomes a spinner.
+- `landmark?: boolean`
+  Wraps the field in a search landmark.
+- `placeholder?: string`
+- `size?: SearchSize` — default: `"md"`
+- `clearLabel?: string`
+  Accessible name for the clear control.
+- `disabled?: boolean`
+  Blocks the field while keeping it focusable and readable.
+- `id?: string`
+  Stable id for the input. Defaults to a generated one.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Search
+            label="Search the system"
+            placeholder="Search…"
+            size="sm"
+            value={search}
+            onValueChange={setSearch}
+          />
+```
+
+Contract: [docs/components/search.md](../docs/components/search.md)
+
+### SideNav (`@rata/react`)
+
+Extends: `Omit<HTMLAttributes<HTMLElement>, "children">`
+
+- `sections: SideNavSection[]`
+  The destinations, grouped. One unlabelled section is a flat nav.
+- `label?: string` — default: `"Sections"`
+  Accessible name for the navigation landmark.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<SideNav label="Sections" sections={navSections} />
+```
+
+Contract: [docs/components/side-nav.md](../docs/components/side-nav.md)
+
 ### Loading: Spinner (`@rata/react`)
 
 - `label?: string`
@@ -433,6 +533,41 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/switch.md](../docs/components/switch.md)
+
+### Tabs (`@rata/react`)
+
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children">`
+
+- `items: TabItem[]`
+  The tabs and their panels, in the order they are read.
+- `value?: string`
+  Which panel is showing. Makes the component controlled.
+- `defaultValue?: string`
+  Starting panel for uncontrolled tabs. Defaults to the first.
+- `onValueChange?: (value: string) => void`
+- `label?: string`
+  Accessible name for the tablist. Required unless `labelledBy` names an element.
+- `labelledBy?: string`
+- `orientation?: TabsOrientation` — default: `"horizontal"`
+- `activation?: TabsActivation` — default: `"automatic"`
+  Whether the arrow keys select as they move.
+- `variant?: TabsVariant` — default: `"underline"`
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Tabs
+          label="Range"
+          variant="segmented"
+          items={[
+            { value: "week", label: "Week", content: "Seven days of activity." },
+            { value: "month", label: "Month", content: "A calendar month." },
+            { value: "quarter", label: "Quarter", content: "Three months." },
+          ]}
+        />
+```
+
+Contract: [docs/components/tabs.md](../docs/components/tabs.md)
 
 ### Input: Text field (`@rata/react`)
 
@@ -520,18 +655,28 @@ Extends: `Omit<HTMLAttributes<HTMLDivElement>, "role" | "onChange" | "defaultVal
 
 Real usage (from `apps/`):
 ```tsx
-<ToggleButtonGroup
-      label="Status filter"
-      deselectable
-      value={status}
-      onValueChange={(next) => setStatus(next as string | null)}
-    >
-      <ToggleButton value="open">Open</ToggleButton>
-      <ToggleButton value="closed">Closed</ToggleButton>
-    </ToggleButtonGroup>
+<ToggleButtonGroup label="Billing period" defaultValue="monthly">
+          <ToggleButton value="monthly">Monthly</ToggleButton>
+          <ToggleButton value="annual">Annual</ToggleButton>
+        </ToggleButtonGroup>
 ```
 
 Contract: [docs/components/toggle-button-group.md](../docs/components/toggle-button-group.md)
+
+### TopNav (`@rata/react`)
+
+Extends: `Omit<HTMLAttributes<HTMLElement>, "children">`
+
+- `items?: TopNavItem[]` — default: `[]`
+- `label?: string` — default: `"Main"`
+  Accessible name for the navigation landmark.
+- `brand?: ReactNode`
+  The product's mark, at the start of the bar.
+- `actions?: ReactNode`
+  Controls at the end of the bar — search, account, notifications.
+- `className?: string`
+
+Contract: [docs/components/top-nav.md](../docs/components/top-nav.md)
 
 ### Visually hidden
 
@@ -889,4 +1034,4 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 
 ## Pages
 
-- `apps/playground/src/app.tsx` — shell: header → nav → main → section×13
+- `apps/playground/src/app.tsx` — shell: main → section×13

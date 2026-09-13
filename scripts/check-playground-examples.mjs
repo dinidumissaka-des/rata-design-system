@@ -19,6 +19,7 @@ import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SOURCE = "apps/playground/src/component-page.tsx";
+const APP = "apps/playground/src/app.tsx";
 
 const contracts = JSON.parse(
   await readFile(path.join(repoRoot, "docs/components/contracts.json"), "utf8")
@@ -67,6 +68,47 @@ function componentMap(name) {
 
 const problems = [];
 
+// The brand-theme wiring: whatever attribute the generated stylesheets are
+// scoped to must be the attribute the playground actually writes.
+//
+// This missed once and nothing noticed. The rename to Ratā searched for the
+// literal string "data-ds-theme", and the playground set the attribute through
+// `dataset.dsTheme` — a camelCase key that does not contain that string. So the
+// stylesheets moved to [data-rata-theme] while the app went on writing
+// data-ds-theme, and no brand theme applied at all. The switcher still looked
+// alive, because each swatch carries the attribute itself.
+//
+// Read out of the built CSS rather than from a shared constant: the stylesheet
+// is the thing that has to be satisfied, and a constant would just be a third
+// copy of the name to keep in step.
+{
+  const themeCss = await readFile(
+    path.join(repoRoot, "packages/themes/lime/dist/theme.css"),
+    "utf8"
+  );
+  const scoped = /\[data-([a-z-]+)="lime"\]/.exec(themeCss);
+  if (scoped === null) {
+    problems.push(
+      "Could not find a [data-*-theme=\"lime\"] scope in the built lime stylesheet — " +
+        "has the theme build changed how it scopes?"
+    );
+  } else {
+    const attribute = `data-${scoped[1]}`;
+    // `dataset.fooBar` writes `data-foo-bar`.
+    const appSource = await readFile(path.join(repoRoot, APP), "utf8");
+    const written = [...appSource.matchAll(/dataset\.([A-Za-z0-9_$]+)\s*=/g)].map(
+      (m) => `data-${m[1].replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`
+    );
+    if (!written.includes(attribute)) {
+      problems.push(
+        `brand stylesheets are scoped to [${attribute}], but ${APP} never writes it — ` +
+          `it sets ${written.length ? written.join(", ") : "nothing"}. The switcher will ` +
+          `appear to work while no theme applies.`
+      );
+    }
+  }
+}
+
 for (const [component, body] of componentMap("EXAMPLES")) {
   const cases = casesByName.get(component);
   if (cases === undefined) {
@@ -91,10 +133,12 @@ for (const [component] of componentMap("INTERACTIVE")) {
 }
 
 if (problems.length) {
-  console.error(`✖ ${SOURCE} disagrees with the contracts:\n`);
+  console.error("✖ the playground disagrees with what it is documenting:\n");
   for (const problem of problems) console.error(`  - ${problem}\n`);
-  console.error("Match the key to the contract's `case` string, or remove the entry.");
   process.exit(1);
 }
 
-console.log("playground demos match the contracts — every example key resolves to a usage case.");
+console.log(
+  "playground wiring is sound — every example key resolves to a usage case, " +
+    "and the theme switcher writes the attribute the stylesheets are scoped to."
+);

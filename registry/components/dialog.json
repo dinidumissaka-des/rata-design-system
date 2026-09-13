@@ -3,6 +3,9 @@
   "title": "Dialog",
   "family": "overlays",
   "description": "Modal dialog with focus trapping, scroll locking, and dismiss behavior.",
+  "alsoKnownAs": [
+    "modal"
+  ],
   "status": {
     "css": {
       "state": "latest"
@@ -30,6 +33,10 @@
     {
       "source": "packages/react/src/cx.ts",
       "target": "lib/cx.ts"
+    },
+    {
+      "source": "packages/react/src/scroll-lock.ts",
+      "target": "lib/scroll-lock.ts"
     }
   ],
   "tier": "free",
