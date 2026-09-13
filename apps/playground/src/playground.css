@@ -125,6 +125,23 @@ code {
   outline-offset: var(--rata-focus-ring-offset);
 }
 
+/* PROSE FILLS ITS COLUMN. There was a 68ch measure on five prose rules —
+   the family docs, the rules list, a component's description, the callouts
+   and each prop block — on the usual reasoning that a long line is harder to
+   read.
+
+   It was the wrong trade at this column width. `ch` is the width of the "0"
+   glyph, not a character, so 68ch resolves to roughly 500px — inside a 912px
+   content box that left 40% of the width empty, and a panel with its right
+   half blank reads as broken long before a line reads as too long. The column
+   is capped at 960px already, which is the constraint doing the real work.
+
+   Seven rules carried one in the end: those five, the lede under every page's
+   heading at 60ch, and an example card's prose at 80ch.
+
+   If a line ever does need shortening, narrow .pg-main rather than the prose
+   inside it: then the container and its content agree and nothing looks
+   unfilled. */
 .pg-main {
   flex: 1;
   min-width: 0;
@@ -586,7 +603,6 @@ code {
 
 .pg-family-doc {
   margin-bottom: var(--rata-space-stack-md);
-  max-width: 68ch;
 }
 
 .pg-family-summary {
@@ -601,7 +617,6 @@ code {
 }
 
 .pg-rules {
-  max-width: 68ch;
   padding-left: var(--rata-space-4);
 }
 
@@ -641,11 +656,9 @@ code {
 
 .pg-component-description {
   margin: 0 0 var(--rata-space-1);
-  max-width: 68ch;
 }
 
 .pg-callout {
-  max-width: 68ch;
   margin: var(--rata-space-stack-sm) 0 0;
   padding: var(--rata-space-padding-xs);
   border-radius: var(--rata-radius-element);
@@ -672,7 +685,6 @@ code {
   border: var(--rata-border-1) solid var(--rata-theme-border-default);
   border-radius: var(--rata-radius-container);
   background: var(--rata-theme-bg-surface);
-  max-width: 68ch;
 }
 
 .pg-prop-head {
@@ -1022,7 +1034,6 @@ code {
 
 .pg-section-lede {
   margin: 0 0 var(--rata-space-4);
-  max-inline-size: 60ch;
   color: var(--rata-theme-fg-secondary);
 }
 
@@ -1128,11 +1139,11 @@ code {
   font-weight: var(--rata-type-control-weight);
 }
 
-/* The contract's prose, under the title. Measured rather than full-width: two
-   sentences across 960px are harder to read than the same two at 80ch. */
+/* The contract's prose, under the title. Fills the card like everything else:
+   an example card is already narrower than the page, so a measure inside it
+   was capping content that was not wide to begin with. */
 .pg-example-desc {
   margin: 0;
-  max-inline-size: 80ch;
   color: var(--rata-theme-fg-secondary);
 }
 
