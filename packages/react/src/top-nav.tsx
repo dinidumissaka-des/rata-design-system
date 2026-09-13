@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import type { CSSProperties, HTMLAttributes, ReactNode } from "react";
+import type { CSSProperties, HTMLAttributes, MouseEvent, ReactNode } from "react";
 import { getDisclosureProps } from "@rata/primitives";
 import { Icon, ChevronDown } from "@rata/icons";
 import type { LucideIcon } from "@rata/icons";
@@ -11,6 +11,16 @@ export interface TopNavSubItem {
   /** Whether this is the page you are on. Stated, as at the top level. */
   current?: boolean;
   icon?: LucideIcon;
+  /**
+   * Intercepts the click, for client-side routing.
+   *
+   * `preventDefault()` in here and route yourself. The `href` is still
+   * required and must still be real: it is what makes the row a link rather
+   * than a button wearing one, so middle-click opens a tab, right-click
+   * copies an address, and a crawler can follow it. A nav built out of
+   * handlers with no addresses behind them loses all three silently.
+   */
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
 }
 
 export interface TopNavItem {
@@ -38,6 +48,16 @@ export interface TopNavItem {
    * the panel is a plain list and Tab moves through it as it does anywhere.
    */
   items?: TopNavSubItem[];
+  /**
+   * Intercepts the click, for client-side routing.
+   *
+   * `preventDefault()` in here and route yourself. The `href` is still
+   * required and must still be real: it is what makes the row a link rather
+   * than a button wearing one, so middle-click opens a tab, right-click
+   * copies an address, and a crawler can follow it. A nav built out of
+   * handlers with no addresses behind them loses all three silently.
+   */
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
 }
 
 export interface TopNavProps extends Omit<HTMLAttributes<HTMLElement>, "children"> {
@@ -100,6 +120,7 @@ export function TopNav({
                 <a
                   className="rata-top-nav-link rata-state-layer rata-state-layer--flush"
                   href={item.href}
+                  onClick={item.onClick}
                   // Both the marker in the CSS and this attribute, so the
                   // current page is never carried by colour alone.
                   aria-current={item.current ? "page" : undefined}
@@ -212,6 +233,7 @@ function TopNavDisclosure({ item }: { item: TopNavItem }) {
               <a
                 className="rata-top-nav-panel-link rata-state-layer rata-state-layer--flush"
                 href={child.href}
+                onClick={child.onClick}
                 aria-current={child.current ? "page" : undefined}
               >
                 {child.icon && <Icon icon={child.icon} />}

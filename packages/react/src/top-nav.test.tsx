@@ -1,4 +1,4 @@
-import { describe, expect, test, afterEach, beforeAll } from "vitest";
+import { describe, expect, test, vi, afterEach, beforeAll } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Star } from "@rata/icons";
@@ -103,6 +103,15 @@ describe("TopNav", () => {
     const banner = screen.getByRole("banner");
     expect(banner.id).toBe("banner");
     expect(banner.getAttribute("data-testid")).toBe("b");
+  });
+
+  test("onClick intercepts the navigation, and the row stays a real link", async () => {
+    const onClick = vi.fn((event: { preventDefault(): void }) => event.preventDefault());
+    render(<TopNav items={[{ label: "Invoices", href: "/invoices", onClick }]} />);
+    const link = screen.getByRole("link", { name: "Invoices" });
+    await userEvent.click(link);
+    expect(onClick).toHaveBeenCalledOnce();
+    expect(link.getAttribute("href")).toBe("/invoices");
   });
 
   describe("a destination with sub-destinations", () => {

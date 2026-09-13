@@ -59,6 +59,10 @@
       {
         "decision": "A group holding the current page starts open",
         "why": "Not a convenience: a reader whose page sits inside a collapsed group cannot see where they are, which is the one question a nav exists to answer. `defaultExpanded` overrides it for the rare case where a group is long enough that opening it costs more than it explains."
+      },
+      {
+        "decision": "Rows carry an optional onClick, and still require a real href",
+        "why": "Found by trying to build the playground's own rail out of this component: the rows navigate client-side, and with no way to intercept the click there was no way to use it without a full page load. The href stays required rather than becoming optional, because it is what makes the row a link — middle-click, copy-address and crawlers all depend on it, and a nav built from handlers with no addresses behind them loses all three without appearing to."
       }
     ]
   },
@@ -68,7 +72,8 @@
       "use": [
         "A named section per group of related pages: \"Billing\", \"Settings\".",
         "A single section with no `label` when there is nothing to group.",
-        "`items` on an entry for pages nested under it — it becomes a disclosure button rather than a link, and opens by default when one of its children is current."
+        "`items` on an entry for pages nested under it — it becomes a disclosure button rather than a link, and opens by default when one of its children is current.",
+        "`onClick` on an entry to intercept the navigation for a client-side router — the `href` stays real, so the row is still a link."
       ],
       "dont": [
         "A section per item. A group of one is a heading over nothing, and it reads as a mistake.",

@@ -55,6 +55,10 @@
       {
         "decision": "The panel is a popover, for a layout reason rather than a stylistic one",
         "why": "The destination list scrolls its overflow so a long nav does not wrap the bar onto two rows, and an overflow container clips its absolutely positioned descendants — a panel drawn inside the list would be cut off or scroll away with it. The top layer is the only place it can be and still be seen. It stays a child of its `<li>` in the DOM, which is what matters for assistive technology: the accessibility tree follows the document rather than the paint order, so those links are still inside the nav landmark. `popover=\"auto\"` settles one-open-at-a-time and light dismiss for free."
+      },
+      {
+        "decision": "Rows carry an optional onClick, and still require a real href",
+        "why": "Found by trying to build the playground's own rail out of this component: the rows navigate client-side, and with no way to intercept the click there was no way to use it without a full page load. The href stays required rather than becoming optional, because it is what makes the row a link — middle-click, copy-address and crawlers all depend on it, and a nav built from handlers with no addresses behind them loses all three without appearing to."
       }
     ]
   },
@@ -63,7 +67,8 @@
       "summary": "The primary destinations, in the order they are read.",
       "use": [
         "Between two and about seven top-level destinations. More than that is a side nav, or a nav plus an overflow menu.",
-        "`items` on an entry for a group of sub-destinations — it becomes a disclosure button rather than a link, and its own `href` is then unnecessary."
+        "`items` on an entry for a group of sub-destinations — it becomes a disclosure button rather than a link, and its own `href` is then unnecessary.",
+        "`onClick` on an entry to intercept the navigation for a client-side router — the `href` stays real, so the row is still a link."
       ],
       "dont": [
         "Actions. A button that does something is not a destination — put it in `actions`, where it is outside the nav landmark.",

@@ -24,12 +24,29 @@ code {
   min-height: 100vh;
 }
 
+/* The header is a TopNav now, so the bar, its padding and its border come
+   from the component. All that is left here is the page gutter, which is the
+   page's own measurement rather than the component's. */
 .pg-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--rata-space-4) var(--rata-space-page-gutter);
-  border-bottom: var(--rata-border-1) solid var(--rata-theme-border-default);
+  padding-inline: var(--rata-space-page-gutter);
+}
+
+/* The drawer holds the same sections the rail does, so it only earns its
+   place where the rail does not fit. Which width that is depends on the rail
+   and the page around it — which is exactly why MobileNav ships no breakpoint
+   of its own, and why this media query lives here. */
+.pg-drawer-trigger {
+  display: none;
+}
+
+@media (max-width: 60rem) {
+  .pg-drawer-trigger {
+    display: inline-flex;
+  }
+
+  .pg-sidebar {
+    display: none;
+  }
 }
 
 .pg-layout {
@@ -37,28 +54,23 @@ code {
   align-items: flex-start;
 }
 
+/* Holds the Search and the SideNav. The rail's own padding and row spacing
+   are the component's; what is left here is the column: how wide it is, that
+   it sticks, and that it scrolls — the three things SideNav deliberately
+   leaves to the page. */
 .pg-sidebar {
-  width: 220px;
+  inline-size: calc(var(--rata-size-control-lg) * 6);
   flex-shrink: 0;
   position: sticky;
-  top: 0;
-  height: 100vh;
+  inset-block-start: var(--rata-space-0);
+  block-size: 100vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: var(--rata-space-gap-md);
-  padding: var(--rata-space-page-block-start) var(--rata-space-4);
-  border-right: var(--rata-border-1) solid var(--rata-theme-border-default);
-}
-
-.pg-search {
-  display: flex;
-  align-items: center;
-  gap: var(--rata-space-gap-xs);
-  padding: var(--rata-space-2) var(--rata-space-3);
-  border-radius: var(--rata-radius-pill);
-  border: var(--rata-border-1) solid var(--rata-theme-border-default);
-  background: var(--rata-theme-bg-surface);
+  padding-block-start: var(--rata-space-page-block-start);
+  padding-inline: var(--rata-space-4);
+  border-inline-end: var(--rata-border-1) solid var(--rata-theme-border-default);
 }
 
 /* The input's own outline is suppressed below (a pill-shaped container needs
@@ -67,88 +79,6 @@ code {
 .pg-search:focus-within {
   outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring);
   outline-offset: var(--rata-focus-ring-offset);
-}
-
-.pg-search-icon {
-  color: var(--rata-theme-fg-muted);
-  font-size: var(--rata-type-body-size);
-}
-
-/* rata-allow: focus-removed — the ring moves to .pg-search:focus-within above,
-   not dropped: a pill-shaped container needs the ring on its own box. */
-.pg-search-input {
-  flex: 1;
-  min-width: 0;
-  border: none;
-  background: none;
-  outline: none;
-  color: var(--rata-theme-fg-primary);
-  font-family: inherit;
-  font-size: var(--rata-type-body-size);
-}
-
-.pg-search-input::placeholder {
-  color: var(--rata-theme-fg-muted);
-}
-
-.pg-nav-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.pg-nav-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  text-align: left;
-  padding: var(--rata-space-2) var(--rata-space-3);
-  border-radius: var(--rata-radius-pill);
-  border: none;
-  background: none;
-  color: var(--rata-theme-fg-primary);
-  font-family: inherit;
-  font-size: var(--rata-type-body-size);
-  cursor: pointer;
-}
-
-.pg-nav-item:hover {
-  background: var(--rata-theme-bg-muted);
-}
-
-.pg-nav-item:focus-visible {
-  outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring);
-  outline-offset: var(--rata-focus-ring-offset);
-}
-
-.pg-nav-item.is-active {
-  background: var(--rata-theme-accent-role-subtle);
-  color: var(--rata-theme-accent-role-fg);
-  font-weight: var(--rata-type-heading-weight);
-}
-
-.pg-nav-item--child {
-  padding-left: var(--rata-space-6);
-  color: var(--rata-theme-fg-secondary);
-}
-
-.pg-nav-chevron {
-  color: var(--rata-theme-fg-muted);
-  transition-property: transform;
-  transition-duration: var(--rata-motion-interactive-duration);
-  transition-timing-function: var(--rata-motion-interactive-easing);
-}
-
-.pg-nav-chevron.is-open {
-  transform: rotate(180deg);
-}
-
-.pg-nav-children {
-  display: flex;
-  flex-direction: column;
-  gap: var(--rata-space-0-5);
-  margin-top: var(--rata-space-0-5);
 }
 
 .pg-main {
@@ -391,11 +321,6 @@ code {
   letter-spacing: var(--rata-type-label-letter-spacing);
   color: var(--rata-theme-fg-muted);
 }
-
-
-
-
-
 
 /* rata-allow: hardcoded-dimension — prose measure for the doc columns below is a
    playground layout constant; this system has no measure/max-width token */
@@ -705,7 +630,6 @@ code {
   color: var(--rata-theme-fg-muted);
 }
 
-
 /* Host element for the state-layer demo: a neutral surface whose only job is
    to have the class composed onto it. */
 .pg-demo-surface {
@@ -871,7 +795,6 @@ code {
   align-items: flex-start;
 }
 
-
 /* A conflict is a rule the compiler won't enforce, so it reads as a warning,
    not an error: the role's subtle tint with its own fg. */
 .pg-callout--conflict {
@@ -932,7 +855,6 @@ code {
   outline-offset: var(--rata-focus-ring-offset);
   border-radius: var(--rata-radius-inner);
 }
-
 
 /* ---- Accent switcher ----------------------------------------------------
    Five accent options, each a brand theme scoped to [data-rata-theme]. The
@@ -1016,14 +938,6 @@ code {
     clip-path: inset(50%);
     white-space: nowrap;
   }
-}
-
-.pg-header-tools {
-  display: flex;
-  align-items: center;
-  gap: var(--rata-space-4);
-  flex-wrap: wrap;
-  justify-content: flex-end;
 }
 
 /* ---- Component overview: hero + specimens --------------------------------

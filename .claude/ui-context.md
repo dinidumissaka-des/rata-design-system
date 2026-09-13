@@ -331,18 +331,11 @@ Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children" | "title">`
 Real usage (from `apps/`):
 ```tsx
 <MobileNav
-        title={String(state.title || "Menu")}
-        label={String(state.label || "Main")}
-        triggerLabel={String(state.triggerLabel || "Menu")}
-        sections={[
-          {
-            items: [
-              { label: "Invoices", href: "#", current: true },
-              { label: "Clients", href: "#" },
-            ],
-          },
-        ]}
-      />
+              className="pg-drawer-trigger"
+              title="Ratā"
+              label="Sections"
+              sections={navSections}
+            />
 ```
 
 Contract: [docs/components/mobile-nav.md](../docs/components/mobile-nav.md)
@@ -465,7 +458,13 @@ Extends: `Omit<`
 
 Real usage (from `apps/`):
 ```tsx
-<Search label="Filter rows" size={size} value={query} onValueChange={setQuery} />
+<Search
+            label="Search the system"
+            placeholder="Search…"
+            size="sm"
+            value={search}
+            onValueChange={setSearch}
+          />
 ```
 
 Contract: [docs/components/search.md](../docs/components/search.md)
@@ -482,19 +481,7 @@ Extends: `Omit<HTMLAttributes<HTMLElement>, "children">`
 
 Real usage (from `apps/`):
 ```tsx
-<SideNav
-        className="pg-rail"
-        label="Settings"
-        sections={[
-          {
-            items: [
-              { label: "Profile", href: "#", current: true },
-              { label: "Notifications", href: "#" },
-              { label: "Security", href: "#" },
-            ],
-          },
-        ]}
-      />
+<SideNav label="Sections" sections={navSections} />
 ```
 
 Contract: [docs/components/side-nav.md](../docs/components/side-nav.md)
@@ -1017,4 +1004,4 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 
 ## Pages
 
-- `apps/playground/src/app.tsx` — shell: header → nav → main → section×13
+- `apps/playground/src/app.tsx` — shell: main → section×13

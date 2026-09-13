@@ -277,18 +277,11 @@ Don't. A drawer covering the page is modal whether or not it is called one: with
 
 ```tsx
 <MobileNav
-        title={String(state.title || "Menu")}
-        label={String(state.label || "Main")}
-        triggerLabel={String(state.triggerLabel || "Menu")}
-        sections={[
-          {
-            items: [
-              { label: "Invoices", href: "#", current: true },
-              { label: "Clients", href: "#" },
-            ],
-          },
-        ]}
-      />
+              className="pg-drawer-trigger"
+              title="Ratā"
+              label="Sections"
+              sections={navSections}
+            />
 ```
 
 ## Token recipe

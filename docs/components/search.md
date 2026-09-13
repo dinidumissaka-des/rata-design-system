@@ -355,7 +355,13 @@ Don't. A placeholder is not a name: it is gone as soon as someone types, several
 ## Real usage in this repo
 
 ```tsx
-<Search label="Filter rows" size={size} value={query} onValueChange={setQuery} />
+<Search
+            label="Search the system"
+            placeholder="Search…"
+            size="sm"
+            value={search}
+            onValueChange={setSearch}
+          />
 ```
 
 ## Token recipe

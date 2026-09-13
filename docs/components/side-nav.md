@@ -27,6 +27,7 @@ A `<nav>` containing one list per section. No primitive and no keyboard handling
 - **The current page is stated per item, as in TopNav** — Only the caller knows whether /invoices/123 counts as being on /invoices. Matching a path here would have to guess between exact and prefix and would be silently wrong for someone either way. It is shown as a tinted row rather than an edge marker: the marker was removed on request, which leaves the visual cue entirely colour and `aria-current` as the only cue that is not.
 - **A nested group is a disclosure expanded in place, not a popover** — An item with `items` becomes a button that expands a list beneath it. Not a menu, for the reason getDisclosureProps documents: `role="menu"` announces a keyboard model a list of links does not have. And not a popover either, unlike TopNav's — a rail scrolls vertically, so a nested list pushes what follows it down and nothing has to escape an overflow. Keeping it inline also keeps the nesting visible, which is most of what a rail is for.
 - **A group holding the current page starts open** — Not a convenience: a reader whose page sits inside a collapsed group cannot see where they are, which is the one question a nav exists to answer. `defaultExpanded` overrides it for the rare case where a group is long enough that opening it costs more than it explains.
+- **Rows carry an optional onClick, and still require a real href** — Found by trying to build the playground's own rail out of this component: the rows navigate client-side, and with no way to intercept the click there was no way to use it without a full page load. The href stays required rather than becoming optional, because it is what makes the row a link — middle-click, copy-address and crawlers all depend on it, and a nav built from handlers with no addresses behind them loses all three without appearing to.
 
 ## Props
 
@@ -51,6 +52,7 @@ The destinations, grouped. One unlabelled section is a flat nav.
 - A named section per group of related pages: "Billing", "Settings".
 - A single section with no `label` when there is nothing to group.
 - `items` on an entry for pages nested under it — it becomes a disclosure button rather than a link, and opens by default when one of its children is current.
+- `onClick` on an entry to intercept the navigation for a client-side router — the `href` stays real, so the row is still a link.
 
 **Don't use for**
 
@@ -190,19 +192,7 @@ Don't. A group of one is a heading over nothing: it doubles the reading length, 
 ## Real usage in this repo
 
 ```tsx
-<SideNav
-        className="pg-rail"
-        label="Settings"
-        sections={[
-          {
-            items: [
-              { label: "Profile", href: "#", current: true },
-              { label: "Notifications", href: "#" },
-              { label: "Security", href: "#" },
-            ],
-          },
-        ]}
-      />
+<SideNav label="Sections" sections={navSections} />
 ```
 
 ## Token recipe

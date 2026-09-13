@@ -1,5 +1,5 @@
 import { useId, useRef, useState } from "react";
-import type { HTMLAttributes } from "react";
+import type { HTMLAttributes, MouseEvent } from "react";
 import { getDisclosureProps } from "@rata/primitives";
 import { Icon, ChevronDown } from "@rata/icons";
 import type { LucideIcon } from "@rata/icons";
@@ -11,6 +11,16 @@ export interface SideNavSubItem {
   /** Whether this is the page you are on. Stated, as at the top level. */
   current?: boolean;
   icon?: LucideIcon;
+  /**
+   * Intercepts the click, for client-side routing.
+   *
+   * `preventDefault()` in here and route yourself. The `href` is still
+   * required and must still be real: it is what makes the row a link rather
+   * than a button wearing one, so middle-click opens a tab, right-click
+   * copies an address, and a crawler can follow it. A nav built out of
+   * handlers with no addresses behind them loses all three silently.
+   */
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
 }
 
 export interface SideNavItem {
@@ -34,6 +44,16 @@ export interface SideNavItem {
    * in place pushes the rest down rather than needing to escape an overflow.
    */
   items?: SideNavSubItem[];
+  /**
+   * Intercepts the click, for client-side routing.
+   *
+   * `preventDefault()` in here and route yourself. The `href` is still
+   * required and must still be real: it is what makes the row a link rather
+   * than a button wearing one, so middle-click opens a tab, right-click
+   * copies an address, and a crawler can follow it. A nav built out of
+   * handlers with no addresses behind them loses all three silently.
+   */
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
   /**
    * Whether the group starts open.
    *
@@ -110,6 +130,7 @@ export function SideNav({
                     <a
                       className="rata-side-nav-link rata-state-layer rata-state-layer--flush"
                       href={item.href}
+                      onClick={item.onClick}
                       aria-current={item.current ? "page" : undefined}
                     >
                       {item.icon && <Icon icon={item.icon} />}
@@ -182,6 +203,7 @@ function SideNavDisclosure({ item }: { item: SideNavItem }) {
               <a
                 className="rata-side-nav-link rata-side-nav-sublink rata-state-layer rata-state-layer--flush"
                 href={child.href}
+                onClick={child.onClick}
                 aria-current={child.current ? "page" : undefined}
               >
                 {child.icon && <Icon icon={child.icon} />}

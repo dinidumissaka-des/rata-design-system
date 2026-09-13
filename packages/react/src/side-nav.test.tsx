@@ -1,4 +1,4 @@
-import { describe, expect, test, afterEach } from "vitest";
+import { describe, expect, test, vi, afterEach } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { cleanup, render, screen } from "@testing-library/react";
 import { Star } from "@rata/icons";
@@ -98,6 +98,46 @@ describe("SideNav", () => {
     const nav = screen.getByRole("navigation");
     expect(nav.id).toBe("rail");
     expect(nav.getAttribute("data-testid")).toBe("r");
+  });
+
+  test("onClick intercepts the navigation, and the row stays a real link", async () => {
+    // Found by building the playground's own rail out of this: the rows
+    // navigate client-side, and with no way to intercept the click there was
+    // no way to use SideNav without a full page load.
+    const onClick = vi.fn((event: { preventDefault(): void }) => event.preventDefault());
+    render(
+      <SideNav
+        sections={[{ items: [{ label: "Invoices", href: "/invoices", onClick }] }]}
+      />
+    );
+    const link = screen.getByRole("link", { name: "Invoices" });
+    await userEvent.click(link);
+    expect(onClick).toHaveBeenCalledOnce();
+    // Still an anchor with a real address, which is what middle-click,
+    // copy-address and crawlers all depend on.
+    expect(link.tagName).toBe("A");
+    expect(link.getAttribute("href")).toBe("/invoices");
+  });
+
+  test("a nested row can intercept its click too", async () => {
+    const onClick = vi.fn((event: { preventDefault(): void }) => event.preventDefault());
+    render(
+      <SideNav
+        sections={[
+          {
+            items: [
+              {
+                label: "Reports",
+                defaultExpanded: true,
+                items: [{ label: "Revenue", href: "/r", onClick }],
+              },
+            ],
+          },
+        ]}
+      />
+    );
+    await userEvent.click(screen.getByRole("link", { name: "Revenue" }));
+    expect(onClick).toHaveBeenCalledOnce();
   });
 
   describe("a group with pages nested under it", () => {

@@ -26,6 +26,7 @@ A `<header>` containing a `<nav>`: the bar is the page's banner landmark, and th
 - **The current page is stated per item, not matched from a path** — Only the caller knows whether /invoices/123 counts as being on /invoices — that is their routing, not this component's. A `currentHref` prop would have to guess between exact and prefix matching and would be wrong for someone either way, silently. `current` on the item is one boolean the caller already has the answer to.
 - **A dropdown is a disclosure, never a menu** — An item with `items` becomes a button that shows and hides a list of links. It is not given `role="menu"`, and that is the single most common mistake in a navigation bar: the menu role is for application commands and announces a keyboard model — one tab stop, arrow keys to move, typeahead — that a list of links does not have, so assistive technology describes the widget as something it is not. The W3C's own menubar-navigation examples are being withdrawn over exactly this. A disclosure promises only "this button reveals that", and everything inside stays in the tab order where it was.
 - **The panel is a popover, for a layout reason rather than a stylistic one** — The destination list scrolls its overflow so a long nav does not wrap the bar onto two rows, and an overflow container clips its absolutely positioned descendants — a panel drawn inside the list would be cut off or scroll away with it. The top layer is the only place it can be and still be seen. It stays a child of its `<li>` in the DOM, which is what matters for assistive technology: the accessibility tree follows the document rather than the paint order, so those links are still inside the nav landmark. `popover="auto"` settles one-open-at-a-time and light dismiss for free.
+- **Rows carry an optional onClick, and still require a real href** — Found by trying to build the playground's own rail out of this component: the rows navigate client-side, and with no way to intercept the click there was no way to use it without a full page load. The href stays required rather than becoming optional, because it is what makes the row a link — middle-click, copy-address and crawlers all depend on it, and a nav built from handlers with no addresses behind them loses all three without appearing to.
 
 ## Props
 
@@ -51,6 +52,7 @@ The primary destinations, in the order they are read.
 
 - Between two and about seven top-level destinations. More than that is a side nav, or a nav plus an overflow menu.
 - `items` on an entry for a group of sub-destinations — it becomes a disclosure button rather than a link, and its own `href` is then unnecessary.
+- `onClick` on an entry to intercept the navigation for a client-side router — the `href` stays real, so the row is still a link.
 
 **Don't use for**
 
