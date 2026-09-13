@@ -61,8 +61,15 @@ export interface TopNavItem {
 }
 
 export interface TopNavProps extends Omit<HTMLAttributes<HTMLElement>, "children"> {
-  /** The primary destinations, in the order they are read. */
-  items: TopNavItem[];
+  /**
+   * The primary destinations, in the order they are read.
+   *
+   * Optional, and omitting it means no `<nav>` at all rather than an empty
+   * one. A banner whose navigation lives in a side rail is an ordinary layout,
+   * and an empty navigation landmark is worse than no landmark: it appears in
+   * a landmark list promising destinations and delivers none.
+   */
+  items?: TopNavItem[];
   /** Accessible name for the navigation landmark. */
   label?: string;
   /** The product's mark, at the start of the bar. */
@@ -94,7 +101,7 @@ export interface TopNavProps extends Omit<HTMLAttributes<HTMLElement>, "children
  * have.
  */
 export function TopNav({
-  items,
+  items = [],
   label = "Main",
   brand,
   actions,
@@ -107,32 +114,40 @@ export function TopNav({
         <div className="rata-top-nav-brand">{brand}</div>
       )}
 
-      {/* Named, because a page with a side nav as well has two navigation
-          landmarks and they are indistinguishable in a landmark list
-          otherwise. The banner itself is unnamed: a page has one. */}
-      <nav className="rata-top-nav-nav" aria-label={label}>
-        <ul className="rata-top-nav-list">
-          {items.map((item) => (
-            <li className="rata-top-nav-item" key={item.href ?? item.label}>
-              {item.items && item.items.length > 0 ? (
-                <TopNavDisclosure item={item} />
-              ) : (
-                <a
-                  className="rata-top-nav-link rata-state-layer rata-state-layer--flush"
-                  href={item.href}
-                  onClick={item.onClick}
-                  // Both the marker in the CSS and this attribute, so the
-                  // current page is never carried by colour alone.
-                  aria-current={item.current ? "page" : undefined}
-                >
-                  {item.icon && <Icon icon={item.icon} />}
-                  {item.label}
-                </a>
-              )}
-            </li>
-          ))}
-        </ul>
-      </nav>
+      {/* No destinations, no landmark. An empty `<nav>` is worse than none: it
+          shows up in a landmark list promising places to go and has none,
+          which is a particular waste of the one tool that exists for skipping
+          straight to the navigation.
+
+          Named when there is one, because a page with a side nav as well has
+          two navigation landmarks and they are indistinguishable in a
+          landmark list otherwise. The banner itself is unnamed: a page has
+          one. */}
+      {items.length > 0 && (
+        <nav className="rata-top-nav-nav" aria-label={label}>
+          <ul className="rata-top-nav-list">
+            {items.map((item) => (
+              <li className="rata-top-nav-item" key={item.href ?? item.label}>
+                {item.items && item.items.length > 0 ? (
+                  <TopNavDisclosure item={item} />
+                ) : (
+                  <a
+                    className="rata-top-nav-link rata-state-layer rata-state-layer--flush"
+                    href={item.href}
+                    onClick={item.onClick}
+                    // Both the marker in the CSS and this attribute, so the
+                    // current page is never carried by colour alone.
+                    aria-current={item.current ? "page" : undefined}
+                  >
+                    {item.icon && <Icon icon={item.icon} />}
+                    {item.label}
+                  </a>
+                )}
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
 
       {actions !== undefined && actions !== null && (
         <div className="rata-top-nav-actions">{actions}</div>

@@ -27,6 +27,7 @@ A `<header>` containing a `<nav>`: the bar is the page's banner landmark, and th
 - **A dropdown is a disclosure, never a menu** — An item with `items` becomes a button that shows and hides a list of links. It is not given `role="menu"`, and that is the single most common mistake in a navigation bar: the menu role is for application commands and announces a keyboard model — one tab stop, arrow keys to move, typeahead — that a list of links does not have, so assistive technology describes the widget as something it is not. The W3C's own menubar-navigation examples are being withdrawn over exactly this. A disclosure promises only "this button reveals that", and everything inside stays in the tab order where it was.
 - **The panel is a popover, for a layout reason rather than a stylistic one** — The destination list scrolls its overflow so a long nav does not wrap the bar onto two rows, and an overflow container clips its absolutely positioned descendants — a panel drawn inside the list would be cut off or scroll away with it. The top layer is the only place it can be and still be seen. It stays a child of its `<li>` in the DOM, which is what matters for assistive technology: the accessibility tree follows the document rather than the paint order, so those links are still inside the nav landmark. `popover="auto"` settles one-open-at-a-time and light dismiss for free.
 - **Rows carry an optional onClick, and still require a real href** — Found by trying to build the playground's own rail out of this component: the rows navigate client-side, and with no way to intercept the click there was no way to use it without a full page load. The href stays required rather than becoming optional, because it is what makes the row a link — middle-click, copy-address and crawlers all depend on it, and a nav built from handlers with no addresses behind them loses all three without appearing to.
+- **No destinations means no navigation landmark** — An empty `<nav>` is worse than none: it appears in a landmark list promising places to go and delivers none, which wastes the one tool that exists for skipping straight to the navigation. Found by using this component for the playground's own banner, whose navigation lives in the rail — the first version passed `items={[]}` and produced exactly that empty landmark, alongside a rail with the same name, which is the collision this contract already warned about two decisions above.
 
 ## Props
 
@@ -34,7 +35,7 @@ Extends `Omit<HTMLAttributes<HTMLElement>, "children">`.
 
 | Prop | Type | Default | Summary |
 |---|---|---|---|
-| `items` | `TopNavItem[]` | — | The primary destinations, in the order they are read. |
+| `items?` | `TopNavItem[]` | `[]` | The primary destinations, in the order they are read. Omitting them means no navigation landmark at all, not an empty one. |
 | `label?` | `string` | `"Main"` | Accessible name for the navigation landmark. |
 | `brand?` | `ReactNode` | — | The product's mark, at the start of the bar. |
 | `actions?` | `ReactNode` | — | Controls at the end of the bar — search, account, notifications. |
@@ -43,14 +44,15 @@ Extends `Omit<HTMLAttributes<HTMLElement>, "children">`.
 ### `items`
 
 ```ts
-items: TopNavItem[]
+items?: TopNavItem[] = []
 ```
 
-The primary destinations, in the order they are read.
+The primary destinations, in the order they are read. Omitting them means no navigation landmark at all, not an empty one.
 
 **Use when**
 
 - Between two and about seven top-level destinations. More than that is a side nav, or a nav plus an overflow menu.
+- Omitting it entirely for a banner whose navigation lives in a side rail — an ordinary layout, and the playground's own.
 - `items` on an entry for a group of sub-destinations — it becomes a disclosure button rather than a link, and its own `href` is then unnecessary.
 - `onClick` on an entry to intercept the navigation for a client-side router — the `href` stays real, so the row is still a link.
 
@@ -59,7 +61,7 @@ The primary destinations, in the order they are read.
 - Actions. A button that does something is not a destination — put it in `actions`, where it is outside the nav landmark.
 - Every page in the product. This is the top level; the rest belongs to a side nav within a section.
 
-**Accessibility** Rendered as a list inside the `<nav>`, so the count and the order are announced. The item marked `current` gets `aria-current="page"`. An entry with `items` becomes a disclosure button with `aria-expanded` and `aria-controls` — deliberately not a menu, which would promise a keyboard model a list of links does not have; its panel is named by the trigger and its links stay ordinary tab stops. A parent of the current page is marked `aria-current="true"` rather than `"page"`, because you are not on it.
+**Accessibility** Rendered as a list inside the `<nav>`, so the count and the order are announced. The item marked `current` gets `aria-current="page"`. With no items there is no `<nav>` at all: an empty navigation landmark is worse than none, because it appears in a landmark list promising destinations and has none. An entry with `items` becomes a disclosure button with `aria-expanded` and `aria-controls` — deliberately not a menu, which would promise a keyboard model a list of links does not have; its panel is named by the trigger and its links stay ordinary tab stops. A parent of the current page is marked `aria-current="true"` rather than `"page"`, because you are not on it.
 
 ### `label`
 
@@ -76,6 +78,7 @@ Accessible name for the navigation landmark.
 **Don't use for**
 
 - The word "navigation". A screen reader already says the role; "Main navigation navigation" is what that produces.
+- Passing it when there are no `items`. There is no landmark to name, and a name for something that is not rendered is a claim the markup does not make.
 
 **Accessibility** Becomes the `<nav>`'s `aria-label`. It names the nav, not the banner — the banner is unnamed, because a page has one.
 

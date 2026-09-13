@@ -636,8 +636,7 @@ Contract: [docs/components/toggle-button-group.md](../docs/components/toggle-but
 
 Extends: `Omit<HTMLAttributes<HTMLElement>, "children">`
 
-- `items: TopNavItem[]`
-  The primary destinations, in the order they are read.
+- `items?: TopNavItem[]` — default: `[]`
 - `label?: string` — default: `"Main"`
   Accessible name for the navigation landmark.
 - `brand?: ReactNode`

@@ -28,6 +28,24 @@ describe("TopNav", () => {
     expect(banner.getAttribute("aria-label")).toBeNull();
   });
 
+  test("no destinations means no nav landmark, not an empty one", () => {
+    // An empty <nav> is worse than none: it appears in a landmark list
+    // promising places to go and has none, which wastes the one tool that
+    // exists for skipping straight to the navigation. A banner whose
+    // navigation lives in a side rail is an ordinary layout — the
+    // playground's own is exactly that.
+    render(<TopNav brand={<strong>Ratā</strong>} />);
+    expect(screen.queryByRole("navigation")).toBeNull();
+    // The banner and its contents are still there.
+    expect(screen.getByRole("banner").textContent).toBe("Ratā");
+  });
+
+  test("an explicitly empty items array is the same as none", () => {
+    render(<TopNav items={[]} />);
+    expect(screen.queryByRole("navigation")).toBeNull();
+    expect(screen.queryByRole("list")).toBeNull();
+  });
+
   test("label renames the nav, for a page with a side nav too", () => {
     render(<TopNav items={ITEMS} label="Sections" />);
     expect(screen.getByRole("navigation", { name: "Sections" })).toBeTruthy();

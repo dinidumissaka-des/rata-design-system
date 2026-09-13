@@ -475,11 +475,15 @@ export function App() {
           nav, an h1 and a div for the header — is now the real component, so
           a regression in any of them shows up on every page rather than
           waiting for someone to open that component's page. */}
+      {/* No `items` and so no nav landmark: this product's navigation lives in
+          the rail, and a second, empty one in the bar would appear in a
+          landmark list promising destinations it does not have. No `label`
+          either, for the same reason — and because the rail is already called
+          "Sections", and two navigation landmarks sharing a name is the exact
+          thing TopNav's own contract warns about. */}
       <TopNav
         className="pg-header"
-        label="Sections"
         brand={<strong className="pg-brand">Ratā</strong>}
-        items={[]}
         actions={
           <>
             <MobileNav
