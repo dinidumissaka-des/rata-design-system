@@ -17,6 +17,12 @@ import { Avatar } from "@rata/react";
 | Status (css / react / figma) | latest / latest / future |
 | Depends on | — |
 
+## Behavior
+
+- **No drawn edge on the circle** — It had one, because the fallback sits on theme.bg.muted and vanished against any container using that same tone — unavoidable while the background ladder had four names and three distinct values, and sections had taken theme.bg.muted for want of a usable theme.bg.subtle. With subtle given a tone of its own, a section band and a placeholder circle are different colours and the ring bought nothing; on a small circle it read as a border round a border.
+
+The remaining case, stated because it is real rather than hypothetical: an avatar placed directly on a theme.bg.muted surface still has no visible edge. Sections use theme.bg.subtle now, so that is an unusual placement — but it is the one to remember, and the separation is modest everywhere else too (1.26:1 on a surface).
+
 ## Props
 
 Extends `Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "alt" | "size">`.
@@ -159,9 +165,9 @@ A circular image, falling back to initials on the most recessed surface.
 |---|---|
 | size | `size.control.md, with the sm and lg steps at the other sizes — an avatar lines up with the controls beside it, which is the whole reason it borrows the control scale` |
 | border-radius | `radius.pill` |
-| edge | `border.default solid theme.border.strong — the circle needs its own boundary or the fallback disappears against any container using theme.bg.muted, which is the tone the fallback itself takes. theme.border.default is not an option: composited over a mid surface it measures around 1.2:1` |
 | fallback background | `theme.bg.muted — the most recessed surface, so initials read as a placeholder rather than a filled badge` |
 | fallback color | `theme.fg.secondary — the pairing the muted background documents for text; theme.fg.muted falls to AA-large there` |
 | fallback font-size | `type.supporting.size` |
 | fallback font-weight | `type.control.weight` |
 | image fit | `cover, so a non-square photo is cropped rather than squashed — a layout fact, not a token` |
+| background | `theme.bg.muted — the most recessed step, so initials read as a placeholder rather than a filled badge. No drawn edge: it had one only because a section band and this fill used to be the same colour, which theme.bg.subtle having a tone of its own has fixed` |

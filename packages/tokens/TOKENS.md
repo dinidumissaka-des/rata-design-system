@@ -1003,12 +1003,12 @@ A circular image, falling back to initials on the most recessed surface.
 |---|---|
 | size | `size.control.md`, with the sm and lg steps at the other sizes — an avatar lines up with the controls beside it, which is the whole reason it borrows the control scale |
 | border-radius | `radius.pill` |
-| edge | `border.default` solid `theme.border.strong` — the circle needs its own boundary or the fallback disappears against any container using `theme.bg.muted`, which is the tone the fallback itself takes. `theme.border.default` is not an option: composited over a mid surface it measures around 1.2:1 |
 | fallback background | `theme.bg.muted` — the most recessed surface, so initials read as a placeholder rather than a filled badge |
 | fallback color | `theme.fg.secondary` — the pairing the muted background documents for text; `theme.fg.muted` falls to AA-large there |
 | fallback font-size | `type.supporting.size` |
 | fallback font-weight | `type.control.weight` |
 | image fit | cover, so a non-square photo is cropped rather than squashed — a layout fact, not a token |
+| background | `theme.bg.muted` — the most recessed step, so initials read as a placeholder rather than a filled badge. No drawn edge: it had one only because a section band and this fill used to be the same colour, which `theme.bg.subtle` having a tone of its own has fixed |
 
 ### badge-neutral
 
