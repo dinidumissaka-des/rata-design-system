@@ -332,7 +332,12 @@ export function expandColorScale(config) {
     "theme.bg.surface": [NL[99], ND[10]],
     "theme.bg.canvas": [NL[95], ND[5]],
     // A quiet band inside a surface takes the canvas tone.
-    "theme.bg.subtle": [NL[95], ND[10]],
+    // 97/15, not 95/10 — those were bg.canvas and bg.surface exactly, so this
+    // step resolved to a duplicate of a neighbour in BOTH schemes and could
+    // not do the job its contract describes. One step below surface in each:
+    // slightly darker in light, slightly lighter in dark, which is the
+    // direction bg.muted already goes.
+    "theme.bg.subtle": [NL[97], ND[15]],
     // The most recessed step — tracks, wells, skeletons.
     "theme.bg.muted": [NL[90], ND[20]],
 

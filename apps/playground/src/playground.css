@@ -1115,11 +1115,17 @@ code {
   min-block-size: 12rem;
   padding: var(--rata-space-6) var(--rata-space-5);
   border-block-start: var(--rata-border-1) solid var(--rata-theme-border-default);
-  /* Not bg.subtle: that step is identical to bg.canvas in light (#E8F3EE) and
-     to bg.surface in dark (#151D1A), so a stage using it merged into the page
-     in one scheme or into its own card in the other. bg.muted is the only step
-     distinct from both in both schemes. */
-  background: var(--rata-theme-bg-muted);
+  /* bg.subtle, which is what that step is documented for: "a quiet section
+     band inside a surface". It used to be unusable here — tone 95 in light
+     made it identical to bg.canvas and tone 10 in dark identical to
+     bg.surface, so a stage using it merged into the page in one scheme or
+     into its own card in the other, and this rule took bg.muted instead.
+
+     That was borrowing the token for an inset well, and it collided the
+     moment a component wanted one: the segmented control's track is bg.muted
+     and vanished into this stage. bg.subtle has its own tone now (97/15), so
+     both can have the step they were always meant to have. */
+  background: var(--rata-theme-bg-subtle);
 }
 
 /* The stage is on bg.muted, where fg.muted measures 4.19:1 in dark — the token

@@ -169,7 +169,7 @@ A raised surface sitting on top of the canvas — the default background for any
 
 ### `theme.bg.subtle`
 
-`var(--rata-theme-bg-subtle)` · light `#E8F3EE` · dark `#151D1A`
+`var(--rata-theme-bg-subtle)` · light `#EEF9F4` · dark `#1F2824`
 
 A quiet, faintly recessed or striped background — one step of emphasis below a surface, without reading as an interactive control.
 
@@ -943,7 +943,7 @@ Ratios are measured from the resolved token values every build. A pairing listed
 |---|---|---|---|---|
 | `theme.fg.primary` | `theme.bg.canvas` | AA-text | 15.12:1 | 14.67:1 |
 | `theme.fg.primary` | `theme.bg.surface` | AA-text | 16.75:1 | 13.30:1 |
-| `theme.fg.primary` | `theme.bg.subtle` | AA-text | 15.12:1 | 13.30:1 |
+| `theme.fg.primary` | `theme.bg.subtle` | AA-text | 15.94:1 | 11.72:1 |
 | `theme.fg.primary` | `theme.bg.muted` | AA-text | 13.30:1 | 10.23:1 |
 | `theme.fg.primary` | `theme.accent-role.subtle` | AA-text | 13.28:1 | 9.65:1 |
 | `theme.fg.primary` | `theme.success-role.subtle` | AA-text | 16.41:1 | 11.55:1 |
@@ -951,11 +951,11 @@ Ratios are measured from the resolved token values every build. A pairing listed
 | `theme.fg.primary` | `theme.danger-role.subtle` | AA-text | 15.70:1 | 12.50:1 |
 | `theme.fg.secondary` | `theme.bg.canvas` | AA-text | 8.23:1 | 8.25:1 |
 | `theme.fg.secondary` | `theme.bg.surface` | AA-text | 9.12:1 | 7.48:1 |
-| `theme.fg.secondary` | `theme.bg.subtle` | AA-text | 8.23:1 | 7.48:1 |
+| `theme.fg.secondary` | `theme.bg.subtle` | AA-text | 8.68:1 | 6.59:1 |
 | `theme.fg.secondary` | `theme.bg.muted` | AA-text | 7.24:1 | 5.75:1 |
 | `theme.fg.muted` | `theme.bg.canvas` | AA-text | 5.68:1 | 6.01:1 |
 | `theme.fg.muted` | `theme.bg.surface` | AA-text | 6.29:1 | 5.45:1 |
-| `theme.fg.muted` | `theme.bg.subtle` | AA-text | 5.68:1 | 5.45:1 |
+| `theme.fg.muted` | `theme.bg.subtle` | AA-text | 5.98:1 | 4.80:1 |
 | `theme.fg.muted` | `theme.bg.muted` | AA-large | 4.99:1 | 4.19:1 |
 | `theme.accent-role.fg` | `theme.bg.canvas` | AA-text | 5.55:1 | 11.11:1 |
 | `theme.accent-role.fg` | `theme.bg.surface` | AA-text | 6.15:1 | 10.07:1 |
@@ -1548,8 +1548,7 @@ The well: a recessed track the chosen option is raised out of, which is what mak
 
 | Property | Token |
 |---|---|
-| track background | `theme.bg.canvas` — not `theme.bg.muted`: canvas is darker than surface in both schemes, where muted is darker in light and lighter in dark, so a muted well reads recessed in one scheme and raised in the other |
-| track border | `border.default` solid `theme.border.strong` — the strong colour step, not `theme.border.default`: that one is a 10%-alpha hairline for decorative rules and measures under 1.5:1 over a mid-tone parent, where `theme.border.strong` is tone-walked to the 3:1 WCAG 1.4.11 asks of a control's boundary. The same colour text-field uses for its edge. |
+| track background | `theme.bg.muted` — exactly what that step is documented for: the most recessed background, an inset well or a track. No border: a track sitting a real step below what it is on does not need an edge drawn round it. |
 | track padding | `space.0-5` |
 | track border-radius | `radius.element` |
 | sizing | hugs its options; fullWidth fills the container |
@@ -1713,8 +1712,7 @@ The enclosed bar, sized to its content rather than to the container — the real
 
 | Property | Token |
 |---|---|
-| track background | `theme.bg.canvas` — not `theme.bg.muted`: canvas is darker than surface in both schemes, where muted is darker in light and lighter in dark, so a muted well reads recessed in one scheme and raised in the other |
-| track border | `border.default` solid `theme.border.strong` — the strong colour step, not `theme.border.default`: that one is a 10%-alpha hairline for decorative rules and measures under 1.5:1 over a mid-tone parent, where `theme.border.strong` is tone-walked to the 3:1 WCAG 1.4.11 asks of a control's boundary. The same colour text-field uses for its edge. |
+| track background | `theme.bg.muted` — exactly what that step is documented for: the most recessed background, an inset well or a track. No border: a track sitting a real step below what it is on does not need an edge drawn round it. |
 | well padding | `space.0-5` |
 | well border-radius | `radius.element` |
 | segment border-radius | `radius.inner` |

@@ -3588,8 +3588,8 @@
           "why": "Sized to content, the selected option's weight change would reflow its neighbours under the reader's cursor every time the answer moved."
         },
         {
-          "decision": "The track is canvas with a hairline, because the background ladder has only three steps",
-          "why": "theme.bg.* names four steps and resolves to three distinct values in each scheme: theme.bg.subtle is tone 95 in light, identical to theme.bg.canvas, and tone 10 in dark, identical to theme.bg.surface. So there is no step whose job is 'one below a surface' — the playground's own example stage had already taken theme.bg.muted for that reason, and a track using the same token vanished into it. Canvas plus a hairline is correct regardless of what the control is placed on, which a fill alone can never be. If theme.bg.subtle is ever given a tone of its own, this is the first thing that should use it."
+          "decision": "The track is theme.bg.muted, and the background ladder gained a fourth step to allow it",
+          "why": "theme.bg.muted is documented as the most recessed background — \"an inset well, a track\" — which is this exactly. It nonetheless collided with the playground's own example stage, which was also using it, and the control vanished into the card demonstrating it.\n\nThe stage was the one in the wrong place: a stage is \"a quiet section band inside a surface\", which is theme.bg.subtle's job. But bg.subtle was tone 95 in light — identical to bg.canvas — and tone 10 in dark, identical to bg.surface, so four named steps resolved to three distinct values and the stage had taken muted because subtle could not do anything. bg.subtle has tones 97 and 15 of its own now, added to the palette's stops for this, so a section band and an inset well are finally different colours and neither needs a border to be seen."
         }
       ]
     },
@@ -3597,8 +3597,7 @@
       "base": {
         "summary": "The well: a recessed track the chosen option is raised out of, which is what makes the bar read as one control with a part selected rather than as buttons that happen to touch. That is the difference from toggle-button-group, which draws the same pattern as attached bordered buttons.",
         "tokens": {
-          "track background": "theme.bg.canvas — not theme.bg.muted: canvas is darker than surface in both schemes, where muted is darker in light and lighter in dark, so a muted well reads recessed in one scheme and raised in the other",
-          "track border": "border.default solid theme.border.strong — the strong colour step, not theme.border.default: that one is a 10%-alpha hairline for decorative rules and measures under 1.5:1 over a mid-tone parent, where theme.border.strong is tone-walked to the 3:1 WCAG 1.4.11 asks of a control's boundary. The same colour text-field uses for its edge.",
+          "track background": "theme.bg.muted — exactly what that step is documented for: the most recessed background, an inset well or a track. No border: a track sitting a real step below what it is on does not need an edge drawn round it.",
           "track padding": "space.0-5",
           "track border-radius": "radius.element",
           "sizing": "hugs its options; fullWidth fills the container"
@@ -4479,8 +4478,7 @@
       "variant-segmented": {
         "summary": "The enclosed bar, sized to its content rather than to the container — the real segmented control is inline-flex and hugs its options, and a tablist drawn to resemble it should do the same. No marker: the filled segment is the indicator, which is why the underline's marker is scoped away here. The selection is still announced through aria-selected.",
         "tokens": {
-          "track background": "theme.bg.canvas — not theme.bg.muted: canvas is darker than surface in both schemes, where muted is darker in light and lighter in dark, so a muted well reads recessed in one scheme and raised in the other",
-          "track border": "border.default solid theme.border.strong — the strong colour step, not theme.border.default: that one is a 10%-alpha hairline for decorative rules and measures under 1.5:1 over a mid-tone parent, where theme.border.strong is tone-walked to the 3:1 WCAG 1.4.11 asks of a control's boundary. The same colour text-field uses for its edge.",
+          "track background": "theme.bg.muted — exactly what that step is documented for: the most recessed background, an inset well or a track. No border: a track sitting a real step below what it is on does not need an edge drawn round it.",
           "well padding": "space.0-5",
           "well border-radius": "radius.element",
           "segment border-radius": "radius.inner",

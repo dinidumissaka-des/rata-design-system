@@ -151,15 +151,13 @@
 .rata-tabs--segmented > .rata-tabs-list {
   gap: var(--rata-space-0);
   padding: var(--rata-space-0-5);
-  /* Hairline plus fill, and bg.canvas rather than bg.muted — for the reasons
-     segmented-control.css sets out at length: a fill alone disappears against
-     a parent of the same tone, and canvas is the step that is consistently
-     recessed from a surface in both schemes where muted is recessed in light
-     and raised in dark. Kept in step with that component deliberately: the
-     two are meant to be indistinguishable. */
-  border: var(--rata-border-default) solid var(--rata-theme-border-strong);
+  /* theme.bg.muted, matching SegmentedControl exactly — the two are meant to
+     be indistinguishable, and that step is what "an inset well, a track" is
+     documented for. No border on either: a track sitting a real step below
+     what it is on does not need an edge drawn round it, and one read as a box
+     inside a box. */
   border-radius: var(--rata-radius-element);
-  background: var(--rata-theme-bg-canvas);
+  background: var(--rata-theme-bg-muted);
 }
 
 /* Sized to its content, not to the container.

@@ -978,7 +978,7 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-theme-accent-role-subtle`: `#7CF9C8`
 - `--rata-theme-bg-canvas`: `#E8F3EE`
 - `--rata-theme-bg-muted`: `#DAE5E0`
-- `--rata-theme-bg-subtle`: `#E8F3EE`
+- `--rata-theme-bg-subtle`: `#EEF9F4`
 - `--rata-theme-bg-surface`: `#F3FFF9`
 - `--rata-theme-border-default`: `#151D1A1A`
 - `--rata-theme-border-strong`: `#84958D`
