@@ -14,8 +14,25 @@
   align-items: center;
   gap: var(--rata-space-0);
   padding: var(--rata-space-0-5);
+  /* A hairline as well as a fill, so the track's edge is visible whatever it
+     is placed on. A fill alone cannot be: a recessed well needs a step below
+     its parent, and CSS cannot know what the parent is — dropped onto a
+     surface the same tone as the fill, the well simply disappears. Which is
+     what happened: the playground's example stage uses bg.muted, the track
+     used bg.muted, and the control vanished into it. */
+  border: var(--rata-border-default) solid var(--rata-theme-border-strong);
   border-radius: var(--rata-radius-element);
-  background: var(--rata-theme-bg-muted);
+  /* bg.canvas, not bg.muted. Two reasons.
+
+     It is consistently recessed: canvas is darker than surface in BOTH
+     schemes (95 vs 99 light, 5 vs 10 dark), where muted is darker than
+     surface in light and LIGHTER in dark — recessed in one scheme and raised
+     in the other, which is why a muted well never quite read right.
+
+     And it is lighter, which is the other half of the complaint: #E8F3EE
+     against muted's #DAE5E0. The option text gains contrast with it too —
+     fg.secondary measures 8.23:1 here against 7.24:1 on muted. */
+  background: var(--rata-theme-bg-canvas);
   font-family: var(--rata-font-family-sans);
 }
 
@@ -46,12 +63,21 @@
   cursor: pointer;
 }
 
+/* The option heights subtract the track's own padding AND its border, so the
+   whole bar measures exactly one control tall and lines up with the buttons
+   and fields beside it. Without the border term it grew 2px the moment the
+   hairline was added — the same class of drift as the box-sizing bug that hit
+   five components in this library. */
 .rata-segmented-control--sm .rata-segmented-control-option {
-  block-size: calc(var(--rata-size-control-sm) - var(--rata-space-1));
+  block-size: calc(
+    var(--rata-size-control-sm) - var(--rata-space-1) - var(--rata-border-default) * 2
+  );
 }
 
 .rata-segmented-control--md .rata-segmented-control-option {
-  block-size: calc(var(--rata-size-control-md) - var(--rata-space-1));
+  block-size: calc(
+    var(--rata-size-control-md) - var(--rata-space-1) - var(--rata-border-default) * 2
+  );
 }
 
 /* The chosen option, raised out of the track. Marked twice over: this surface

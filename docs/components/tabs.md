@@ -370,7 +370,8 @@ The enclosed bar, sized to its content rather than to the container — the real
 
 | Property | Token |
 |---|---|
-| well background | `theme.bg.muted` |
+| track background | `theme.bg.canvas — not theme.bg.muted: canvas is darker than surface in both schemes, where muted is darker in light and lighter in dark, so a muted well reads recessed in one scheme and raised in the other` |
+| track border | `border.default solid theme.border.strong — the strong colour step, not theme.border.default: that one is a 10%-alpha hairline for decorative rules and measures under 1.5:1 over a mid-tone parent, where theme.border.strong is tone-walked to the 3:1 WCAG 1.4.11 asks of a control's boundary. The same colour text-field uses for its edge.` |
 | well padding | `space.0-5` |
 | well border-radius | `radius.element` |
 | segment border-radius | `radius.inner` |
