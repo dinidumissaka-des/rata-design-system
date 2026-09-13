@@ -2,6 +2,7 @@ import { useEffect, useId, useRef } from "react";
 import type { DialogHTMLAttributes, ReactNode, RefObject } from "react";
 import { Icon, X } from "@rata/icons";
 import { cx } from "./cx.js";
+import { lockScroll, unlockScroll } from "./scroll-lock.js";
 
 export type DialogSize = "sm" | "md" | "lg";
 
@@ -78,43 +79,6 @@ export interface DialogProps
    */
   initialFocus?: RefObject<HTMLElement | null>;
   className?: string;
-}
-
-/**
- * How many dialogs currently want the page not to scroll.
- *
- * Counted rather than saved-and-restored, because save/restore is wrong the
- * moment two dialogs overlap: the second one captures `hidden` as the value to
- * put back, and closing it leaves the page locked with no dialog open. A
- * counter has no such state to get stale — the property is set while anything
- * holds the lock and removed when the last holder lets go.
- */
-let scrollLocks = 0;
-
-function lockScroll(): void {
-  scrollLocks += 1;
-  if (scrollLocks !== 1) return;
-  const { body, documentElement } = document;
-  // Hiding the overflow takes the scrollbar away with it, and the page reflows
-  // into the space it occupied — everything shifts sideways as the dialog
-  // opens and jumps back as it closes, which is far more noticeable than the
-  // scrolling this is meant to prevent. Holding the width with padding keeps
-  // the page still. Measured, not a token: it is whatever this browser and
-  // this user's settings make it, and it is zero for overlay scrollbars.
-  const gutter = window.innerWidth - documentElement.clientWidth;
-  body.style.overflow = "hidden";
-  if (gutter > 0) body.style.paddingInlineEnd = `${gutter}px`;
-}
-
-function unlockScroll(): void {
-  scrollLocks = Math.max(0, scrollLocks - 1);
-  if (scrollLocks !== 0) return;
-  // Removed rather than set to "": leaves the page exactly as it was found,
-  // including a stylesheet's own overflow or padding, which an empty inline
-  // value would shadow instead of restoring.
-  const { body } = document;
-  body.style.removeProperty("overflow");
-  body.style.removeProperty("padding-inline-end");
 }
 
 /**

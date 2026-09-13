@@ -28,6 +28,7 @@ this path is the honest answer to when it last actually moved.
 | [icon](../docs/components/icon.md) | `@rata/react` | content | latest / latest / future | free |
 | [menu](../docs/components/menu.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [menu-item](../docs/components/menu-item.md) | `@rata/react` | overlays | latest / latest / future | free |
+| [mobile-nav](../docs/components/mobile-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [notice](../docs/components/notice.md) | `@rata/react` | feedback | latest / latest / future | free |
 | [radio](../docs/components/radio.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [radio-group](../docs/components/radio-group.md) | `@rata/react` | inputs | latest / latest / future | free |
@@ -303,6 +304,48 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/menu-item.md](../docs/components/menu-item.md)
+
+### MobileNav (`@rata/react`)
+
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children" | "title">`
+
+- `sections: SideNavSection[]`
+  The destinations, grouped — the same shape SideNav takes.
+- `label?: string` — default: `"Main"`
+  Accessible name for the navigation landmark inside the drawer.
+- `title?: ReactNode` — default: `"Menu"`
+  The drawer's own name, shown at its top.
+- `triggerLabel?: string` — default: `"Menu"`
+  Accessible name for the control that opens the drawer.
+- `open?: boolean`
+  Whether the drawer is showing. Makes the component controlled.
+- `defaultOpen?: boolean`
+  Starting state for an uncontrolled drawer. Conflicts with `open`.
+- `onOpenChange?: (open: boolean) => void`
+- `closeLabel?: string` — default: `"Close"`
+  Accessible name for the drawer's close control.
+- `footer?: ReactNode`
+  Content pinned below the destinations — an account link, a sign-out.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<MobileNav
+        title={String(state.title || "Menu")}
+        label={String(state.label || "Main")}
+        triggerLabel={String(state.triggerLabel || "Menu")}
+        sections={[
+          {
+            items: [
+              { label: "Invoices", href: "#", current: true },
+              { label: "Clients", href: "#" },
+            ],
+          },
+        ]}
+      />
+```
+
+Contract: [docs/components/mobile-nav.md](../docs/components/mobile-nav.md)
 
 ### Notice (`@rata/react`)
 

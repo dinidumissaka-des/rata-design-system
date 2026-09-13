@@ -23,6 +23,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Icon](icon.md) | `icon` | content | latest / latest | documented | free |
 | [Menu](menu.md) | `menu` | overlays | latest / latest | documented | free |
 | [MenuItem](menu-item.md) | `menu-item` | overlays | latest / latest | documented | free |
+| [MobileNav](mobile-nav.md) | `mobile-nav` | navigation | latest / latest | documented | free |
 | [Notice](notice.md) | `notice` | feedback | latest / latest | documented | free |
 | [Radio](radio.md) | `radio` | inputs | latest / latest | documented | free |
 | [Radio Group](radio-group.md) | `radio-group` | inputs | latest / latest | documented | free |

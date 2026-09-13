@@ -1,0 +1,175 @@
+/* MobileNav — a navigation drawer behind a trigger.
+
+   A native <dialog> opened with showModal(), for the reasons Dialog's
+   stylesheet lists: the focus trap, `inert` on the page behind, the top layer,
+   ::backdrop and Escape all come from the platform. What is different here is
+   only the shape — full height against the inline-start edge instead of
+   centred.
+
+   It hides itself at no width. This system has no breakpoint tokens because
+   where a rail stops fitting depends on the rail's width and the page around
+   it, so the media query belongs to the page. */
+.rata-mobile-nav-trigger-wrap {
+  display: inline-flex;
+}
+
+.rata-mobile-nav-trigger {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--rata-size-control-md);
+  block-size: var(--rata-size-control-md);
+  padding: var(--rata-space-0);
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-element);
+  background: transparent;
+  color: var(--rata-theme-fg-primary);
+  cursor: pointer;
+}
+
+.rata-mobile-nav-trigger:focus-visible,
+.rata-mobile-nav-close:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style)
+    var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* The drawer. `margin` overrides the UA's auto-centring for a modal dialog,
+   which is what pins it to the inline-start edge instead. */
+.rata-mobile-nav {
+  box-sizing: border-box;
+  margin: var(--rata-space-0);
+  margin-inline-end: auto;
+  padding-block: var(--rata-space-padding-md);
+  padding-inline: var(--rata-space-padding-sm);
+  border: var(--rata-space-0);
+  inline-size: 100%;
+  /* Narrower than the viewport on purpose: the scrim behind stays visible, so
+     the drawer reads as a layer over the page rather than a new one. */
+  max-inline-size: min(
+    calc(var(--rata-size-control-lg) * 8),
+    calc(100% - var(--rata-size-control-lg))
+  );
+  block-size: 100%;
+  max-block-size: 100%;
+  background: var(--rata-theme-bg-surface);
+  box-shadow: var(--rata-theme-elevation-modal);
+  font-family: var(--rata-font-family-sans);
+  /* Here and NOT on [open]: `display` is transitioned with allow-discrete, so
+     on close it is held while everything else on that selector reverts at
+     once — and flex-direction cannot animate, so it would snap and the drawer
+     would re-lay-out for the whole exit. The bug that shipped in Dialog. */
+  flex-direction: column;
+  gap: var(--rata-space-stack-md);
+}
+
+.rata-mobile-nav[open] {
+  display: flex;
+}
+
+.rata-mobile-nav::backdrop {
+  background: var(--rata-theme-scrim);
+}
+
+/* Slides from the inline-start edge as well as fading, which is what makes it
+   read as a drawer rather than a panel that appeared. `overlay` is
+   transitioned on both the dialog and its backdrop: it is what holds an
+   element in the top layer for the length of its exit, and leaving it off the
+   backdrop drops the scrim the instant close() runs. */
+@media (prefers-reduced-motion: no-preference) {
+  .rata-mobile-nav {
+    transition:
+      opacity var(--rata-motion-modal-duration) var(--rata-motion-easing-exit),
+      translate var(--rata-motion-modal-duration) var(--rata-motion-easing-exit),
+      display var(--rata-motion-modal-duration) allow-discrete,
+      overlay var(--rata-motion-modal-duration) allow-discrete;
+    opacity: 0;
+    translate: -100% 0;
+    pointer-events: none;
+  }
+
+  .rata-mobile-nav::backdrop {
+    transition:
+      opacity var(--rata-motion-modal-duration) var(--rata-motion-easing-exit),
+      display var(--rata-motion-modal-duration) allow-discrete,
+      overlay var(--rata-motion-modal-duration) allow-discrete;
+    opacity: 0;
+  }
+
+  .rata-mobile-nav[open],
+  .rata-mobile-nav[open]::backdrop {
+    opacity: 1;
+    transition-timing-function: var(--rata-motion-easing-enter);
+  }
+
+  .rata-mobile-nav[open] {
+    translate: 0 0;
+    pointer-events: auto;
+  }
+
+  @starting-style {
+    .rata-mobile-nav[open],
+    .rata-mobile-nav[open]::backdrop {
+      opacity: 0;
+    }
+
+    .rata-mobile-nav[open] {
+      translate: -100% 0;
+    }
+  }
+}
+
+.rata-mobile-nav-header {
+  display: flex;
+  align-items: center;
+  gap: var(--rata-space-gap-sm);
+  padding-inline: var(--rata-space-control-padding-inline-sm);
+}
+
+/* A paragraph, not a heading: the drawer sits in the page's own outline and
+   cannot know what level it is at. Dialog's title is an h2 because a modal
+   document genuinely starts a fresh outline; a nav drawer is still the page. */
+.rata-mobile-nav-title {
+  flex: 1;
+  min-inline-size: 0;
+  margin: var(--rata-space-0);
+  color: var(--rata-theme-fg-primary);
+  font-size: var(--rata-type-heading-size);
+  font-weight: var(--rata-type-heading-weight);
+}
+
+.rata-mobile-nav-close {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--rata-size-control-sm);
+  block-size: var(--rata-size-control-sm);
+  padding: var(--rata-space-0);
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-inner);
+  background: transparent;
+  color: currentColor;
+  cursor: pointer;
+}
+
+/* Takes the slack and scrolls, so a long navigation does not push the footer
+   off the bottom. `min-block-size: 0` is what lets it: a flex item's default
+   refuses to shrink below its content, which is the bug Dialog's body had. */
+.rata-mobile-nav-sections {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.rata-mobile-nav-footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-gap-sm);
+  padding-block-start: var(--rata-space-padding-sm);
+  padding-inline: var(--rata-space-control-padding-inline-sm);
+  border-block-start: var(--rata-border-default) solid var(--rata-theme-border-default);
+}

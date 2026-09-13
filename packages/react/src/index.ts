@@ -36,6 +36,8 @@ export { Menu, MenuItem, MenuSeparator } from "./menu.js";
 export type { MenuProps, MenuItemProps } from "./menu.js";
 export { Notice } from "./notice.js";
 export type { NoticeProps, NoticeVariant, NoticeLive } from "./notice.js";
+export { MobileNav } from "./mobile-nav.js";
+export type { MobileNavProps } from "./mobile-nav.js";
 export { SideNav } from "./side-nav.js";
 export type {
   SideNavProps,

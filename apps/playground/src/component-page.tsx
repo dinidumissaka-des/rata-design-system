@@ -25,6 +25,7 @@ import {
   Notice,
   Radio,
   RadioGroup,
+  MobileNav,
   Search,
   SideNav,
   TopNav,
@@ -356,6 +357,49 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
         <Avatar name="Bo Nakamura" size="md" />
         <Avatar name="Chidi Okonkwo" size="lg" />
       </>
+    ),
+  },
+
+  "mobile-nav": {
+    "A drawer beside a rail, sharing one set of destinations": () => (
+      <MobileNav
+        title="Ratā"
+        label="Main"
+        sections={[
+          {
+            items: [
+              { label: "Invoices", href: "#", current: true },
+              { label: "Clients", href: "#" },
+              {
+                label: "Reports",
+                items: [
+                  { label: "Revenue", href: "#" },
+                  { label: "Ageing", href: "#" },
+                ],
+              },
+            ],
+          },
+        ]}
+      />
+    ),
+    "A drawer with account actions under the destinations": () => (
+      <MobileNav
+        title="Ratā"
+        sections={[
+          {
+            items: [
+              { label: "Invoices", href: "#", current: true },
+              { label: "Clients", href: "#" },
+            ],
+          },
+        ]}
+        footer={
+          <>
+            <Button variant="secondary">Settings</Button>
+            <Button variant="tertiary">Sign out</Button>
+          </>
+        }
+      />
     ),
   },
 
@@ -1207,6 +1251,25 @@ const INTERACTIVE: Record<string, Interactive> = {
         name={String(state.name || "Ada Hartley")}
         size={state.size as AvatarSize}
         decorative={Boolean(state.decorative)}
+      />
+    ),
+  },
+
+  "mobile-nav": {
+    controls: ["title", "label", "triggerLabel"],
+    render: (state) => (
+      <MobileNav
+        title={String(state.title || "Menu")}
+        label={String(state.label || "Main")}
+        triggerLabel={String(state.triggerLabel || "Menu")}
+        sections={[
+          {
+            items: [
+              { label: "Invoices", href: "#", current: true },
+              { label: "Clients", href: "#" },
+            ],
+          },
+        ]}
       />
     ),
   },

@@ -1330,6 +1330,54 @@ A rule between groups of actions.
 | border-block-start | `border.default` solid `theme.border.default` |
 | margin-block | `space.1` |
 
+### mobile-nav-trigger
+
+The control that opens the drawer. Same construction as the other icon-only controls here: transparent, taking its colour from the text.
+
+| Property | Token |
+|---|---|
+| glyph size | `size.icon.md` |
+| target inline-size / block-size | `size.control.md` |
+| border-radius | `radius.element` |
+| colour | `theme.fg.primary` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+
+### mobile-nav-drawer
+
+The panel itself: full height, against the inline-start edge, at a width that leaves the page visible behind the scrim so it still reads as a layer over it.
+
+| Property | Token |
+|---|---|
+| background | `theme.bg.surface` |
+| box-shadow | `theme.elevation.modal` |
+| max-inline-size | `size.control.lg` multiplied by 8, or the viewport less one large control |
+| padding-block | `space.padding.md` |
+| padding-inline | `space.padding.sm` |
+| gap between header, nav and footer | `space.stack.md` |
+| enter transition | `motion.modal.duration` with `motion.easing.enter` |
+| exit transition | `motion.modal.duration` with `motion.easing.exit` |
+
+### mobile-nav-backdrop
+
+The wash over the inert page behind it — the same token and the same reasoning as Dialog's.
+
+| Property | Token |
+|---|---|
+| background | `theme.scrim` |
+| fade | `motion.modal.duration` with `motion.easing.enter` |
+
+### mobile-nav-header
+
+The drawer's name and its close control.
+
+| Property | Token |
+|---|---|
+| title font-size | `type.heading.size` |
+| title font-weight | `type.heading.weight` |
+| gap | `space.gap.sm` |
+| close target | `size.control.sm` |
+
 ### notice
 
 The shared frame. Only the tinted subtle backgrounds carry text; the saturated role fills are not used here at all — they are non-text indicator tones, and text on them is a recorded contrast gap.
