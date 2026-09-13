@@ -226,4 +226,4 @@ The page you are on. A tinted row plus an edge marker, alongside aria-current, s
 |---|---|
 | background | `theme.accent-role.subtle` |
 | colour | `theme.fg.primary` |
-| indicator | `theme.accent-role.bg at border.2, along the inline-start edge` |
+| indicator | `theme.accent-role.bg at border.2, space.4 tall and centred on the inline-start edge` |

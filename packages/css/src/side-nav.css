@@ -78,7 +78,14 @@
   content: "";
   position: absolute;
   inset-inline-start: var(--rata-space-0);
-  inset-block: var(--rata-space-1);
+  /* Centred at a stated height rather than inset from the row's edges. Inset,
+     it was 4px short of the full row and read as a border the row happened to
+     have; at half the row's height it reads as a marker pointing at it. Stated
+     rather than proportional so it stays the same mark if the row height ever
+     changes. */
+  inset-block-start: 50%;
+  translate: 0 -50%;
+  block-size: var(--rata-space-4);
   inline-size: var(--rata-border-2);
   background: var(--rata-theme-accent-role-bg);
   border-radius: var(--rata-radius-pill);
