@@ -1661,7 +1661,7 @@ A track the thumb slides along. The track's fill is the state, and the thumb's p
 
 ### tabs
 
-The set, in either appearance. `underline` reads as an edge with a marker on it; `segmented` reads as one enclosed bar. The segmented form borrows the tokens the real segmented control uses rather than picking its own, so the two cannot drift into looking nearly-but-not-quite alike.
+The set. Tabs read as an edge with a marker on it, and only that — there was a segmented appearance for a while, added when that look had no component of its own. SegmentedControl is that component now, and two things able to draw the same bar made the pair hard to tell apart in exactly the place the difference matters.
 
 | Property | Token |
 |---|---|
@@ -1705,21 +1705,6 @@ The region a tab reveals. Focusable even with nothing focusable inside, so Tab f
 |---|---|
 | padding-block-start | `space.padding.md` |
 | focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
-
-### tabs-variant-segmented
-
-The enclosed bar, sized to its content rather than to the container — the real segmented control is inline-flex and hugs its options, and a tablist drawn to resemble it should do the same. No marker: the filled segment is the indicator, which is why the underline's marker is scoped away here. The selection is still announced through aria-selected.
-
-| Property | Token |
-|---|---|
-| track background | `theme.bg.muted` — exactly what that step is documented for: the most recessed background, an inset well or a track. No border: a track sitting a real step below what it is on does not need an edge drawn round it. |
-| well padding | `space.0-5` |
-| well border-radius | `radius.element` |
-| segment border-radius | `radius.inner` |
-| selected background | `theme.bg.surface` |
-| selected colour | `theme.fg.primary` |
-| selected elevation | `theme.elevation.raised` |
-| bar sizing | align-self to its content, while the panel still fills the width |
 
 ### text-field
 

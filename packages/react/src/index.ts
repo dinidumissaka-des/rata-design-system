@@ -52,7 +52,7 @@ export type {
   SegmentedControlSize,
 } from "./segmented-control.js";
 export { Tabs } from "./tabs.js";
-export type { TabsProps, TabItem, TabsVariant } from "./tabs.js";
+export type { TabsProps, TabItem } from "./tabs.js";
 export { TopNav } from "./top-nav.js";
 export type { TopNavProps, TopNavItem, TopNavSubItem } from "./top-nav.js";
 export { Search } from "./search.js";

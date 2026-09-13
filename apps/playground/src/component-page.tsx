@@ -54,7 +54,7 @@ import type {
   ToggleButtonVariant,
 } from "@rata/react";
 import type { TabsActivation, TabsOrientation } from "@rata/primitives";
-import type { SegmentedControlSize, TabsVariant } from "@rata/react";
+import type { SegmentedControlSize } from "@rata/react";
 import type { IconSize, LucideIcon } from "@rata/icons";
 import {
   Icon,
@@ -498,17 +498,6 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
       />
     ),
     "Panels that cost something to open": () => <TabsManualStage />,
-    "Drawn as a segmented control": () => (
-      <Tabs
-        label="Range"
-        variant="segmented"
-        items={[
-          { value: "week", label: "Week", content: "Seven days of activity." },
-          { value: "month", label: "Month", content: "A calendar month." },
-          { value: "quarter", label: "Quarter", content: "Three months." },
-        ]}
-      />
-    ),
   },
 
   "top-nav": {
@@ -1408,11 +1397,10 @@ const INTERACTIVE: Record<string, Interactive> = {
   },
 
   tabs: {
-    controls: ["label", "variant", "orientation", "activation"],
+    controls: ["label", "orientation", "activation"],
     render: (state) => (
       <Tabs
         label={String(state.label || "Invoice")}
-        variant={state.variant as TabsVariant}
         orientation={state.orientation as TabsOrientation}
         activation={state.activation as TabsActivation}
         items={[

@@ -6,9 +6,6 @@ import { Icon } from "@rata/icons";
 import type { LucideIcon } from "@rata/icons";
 import { cx } from "./cx.js";
 
-/** How the tablist is drawn. The semantics are identical either way. */
-export type TabsVariant = "underline" | "segmented";
-
 export interface TabItem {
   value: string;
   label: ReactNode;
@@ -33,39 +30,27 @@ export interface TabsProps extends Omit<HTMLAttributes<HTMLDivElement>, "childre
   orientation?: TabsOrientation;
   /** Whether the arrow keys select as they move. */
   activation?: TabsActivation;
-  /**
-   * How the tablist is drawn. Appearance only — the roles, the keyboard model
-   * and everything announced are identical either way.
-   *
-   * `segmented` makes it look like this system's segmented control
-   * (`ToggleButtonGroup`), which is a legitimate choice and worth knowing the
-   * cost of: the two become hard to tell apart by eye, while staying
-   * correctly distinguishable to a screen reader. Reach for it when the tabs
-   * are short and peer-like; the underline carries a wider set better.
-   */
-  variant?: TabsVariant;
   className?: string;
 }
 
 /**
  * Tabs: several panels, one shown at a time.
  *
- * NOT A SEGMENTED CONTROL, which this system has as its own component.
- * `SegmentedControl` and a segmented-looking tablist are almost identical on
- * screen and are not the same control. A segmented control picks a VALUE:
- * it is a radiogroup, every option is announced as a choice, and the answer is
- * submitted with the rest of the form. Tabs reveal a REGION: each tab says
- * which panel it controls, each panel says which tab named it, and moving
- * between them changes what is on screen rather than what will be sent.
+ * NOT A SEGMENTED CONTROL, which this system has as its own component. A
+ * segmented control picks a VALUE: it is a radiogroup, every option is
+ * announced as a choice, and the answer is submitted with the rest of the
+ * form. Tabs reveal a REGION: each tab says which panel it controls, each
+ * panel says which tab named it, and moving between them changes what is on
+ * screen rather than what will be sent.
  *
  * Using one for the other is not a style error. A radiogroup standing in for
  * tabs tells a screen reader a form is being filled in; tabs standing in for a
  * form control hide the answer inside a region nobody submits.
  *
- * That is about the ROLE, not the appearance — and the two are worth keeping
- * apart. `variant="segmented"` draws a tablist to look like the segmented
- * control, which is a fine choice: what must not be swapped is which pattern
- * the markup claims to be, and that is unaffected by how it is painted.
+ * Tabs had a segmented appearance for a while, added when that look had no
+ * component of its own. It does now, and two components able to draw the same
+ * bar made the pair harder to tell apart in exactly the place the difference
+ * matters — so tabs look like tabs: an edge with a marker on it.
  *
  * An `items` array rather than children, for the reason Breadcrumbs takes one:
  * the component owns the id wiring that makes a tablist a tablist — every tab
@@ -87,7 +72,6 @@ export function Tabs({
   labelledBy,
   orientation = "horizontal",
   activation = "automatic",
-  variant = "underline",
   className,
   ...rest
 }: TabsProps) {
@@ -133,12 +117,7 @@ export function Tabs({
   return (
     <div
       {...rest}
-      className={cx(
-        "rata-tabs",
-        `rata-tabs--${orientation}`,
-        `rata-tabs--${variant}`,
-        className
-      )}
+      className={cx("rata-tabs", `rata-tabs--${orientation}`, className)}
     >
       <div {...tabs.tablist} className="rata-tabs-list">
         {items.map((item) => (
