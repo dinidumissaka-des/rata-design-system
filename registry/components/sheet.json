@@ -1,0 +1,280 @@
+{
+  "name": "sheet",
+  "title": "Sheet",
+  "description": "A modal surface anchored to an edge of the viewport — a bottom sheet or a side drawer.",
+  "family": "overlays",
+  "alsoKnownAs": [
+    "bottom-sheet",
+    "drawer",
+    "side-sheet",
+    "tray",
+    "action-sheet"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "button",
+    "icon",
+    "state-layer"
+  ],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "A modal surface held against one edge. Unlike Dialog it is flush with that edge, so only the corners that face the page are rounded.",
+      "tokens": {
+        "background": "theme.bg.surface",
+        "color": "theme.fg.primary",
+        "border-radius on the two corners facing the page": "radius.page",
+        "border-radius on the two corners against the edge": "radius.none — a radius there would show the page through the gap",
+        "padding": "space.padding.lg",
+        "box-shadow": "theme.elevation.modal",
+        "gap between title, body, and footer": "space.stack.md",
+        "gap between title and description": "space.stack.2xs",
+        "title font-size": "type.heading.size",
+        "title font-weight": "type.heading.weight",
+        "title line-height": "type.heading.line-height",
+        "description color": "theme.fg.secondary"
+      }
+    },
+    "backdrop": {
+      "summary": "The wash over the inert page behind it. The same treatment as Dialog's, because it is the same statement about the page.",
+      "tokens": {
+        "background": "theme.scrim",
+        "fade": "motion.modal.duration with motion.easing.enter"
+      }
+    },
+    "motion": {
+      "summary": "It slides in from the edge it is anchored to. The distance is the sheet's own measure, so it starts fully off-screen whatever its size.",
+      "tokens": {
+        "enter transition": "motion.modal.duration with motion.easing.enter, translating from off-screen to rest",
+        "exit transition": "motion.modal.duration with motion.easing.exit",
+        "translate axis": "the axis the sheet's edge lies on — block for block-start and block-end, inline for inline-start and inline-end",
+        "reduced motion": "the translate is dropped and only the backdrop's opacity transitions, at motion.modal.duration",
+        "exit pointer-events": "none while closing — the top layer is held for the exit, so a click during it would land on a sheet that is leaving"
+      }
+    },
+    "size": {
+      "summary": "One measure across the sheet's own axis: block-size for a sheet on a horizontal edge, inline-size for one on a vertical edge. Derived from the control scale rather than stated in pixels, the same way Dialog's widths are.",
+      "tokens": {
+        "sm": "size.control.lg multiplied by 8",
+        "md": "size.control.lg multiplied by 12",
+        "lg": "size.control.lg multiplied by 18",
+        "cap across its own axis": "the viewport on that axis, less space.padding.lg — so a sheet never covers the edge it slid from",
+        "measure across the other axis": "the full viewport — a sheet spans the edge it is anchored to"
+      }
+    },
+    "footer": {
+      "summary": "The actions, reading after the body they act on.",
+      "tokens": {
+        "gap between actions": "space.gap.sm",
+        "margin above": "space.stack.md"
+      }
+    },
+    "dismiss": {
+      "summary": "The close control. Same construction as Dialog's, so a close button is the same control everywhere.",
+      "tokens": {
+        "color": "currentColor — inherited from the sheet's own foreground",
+        "glyph size": "size.icon.text",
+        "target inline-size / block-size": "size.control.sm",
+        "border-radius": "radius.inner",
+        "hover / press": "compose the .rata-state-layer class",
+        "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset",
+        "block alignment": "centred on the title's first line, from type.heading.size and type.heading.line-height"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "A native `<dialog>` opened with `showModal()`, held against one edge of the viewport. The browser supplies the focus trap, `inert` on the page behind, the top layer, `::backdrop`, Escape, and focus returned to whatever opened it — the same reasoning Dialog and MobileNav follow, and the same reason not to hand-roll any of it.",
+    "decisions": [
+      {
+        "decision": "It is modal, and there is no option for it not to be",
+        "why": "MobileNav's contract already states the rule this follows: a surface covering the page is modal whether or not it is called one, because the content behind it must not be reachable by Tab, by a screen reader's own navigation, or by scrolling. A non-modal edge-anchored overlay would leave a reader tabbing into a page they cannot see. A panel that genuinely should not be modal belongs in the layout, which is what Panel is for."
+      },
+      {
+        "decision": "`edge` rather than separate BottomSheet and Drawer components",
+        "why": "Everything that makes this hard — the top layer, the focus trap, the scroll lock with the scrollbar held open, the exit that must keep the layer alive — is identical on all four edges. What differs is which axis it slides along and which two corners are rounded, and that is geometry, not behaviour. Splitting by edge would be three copies of the difficult part to keep in step, which is the mistake Tabs and SegmentedControl were separated to avoid making in the other direction: they were split because their SEMANTICS differ, not their looks."
+      },
+      {
+        "decision": "`size` is one measure on whichever axis the sheet slides along",
+        "why": "A bottom sheet's size is its height; a drawer's is its width. They are the same question — how far does it come in — asked about different axes, so one prop answers it and the component knows which axis from `edge`. Two props would let a caller state the one that does not apply, which the type system cannot catch and which would silently do nothing."
+      },
+      {
+        "decision": "It reuses Dialog's scroll lock rather than its own",
+        "why": "That lock counts holders instead of saving and restoring, because save-and-restore breaks the moment two things overlap — the second captures `hidden` as the value to put back, and closing it leaves the page locked with nothing open. A sheet over a dialog is an ordinary combination, so a second independent lock would reintroduce exactly that bug. It also holds the scrollbar's width open, measured at lock time because it is whatever the browser and the reader's settings make it."
+      },
+      {
+        "decision": "No drag to dismiss in this version",
+        "why": "Close button, Escape and backdrop click are all supplied by the platform and all operable by keyboard and switch access. A drag gesture is a pointer state machine with a velocity threshold, a scroll-versus-drag conflict inside the sheet's own body, and no keyboard equivalent — so it needs its own pass through these gates rather than riding along with the geometry. No grab handle is drawn either: an affordance that does nothing is worse than none."
+      },
+      {
+        "decision": "Escape is prevented, then reported",
+        "why": "Dialog's reasoning, unchanged: the platform would close the dialog itself and leave `open` still saying it is showing. Preventing the default and reporting through `onClose` keeps React the single source of truth."
+      },
+      {
+        "decision": "A native close is reported rather than ignored",
+        "why": "`<form method=\"dialog\">` is the documented HTML way to close a dialog and the platform can close one for its own reasons too. Neither goes through `onClose`, and the driving effect is keyed on `open`, so it never re-runs to notice — which in Dialog left the scroll lock on the body with nothing open and the page unable to scroll at all. The native `close` event reports `external`, and only while React still believes the sheet is open."
+      },
+      {
+        "decision": "Initial focus is a ref, because React's `autoFocus` cannot work here",
+        "why": "React implements `autoFocus` by calling `.focus()` during commit rather than emitting the HTML attribute, so `showModal()` — which runs afterwards, in an effect — never sees an `[autofocus]` element and applies its own default, undoing it. `initialFocus` is applied after `showModal()` and therefore wins."
+      },
+      {
+        "decision": "The title is a real `<h2>`, as Dialog's is",
+        "why": "Everything behind a modal is inert, so the outline inside it genuinely starts fresh and the title is the top of it. This is the difference from Panel, which sits inside the page's outline and has to be told its level."
+      }
+    ]
+  },
+  "props": {
+    "title": {
+      "type": "ReactNode",
+      "required": true,
+      "summary": "The sheet's name. Required.",
+      "use": [
+        "A noun phrase naming what this is about: \"Filters\", \"Token documentation\"."
+      ],
+      "dont": [
+        "Omitting it and relying on the content. A modal with no accessible name announces as \"dialog\" and nothing else."
+      ],
+      "a11y": "Rendered as an `<h2>` and wired with `aria-labelledby`, so the sheet is named the moment it opens."
+    },
+    "children": {
+      "type": "ReactNode",
+      "required": true,
+      "summary": "The sheet's content.",
+      "use": [
+        "The detail, the form, the list of options."
+      ],
+      "dont": [
+        "Another sheet's trigger, if you can avoid it. Stacked modals are legal and the scroll lock counts holders for that reason, but a reader two layers deep has lost the page."
+      ],
+      "a11y": "Scrolls in its own region so the title stays put and the close control stays reachable."
+    },
+    "open": {
+      "type": "boolean",
+      "required": true,
+      "summary": "Whether the sheet is showing. Always controlled.",
+      "use": [
+        "State the caller owns, so opening and closing are things that happen in their code rather than inside this one."
+      ],
+      "dont": [
+        "Leaving it stale after `onClose`. The sheet reports; the caller decides."
+      ],
+      "a11y": "Drives `showModal()` and `close()`. Nothing else makes the sheet modal — rendering the `open` attribute instead shows it non-modally, with no focus trap and a live page behind it."
+    },
+    "onClose": {
+      "type": "(reason: SheetCloseReason) => void",
+      "required": true,
+      "summary": "Called when the sheet asks to close, with why.",
+      "use": [
+        "Setting `open` to false."
+      ],
+      "dont": [
+        "Ignoring the reason when a backdrop click should be treated differently from the close button — an unsaved form is the usual case."
+      ],
+      "a11y": "Focus returns to whatever opened the sheet automatically, because the platform does it."
+    },
+    "edge": {
+      "type": "SheetEdge",
+      "default": "\"block-end\"",
+      "summary": "Which edge the sheet is anchored to and slides in from.",
+      "use": [
+        "`block-end` for a bottom sheet — options and detail on a narrow viewport, where the bottom is where a thumb is.",
+        "`inline-end` for a detail drawer on a wide viewport, where it is the same side a Panel would sit on — so the same content can move between the two as the viewport changes."
+      ],
+      "dont": [
+        "`block-start` for anything a reader dismisses often. The top edge is where the browser's own chrome is, and the reach is worst there."
+      ],
+      "a11y": "Logical edges, not physical: `inline-start` is the left in a left-to-right document and the right in a right-to-left one, so a drawer follows the reading direction without the caller doing anything."
+    },
+    "size": {
+      "type": "SheetSize",
+      "default": "\"md\"",
+      "summary": "How far the sheet comes in, measured on the axis it slides along.",
+      "use": [
+        "`sm` for a short list of actions; `lg` for a form or a document."
+      ],
+      "dont": [
+        "Expecting it to control the other axis. A sheet spans the edge it is anchored to, always."
+      ],
+      "a11y": "Every size gives way to a small viewport rather than overflowing it, and never covers the edge it slid from."
+    },
+    "description": {
+      "type": "ReactNode",
+      "summary": "A line under the title, wired as the sheet's description.",
+      "use": [
+        "One sentence of consequence or scope that the title cannot carry."
+      ],
+      "dont": [
+        "Content. This is announced with the name, so length here is length before the reader reaches anything."
+      ],
+      "a11y": "Becomes `aria-describedby`. Omitted, there is no dangling reference."
+    },
+    "footer": {
+      "type": "ReactNode",
+      "summary": "The actions.",
+      "use": [
+        "An Apply and a Cancel for a filter sheet."
+      ],
+      "dont": [
+        "Navigation. A sheet is a place to do one thing and leave."
+      ],
+      "a11y": "Rendered after the body in DOM order, so the actions are reached after the content they act on."
+    },
+    "dismissible": {
+      "type": "boolean",
+      "default": "true",
+      "summary": "Whether the reader can close it themselves.",
+      "use": [
+        "`false` only while something must finish — a migration step, a required choice with no default."
+      ],
+      "dont": [
+        "`false` to keep attention. A sheet the reader cannot leave is a trap, and they will reload the page instead."
+      ],
+      "a11y": "`false` removes the close button and prevents the `cancel` event, so Escape and a backdrop click do nothing. Provide another way out in the footer or it is a dead end."
+    },
+    "dismissLabel": {
+      "type": "string",
+      "default": "\"Close\"",
+      "summary": "Accessible name for the close button.",
+      "use": [
+        "Naming what closes when the word alone is ambiguous: \"Close filters\"."
+      ],
+      "dont": [
+        "Passing it with `dismissible={false}`. There is no button to name."
+      ],
+      "a11y": "Becomes the button's `aria-label`. The control is icon-only, so without a name it announces as \"button\"."
+    },
+    "initialFocus": {
+      "type": "RefObject<HTMLElement | null>",
+      "summary": "What to focus when it opens. Defaults to the platform's choice.",
+      "use": [
+        "The safe action in a destructive sheet, so the dangerous one is not one Enter away."
+      ],
+      "dont": [
+        "Pointing it at something that is not rendered yet. It is applied once, after `showModal()`."
+      ],
+      "a11y": "Applied after `showModal()`, which is the only order that works — React's `autoFocus` runs during commit and the platform's own default overrides it."
+    },
+    "className": {
+      "type": "string",
+      "summary": "Extra classes on the sheet, for placement — not for restyling it.",
+      "use": [
+        "Nothing yet. It exists for the same reason Dialog's does, and the same caution applies."
+      ],
+      "dont": [
+        "Changing its geometry or colours. Those come from `edge`, `size` and the recipe."
+      ]
+    }
+  },
+  "usage": []
+}

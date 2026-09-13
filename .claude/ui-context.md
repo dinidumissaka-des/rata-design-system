@@ -30,10 +30,12 @@ this path is the honest answer to when it last actually moved.
 | [menu-item](../docs/components/menu-item.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [mobile-nav](../docs/components/mobile-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [notice](../docs/components/notice.md) | `@rata/react` | feedback | latest / latest / future | free |
+| [panel](../docs/components/panel.md) | `@rata/react` | content | future / future / future | free |
 | [radio](../docs/components/radio.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [radio-group](../docs/components/radio-group.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [search](../docs/components/search.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [segmented-control](../docs/components/segmented-control.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [sheet](../docs/components/sheet.md) | `@rata/react` | overlays | future / future / future | free |
 | [side-nav](../docs/components/side-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [spinner](../docs/components/spinner.md) | `@rata/react` | loading | latest / latest / future | free |
 | [state-layer](../docs/components/state-layer.md) | `@rata/react` | foundations | latest / na / future | free |
@@ -370,6 +372,12 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/notice.md](../docs/components/notice.md)
 
+### Panel
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/panel.md](../docs/components/panel.md)
+
 ### Radio (`@rata/react`)
 
 Extends: `Omit<`
@@ -504,6 +512,12 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/segmented-control.md](../docs/components/segmented-control.md)
+
+### Sheet
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/sheet.md](../docs/components/sheet.md)
 
 ### SideNav (`@rata/react`)
 

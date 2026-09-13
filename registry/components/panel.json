@@ -1,0 +1,168 @@
+{
+  "name": "panel",
+  "title": "Panel",
+  "description": "A titled region beside the content it describes, with its own scroll and an optional close.",
+  "family": "content",
+  "alsoKnownAs": [
+    "inspector",
+    "side-panel",
+    "details-panel",
+    "rail"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "button",
+    "icon"
+  ],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "A bordered surface inside the layout. No elevation and no scrim: it is not floating above anything, and a shadow would claim it is.",
+      "tokens": {
+        "background": "theme.bg.surface",
+        "color": "theme.fg.primary",
+        "border on the edge it sits against": "theme.border.default at border.default",
+        "border-radius": "radius.none — it meets the page's edge, and a corner radius on a flush edge reads as a gap",
+        "padding": "space.padding.md",
+        "gap between head and body": "space.stack.sm"
+      }
+    },
+    "head": {
+      "summary": "The title and the close control, which stay put while the body scrolls.",
+      "tokens": {
+        "title font-size": "type.heading.size",
+        "title font-weight": "type.heading.weight",
+        "title line-height": "type.heading.line-height",
+        "gap between title and close": "space.gap.sm",
+        "margin below": "space.stack.sm"
+      }
+    },
+    "dismiss": {
+      "summary": "The close control. Same construction as Dialog's and Notice's, so a close button is the same control everywhere.",
+      "tokens": {
+        "color": "currentColor — inherited from the panel's own foreground",
+        "glyph size": "size.icon.text",
+        "target inline-size / block-size": "size.control.sm",
+        "border-radius": "radius.inner",
+        "hover / press": "compose the .rata-state-layer class",
+        "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "A `<aside>` complementary landmark named by its own heading, in normal flow. Not a dialog, not in the top layer, and not dismissed by Escape. The page reflows around it and everything beside it stays usable — which is the only reason to choose it over a Sheet.",
+    "decisions": [
+      {
+        "decision": "It is in the layout, and that is the whole distinction from Sheet",
+        "why": "Reading a token's contract while still seeing the swatch grid is the point of this pattern: the comparison IS the task. A Sheet covers the page and makes everything behind it inert, so the same content in a sheet would answer a different question. Two components rather than one with a `modal` boolean, because the two render through completely different mechanisms — normal flow against the top layer — and a boolean that swaps the rendering model is two components wearing one name."
+      },
+      {
+        "decision": "Escape does not close it",
+        "why": "Escape dismisses the top layer, and a reader who presses it expects whatever is covering the page to go away. This is not covering anything, nothing has trapped focus, and the reader may well be typing in the page beside it. A panel that vanished on Escape would also take the reader's place in the page with it, since there is nowhere for focus to return to."
+      },
+      {
+        "decision": "Focus is not moved, trapped, or restored",
+        "why": "All three are modal behaviours. Opening a panel adds a region to the page; it does not take the reader anywhere, so moving their focus would be a surprise, and trapping it would strand them in a region they can see past. Tab reaches it in document order like anything else."
+      },
+      {
+        "decision": "The page owns the measure, not the component",
+        "why": "The same bargain SideNav makes. Where a panel stops fitting depends on the panel's content and the page around it, which is the page's knowledge — and this system has no breakpoint tokens for exactly that reason. Found the hard way: the playground's own inspector hardcoded `width: 340px`, a bare pixel value in a repo whose first rule is that there are none."
+      },
+      {
+        "decision": "The heading level is the caller's, because only they know it",
+        "why": "A complementary landmark should be headed, and the heading names the landmark through `aria-labelledby`. But a panel sits inside the page's existing outline and cannot know its depth — the same problem Notice has, which Notice solves by not being a heading at all. A panel cannot take that way out because it needs the name, so the level is stated instead of guessed. Dialog can hardcode `<h2>` only because everything behind a modal is inert and its outline genuinely starts fresh."
+      },
+      {
+        "decision": "Closing is optional, and its absence means persistent",
+        "why": "A panel that is always there — a properties rail, a filter column — has nothing to close, and rendering a close button that the caller has to ignore invites them to wire it to nothing. Omitting `onClose` omits the control."
+      },
+      {
+        "decision": "The body scrolls, the head does not",
+        "why": "Same construction as Dialog's. A panel is tall and narrow by nature, so the title is the first thing to scroll away and the close control goes with it — leaving the reader inside a region with no name in view and no way out of it."
+      }
+    ]
+  },
+  "props": {
+    "title": {
+      "type": "ReactNode",
+      "required": true,
+      "summary": "The panel's name. Required.",
+      "use": [
+        "A noun phrase naming what the panel is about — the token path, the selected row's name."
+      ],
+      "dont": [
+        "A verb phrase. This names a region, it does not describe an action."
+      ],
+      "a11y": "Rendered as a heading at `headingLevel` and wired to the `<aside>` with `aria-labelledby`, so the landmark is announced by name. An unnamed complementary landmark is listed as \"complementary\" and nothing else, which is worse than useless when a page has two."
+    },
+    "children": {
+      "type": "ReactNode",
+      "required": true,
+      "summary": "The panel's content.",
+      "use": [
+        "Whatever the panel is about — the detail, the contract, the form."
+      ],
+      "dont": [
+        "The page's primary content. If it is the main thing on the page it is not complementary, and this is the wrong container."
+      ],
+      "a11y": "Scrolls in its own region so the title and the close control stay reachable."
+    },
+    "headingLevel": {
+      "type": "2 | 3 | 4 | 5 | 6",
+      "default": "2",
+      "summary": "Where the title sits in the page's outline.",
+      "use": [
+        "The level below whatever heading the panel's section sits under — a panel inside a section headed `<h2>` takes `3`."
+      ],
+      "dont": [
+        "Picking it for type size. The size comes from the recipe; this is the outline only."
+      ],
+      "a11y": "A skipped level breaks heading navigation, which is how many readers move through a page. Only the caller knows the depth, which is why there is no sensible default beyond the commonest case."
+    },
+    "onClose": {
+      "type": "() => void",
+      "summary": "Called when the reader closes the panel. Omitting it makes the panel persistent.",
+      "use": [
+        "A panel opened by a selection — clicking a swatch, a row, a node — which the reader can put away again."
+      ],
+      "dont": [
+        "Passing a no-op to get the button. No handler means no button, and that is the intended way to say the panel does not close."
+      ],
+      "a11y": "No reason argument, unlike Dialog's: the close button is the only way this closes. Escape does not, and there is no backdrop to click."
+    },
+    "closeLabel": {
+      "type": "string",
+      "default": "\"Close\"",
+      "summary": "Accessible name for the close button.",
+      "use": [
+        "Naming what closes when several panels can be open at once: \"Close token documentation\"."
+      ],
+      "dont": [
+        "Passing it without `onClose`. There is no button to name."
+      ],
+      "a11y": "Becomes the button's `aria-label`. The control is icon-only, so without a name it announces as \"button\"."
+    },
+    "className": {
+      "type": "string",
+      "summary": "Extra classes on the panel, for placement and measure — not for restyling it.",
+      "use": [
+        "Setting the width and how it sits in the page's grid or flex row, which the component deliberately leaves open."
+      ],
+      "dont": [
+        "Changing its surface or border. Those come from the recipe, and a panel that differs per page reads as two different products."
+      ]
+    }
+  },
+  "usage": []
+}

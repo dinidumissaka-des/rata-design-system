@@ -1444,6 +1444,44 @@ The close button, when `onDismiss` is passed. It takes currentColor so the glyph
 | focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
 | background | transparent — the variant's tint shows through |
 
+### panel
+
+A bordered surface inside the layout. No elevation and no scrim: it is not floating above anything, and a shadow would claim it is.
+
+| Property | Token |
+|---|---|
+| background | `theme.bg.surface` |
+| color | `theme.fg.primary` |
+| border on the edge it sits against | `theme.border.default` at `border.default` |
+| border-radius | `radius.none` — it meets the page's edge, and a corner radius on a flush edge reads as a gap |
+| padding | `space.padding.md` |
+| gap between head and body | `space.stack.sm` |
+
+### panel-head
+
+The title and the close control, which stay put while the body scrolls.
+
+| Property | Token |
+|---|---|
+| title font-size | `type.heading.size` |
+| title font-weight | `type.heading.weight` |
+| title line-height | `type.heading.line-height` |
+| gap between title and close | `space.gap.sm` |
+| margin below | `space.stack.sm` |
+
+### panel-dismiss
+
+The close control. Same construction as Dialog's and Notice's, so a close button is the same control everywhere.
+
+| Property | Token |
+|---|---|
+| color | currentColor — inherited from the panel's own foreground |
+| glyph size | `size.icon.text` |
+| target inline-size / block-size | `size.control.sm` |
+| border-radius | `radius.inner` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset` |
+
 ### radio-group-vertical
 
 The default: a readable column of options.
@@ -1580,6 +1618,81 @@ The answer, raised out of the track. Marked twice over: the surface is the visua
 | background | `theme.bg.surface` |
 | colour | `theme.fg.primary` |
 | elevation | `theme.elevation.raised` |
+
+### sheet
+
+A modal surface held against one edge. Unlike Dialog it is flush with that edge, so only the corners that face the page are rounded.
+
+| Property | Token |
+|---|---|
+| background | `theme.bg.surface` |
+| color | `theme.fg.primary` |
+| border-radius on the two corners facing the page | `radius.page` |
+| border-radius on the two corners against the edge | `radius.none` — a radius there would show the page through the gap |
+| padding | `space.padding.lg` |
+| box-shadow | `theme.elevation.modal` |
+| gap between title, body, and footer | `space.stack.md` |
+| gap between title and description | `space.stack.2xs` |
+| title font-size | `type.heading.size` |
+| title font-weight | `type.heading.weight` |
+| title line-height | `type.heading.line-height` |
+| description color | `theme.fg.secondary` |
+
+### sheet-backdrop
+
+The wash over the inert page behind it. The same treatment as Dialog's, because it is the same statement about the page.
+
+| Property | Token |
+|---|---|
+| background | `theme.scrim` |
+| fade | `motion.modal.duration` with `motion.easing.enter` |
+
+### sheet-motion
+
+It slides in from the edge it is anchored to. The distance is the sheet's own measure, so it starts fully off-screen whatever its size.
+
+| Property | Token |
+|---|---|
+| enter transition | `motion.modal.duration` with `motion.easing.enter`, translating from off-screen to rest |
+| exit transition | `motion.modal.duration` with `motion.easing.exit` |
+| translate axis | the axis the sheet's edge lies on — block for block-start and block-end, inline for inline-start and inline-end |
+| reduced motion | the translate is dropped and only the backdrop's opacity transitions, at `motion.modal.duration` |
+| exit pointer-events | none while closing — the top layer is held for the exit, so a click during it would land on a sheet that is leaving |
+
+### sheet-size
+
+One measure across the sheet's own axis: block-size for a sheet on a horizontal edge, inline-size for one on a vertical edge. Derived from the control scale rather than stated in pixels, the same way Dialog's widths are.
+
+| Property | Token |
+|---|---|
+| sm | `size.control.lg` multiplied by 8 |
+| md | `size.control.lg` multiplied by 12 |
+| lg | `size.control.lg` multiplied by 18 |
+| cap across its own axis | the viewport on that axis, less `space.padding.lg` — so a sheet never covers the edge it slid from |
+| measure across the other axis | the full viewport — a sheet spans the edge it is anchored to |
+
+### sheet-footer
+
+The actions, reading after the body they act on.
+
+| Property | Token |
+|---|---|
+| gap between actions | `space.gap.sm` |
+| margin above | `space.stack.md` |
+
+### sheet-dismiss
+
+The close control. Same construction as Dialog's, so a close button is the same control everywhere.
+
+| Property | Token |
+|---|---|
+| color | currentColor — inherited from the sheet's own foreground |
+| glyph size | `size.icon.text` |
+| target inline-size / block-size | `size.control.sm` |
+| border-radius | `radius.inner` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset` |
+| block alignment | centred on the title's first line, from `type.heading.size` and `type.heading.line-height` |
 
 ### side-nav
 
