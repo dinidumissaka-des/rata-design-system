@@ -1202,6 +1202,10 @@ code {
    examples state one here rather than SideNav shipping it. */
 .pg-rail {
   inline-size: calc(var(--rata-size-control-lg) * 6);
+  /* The gutter is the page's, not the rail's: SideNav's rows fill its width so
+     they line up with anything else placed beside them, which means the inset
+     has to come from here. The same split as the width and the border. */
+  padding-inline: var(--rata-space-4);
   border-inline-end: var(--rata-border-default) solid var(--rata-theme-border-default);
 }
 

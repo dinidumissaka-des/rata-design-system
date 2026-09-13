@@ -1583,12 +1583,12 @@ The answer, raised out of the track. Marked twice over: the surface is the visua
 
 ### side-nav
 
-The rail. No background of its own: it sits on whatever surface the page gives it, so the same component works against the canvas and inside a panel. Its width is the page's to set.
+The rail. No background, no width and no inline padding of its own: it sits on whatever surface the page gives it, at whatever width, inset by the page's own gutter — so its rows fill the rail and line up with anything else the page puts there, such as a search field.
 
 | Property | Token |
 |---|---|
 | padding-block | `space.padding.sm` |
-| padding-inline | `space.padding.sm` |
+| padding-inline | none — the rows fill the rail, and the page owns the gutter |
 | gap between sections | `space.stack.md` |
 
 ### side-nav-section

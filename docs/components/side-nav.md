@@ -28,6 +28,7 @@ A `<nav>` containing one list per section. No primitive and no keyboard handling
 - **A nested group is a disclosure expanded in place, not a popover** — An item with `items` becomes a button that expands a list beneath it. Not a menu, for the reason getDisclosureProps documents: `role="menu"` announces a keyboard model a list of links does not have. And not a popover either, unlike TopNav's — a rail scrolls vertically, so a nested list pushes what follows it down and nothing has to escape an overflow. Keeping it inline also keeps the nesting visible, which is most of what a rail is for.
 - **A group holding the current page starts open** — Not a convenience: a reader whose page sits inside a collapsed group cannot see where they are, which is the one question a nav exists to answer. `defaultExpanded` overrides it for the rare case where a group is long enough that opening it costs more than it explains.
 - **Rows carry an optional onClick, and still require a real href** — Found by trying to build the playground's own rail out of this component: the rows navigate client-side, and with no way to intercept the click there was no way to use it without a full page load. The href stays required rather than becoming optional, because it is what makes the row a link — middle-click, copy-address and crawlers all depend on it, and a nav built from handlers with no addresses behind them loses all three without appearing to.
+- **The rows fill the rail; the page owns the inline padding** — A rail is almost never alone — a search field, a button, a heading sit in it too — and inline padding on the nav doubles up with the page's own gutter, so the rows end up inset further than everything beside them. Filling the width also makes the whole row the target rather than just the words. Block padding stays, because vertical breathing room inside the rail affects nothing outside it.
 
 ## Props
 
@@ -90,7 +91,7 @@ Extra classes on the nav, for placement — not for restyling it.
 
 **Use when**
 
-- Giving the rail its width, or making it stick — both layout decisions the component deliberately leaves to the page.
+- Giving the rail its width, its inline padding, or making it stick — all layout decisions the component deliberately leaves to the page, so its rows line up with whatever else the page puts beside them.
 
 **Don't use for**
 
@@ -199,12 +200,12 @@ Don't. A group of one is a heading over nothing: it doubles the reading length, 
 
 ### base
 
-The rail. No background of its own: it sits on whatever surface the page gives it, so the same component works against the canvas and inside a panel. Its width is the page's to set.
+The rail. No background, no width and no inline padding of its own: it sits on whatever surface the page gives it, at whatever width, inset by the page's own gutter — so its rows fill the rail and line up with anything else the page puts there, such as a search field.
 
 | Property | Token |
 |---|---|
 | padding-block | `space.padding.sm` |
-| padding-inline | `space.padding.sm` |
+| padding-inline | `none — the rows fill the rail, and the page owns the gutter` |
 | gap between sections | `space.stack.md` |
 
 ### section
