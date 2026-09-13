@@ -3900,6 +3900,282 @@
     "example": "<Switch label=\"Push digest\" labelHidden />"
   },
   {
+    "name": "tabs",
+    "title": "Tabs",
+    "description": "Several panels, one shown at a time, chosen from a row of tabs.",
+    "family": "navigation",
+    "tier": "free",
+    "status": {
+      "css": {
+        "state": "latest"
+      },
+      "react": {
+        "state": "latest"
+      },
+      "figma": {
+        "state": "future"
+      }
+    },
+    "dependencies": [
+      "state-layer",
+      "icon"
+    ],
+    "importPath": "@rata/react",
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLDivElement>, \"children\">",
+    "props": [
+      {
+        "name": "items",
+        "optional": false,
+        "type": "TabItem[]",
+        "description": "The tabs and their panels, in the order they are read.",
+        "declared": true,
+        "summary": "The tabs and their panels, in the order they are read.",
+        "use": [
+          "Two to about six panels of one thing seen different ways: an invoice's details, its history, its notes."
+        ],
+        "dont": [
+          "Steps in a sequence. Tabs are peers a reader moves between freely; a process with an order and a completion state is not this.",
+          "One tab. A tablist of one is a heading with extra keyboard behaviour.",
+          "Navigation between pages. These are regions of one page — a destination belongs in a nav, where it has an address."
+        ],
+        "conflicts": [],
+        "a11y": "Each entry becomes a `tab` pointing at its `tabpanel` with `aria-controls`, and the panel points back with `aria-labelledby`. The selected tab carries `aria-selected`; the rest are `hidden`, which keeps them out of both the accessibility tree and the tab order."
+      },
+      {
+        "name": "value",
+        "optional": true,
+        "type": "string",
+        "description": "Which panel is showing. Makes the component controlled.",
+        "declared": true,
+        "summary": "Which panel is showing. Makes the component controlled.",
+        "use": [
+          "Driving the selection from a URL, so a tab can be linked to and survives a reload."
+        ],
+        "dont": [
+          "Passing it alongside `defaultValue`."
+        ],
+        "conflicts": [
+          "defaultValue"
+        ],
+        "a11y": null
+      },
+      {
+        "name": "defaultValue",
+        "optional": true,
+        "type": "string",
+        "description": "Starting panel for uncontrolled tabs. Defaults to the first.",
+        "declared": true,
+        "summary": "Starting panel for uncontrolled tabs. Defaults to the first.",
+        "use": [
+          "Opening on something other than the first panel."
+        ],
+        "dont": [],
+        "conflicts": [
+          "value"
+        ],
+        "a11y": null
+      },
+      {
+        "name": "onValueChange",
+        "optional": true,
+        "type": "(value: string) => void",
+        "description": null,
+        "declared": true,
+        "summary": "Called with the panel that should be shown.",
+        "use": [
+          "Controlled mode, to set `value`.",
+          "Loading a panel's data the first time it is opened."
+        ],
+        "dont": [
+          "Assuming it fires once per tab. Under automatic activation it fires for every tab the arrow keys pass through — which is the reason `activation` exists."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "label",
+        "optional": true,
+        "type": "string",
+        "description": "Accessible name for the tablist. Required unless `labelledBy` names an element.",
+        "declared": true,
+        "summary": "Accessible name for the tablist.",
+        "use": [
+          "Naming what the tabs divide: \"Invoice\" for a set covering one invoice's details, history and notes."
+        ],
+        "dont": [
+          "The word \"tabs\", which the role already says."
+        ],
+        "conflicts": [],
+        "a11y": "Becomes the tablist's `aria-label`. Required unless `labelledBy` names an element — a tablist with no name is announced as a bare tablist."
+      },
+      {
+        "name": "labelledBy",
+        "optional": true,
+        "type": "string",
+        "description": null,
+        "declared": true,
+        "summary": "Names the tablist from an element the reader can see.",
+        "use": [
+          "Pointing at the heading the tabs sit under, so the name changes with it."
+        ],
+        "dont": [
+          "Passing it alongside `label` and expecting both. This one wins, and never renders the other."
+        ],
+        "conflicts": [],
+        "a11y": "Wins over `label`, because it points at text on screen."
+      },
+      {
+        "name": "orientation",
+        "optional": true,
+        "type": "TabsOrientation",
+        "description": null,
+        "default": "\"horizontal\"",
+        "values": [
+          "horizontal",
+          "vertical"
+        ],
+        "declared": true,
+        "summary": "Which axis the tabs run along.",
+        "use": [
+          "`vertical` for a long set, or beside a wide panel."
+        ],
+        "dont": [
+          "`vertical` for two or three short tabs, where a row is easier to scan."
+        ],
+        "conflicts": [],
+        "a11y": "Announced as `aria-orientation`, and it decides which arrow keys move: left/right on the horizontal axis, up/down on the vertical. Announcing it is a promise the component keeps."
+      },
+      {
+        "name": "activation",
+        "optional": true,
+        "type": "TabsActivation",
+        "description": "Whether the arrow keys select as they move.",
+        "default": "\"automatic\"",
+        "values": [
+          "automatic",
+          "manual"
+        ],
+        "declared": true,
+        "summary": "Whether the arrow keys select as they move.",
+        "use": [
+          "`automatic` — the default, and what a reader expects — when the panels are already on the client.",
+          "`manual` when opening a panel costs something: a request, a render nobody asked for."
+        ],
+        "dont": [
+          "`automatic` over panels that fetch. Arrowing across four tabs fires four requests, and the reader wanted the fifth."
+        ],
+        "conflicts": [],
+        "a11y": "Both are conforming. `manual` moves focus and waits for Enter or Space; `automatic` selects as focus moves. A disabled tab is reachable either way — this system's disabled controls stay focusable — and selection does not follow focus onto it."
+      },
+      {
+        "name": "className",
+        "optional": true,
+        "type": "string",
+        "description": null,
+        "declared": true,
+        "summary": "Extra classes on the wrapper, for placement — not for restyling it.",
+        "use": [
+          "Constraining the width, or spacing the set from what surrounds it."
+        ],
+        "dont": [
+          "Making it look like a segmented control. They are different controls, and looking alike is how they get used for each other."
+        ],
+        "conflicts": [],
+        "a11y": null
+      }
+    ],
+    "usage": [
+      {
+        "case": "One thing seen several ways",
+        "when": "The commonest case: panels of the same subject, all already loaded.",
+        "example": "<Tabs\n  label=\"Invoice\"\n  items={[\n    { value: \"details\", label: \"Details\", content: <Details /> },\n    { value: \"history\", label: \"History\", content: <History /> },\n    { value: \"notes\", label: \"Notes\", content: <Notes /> },\n  ]}\n/>",
+        "notes": "Automatic activation, which is the default: the panels are on the client, so selecting as the arrows move costs nothing and is what a reader expects."
+      },
+      {
+        "case": "Panels that cost something to open",
+        "when": "A panel fetches, so arrowing past it must not.",
+        "example": "<Tabs\n  label=\"Invoice\"\n  activation=\"manual\"\n  value={tab}\n  onValueChange={(next) => {\n    setTab(next);\n    load(next);\n  }}\n  items={items}\n/>",
+        "notes": "`manual` is the whole point here: under automatic, arrowing from the first tab to the fourth fires three requests for panels nobody wanted to see. Controlled as well, so the tab can come from the URL and survive a reload."
+      },
+      {
+        "case": "Don't: tabs standing in for a segmented control",
+        "when": "Never — this is the shape to recognise and avoid.",
+        "example": "{/* Don't: this is a choice being made, not a region being revealed. */}\n<Tabs\n  label=\"Billing period\"\n  items={[\n    { value: \"monthly\", label: \"Monthly\", content: null },\n    { value: \"annual\", label: \"Annual\", content: null },\n  ]}\n/>",
+        "notes": "Don't. Empty panels are the tell: nothing is being revealed, so this is a question being answered — a `ToggleButtonGroup`, which is this system's segmented control. Tabs tell a screen reader that regions are being shown and hidden, and the answer here would sit inside a region nobody submits."
+      }
+    ],
+    "behavior": {
+      "primitive": "getTabsProps",
+      "summary": "A `tablist` of `tab` buttons over a set of `tabpanel` regions, with roving tabindex and arrow-key movement along the declared axis. Every tab points at its panel and every panel back at its tab, which is the pairing that makes a tablist a tablist.",
+      "decisions": [
+        {
+          "decision": "It is not a segmented control, which this system already has",
+          "why": "`ToggleButtonGroup` in its default configuration IS a segmented control, and the two look almost identical without being the same control. A segmented control picks a VALUE: it is a radiogroup, every option is announced as a choice, and the answer is submitted with the rest of the form. Tabs reveal a REGION: moving between them changes what is on screen rather than what will be sent. Using one for the other is not a style error — a radiogroup standing in for tabs tells a screen reader a form is being filled in, and tabs standing in for a form control hide the answer inside a region nobody submits."
+        },
+        {
+          "decision": "Activation is the caller's choice, because it has a cost",
+          "why": "Automatic — the arrow keys select as they move — is what APG recommends and what a reader expects, but arrowing past four tabs then renders four panels. Manual moves focus and waits for Enter or Space, which is right when a panel fetches something. The wrong one is not cosmetic: automatic over an expensive panel fires requests nobody asked for."
+        },
+        {
+          "decision": "An items array rather than children",
+          "why": "The component owns the id wiring that makes a tablist a tablist — every tab pointing at its panel, every panel back at its tab — and that is the error-prone part. Handing it out to be assembled would mean cloning elements to inject ids, and a mis-wired pair looks perfectly fine on screen. The trade is that a tab is a label and some content rather than arbitrary structure; if that stops being enough the API should change rather than the caller working around it."
+        },
+        {
+          "decision": "Every panel stays mounted, all but one hidden",
+          "why": "Unmounting would throw away whatever state each panel held — a half-filled form, a scroll position, an expanded row — every time the reader glanced at another tab. `hidden` keeps them out of the accessibility tree and out of the tab order without destroying them."
+        },
+        {
+          "decision": "A panel is in the tab order even with nothing focusable inside it",
+          "why": "Without `tabIndex={0}` on the panel, Tab from the tablist skips a panel of plain text entirely and the reader never reaches the content the tab just promised them."
+        }
+      ]
+    },
+    "tokens": {
+      "base": {
+        "summary": "The set. Tabs read as an edge with a marker on it, deliberately unlike the segmented control's single enclosed bar — the two are different controls, and looking alike is how they get used for each other.",
+        "tokens": {
+          "rule under the tabs": "border.default solid theme.border.default",
+          "gap between tabs": "space.gap.xs",
+          "gap between the list and the panel": "space.padding.md",
+          "gap between a vertical list and its panel": "space.gap.lg"
+        }
+      },
+      "tab": {
+        "summary": "One tab. The resting tone is the secondary text colour, so the selected one reads as emphasised rather than the rest reading as dimmed.",
+        "tokens": {
+          "colour": "theme.fg.secondary",
+          "block-size": "size.control.md",
+          "padding-inline": "space.control.padding-inline.sm",
+          "border-radius": "radius.element",
+          "font-size": "type.control.size.sm",
+          "font-weight": "type.control.weight",
+          "gap between icon and label": "space.gap.sm",
+          "icon size": "size.icon.text",
+          "hover / press": "compose the .rata-state-layer class",
+          "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible",
+          "disabled": "state.disabled-opacity"
+        }
+      },
+      "tab-selected": {
+        "summary": "The panel you are looking at. Marked twice over: the bar is the visual cue and aria-selected is the announced one, so the state is never carried by colour alone.",
+        "tokens": {
+          "colour": "theme.fg.primary",
+          "indicator": "theme.accent-role.bg at border.2, straddling the list's rule so the tab reads as joined to its panel"
+        }
+      },
+      "panel": {
+        "summary": "The region a tab reveals. Focusable even with nothing focusable inside, so Tab from the tablist reaches it.",
+        "tokens": {
+          "padding-block-start": "space.padding.md",
+          "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible"
+        }
+      }
+    },
+    "example": "<Tabs\n        label=\"Invoice\"\n        items={[\n          { value: \"details\", label: \"Details\", content: \"Amount, dates, and the client.\" },\n          { value: \"history\", label: \"History\", content: \"Every change, most recent first.\" },\n          { value: \"notes\", label: \"Notes\", content: \"Anything the team wrote down.\" },\n        ]}\n      />"
+  },
+  {
     "name": "text-field",
     "title": "Input: Text field",
     "description": "Single-line text input with label, helper text, and validation states.",

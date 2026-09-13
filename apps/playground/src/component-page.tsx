@@ -28,6 +28,7 @@ import {
   MobileNav,
   Search,
   SideNav,
+  Tabs,
   TopNav,
   Spinner,
   Switch,
@@ -51,6 +52,7 @@ import type {
   ToggleButtonSize,
   ToggleButtonVariant,
 } from "@rata/react";
+import type { TabsActivation, TabsOrientation } from "@rata/primitives";
 import type { IconSize, LucideIcon } from "@rata/icons";
 import {
   Icon,
@@ -465,6 +467,20 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     ),
   },
 
+  tabs: {
+    "One thing seen several ways": () => (
+      <Tabs
+        label="Invoice"
+        items={[
+          { value: "details", label: "Details", content: "Amount, dates, and the client." },
+          { value: "history", label: "History", content: "Every change, most recent first." },
+          { value: "notes", label: "Notes", content: "Anything the team wrote down." },
+        ]}
+      />
+    ),
+    "Panels that cost something to open": () => <TabsManualStage />,
+  },
+
   "top-nav": {
     "An application banner": () => (
       <TopNav
@@ -871,6 +887,37 @@ function DialogStage({
 }
 
 /** Filtering over data already on the client, so every keystroke is free. */
+/**
+ * Manual activation, which is the whole reason that prop exists.
+ *
+ * The counter makes the difference visible: arrow across the tabs and nothing
+ * loads until Enter. Switch the same example to automatic and every tab
+ * passed through fires a load — which over a real request is three the reader
+ * never asked for.
+ */
+function TabsManualStage() {
+  const [loads, setLoads] = useState<string[]>([]);
+  return (
+    <div className="pg-block-stack">
+      <Tabs
+        label="Invoice"
+        activation="manual"
+        onValueChange={(next) => setLoads((seen) => [...seen, next])}
+        items={[
+          { value: "details", label: "Details", content: "Loaded on open." },
+          { value: "history", label: "History", content: "Loaded on open." },
+          { value: "notes", label: "Notes", content: "Loaded on open." },
+        ]}
+      />
+      <p className="pg-search-status">
+        {loads.length === 0
+          ? "Arrow across the tabs — nothing loads until you press Enter."
+          : `Loaded: ${loads.join(", ")}`}
+      </p>
+    </div>
+  );
+}
+
 function SearchFilterStage({ size }: { size?: SearchSize }) {
   const rows = ["Acme Ltd", "Borealis", "Cygnus Freight", "Delta Rail"];
   const [query, setQuery] = useState("");
@@ -1289,6 +1336,22 @@ const INTERACTIVE: Record<string, Interactive> = {
             ],
           },
           { label: "Setup", items: [{ label: "Tax rates", href: "#" }] },
+        ]}
+      />
+    ),
+  },
+
+  tabs: {
+    controls: ["label", "orientation", "activation"],
+    render: (state) => (
+      <Tabs
+        label={String(state.label || "Invoice")}
+        orientation={state.orientation as TabsOrientation}
+        activation={state.activation as TabsActivation}
+        items={[
+          { value: "details", label: "Details", content: "Amount, dates, and the client." },
+          { value: "history", label: "History", content: "Every change, most recent first." },
+          { value: "notes", label: "Notes", content: "Anything the team wrote down." },
         ]}
       />
     ),

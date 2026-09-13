@@ -3,6 +3,11 @@
   "title": "Search",
   "family": "inputs",
   "description": "A search field with a clear control, an in-flight state, and an optional landmark.",
+  "alsoKnownAs": [
+    "search-field",
+    "search-input",
+    "searchbox"
+  ],
   "status": {
     "css": {
       "state": "latest"

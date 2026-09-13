@@ -3,6 +3,11 @@
   "title": "Menu",
   "family": "overlays",
   "description": "A transient list of actions anchored to a trigger.",
+  "alsoKnownAs": [
+    "dropdown",
+    "dropdown-menu",
+    "action-menu"
+  ],
   "status": {
     "css": {
       "state": "latest"

@@ -199,9 +199,34 @@ function packageNameFor(sourcePath) {
   }
 }
 
+/**
+ * The component that answers to `name`, following `alsoKnownAs`.
+ *
+ * The repo's premise is that looking a component up is cheaper than
+ * remembering it — which fails the moment someone looks up a real name this
+ * system happens to spell differently. `segmented-control` is the case that
+ * prompted this: it exists, as `toggle-button-group` in its default
+ * configuration, and asking for it by the name on every other design system's
+ * tin returned "Unknown component". That is the lookup surface being wrong,
+ * not the asker.
+ */
+export function resolveComponent(name, registry) {
+  if (registry[name]) return { name, entry: registry[name] };
+  for (const [canonical, entry] of Object.entries(registry)) {
+    if ((entry.alsoKnownAs ?? []).includes(name)) {
+      return { name: canonical, entry, via: name };
+    }
+  }
+  return {};
+}
+
 export async function getComponentProps(name, registry) {
-  const entry = registry[name];
+  const { name: resolved, entry, via } = resolveComponent(name, registry);
   if (!entry) return { error: `Unknown component: "${name}". Run \`rata list\` — don't guess.` };
+  if (via !== undefined) {
+    console.log(`"${via}" is ${resolved} in this system — showing that.\n`);
+  }
+  name = resolved;
 
   // The manifest declares where a component's React source lives, so this
   // trusts it rather than assuming one package. @rata/icons holds its own

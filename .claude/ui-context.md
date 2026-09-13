@@ -37,6 +37,7 @@ this path is the honest answer to when it last actually moved.
 | [spinner](../docs/components/spinner.md) | `@rata/react` | loading | latest / latest / future | free |
 | [state-layer](../docs/components/state-layer.md) | `@rata/react` | foundations | latest / na / future | free |
 | [switch](../docs/components/switch.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [tabs](../docs/components/tabs.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [text-field](../docs/components/text-field.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [toggle-button](../docs/components/toggle-button.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [toggle-button-group](../docs/components/toggle-button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
@@ -532,6 +533,39 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/switch.md](../docs/components/switch.md)
+
+### Tabs (`@rata/react`)
+
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children">`
+
+- `items: TabItem[]`
+  The tabs and their panels, in the order they are read.
+- `value?: string`
+  Which panel is showing. Makes the component controlled.
+- `defaultValue?: string`
+  Starting panel for uncontrolled tabs. Defaults to the first.
+- `onValueChange?: (value: string) => void`
+- `label?: string`
+  Accessible name for the tablist. Required unless `labelledBy` names an element.
+- `labelledBy?: string`
+- `orientation?: TabsOrientation` — default: `"horizontal"`
+- `activation?: TabsActivation` — default: `"automatic"`
+  Whether the arrow keys select as they move.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Tabs
+        label="Invoice"
+        items={[
+          { value: "details", label: "Details", content: "Amount, dates, and the client." },
+          { value: "history", label: "History", content: "Every change, most recent first." },
+          { value: "notes", label: "Notes", content: "Anything the team wrote down." },
+        ]}
+      />
+```
+
+Contract: [docs/components/tabs.md](../docs/components/tabs.md)
 
 ### Input: Text field (`@rata/react`)
 

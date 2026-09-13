@@ -38,6 +38,17 @@ export type {
 } from "./menu.js";
 export { getSearchProps } from "./search.js";
 export type { SearchOptions, SearchProps, SearchKeyEvent } from "./search.js";
+export { getTabsProps } from "./tabs.js";
+export type {
+  TabsOptions,
+  TabsProps,
+  TabProps,
+  TabPanelProps,
+  TabDescriptor,
+  TabsKeyEvent,
+  TabsOrientation,
+  TabsActivation,
+} from "./tabs.js";
 export { getSwitchProps } from "./switch.js";
 export type { SwitchOptions, SwitchProps } from "./switch.js";
 export { getTextFieldProps } from "./text-field.js";

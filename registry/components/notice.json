@@ -3,6 +3,12 @@
   "title": "Notice",
   "family": "feedback",
   "description": "An inline banner carrying an informational, success, warning, or error message.",
+  "alsoKnownAs": [
+    "alert",
+    "banner",
+    "inline-message",
+    "callout"
+  ],
   "status": {
     "css": {
       "state": "latest"

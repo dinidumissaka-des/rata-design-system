@@ -3,6 +3,11 @@
   "title": "Toggle Button Group",
   "family": "buttons",
   "description": "A set of toggle buttons that holds a value: one choice out of several, or any number of independent states.",
+  "alsoKnownAs": [
+    "segmented-control",
+    "segmented-button",
+    "button-toggle-group"
+  ],
   "status": {
     "css": {
       "state": "latest",

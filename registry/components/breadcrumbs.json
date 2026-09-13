@@ -3,6 +3,9 @@
   "title": "Breadcrumbs",
   "family": "navigation",
   "description": "The trail from the site's root to the current page.",
+  "alsoKnownAs": [
+    "breadcrumb"
+  ],
   "status": {
     "css": {
       "state": "latest",

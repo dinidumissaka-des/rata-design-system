@@ -1620,6 +1620,53 @@ A track the thumb slides along. The track's fill is the state, and the thumb's p
 | opacity (aria-disabled) | `state.disabled-opacity` |
 | transition | `motion.interactive.duration` with `motion.interactive.easing`, on the thumb's transform and the track's fill |
 
+### tabs
+
+The set. Tabs read as an edge with a marker on it, deliberately unlike the segmented control's single enclosed bar — the two are different controls, and looking alike is how they get used for each other.
+
+| Property | Token |
+|---|---|
+| rule under the tabs | `border.default` solid `theme.border.default` |
+| gap between tabs | `space.gap.xs` |
+| gap between the list and the panel | `space.padding.md` |
+| gap between a vertical list and its panel | `space.gap.lg` |
+
+### tabs-tab
+
+One tab. The resting tone is the secondary text colour, so the selected one reads as emphasised rather than the rest reading as dimmed.
+
+| Property | Token |
+|---|---|
+| colour | `theme.fg.secondary` |
+| block-size | `size.control.md` |
+| padding-inline | `space.control.padding-inline.sm` |
+| border-radius | `radius.element` |
+| font-size | `type.control.size.sm` |
+| font-weight | `type.control.weight` |
+| gap between icon and label | `space.gap.sm` |
+| icon size | `size.icon.text` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+| disabled | `state.disabled-opacity` |
+
+### tabs-tab-selected
+
+The panel you are looking at. Marked twice over: the bar is the visual cue and aria-selected is the announced one, so the state is never carried by colour alone.
+
+| Property | Token |
+|---|---|
+| colour | `theme.fg.primary` |
+| indicator | `theme.accent-role.bg` at `border.2`, straddling the list's rule so the tab reads as joined to its panel |
+
+### tabs-panel
+
+The region a tab reveals. Focusable even with nothing focusable inside, so Tab from the tablist reaches it.
+
+| Property | Token |
+|---|---|
+| padding-block-start | `space.padding.md` |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+
 ### text-field
 
 A single-line input with a label, helper text, and validation states.

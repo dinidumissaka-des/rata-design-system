@@ -3,6 +3,11 @@
   "title": "TopNav",
   "family": "navigation",
   "description": "The page's banner: a brand, the primary navigation, and room for actions.",
+  "alsoKnownAs": [
+    "navbar",
+    "header",
+    "app-bar"
+  ],
   "status": {
     "css": {
       "state": "latest"

@@ -18,7 +18,8 @@
     "@rata/theme-rust": "*",
     "@rata/tokens": "*",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "@rata/primitives": "*"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

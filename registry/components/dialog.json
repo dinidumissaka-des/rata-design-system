@@ -3,6 +3,9 @@
   "title": "Dialog",
   "family": "overlays",
   "description": "Modal dialog with focus trapping, scroll locking, and dismiss behavior.",
+  "alsoKnownAs": [
+    "modal"
+  ],
   "status": {
     "css": {
       "state": "latest"

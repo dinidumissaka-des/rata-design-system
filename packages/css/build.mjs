@@ -34,6 +34,7 @@ const ORDER = [
   "side-nav.css",
   // After side-nav: the drawer renders one and overrides its scrolling.
   "mobile-nav.css",
+  "tabs.css",
   "notice.css",
   // After notice: both are surfaces, and the menu sits above one.
   "menu.css",
