@@ -423,6 +423,24 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
         }
       />
     ),
+    "A destination with sub-destinations": () => (
+      <TopNav
+        brand={<strong className="pg-brand">Ratā</strong>}
+        items={[
+          { label: "Invoices", href: "#" },
+          {
+            label: "Reports",
+            current: true,
+            items: [
+              { label: "Revenue", href: "#", current: true },
+              { label: "Ageing", href: "#" },
+              { label: "Tax summary", href: "#" },
+            ],
+          },
+          { label: "Clients", href: "#" },
+        ]}
+      />
+    ),
     "A banner beside a side nav, where both landmarks need names": () => (
       <TopNav
         label="Main"

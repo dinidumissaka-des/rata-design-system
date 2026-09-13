@@ -39,7 +39,7 @@ export type { NoticeProps, NoticeVariant, NoticeLive } from "./notice.js";
 export { SideNav } from "./side-nav.js";
 export type { SideNavProps, SideNavItem, SideNavSection } from "./side-nav.js";
 export { TopNav } from "./top-nav.js";
-export type { TopNavProps, TopNavItem } from "./top-nav.js";
+export type { TopNavProps, TopNavItem, TopNavSubItem } from "./top-nav.js";
 export { Search } from "./search.js";
 export type { SearchProps, SearchSize } from "./search.js";
 export { Spinner } from "./spinner.js";

@@ -19,6 +19,13 @@ export { getCheckboxProps } from "./checkbox.js";
 export type { CheckboxOptions, CheckboxProps, CheckboxState } from "./checkbox.js";
 export { getRadioGroupProps } from "./radio-group.js";
 export type { RadioGroupOptions, RadioGroupItemProps, RadioGroupProps } from "./radio-group.js";
+export { getDisclosureProps } from "./disclosure.js";
+export type {
+  DisclosureOptions,
+  DisclosureProps,
+  DisclosureKeyEvent,
+  DisclosureCloseReason,
+} from "./disclosure.js";
 export { getMenuProps } from "./menu.js";
 export type {
   MenuOptions,

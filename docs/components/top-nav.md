@@ -24,6 +24,8 @@ A `<header>` containing a `<nav>`: the bar is the page's banner landmark, and th
 - **It renders the `<header>`, so it is the page's banner** — A top nav IS the banner — brand, navigation and actions in one bar — and pretending otherwise would mean emitting a bare `<nav>` with a logo and an avatar menu inside it, neither of which is navigation. The consequence is a real constraint rather than a detail: one per page, and not nested inside a `<header>` you already have.
 - **Links are data; everything else is a slot** — The component has to own what the list says — the ordered set of destinations, and which one you are on — so those come in as an array, the same bargain Breadcrumbs makes. A logo, a search box and an account menu are not destinations and do not belong in the nav landmark at all, so they are `brand` and `actions` slots outside it.
 - **The current page is stated per item, not matched from a path** — Only the caller knows whether /invoices/123 counts as being on /invoices — that is their routing, not this component's. A `currentHref` prop would have to guess between exact and prefix matching and would be wrong for someone either way, silently. `current` on the item is one boolean the caller already has the answer to.
+- **A dropdown is a disclosure, never a menu** — An item with `items` becomes a button that shows and hides a list of links. It is not given `role="menu"`, and that is the single most common mistake in a navigation bar: the menu role is for application commands and announces a keyboard model — one tab stop, arrow keys to move, typeahead — that a list of links does not have, so assistive technology describes the widget as something it is not. The W3C's own menubar-navigation examples are being withdrawn over exactly this. A disclosure promises only "this button reveals that", and everything inside stays in the tab order where it was.
+- **The panel is a popover, for a layout reason rather than a stylistic one** — The destination list scrolls its overflow so a long nav does not wrap the bar onto two rows, and an overflow container clips its absolutely positioned descendants — a panel drawn inside the list would be cut off or scroll away with it. The top layer is the only place it can be and still be seen. It stays a child of its `<li>` in the DOM, which is what matters for assistive technology: the accessibility tree follows the document rather than the paint order, so those links are still inside the nav landmark. `popover="auto"` settles one-open-at-a-time and light dismiss for free.
 
 ## Props
 
@@ -48,13 +50,14 @@ The primary destinations, in the order they are read.
 **Use when**
 
 - Between two and about seven top-level destinations. More than that is a side nav, or a nav plus an overflow menu.
+- `items` on an entry for a group of sub-destinations — it becomes a disclosure button rather than a link, and its own `href` is then unnecessary.
 
 **Don't use for**
 
 - Actions. A button that does something is not a destination — put it in `actions`, where it is outside the nav landmark.
 - Every page in the product. This is the top level; the rest belongs to a side nav within a section.
 
-**Accessibility** Rendered as a list inside the `<nav>`, so the count and the order are announced. The item marked `current` gets `aria-current="page"`.
+**Accessibility** Rendered as a list inside the `<nav>`, so the count and the order are announced. The item marked `current` gets `aria-current="page"`. An entry with `items` becomes a disclosure button with `aria-expanded` and `aria-controls` — deliberately not a menu, which would promise a keyboard model a list of links does not have; its panel is named by the trigger and its links stay ordinary tab stops. A parent of the current page is marked `aria-current="true"` rather than `"page"`, because you are not on it.
 
 ### `label`
 
@@ -165,6 +168,28 @@ Any page with two navigation landmarks.
 ```
 
 Two navigation landmarks with the same name are indistinguishable in a landmark list, which is the one place they are most useful. Naming them for what they contain — not "top" and "side", which describe where they happen to sit — survives a redesign that moves them.
+
+### A destination with sub-destinations
+
+An area of the product with several pages under one name.
+
+```tsx
+<TopNav
+  items={[
+    { label: "Invoices", href: "/invoices" },
+    {
+      label: "Reports",
+      current: true,
+      items: [
+        { label: "Revenue", href: "/reports/revenue", current: true },
+        { label: "Ageing", href: "/reports/ageing" },
+      ],
+    },
+  ]}
+/>
+```
+
+The entry with `items` needs no `href` — it reveals rather than navigates, so it renders as a button. Note the two kinds of current: the child is `aria-current="page"` because you are on it, and the parent is `aria-current="true"` because you are merely inside the area it leads to. If the parent is itself a page worth reaching, put it in its own panel as the first child.
 
 ### Don't: an action in the items array
 
