@@ -745,6 +745,11 @@ export function App() {
               </table>
               <div className="pg-type-sample-row">
                 <span className="pg-bar-label">type.heading</span>
+                {/* The size column the generated-scale rows above also carry.
+                    Without it the sample text on those rows and these started
+                    84px apart on the same page — the label is 140px, the value
+                    72px, and only one kind of row had both. */}
+                <span className="pg-bar-value">{tokens.type.heading.size}</span>
                 <span
                   className="pg-type-sample-text"
                   style={{
@@ -758,6 +763,7 @@ export function App() {
               </div>
               <div className="pg-type-sample-row">
                 <span className="pg-bar-label">type.body</span>
+                <span className="pg-bar-value">{tokens.type.body.size}</span>
                 <span
                   className="pg-type-sample-text"
                   style={{
@@ -771,6 +777,7 @@ export function App() {
               </div>
               <div className="pg-type-sample-row">
                 <span className="pg-bar-label">type.label</span>
+                <span className="pg-bar-value">{tokens.type.label.size}</span>
                 <span
                   className="pg-type-sample-text"
                   style={{

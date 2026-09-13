@@ -297,15 +297,29 @@ code {
 }
 
 /* Typography samples */
+/* Baseline alignment, because that is the line a type sample is read against
+   — with samples from 12px to a heading size in one column, centring them
+   would make the label drift up and down the row.
+
+   The vertical padding is a stack step rather than a gap step: gap is for
+   space *between* things in a row, stack is for space between stacked
+   blocks, and these rows are stacked. They read the same at 8px today, which
+   is exactly why the wrong one went unnoticed. */
 .pg-type-sample-row {
   display: flex;
   align-items: baseline;
   gap: var(--rata-space-gap-md);
-  padding: var(--rata-space-gap-xs) 0;
-  border-bottom: var(--rata-border-1) solid var(--rata-theme-border-default);
+  padding-block: var(--rata-space-stack-xs);
+  border-block-end: var(--rata-border-1) solid var(--rata-theme-border-default);
 }
 
+/* Fills the rest of the row. It was sized by its own content, so a row was as
+   wide as the sentence happened to be at that font size — short rows at 12px,
+   overflowing ones at a heading size, and a ragged right edge down a column
+   whose whole point is comparing one line against another. */
 .pg-type-sample-text {
+  flex: 1;
+  min-inline-size: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
