@@ -24,7 +24,7 @@ A `<nav>` containing one list per section. No primitive and no keyboard handling
 - **Sections are the only shape, even for a flat list** — A side nav exists because there are enough destinations to group; a flat one is the special case, not the default. Offering both `items` and `sections` would mean two mutually exclusive props and a rule about which wins — so a flat nav is one unlabelled section, which costs a pair of braces and removes the ambiguity entirely.
 - **A section's label names its list rather than being a heading** — Same reasoning as Notice's title: a nav cannot know what heading level it sits under, and a wrong one breaks heading navigation for the whole page. The label is a plain element with an id, and the list points at it with `aria-labelledby` — so the group is announced with its name and the document outline is untouched.
 - **Collapsing to an icon-only rail is out of scope** — A collapsed rail hides the labels, which is the point of collapsing and also the problem: a sighted reader then needs the name on hover, and this system has no Tooltip. Shipping the collapse without one would trade an accessible nav for a row of unexplained glyphs. It belongs with a Tooltip, not before one.
-- **The current page is stated per item, as in TopNav** — Only the caller knows whether /invoices/123 counts as being on /invoices. Matching a path here would have to guess between exact and prefix and would be silently wrong for someone either way.
+- **The current page is stated per item, as in TopNav** — Only the caller knows whether /invoices/123 counts as being on /invoices. Matching a path here would have to guess between exact and prefix and would be silently wrong for someone either way. It is shown as a tinted row rather than an edge marker: the marker was removed on request, which leaves the visual cue entirely colour and `aria-current` as the only cue that is not.
 
 ## Props
 
@@ -54,7 +54,7 @@ The destinations, grouped. One unlabelled section is a flat nav.
 - A section per item. A group of one is a heading over nothing, and it reads as a mistake.
 - Actions. Everything here is announced as a destination and rendered as a link.
 
-**Accessibility** Each section is a list; a labelled one is pointed at its own label with `aria-labelledby`, so the group is announced with its name. The count and order within each come free with the list.
+**Accessibility** Each section is a list; a labelled one is pointed at its own label with `aria-labelledby`, so the group is announced with its name. The count and order within each come free with the list. The current item carries `aria-current="page"` — which is the only non-colour cue it has, since the visual distinction is a background tint and a text tone.
 
 ### `label`
 
@@ -220,10 +220,9 @@ One destination, filling the rail's width so the whole row is the target.
 
 ### item-current
 
-The page you are on. A tinted row plus an edge marker, alongside aria-current, so the state is never carried by colour alone.
+The page you are on: a tinted row, plus aria-current in the markup. The tint is the role's subtle step with fg.primary on it — a pairing the token contracts verify for text at any size — not the saturated fill, which is a non-text indicator tone.
 
 | Property | Token |
 |---|---|
 | background | `theme.accent-role.subtle` |
 | colour | `theme.fg.primary` |
-| indicator | `theme.accent-role.bg at border.2, space.4 tall and centred on the inline-start edge` |

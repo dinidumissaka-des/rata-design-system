@@ -63,30 +63,20 @@
   outline-offset: var(--rata-focus-ring-offset);
 }
 
-/* The page you are on: a tinted row and an edge marker, alongside
-   aria-current in the markup, so the state is never carried by colour alone.
+/* The page you are on: a tinted row, plus aria-current in the markup.
 
    The tint is accent-role.subtle with fg.primary on it — a pairing the token
    contracts verify for text at any size — rather than the saturated fill,
-   which is a non-text indicator tone. */
+   which is a non-text indicator tone.
+
+   There was an accent bar on the inline-start edge as well, removed on
+   request. Worth knowing what that costs: the remaining visual distinction is
+   entirely colour — a background tint and a text tone — so a reader who
+   cannot tell those apart has only aria-current, which is announced but not
+   seen. A weight change on the current row would put a non-colour cue back
+   without reintroducing the bar. */
 .rata-side-nav-link[aria-current="page"] {
   background: var(--rata-theme-accent-role-subtle);
   color: var(--rata-theme-fg-primary);
 }
 
-.rata-side-nav-link[aria-current="page"]::before {
-  content: "";
-  position: absolute;
-  inset-inline-start: var(--rata-space-0);
-  /* Centred at a stated height rather than inset from the row's edges. Inset,
-     it was 4px short of the full row and read as a border the row happened to
-     have; at half the row's height it reads as a marker pointing at it. Stated
-     rather than proportional so it stays the same mark if the row height ever
-     changes. */
-  inset-block-start: 50%;
-  translate: 0 -50%;
-  block-size: var(--rata-space-4);
-  inline-size: var(--rata-border-2);
-  background: var(--rata-theme-accent-role-bg);
-  border-radius: var(--rata-radius-pill);
-}

@@ -1536,13 +1536,12 @@ One destination, filling the rail's width so the whole row is the target.
 
 ### side-nav-item-current
 
-The page you are on. A tinted row plus an edge marker, alongside aria-current, so the state is never carried by colour alone.
+The page you are on: a tinted row, plus aria-current in the markup. The tint is the role's subtle step with fg.primary on it — a pairing the token contracts verify for text at any size — not the saturated fill, which is a non-text indicator tone.
 
 | Property | Token |
 |---|---|
 | background | `theme.accent-role.subtle` |
 | colour | `theme.fg.primary` |
-| indicator | `theme.accent-role.bg` at `border.2`, `space.4` tall and centred on the inline-start edge |
 
 ### switch
 

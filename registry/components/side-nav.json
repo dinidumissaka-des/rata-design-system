@@ -50,7 +50,7 @@
       },
       {
         "decision": "The current page is stated per item, as in TopNav",
-        "why": "Only the caller knows whether /invoices/123 counts as being on /invoices. Matching a path here would have to guess between exact and prefix and would be silently wrong for someone either way."
+        "why": "Only the caller knows whether /invoices/123 counts as being on /invoices. Matching a path here would have to guess between exact and prefix and would be silently wrong for someone either way. It is shown as a tinted row rather than an edge marker: the marker was removed on request, which leaves the visual cue entirely colour and `aria-current` as the only cue that is not."
       }
     ]
   },
@@ -65,7 +65,7 @@
         "A section per item. A group of one is a heading over nothing, and it reads as a mistake.",
         "Actions. Everything here is announced as a destination and rendered as a link."
       ],
-      "a11y": "Each section is a list; a labelled one is pointed at its own label with `aria-labelledby`, so the group is announced with its name. The count and order within each come free with the list."
+      "a11y": "Each section is a list; a labelled one is pointed at its own label with `aria-labelledby`, so the group is announced with its name. The count and order within each come free with the list. The current item carries `aria-current=\"page\"` — which is the only non-colour cue it has, since the visual distinction is a background tint and a text tone."
     },
     "label": {
       "summary": "Accessible name for the navigation landmark.",
@@ -144,11 +144,10 @@
       }
     },
     "item-current": {
-      "summary": "The page you are on. A tinted row plus an edge marker, alongside aria-current, so the state is never carried by colour alone.",
+      "summary": "The page you are on: a tinted row, plus aria-current in the markup. The tint is the role's subtle step with fg.primary on it — a pairing the token contracts verify for text at any size — not the saturated fill, which is a non-text indicator tone.",
       "tokens": {
         "background": "theme.accent-role.subtle",
-        "colour": "theme.fg.primary",
-        "indicator": "theme.accent-role.bg at border.2, space.4 tall and centred on the inline-start edge"
+        "colour": "theme.fg.primary"
       }
     }
   }
