@@ -50,9 +50,9 @@ export interface TabsProps extends Omit<HTMLAttributes<HTMLDivElement>, "childre
 /**
  * Tabs: several panels, one shown at a time.
  *
- * NOT A SEGMENTED CONTROL, which this system already has —
- * `ToggleButtonGroup` in its default configuration. They look almost
- * identical and are not the same control. A segmented control picks a VALUE:
+ * NOT A SEGMENTED CONTROL, which this system has as its own component.
+ * `SegmentedControl` and a segmented-looking tablist are almost identical on
+ * screen and are not the same control. A segmented control picks a VALUE:
  * it is a radiogroup, every option is announced as a choice, and the answer is
  * submitted with the rest of the form. Tabs reveal a REGION: each tab says
  * which panel it controls, each panel says which tab named it, and moving

@@ -48,7 +48,7 @@
       },
       {
         "decision": "It is not a segmented control, though it can be drawn as one",
-        "why": "`ToggleButtonGroup` in its default configuration IS a segmented control, and the two are not the same control however they are painted. A segmented control picks a VALUE: it is a radiogroup, every option is announced as a choice, and the answer is submitted with the rest of the form. Tabs reveal a REGION: moving between them changes what is on screen rather than what will be sent. Using one for the other is not a style error — a radiogroup standing in for tabs tells a screen reader a form is being filled in, and tabs standing in for a form control hide the answer inside a region nobody submits.\n\nThat is entirely about the ROLE. `variant=\"segmented\"` draws a tablist to look like the segmented control, which is a legitimate design choice and changes nothing announced. The cost is only that a reader cannot tell the two apart by eye; assistive technology still can."
+        "why": "`SegmentedControl` is the component for that, and the two are not the same control however they are painted. A segmented control picks a VALUE: it is a radiogroup, every option is announced as a choice, and the answer is submitted with the rest of the form. Tabs reveal a REGION: moving between them changes what is on screen rather than what will be sent. Using one for the other is not a style error — a radiogroup standing in for tabs tells a screen reader a form is being filled in, and tabs standing in for a form control hide the answer inside a region nobody submits.\n\nThat is entirely about the ROLE. `variant=\"segmented\"` draws a tablist to look like the segmented control, which is a legitimate design choice and changes nothing announced. The cost is only that a reader cannot tell the two apart by eye; assistive technology still can."
       },
       {
         "decision": "Activation is the caller's choice, because it has a cost",
@@ -192,13 +192,13 @@
       "case": "Drawn as a segmented control",
       "when": "Two to four short tabs, where one enclosed bar reads as a single control.",
       "example": "<Tabs\n  label=\"Range\"\n  variant=\"segmented\"\n  items={[\n    { value: \"week\", label: \"Week\", content: <Week /> },\n    { value: \"month\", label: \"Month\", content: <Month /> },\n  ]}\n/>",
-      "notes": "Appearance only — this is still a tablist revealing regions, and still announced as one. The reason it is worth stating: the same shape built from `ToggleButtonGroup` would be a radiogroup answering a question, and the two are not interchangeable however alike they look. If the panels were empty, that would be the tell that this is the wrong one."
+      "notes": "Appearance only — this is still a tablist revealing regions, and still announced as one. Worth stating because the same shape built from `SegmentedControl` would be a radiogroup answering a question, and the two are not interchangeable however alike they look. If the panels were empty, that would be the tell that this is the wrong one."
     },
     {
       "case": "Don't: tabs standing in for a segmented control",
       "when": "Never — this is the shape to recognise and avoid.",
       "example": "{/* Don't: this is a choice being made, not a region being revealed. */}\n<Tabs\n  label=\"Billing period\"\n  items={[\n    { value: \"monthly\", label: \"Monthly\", content: null },\n    { value: \"annual\", label: \"Annual\", content: null },\n  ]}\n/>",
-      "notes": "Don't. Empty panels are the tell: nothing is being revealed, so this is a question being answered — a `ToggleButtonGroup`, which is this system's segmented control. Tabs tell a screen reader that regions are being shown and hidden, and the answer here would sit inside a region nobody submits."
+      "notes": "Don't. Empty panels are the tell: nothing is being revealed, so this is a question being answered — `SegmentedControl`, which is what that component is for. Tabs tell a screen reader that regions are being shown and hidden, and the answer here would sit inside a region nobody submits."
     }
   ],
   "tokens": {

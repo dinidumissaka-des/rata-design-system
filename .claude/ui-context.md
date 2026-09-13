@@ -493,10 +493,12 @@ Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children" | "role" | "onChange">
 Real usage (from `apps/`):
 ```tsx
 <SegmentedControl
-          label="Billing period"
+          label="Sort"
+          fullWidth
+          size="sm"
           options={[
-            { value: "monthly", label: "Monthly" },
-            { value: "annual", label: "Annual" },
+            { value: "newest", label: "Newest" },
+            { value: "oldest", label: "Oldest" },
           ]}
         />
 ```
@@ -590,14 +592,14 @@ Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children">`
 Real usage (from `apps/`):
 ```tsx
 <Tabs
-          label="Range"
-          variant="segmented"
-          items={[
-            { value: "week", label: "Week", content: "Seven days of activity." },
-            { value: "month", label: "Month", content: "A calendar month." },
-            { value: "quarter", label: "Quarter", content: "Three months." },
-          ]}
-        />
+        label="Range"
+        variant="segmented"
+        items={[
+          { value: "week", label: "Week", content: "Seven days of activity." },
+          { value: "month", label: "Month", content: "A calendar month." },
+          { value: "quarter", label: "Quarter", content: "Three months." },
+        ]}
+      />
 ```
 
 Contract: [docs/components/tabs.md](../docs/components/tabs.md)

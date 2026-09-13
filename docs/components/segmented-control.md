@@ -280,10 +280,12 @@ Don't. Swapping content below it is what `Tabs` is: each tab names its panel and
 
 ```tsx
 <SegmentedControl
-          label="Billing period"
+          label="Sort"
+          fullWidth
+          size="sm"
           options={[
-            { value: "monthly", label: "Monthly" },
-            { value: "annual", label: "Annual" },
+            { value: "newest", label: "Newest" },
+            { value: "oldest", label: "Oldest" },
           ]}
         />
 ```

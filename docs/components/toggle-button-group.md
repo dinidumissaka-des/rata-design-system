@@ -246,11 +246,12 @@ Source doc: Joins the options into one continuous bar. Defaults to true.
 
 **Use when**
 
-- The default, and the right one for a segmented control: the options are one question, so they read as one control.
+- The default, and right whenever the options are one question: they close up so they read as one control rather than several buttons that happen to sit together.
 
 **Don't use for**
 
 - Keeping it attached when the options wrap onto a second line — a broken bar reads as two controls.
+- Reaching for this to build a segmented control. `SegmentedControl` is the component for that — narrower on purpose, and drawn as a well with the answer raised out of it. This one is the wider API: multiple selection, deselection, vertical orientation, the toggle-button variants.
 
 **Accessibility** Visual only. The role, the selection and the focus model are the same either way.
 
@@ -277,7 +278,7 @@ Source doc: Blocks activation for every option while keeping them focusable.
 
 ## Use cases
 
-### Single choice — a segmented control
+### Single choice — one question, several answers
 
 The default: one answer out of a few, all visible at once.
 
@@ -293,7 +294,7 @@ The default: one answer out of a few, all visible at once.
 </ToggleButtonGroup>
 ```
 
-A radiogroup: one tab stop, arrows move and select. Each icon-only option still needs its own `aria-label` — the group's name is the question, not the answers.
+A radiogroup: one tab stop, arrows move and select. Each icon-only option still needs its own `aria-label` — the group's name is the question, not the answers. For a plain segmented control reach for `SegmentedControl` instead; this shape is for when you need something it deliberately cannot do, such as icon-only options or a vertical bar.
 
 ### Independent states that sit together
 

@@ -2,7 +2,7 @@
 
    TWO APPEARANCES, and the choice is only that. `--underline` reads as an
    edge with a marker on it; `--segmented` reads as one enclosed bar, matching
-   .rata-toggle-button-group, this system's segmented control.
+   .rata-segmented-control.
 
    What must never be swapped is which pattern the MARKUP claims to be: a
    tablist reveals a region, a radiogroup answers a question, and a radiogroup
@@ -140,10 +140,9 @@
 }
 
 /* ── Segmented ───────────────────────────────────────────────────────────────
-   The enclosed bar, using the same tokens .rata-toggle-button-group and
-   .rata-toggle-button use for the real segmented control — borrowed rather
-   than re-picked, so the two cannot drift into looking nearly-but-not-quite
-   alike, which would be worse than either choice.
+   The enclosed bar, using the same tokens .rata-segmented-control uses —
+   borrowed rather than re-picked, so the two cannot drift into looking
+   nearly-but-not-quite alike, which would be worse than either choice.
 
    No marker bar: the filled segment IS the indicator here, which is why the
    ::before above is scoped to the underline appearance. The selection is still

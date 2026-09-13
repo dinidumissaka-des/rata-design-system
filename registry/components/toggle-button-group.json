@@ -196,10 +196,11 @@
     "attached": {
       "summary": "Joins the options into one continuous bar, with shared borders and only the outer corners rounded.",
       "use": [
-        "The default, and the right one for a segmented control: the options are one question, so they read as one control."
+        "The default, and right whenever the options are one question: they close up so they read as one control rather than several buttons that happen to sit together."
       ],
       "dont": [
-        "Keeping it attached when the options wrap onto a second line — a broken bar reads as two controls."
+        "Keeping it attached when the options wrap onto a second line — a broken bar reads as two controls.",
+        "Reaching for this to build a segmented control. `SegmentedControl` is the component for that — narrower on purpose, and drawn as a well with the answer raised out of it. This one is the wider API: multiple selection, deselection, vertical orientation, the toggle-button variants."
       ],
       "a11y": "Visual only. The role, the selection and the focus model are the same either way."
     },
@@ -217,10 +218,10 @@
   },
   "usage": [
     {
-      "case": "Single choice — a segmented control",
+      "case": "Single choice — one question, several answers",
       "when": "The default: one answer out of a few, all visible at once.",
       "example": "<ToggleButtonGroup\n  label=\"Text alignment\"\n  value={align}\n  onValueChange={setAlign}\n>\n  <ToggleButton value=\"left\" iconOnly aria-label=\"Align left\">⇤</ToggleButton>\n  <ToggleButton value=\"center\" iconOnly aria-label=\"Align center\">↔</ToggleButton>\n  <ToggleButton value=\"right\" iconOnly aria-label=\"Align right\">⇥</ToggleButton>\n</ToggleButtonGroup>",
-      "notes": "A radiogroup: one tab stop, arrows move and select. Each icon-only option still needs its own `aria-label` — the group's name is the question, not the answers."
+      "notes": "A radiogroup: one tab stop, arrows move and select. Each icon-only option still needs its own `aria-label` — the group's name is the question, not the answers. For a plain segmented control reach for `SegmentedControl` instead; this shape is for when you need something it deliberately cannot do, such as icon-only options or a vertical bar."
     },
     {
       "case": "Independent states that sit together",

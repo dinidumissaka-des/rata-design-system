@@ -24,7 +24,7 @@ A `tablist` of `tab` buttons over a set of `tabpanel` regions, with roving tabin
 Headless contract: `getTabsProps` in `packages/primitives/src/tabs.ts` — importable from `@rata/primitives` without the React wrapper or any CSS.
 
 - **Which of three, when they all look like one bar of options** — Three components here can look like one enclosed bar of options, so each one's contract says which is which. SegmentedControl is a question with a short fixed set of answers: single, always filled, cannot be cleared. ToggleButtonGroup is the same ARIA pattern with a wider API — multiple selection, deselection, vertical orientation, the toggle-button variants — so reach for it when you need any of those. Tabs is a different pattern entirely: tabs reveal a region, each naming a panel and each panel naming its tab, and if what is being chosen is which content is shown rather than what gets submitted, it is Tabs — which can be drawn to look exactly like the other two and is still announced as a tablist.
-- **It is not a segmented control, though it can be drawn as one** — `ToggleButtonGroup` in its default configuration IS a segmented control, and the two are not the same control however they are painted. A segmented control picks a VALUE: it is a radiogroup, every option is announced as a choice, and the answer is submitted with the rest of the form. Tabs reveal a REGION: moving between them changes what is on screen rather than what will be sent. Using one for the other is not a style error — a radiogroup standing in for tabs tells a screen reader a form is being filled in, and tabs standing in for a form control hide the answer inside a region nobody submits.
+- **It is not a segmented control, though it can be drawn as one** — `SegmentedControl` is the component for that, and the two are not the same control however they are painted. A segmented control picks a VALUE: it is a radiogroup, every option is announced as a choice, and the answer is submitted with the rest of the form. Tabs reveal a REGION: moving between them changes what is on screen rather than what will be sent. Using one for the other is not a style error — a radiogroup standing in for tabs tells a screen reader a form is being filled in, and tabs standing in for a form control hide the answer inside a region nobody submits.
 
 That is entirely about the ROLE. `variant="segmented"` draws a tablist to look like the segmented control, which is a legitimate design choice and changes nothing announced. The cost is only that a reader cannot tell the two apart by eye; assistive technology still can.
 - **Activation is the caller's choice, because it has a cost** — Automatic — the arrow keys select as they move — is what APG recommends and what a reader expects, but arrowing past four tabs then renders four panels. Manual moves focus and waits for Enter or Space, which is right when a panel fetches something. The wrong one is not cosmetic: automatic over an expensive panel fires requests nobody asked for.
@@ -282,7 +282,7 @@ Two to four short tabs, where one enclosed bar reads as a single control.
 />
 ```
 
-Appearance only — this is still a tablist revealing regions, and still announced as one. The reason it is worth stating: the same shape built from `ToggleButtonGroup` would be a radiogroup answering a question, and the two are not interchangeable however alike they look. If the panels were empty, that would be the tell that this is the wrong one.
+Appearance only — this is still a tablist revealing regions, and still announced as one. Worth stating because the same shape built from `SegmentedControl` would be a radiogroup answering a question, and the two are not interchangeable however alike they look. If the panels were empty, that would be the tell that this is the wrong one.
 
 ### Don't: tabs standing in for a segmented control
 
@@ -299,20 +299,20 @@ Never — this is the shape to recognise and avoid.
 />
 ```
 
-Don't. Empty panels are the tell: nothing is being revealed, so this is a question being answered — a `ToggleButtonGroup`, which is this system's segmented control. Tabs tell a screen reader that regions are being shown and hidden, and the answer here would sit inside a region nobody submits.
+Don't. Empty panels are the tell: nothing is being revealed, so this is a question being answered — `SegmentedControl`, which is what that component is for. Tabs tell a screen reader that regions are being shown and hidden, and the answer here would sit inside a region nobody submits.
 
 ## Real usage in this repo
 
 ```tsx
 <Tabs
-          label="Range"
-          variant="segmented"
-          items={[
-            { value: "week", label: "Week", content: "Seven days of activity." },
-            { value: "month", label: "Month", content: "A calendar month." },
-            { value: "quarter", label: "Quarter", content: "Three months." },
-          ]}
-        />
+        label="Range"
+        variant="segmented"
+        items={[
+          { value: "week", label: "Week", content: "Seven days of activity." },
+          { value: "month", label: "Month", content: "A calendar month." },
+          { value: "quarter", label: "Quarter", content: "Three months." },
+        ]}
+      />
 ```
 
 ## Token recipe

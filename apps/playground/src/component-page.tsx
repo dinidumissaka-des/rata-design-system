@@ -499,27 +499,15 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     ),
     "Panels that cost something to open": () => <TabsManualStage />,
     "Drawn as a segmented control": () => (
-      <div className="pg-block-stack">
-        <Tabs
-          label="Range"
-          variant="segmented"
-          items={[
-            { value: "week", label: "Week", content: "Seven days of activity." },
-            { value: "month", label: "Month", content: "A calendar month." },
-            { value: "quarter", label: "Quarter", content: "Three months." },
-          ]}
-        />
-        {/* The real segmented control directly below, so the resemblance is
-            visible — and so is the fact that only one of the two is a
-            tablist. Same shape, different pattern. */}
-        <SegmentedControl
-          label="Billing period"
-          options={[
-            { value: "monthly", label: "Monthly" },
-            { value: "annual", label: "Annual" },
-          ]}
-        />
-      </div>
+      <Tabs
+        label="Range"
+        variant="segmented"
+        items={[
+          { value: "week", label: "Week", content: "Seven days of activity." },
+          { value: "month", label: "Month", content: "A calendar month." },
+          { value: "quarter", label: "Quarter", content: "Three months." },
+        ]}
+      />
     ),
   },
 
@@ -680,7 +668,7 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
   },
 
   "toggle-button-group": {
-    "Single choice — a segmented control": () => <AlignGroupExample />,
+    "Single choice — one question, several answers": () => <AlignGroupExample />,
     "Independent states that sit together": () => <StyleGroupExample />,
     "A filter that can be cleared": () => <FilterGroupExample />,
   },

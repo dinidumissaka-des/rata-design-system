@@ -3636,7 +3636,7 @@
         }
       }
     },
-    "example": "<SegmentedControl\n          label=\"Billing period\"\n          options={[\n            { value: \"monthly\", label: \"Monthly\" },\n            { value: \"annual\", label: \"Annual\" },\n          ]}\n        />"
+    "example": "<SegmentedControl\n          label=\"Sort\"\n          fullWidth\n          size=\"sm\"\n          options={[\n            { value: \"newest\", label: \"Newest\" },\n            { value: \"oldest\", label: \"Oldest\" },\n          ]}\n        />"
   },
   {
     "name": "side-nav",
@@ -4404,13 +4404,13 @@
         "case": "Drawn as a segmented control",
         "when": "Two to four short tabs, where one enclosed bar reads as a single control.",
         "example": "<Tabs\n  label=\"Range\"\n  variant=\"segmented\"\n  items={[\n    { value: \"week\", label: \"Week\", content: <Week /> },\n    { value: \"month\", label: \"Month\", content: <Month /> },\n  ]}\n/>",
-        "notes": "Appearance only — this is still a tablist revealing regions, and still announced as one. The reason it is worth stating: the same shape built from `ToggleButtonGroup` would be a radiogroup answering a question, and the two are not interchangeable however alike they look. If the panels were empty, that would be the tell that this is the wrong one."
+        "notes": "Appearance only — this is still a tablist revealing regions, and still announced as one. Worth stating because the same shape built from `SegmentedControl` would be a radiogroup answering a question, and the two are not interchangeable however alike they look. If the panels were empty, that would be the tell that this is the wrong one."
       },
       {
         "case": "Don't: tabs standing in for a segmented control",
         "when": "Never — this is the shape to recognise and avoid.",
         "example": "{/* Don't: this is a choice being made, not a region being revealed. */}\n<Tabs\n  label=\"Billing period\"\n  items={[\n    { value: \"monthly\", label: \"Monthly\", content: null },\n    { value: \"annual\", label: \"Annual\", content: null },\n  ]}\n/>",
-        "notes": "Don't. Empty panels are the tell: nothing is being revealed, so this is a question being answered — a `ToggleButtonGroup`, which is this system's segmented control. Tabs tell a screen reader that regions are being shown and hidden, and the answer here would sit inside a region nobody submits."
+        "notes": "Don't. Empty panels are the tell: nothing is being revealed, so this is a question being answered — `SegmentedControl`, which is what that component is for. Tabs tell a screen reader that regions are being shown and hidden, and the answer here would sit inside a region nobody submits."
       }
     ],
     "behavior": {
@@ -4423,7 +4423,7 @@
         },
         {
           "decision": "It is not a segmented control, though it can be drawn as one",
-          "why": "`ToggleButtonGroup` in its default configuration IS a segmented control, and the two are not the same control however they are painted. A segmented control picks a VALUE: it is a radiogroup, every option is announced as a choice, and the answer is submitted with the rest of the form. Tabs reveal a REGION: moving between them changes what is on screen rather than what will be sent. Using one for the other is not a style error — a radiogroup standing in for tabs tells a screen reader a form is being filled in, and tabs standing in for a form control hide the answer inside a region nobody submits.\n\nThat is entirely about the ROLE. `variant=\"segmented\"` draws a tablist to look like the segmented control, which is a legitimate design choice and changes nothing announced. The cost is only that a reader cannot tell the two apart by eye; assistive technology still can."
+          "why": "`SegmentedControl` is the component for that, and the two are not the same control however they are painted. A segmented control picks a VALUE: it is a radiogroup, every option is announced as a choice, and the answer is submitted with the rest of the form. Tabs reveal a REGION: moving between them changes what is on screen rather than what will be sent. Using one for the other is not a style error — a radiogroup standing in for tabs tells a screen reader a form is being filled in, and tabs standing in for a form control hide the answer inside a region nobody submits.\n\nThat is entirely about the ROLE. `variant=\"segmented\"` draws a tablist to look like the segmented control, which is a legitimate design choice and changes nothing announced. The cost is only that a reader cannot tell the two apart by eye; assistive technology still can."
         },
         {
           "decision": "Activation is the caller's choice, because it has a cost",
@@ -4497,7 +4497,7 @@
         }
       }
     },
-    "example": "<Tabs\n          label=\"Range\"\n          variant=\"segmented\"\n          items={[\n            { value: \"week\", label: \"Week\", content: \"Seven days of activity.\" },\n            { value: \"month\", label: \"Month\", content: \"A calendar month.\" },\n            { value: \"quarter\", label: \"Quarter\", content: \"Three months.\" },\n          ]}\n        />"
+    "example": "<Tabs\n        label=\"Range\"\n        variant=\"segmented\"\n        items={[\n          { value: \"week\", label: \"Week\", content: \"Seven days of activity.\" },\n          { value: \"month\", label: \"Month\", content: \"A calendar month.\" },\n          { value: \"quarter\", label: \"Quarter\", content: \"Three months.\" },\n        ]}\n      />"
   },
   {
     "name": "text-field",
@@ -5339,10 +5339,11 @@
         "declared": true,
         "summary": "Joins the options into one continuous bar, with shared borders and only the outer corners rounded.",
         "use": [
-          "The default, and the right one for a segmented control: the options are one question, so they read as one control."
+          "The default, and right whenever the options are one question: they close up so they read as one control rather than several buttons that happen to sit together."
         ],
         "dont": [
-          "Keeping it attached when the options wrap onto a second line — a broken bar reads as two controls."
+          "Keeping it attached when the options wrap onto a second line — a broken bar reads as two controls.",
+          "Reaching for this to build a segmented control. `SegmentedControl` is the component for that — narrower on purpose, and drawn as a well with the answer raised out of it. This one is the wider API: multiple selection, deselection, vertical orientation, the toggle-button variants."
         ],
         "conflicts": [],
         "a11y": "Visual only. The role, the selection and the focus model are the same either way."
@@ -5367,10 +5368,10 @@
     ],
     "usage": [
       {
-        "case": "Single choice — a segmented control",
+        "case": "Single choice — one question, several answers",
         "when": "The default: one answer out of a few, all visible at once.",
         "example": "<ToggleButtonGroup\n  label=\"Text alignment\"\n  value={align}\n  onValueChange={setAlign}\n>\n  <ToggleButton value=\"left\" iconOnly aria-label=\"Align left\">⇤</ToggleButton>\n  <ToggleButton value=\"center\" iconOnly aria-label=\"Align center\">↔</ToggleButton>\n  <ToggleButton value=\"right\" iconOnly aria-label=\"Align right\">⇥</ToggleButton>\n</ToggleButtonGroup>",
-        "notes": "A radiogroup: one tab stop, arrows move and select. Each icon-only option still needs its own `aria-label` — the group's name is the question, not the answers."
+        "notes": "A radiogroup: one tab stop, arrows move and select. Each icon-only option still needs its own `aria-label` — the group's name is the question, not the answers. For a plain segmented control reach for `SegmentedControl` instead; this shape is for when you need something it deliberately cannot do, such as icon-only options or a vertical bar."
       },
       {
         "case": "Independent states that sit together",
