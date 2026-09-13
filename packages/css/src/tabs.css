@@ -149,6 +149,23 @@
   background: var(--rata-theme-bg-muted);
 }
 
+/* Sized to its content, not to the container.
+   `.rata-tabs` is a flex column, so a list left alone stretches the full
+   width — which made the bar span whatever it was dropped into, while the
+   real segmented control it is meant to resemble is inline-flex and hugs its
+   options. `align-self` on the list alone, so the PANEL still fills the
+   width: it is the one that holds the content. */
+.rata-tabs--segmented.rata-tabs--horizontal > .rata-tabs-list {
+  align-self: flex-start;
+  /* With the bar sized to content, `flex: 1` on the segments below
+     distributes that width evenly instead of filling the page — so every
+     segment is as wide as the widest label, which is the look. */
+  max-inline-size: 100%;
+}
+
+/* The underline form is the opposite on purpose: its rule is an edge across
+   the content, so the list stays full width. */
+
 .rata-tabs--segmented .rata-tabs-tab {
   flex: 1;
   justify-content: center;

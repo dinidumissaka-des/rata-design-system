@@ -1669,7 +1669,7 @@ The region a tab reveals. Focusable even with nothing focusable inside, so Tab f
 
 ### tabs-variant-segmented
 
-The enclosed bar. No marker: the filled segment is the indicator, which is why the underline's marker is scoped away here. The selection is still announced through aria-selected.
+The enclosed bar, sized to its content rather than to the container — the real segmented control is inline-flex and hugs its options, and a tablist drawn to resemble it should do the same. No marker: the filled segment is the indicator, which is why the underline's marker is scoped away here. The selection is still announced through aria-selected.
 
 | Property | Token |
 |---|---|
@@ -1680,6 +1680,7 @@ The enclosed bar. No marker: the filled segment is the indicator, which is why t
 | selected background | `theme.bg.surface` |
 | selected colour | `theme.fg.primary` |
 | selected elevation | `theme.elevation.raised` |
+| bar sizing | align-self to its content, while the panel still fills the width |
 
 ### text-field
 
