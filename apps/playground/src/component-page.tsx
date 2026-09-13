@@ -75,7 +75,7 @@ import {
   AlignCenter,
   AlignRight,
 } from "@rata/icons";
-import { COMPONENT_TABS, componentPage, hrefFor } from "./routing.js";
+import { COMPONENT_TABS, componentPage } from "./routing.js";
 import type { ComponentTab, Page } from "./routing.js";
 import contractsJson from "../../../docs/components/contracts.json";
 
@@ -2005,28 +2005,32 @@ function ComponentTabs({
   onNavigate: (page: Page, tab: ComponentTab) => void;
 }) {
   return (
-    <nav className="pg-tabs" aria-label={`${contract.title} sections`}>
-      {COMPONENT_TABS.map((item) => (
-        <a
-          key={item.id}
-          className={`pg-tab${item.id === tab ? " is-active" : ""}`}
-          href={hrefFor(componentPage(contract.name), item.id)}
-          aria-current={item.id === tab ? "page" : undefined}
-          onClick={(event) => {
-            // Let the browser handle the modified clicks it handles better:
-            // new tab, new window, download, and any non-primary button.
-            if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
-              return;
-            }
-            event.preventDefault();
-            onNavigate(componentPage(contract.name), item.id);
-          }}
-        >
-          {item.label}
-        </a>
-      ))}
-    </nav>
+    <Tabs
+      label={`${contract.title} sections`}
+      value={tab}
+      onValueChange={(value) => onNavigate(componentPage(contract.name), value as ComponentTab)}
+      items={COMPONENT_TABS.map((item) => ({
+        value: item.id,
+        label: item.label,
+        content: <ComponentTabPanel contract={contract} tab={item.id} onNavigate={onNavigate} />,
+      }))}
+    />
   );
+}
+
+/** The body behind one tab. Tabs owns the panels, so the page hands it these. */
+function ComponentTabPanel({
+  contract,
+  tab,
+  onNavigate,
+}: {
+  contract: Contract;
+  tab: ComponentTab;
+  onNavigate: (page: Page, tab: ComponentTab) => void;
+}) {
+  if (tab === "properties") return <PropertiesTab contract={contract} />;
+  if (tab === "accessibility") return <AccessibilityTab contract={contract} />;
+  return <OverviewTab contract={contract} onNavigate={onNavigate} />;
 }
 
 /**
@@ -2408,12 +2412,9 @@ export function ComponentPage({
           <code>{contract.name}</code> · {contract.family} · {contract.tier} tier
           {contract.dependencies.length > 0 && <> · depends on {contract.dependencies.join(", ")}</>}
         </p>
-        <ComponentTabs contract={contract} tab={tab} onNavigate={onNavigate} />
       </section>
 
-      {tab === "overview" && <OverviewTab contract={contract} onNavigate={onNavigate} />}
-      {tab === "properties" && <PropertiesTab contract={contract} />}
-      {tab === "accessibility" && <AccessibilityTab contract={contract} />}
+      <ComponentTabs contract={contract} tab={tab} onNavigate={onNavigate} />
     </>
   );
 }

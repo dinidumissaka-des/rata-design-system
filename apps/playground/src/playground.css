@@ -906,45 +906,20 @@ code {
      breakpoint has nothing left to correct here. */
 }
 
-/* ---- Component tabs ------------------------------------------------------
-   Overview / Properties / Accessibility. Anchors, not an ARIA tablist: each
-   one is a real URL, so they behave like the links they are. */
+/* ---- Component page head -------------------------------------------------
+   The Overview / Properties / Accessibility bar above the panels is the Tabs
+   component now. It used to be a hand-rolled <nav> of anchors with its own
+   underline, hover transition and active colour — a second drawing of an
+   appearance .rata-tabs already owns, and one that had drifted: border-1
+   against border-default, control-size-md against sm, and no state layer at
+   all. The comment here used to defend the anchors on the grounds that each
+   tab is a real URL. That mistook having an address for being a
+   destination. These are three views of one contract — Tabs' own example of
+   what it is for — and driving its `value` from the URL is the documented
+   way to keep them linkable.
 
 .pg-section--head {
   margin-bottom: var(--rata-space-stack-lg);
-}
-
-.pg-tabs {
-  display: flex;
-  gap: var(--rata-space-gap-lg);
-  margin-top: var(--rata-space-stack-md);
-  border-bottom: var(--rata-border-1) solid var(--rata-theme-border-default);
-}
-
-.pg-tab {
-  padding: var(--rata-space-2) var(--rata-space-1);
-  color: var(--rata-theme-fg-secondary);
-  text-decoration: none;
-  font-size: var(--rata-type-control-size-md);
-  font-weight: var(--rata-type-control-weight);
-  border-bottom: var(--rata-border-2) solid transparent;
-  /* Sits on the container's own 1px rule, so the active underline replaces it
-     rather than stacking two lines of different weights. */
-  margin-bottom: calc(-1 * var(--rata-border-1));
-  transition-duration: var(--rata-motion-interactive-duration);
-  transition-timing-function: var(--rata-motion-interactive-easing);
-  transition-property: color, border-color;
-}
-
-.pg-tab.is-active {
-  color: var(--rata-theme-fg-primary);
-  border-bottom-color: var(--rata-theme-accent-role-bg);
-}
-
-.pg-tab:focus-visible {
-  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
-  outline-offset: var(--rata-focus-ring-offset);
-  border-radius: var(--rata-radius-inner);
 }
 
 /* ---- Accent switcher ----------------------------------------------------
