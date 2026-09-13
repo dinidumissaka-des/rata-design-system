@@ -484,7 +484,17 @@ export function App() {
           thing TopNav's own contract warns about. */}
       <TopNav
         className="pg-header"
-        brand={<strong className="pg-brand">Ratā</strong>}
+        brand={
+          <span className="pg-brand">
+            {/* Decorative, because the wordmark beside it already names the
+                product. TopNav's contract warns that an image in this slot
+                needs its own alt text — it does, and for a mark paired with
+                the name the correct alt text is empty. Giving it "Ratā" here
+                would have a screen reader read the product twice. */}
+            <img className="pg-brand-mark" src="/rata-icon.svg" alt="" />
+            <strong className="pg-brand-name">Ratā</strong>
+          </span>
+        }
         actions={
           <>
             <MobileNav
