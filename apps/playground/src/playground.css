@@ -2,6 +2,33 @@
   box-sizing: border-box;
 }
 
+/* The header is sticky, so anything scrolled to by an anchor would otherwise
+   arrive underneath it. Nothing links by fragment today — the routes are
+   paths — which is exactly why this is worth setting now rather than after
+   the first anchor is added and lands behind the bar. On the scrolling
+   element, which is html, not body. */
+html {
+  /* The header's height, derived rather than guessed: the component states no
+     height — it comes from its padding plus whatever is tallest in the row —
+     and three separate rules depend on it, so they cannot be allowed to
+     disagree.
+
+     On the root because that is the only element every reader inherits from.
+     A custom property flows down the tree and not sideways or up: declared on
+     .pg-header the sticky sidebar could not see it (a sibling), and declared
+     on .pg-app this rule could not (an ancestor). Both were wrong in turn
+     before this. */
+  --pg-header-block-size: calc(
+    var(--rata-size-control-lg) + var(--rata-space-padding-sm) * 2 +
+      var(--rata-border-default)
+  );
+  /* The header is sticky, so anything scrolled to by an anchor would
+     otherwise arrive underneath it. Nothing links by fragment today — the
+     routes are paths — which is why it is worth setting now rather than after
+     the first anchor lands behind the bar. */
+  scroll-padding-block-start: var(--pg-header-block-size);
+}
+
 body {
   margin: 0;
   font-family: var(--rata-font-family-sans);
@@ -27,7 +54,22 @@ code {
 /* The header is a TopNav now, so the bar, its padding and its border come
    from the component. All that is left here is the page gutter, which is the
    page's own measurement rather than the component's. */
+/* Sticky rather than fixed. Fixed takes the bar out of flow, which means
+   every page below it needs padding to replace the space it used to occupy —
+   one more number to keep in step with the bar's height. Sticky keeps it in
+   flow and pins it once the page scrolls, which is what "fixed to the top"
+   actually asks for, and needs no compensation anywhere.
+
+   Its height is not stated by the component — it comes from the padding plus
+   whatever is tallest in the row — so it is derived here rather than guessed,
+   because the sidebar below has to stick underneath it and the two cannot
+   disagree. */
 .pg-header {
+  position: sticky;
+  inset-block-start: var(--rata-space-0);
+  /* Above the content scrolling under it, and above the sticky sidebar, which
+     takes no z-index of its own. */
+  z-index: 1;
   padding-inline: var(--rata-space-page-gutter);
 }
 
@@ -62,8 +104,10 @@ code {
   inline-size: calc(var(--rata-size-control-lg) * 6);
   flex-shrink: 0;
   position: sticky;
-  inset-block-start: var(--rata-space-0);
-  block-size: 100vh;
+  /* Below the sticky header, not under it. Same derivation as the header's own
+     height, declared on :root so both can read it. */
+  inset-block-start: var(--pg-header-block-size);
+  block-size: calc(100vh - var(--pg-header-block-size));
   overflow-y: auto;
   display: flex;
   flex-direction: column;
