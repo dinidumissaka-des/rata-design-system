@@ -149,6 +149,42 @@ describe("Tabs", () => {
     expect(screen.getByRole("tablist", { name: "Invoice 42" })).toBeTruthy();
   });
 
+  describe("variant", () => {
+    test("changes nothing that is announced", async () => {
+      // Appearance only. The role, the pairing, the keyboard model and
+      // aria-selected are identical either way — which is the point, because
+      // what must not be swapped is the pattern the markup claims to be.
+      render(<Tabs label="Range" variant="segmented" items={ITEMS} />);
+      expect(screen.getByRole("tablist", { name: "Range" })).toBeTruthy();
+      expect(screen.getAllByRole("tab")).toHaveLength(3);
+      expect(screen.getAllByRole("tabpanel")).toHaveLength(1);
+      // Still a tablist, not the radiogroup it now resembles.
+      expect(screen.queryByRole("radiogroup")).toBeNull();
+
+      const tab = screen.getByRole("tab", { name: "Details" });
+      expect(tab.getAttribute("aria-selected")).toBe("true");
+      expect(tab.getAttribute("aria-controls")).toBe(screen.getByRole("tabpanel").id);
+    });
+
+    test("the keyboard model is unchanged", async () => {
+      render(<Tabs label="Range" variant="segmented" items={ITEMS} />);
+      screen.getByRole("tab", { name: "Details" }).focus();
+      await userEvent.keyboard("{ArrowRight}");
+      expect(document.activeElement).toBe(screen.getByRole("tab", { name: "History" }));
+      expect(screen.getByRole("tabpanel").textContent).toBe("The history");
+    });
+
+    test("underline is the default, and each picks its own class", () => {
+      const { container: underline } = render(<Tabs label="x" items={ITEMS} />);
+      expect(underline.querySelector(".rata-tabs--underline")).toBeTruthy();
+      const { container: segmented } = render(
+        <Tabs label="x" variant="segmented" items={ITEMS} />
+      );
+      expect(segmented.querySelector(".rata-tabs--segmented")).toBeTruthy();
+      expect(segmented.querySelector(".rata-tabs--underline")).toBeNull();
+    });
+  });
+
   test("mounting does not steal focus", () => {
     // Focus follows the arrow keys, never the first paint — a page of tabs
     // would otherwise yank focus on load.

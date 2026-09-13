@@ -1622,7 +1622,7 @@ A track the thumb slides along. The track's fill is the state, and the thumb's p
 
 ### tabs
 
-The set. Tabs read as an edge with a marker on it, deliberately unlike the segmented control's single enclosed bar — the two are different controls, and looking alike is how they get used for each other.
+The set, in either appearance. `underline` reads as an edge with a marker on it; `segmented` reads as one enclosed bar. The segmented form borrows the tokens the real segmented control uses rather than picking its own, so the two cannot drift into looking nearly-but-not-quite alike.
 
 | Property | Token |
 |---|---|
@@ -1666,6 +1666,20 @@ The region a tab reveals. Focusable even with nothing focusable inside, so Tab f
 |---|---|
 | padding-block-start | `space.padding.md` |
 | focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+
+### tabs-variant-segmented
+
+The enclosed bar. No marker: the filled segment is the indicator, which is why the underline's marker is scoped away here. The selection is still announced through aria-selected.
+
+| Property | Token |
+|---|---|
+| well background | `theme.bg.muted` |
+| well padding | `space.0-5` |
+| well border-radius | `radius.element` |
+| segment border-radius | `radius.inner` |
+| selected background | `theme.bg.surface` |
+| selected colour | `theme.fg.primary` |
+| selected elevation | `theme.elevation.raised` |
 
 ### text-field
 

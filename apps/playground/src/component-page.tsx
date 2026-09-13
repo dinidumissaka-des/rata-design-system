@@ -53,6 +53,7 @@ import type {
   ToggleButtonVariant,
 } from "@rata/react";
 import type { TabsActivation, TabsOrientation } from "@rata/primitives";
+import type { TabsVariant } from "@rata/react";
 import type { IconSize, LucideIcon } from "@rata/icons";
 import {
   Icon,
@@ -479,6 +480,25 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
       />
     ),
     "Panels that cost something to open": () => <TabsManualStage />,
+    "Drawn as a segmented control": () => (
+      <div className="pg-block-stack">
+        <Tabs
+          label="Range"
+          variant="segmented"
+          items={[
+            { value: "week", label: "Week", content: "Seven days of activity." },
+            { value: "month", label: "Month", content: "A calendar month." },
+            { value: "quarter", label: "Quarter", content: "Three months." },
+          ]}
+        />
+        {/* The real segmented control, directly below, so the resemblance is
+            visible — and so is the fact that only one of them is a tablist. */}
+        <ToggleButtonGroup label="Billing period" defaultValue="monthly">
+          <ToggleButton value="monthly">Monthly</ToggleButton>
+          <ToggleButton value="annual">Annual</ToggleButton>
+        </ToggleButtonGroup>
+      </div>
+    ),
   },
 
   "top-nav": {
@@ -1342,10 +1362,11 @@ const INTERACTIVE: Record<string, Interactive> = {
   },
 
   tabs: {
-    controls: ["label", "orientation", "activation"],
+    controls: ["label", "variant", "orientation", "activation"],
     render: (state) => (
       <Tabs
         label={String(state.label || "Invoice")}
+        variant={state.variant as TabsVariant}
         orientation={state.orientation as TabsOrientation}
         activation={state.activation as TabsActivation}
         items={[

@@ -551,18 +551,20 @@ Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children">`
 - `orientation?: TabsOrientation` — default: `"horizontal"`
 - `activation?: TabsActivation` — default: `"automatic"`
   Whether the arrow keys select as they move.
+- `variant?: TabsVariant` — default: `"underline"`
 - `className?: string`
 
 Real usage (from `apps/`):
 ```tsx
 <Tabs
-        label="Invoice"
-        items={[
-          { value: "details", label: "Details", content: "Amount, dates, and the client." },
-          { value: "history", label: "History", content: "Every change, most recent first." },
-          { value: "notes", label: "Notes", content: "Anything the team wrote down." },
-        ]}
-      />
+          label="Range"
+          variant="segmented"
+          items={[
+            { value: "week", label: "Week", content: "Seven days of activity." },
+            { value: "month", label: "Month", content: "A calendar month." },
+            { value: "quarter", label: "Quarter", content: "Three months." },
+          ]}
+        />
 ```
 
 Contract: [docs/components/tabs.md](../docs/components/tabs.md)
@@ -653,15 +655,10 @@ Extends: `Omit<HTMLAttributes<HTMLDivElement>, "role" | "onChange" | "defaultVal
 
 Real usage (from `apps/`):
 ```tsx
-<ToggleButtonGroup
-      label="Status filter"
-      deselectable
-      value={status}
-      onValueChange={(next) => setStatus(next as string | null)}
-    >
-      <ToggleButton value="open">Open</ToggleButton>
-      <ToggleButton value="closed">Closed</ToggleButton>
-    </ToggleButtonGroup>
+<ToggleButtonGroup label="Billing period" defaultValue="monthly">
+          <ToggleButton value="monthly">Monthly</ToggleButton>
+          <ToggleButton value="annual">Annual</ToggleButton>
+        </ToggleButtonGroup>
 ```
 
 Contract: [docs/components/toggle-button-group.md](../docs/components/toggle-button-group.md)

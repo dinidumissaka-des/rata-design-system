@@ -1,10 +1,16 @@
 /* Tabs — several panels, one shown at a time.
 
-   Deliberately NOT the segmented control's appearance, which this system
-   already has in .rata-toggle-button-group. The two are different controls —
-   one reveals a region, the other answers a question — and looking alike is
-   how they get used for each other. Tabs read as an edge with a marker on it;
-   a segmented control reads as one enclosed bar. */
+   TWO APPEARANCES, and the choice is only that. `--underline` reads as an
+   edge with a marker on it; `--segmented` reads as one enclosed bar, matching
+   .rata-toggle-button-group, this system's segmented control.
+
+   What must never be swapped is which pattern the MARKUP claims to be: a
+   tablist reveals a region, a radiogroup answers a question, and a radiogroup
+   standing in for tabs tells a screen reader a form is being filled in. That
+   is a role question and it is unaffected by paint. The cost of the segmented
+   appearance is only that a reader cannot tell the two apart by eye — which
+   is a reasonable trade for short, peer-like tabs, and a poor one for a wide
+   set where the underline scales better. */
 .rata-tabs {
   display: flex;
   font-family: var(--rata-font-family-sans);
@@ -26,14 +32,19 @@
 
 /* The rule the markers sit on, which is what makes a row of tabs read as an
    edge rather than a row of buttons. */
-.rata-tabs--horizontal > .rata-tabs-list {
+.rata-tabs--underline.rata-tabs--horizontal > .rata-tabs-list {
   border-block-end: var(--rata-border-default) solid var(--rata-theme-border-default);
+}
+
+.rata-tabs--underline.rata-tabs--vertical > .rata-tabs-list {
+  flex-direction: column;
+  flex-shrink: 0;
+  border-inline-end: var(--rata-border-default) solid var(--rata-theme-border-default);
 }
 
 .rata-tabs--vertical > .rata-tabs-list {
   flex-direction: column;
   flex-shrink: 0;
-  border-inline-end: var(--rata-border-default) solid var(--rata-theme-border-default);
 }
 
 /* The resting tone is the secondary text colour, so the selected tab reads as
@@ -86,7 +97,7 @@
   background: var(--rata-theme-accent-role-bg);
 }
 
-.rata-tabs--horizontal .rata-tabs-tab[aria-selected="true"]::after {
+.rata-tabs--underline.rata-tabs--horizontal .rata-tabs-tab[aria-selected="true"]::after {
   inset-inline: var(--rata-space-control-padding-inline-sm);
   /* On the list's rule, not the tab's own edge — the offset is the rule's own
      width, so the marker covers it rather than sitting above it. */
@@ -96,7 +107,7 @@
   border-start-end-radius: var(--rata-radius-inner);
 }
 
-.rata-tabs--vertical .rata-tabs-tab[aria-selected="true"]::after {
+.rata-tabs--underline.rata-tabs--vertical .rata-tabs-tab[aria-selected="true"]::after {
   inset-block: var(--rata-space-1);
   inset-inline-end: calc(-1 * var(--rata-border-default));
   inline-size: var(--rata-border-2);
@@ -120,4 +131,46 @@
   outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style)
     var(--rata-theme-focus-ring);
   outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* ── Segmented ───────────────────────────────────────────────────────────────
+   The enclosed bar, using the same tokens .rata-toggle-button-group and
+   .rata-toggle-button use for the real segmented control — borrowed rather
+   than re-picked, so the two cannot drift into looking nearly-but-not-quite
+   alike, which would be worse than either choice.
+
+   No marker bar: the filled segment IS the indicator here, which is why the
+   ::after above is scoped to the underline appearance. The selection is still
+   announced through aria-selected, so it is not carried by colour alone. */
+.rata-tabs--segmented > .rata-tabs-list {
+  gap: var(--rata-space-0);
+  padding: var(--rata-space-0-5);
+  border-radius: var(--rata-radius-element);
+  background: var(--rata-theme-bg-muted);
+}
+
+.rata-tabs--segmented .rata-tabs-tab {
+  flex: 1;
+  justify-content: center;
+  border-radius: var(--rata-radius-inner);
+}
+
+/* A selected segment sits on a raised surface inside the well, which is what
+   makes the bar read as one control with one part chosen rather than as
+   several buttons. */
+.rata-tabs--segmented .rata-tabs-tab[aria-selected="true"] {
+  background: var(--rata-theme-bg-surface);
+  color: var(--rata-theme-fg-primary);
+  box-shadow: var(--rata-theme-elevation-raised);
+}
+
+/* A focused segment's ring would otherwise be clipped by the neighbour it
+   sits against — the same reason the attached toggle group lifts its focused
+   option. */
+.rata-tabs--segmented .rata-tabs-tab:focus-visible {
+  z-index: 1;
+}
+
+.rata-tabs--segmented.rata-tabs--vertical > .rata-tabs-list {
+  flex-direction: column;
 }
