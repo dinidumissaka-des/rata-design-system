@@ -873,70 +873,49 @@ code {
   border: 0;
 }
 
-.pg-accent {
-  display: flex;
-  align-items: center;
-  gap: var(--rata-space-1);
-  margin: 0;
-  padding: var(--rata-space-1);
-  border: var(--rata-border-1) solid var(--rata-theme-border-default);
-  border-radius: var(--rata-radius-container);
-}
+/* The switcher is a SegmentedControl now, so the bar, its track, the selected
+   option's treatment, the hover and the focus ring all come from the
+   component. What is left here is only the inside of each option's label: a
+   swatch beside a name.
 
+   Gone with the hand-rolled version: the fieldset's own border and padding,
+   an :hover that duplicated the state layer, and a :has(input:checked) rule
+   selecting an input that no longer exists. */
 .pg-accent-option {
   display: inline-flex;
   align-items: center;
   gap: var(--rata-space-2);
-  padding: var(--rata-space-1) var(--rata-space-2);
-  border: var(--rata-border-1) solid transparent;
-  border-radius: var(--rata-radius-element);
-  color: var(--rata-theme-fg-secondary);
-  font-size: var(--rata-type-supporting-size);
-  cursor: pointer;
-  transition:
-    background-color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing),
-    color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing);
 }
 
-.pg-accent-option:hover {
-  background: var(--rata-theme-bg-subtle);
-}
-
-/* The selected option, marked by more than colour: it gains a border and the
-   primary text weight, so the choice survives a greyscale screenshot. */
-.pg-accent-option:has(input:checked) {
-  background: var(--rata-theme-bg-subtle);
-  border-color: var(--rata-theme-border-strong);
-  color: var(--rata-theme-fg-primary);
-  font-weight: var(--rata-type-control-weight);
-}
-
-.pg-accent-option:has(input:focus-visible) {
-  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
-  outline-offset: var(--rata-focus-ring-offset);
-}
-
-/* Reads its own theme's generated fill through the data-rata-theme on itself. */
+/* Reads its own theme's generated fill through the data-rata-theme on itself,
+   so a swatch cannot drift from the theme it stands for. */
 .pg-accent-swatch {
   inline-size: var(--rata-space-4);
   block-size: var(--rata-space-4);
+  flex-shrink: 0;
   border-radius: var(--rata-radius-pill);
   background: var(--rata-theme-accent-role-bg);
-  box-shadow: inset 0 0 0 var(--rata-border-1) var(--rata-theme-border-default);
+  box-shadow: inset 0 0 0 var(--rata-border-1) var(--rata-theme-border-strong);
 }
 
-/* The five names are useful but wide; below the sidebar breakpoint the
-   swatches alone carry the control, with the name still in the title and the
-   radio's own accessible name. */
+/* Five names are wide. Below the sidebar breakpoint the swatches carry the
+   control alone — clipped rather than removed, so each option keeps the
+   accessible name the component reads from its label. */
 @media (max-width: 60rem) {
   .pg-accent-name {
     position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
+    inline-size: var(--rata-border-1);
+    block-size: var(--rata-border-1);
+    margin: calc(-1 * var(--rata-border-1));
+    padding: var(--rata-space-0);
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
+    border: var(--rata-space-0);
+  }
+
+  .pg-accent-option {
+    gap: var(--rata-space-0);
   }
 }
 

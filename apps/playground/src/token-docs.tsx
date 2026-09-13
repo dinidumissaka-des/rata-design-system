@@ -9,6 +9,7 @@
 // for exactly one action per view, that the only foreground allowed on it is
 // theme.fg.on-accent, or that a tinted region wants accent-role.subtle
 // instead. That is what the contract knows.
+import { Icon, X } from "@rata/icons";
 import usage from "@rata/tokens/usage";
 
 interface TokenEntry {
@@ -112,8 +113,11 @@ export function TokenDoc({ path, onClose }: { path: string; onClose: () => void 
     <aside className="pg-inspector" aria-label={`Documentation for ${path}`}>
       <div className="pg-inspector-head">
         <code className="pg-inspector-path">{path}</code>
+        {/* The system's own glyph rather than a × character: the icon set
+            exists so a close control looks the same everywhere, and a
+            typographic multiplication sign is not that control. */}
         <button className="pg-inspector-close" onClick={onClose} aria-label="Close documentation">
-          ×
+          <Icon icon={X} />
         </button>
       </div>
 

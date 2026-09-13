@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Button, MobileNav, Search, SideNav, TopNav } from "@rata/react";
+import { MobileNav, Search, SegmentedControl, SideNav, TopNav } from "@rata/react";
 import { tokens } from "@rata/tokens";
 import { TokenDoc, FamilyDoc, ContrastPage, RecipeList } from "./token-docs.js";
 import { ComponentIndex, ComponentPage, contracts, contractsByName } from "./component-page.js";
 import { componentName, componentPage, hrefFor, parseLocation } from "./routing.js";
 import { AccentSwitcher, DEFAULT_ACCENT } from "./accent-switcher.js";
+import type { Scheme } from "./accent-switcher.js";
 import type { ComponentTab, Page } from "./routing.js";
 
 // One page per category, primitives and semantics merged into one flowing
@@ -496,13 +497,22 @@ export function App() {
                 next to the scheme toggle: both re-theme the whole page, and
                 neither belongs to any one page's content. */}
             <AccentSwitcher value={accent} scheme={theme} onChange={setAccent} />
-            <Button
-              variant="secondary"
+            {/* A SegmentedControl rather than a button that toggles. The
+                button was labelled with the scheme you were NOT in — "Dark
+                theme" while the page was light — which is the classic
+                ambiguity of a toggle whose label describes its action rather
+                than its state. Two named options with one marked is a
+                question being answered, which is what this is. */}
+            <SegmentedControl
+              label="Colour scheme"
               size="sm"
-              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-            >
-              {theme === "light" ? "Dark theme" : "Light theme"}
-            </Button>
+              value={theme}
+              onValueChange={(next) => setTheme(next as Scheme)}
+              options={[
+                { value: "light", label: "Light" },
+                { value: "dark", label: "Dark" },
+              ]}
+            />
           </>
         }
       />

@@ -246,7 +246,7 @@ Contract: [docs/components/dialog.md](../docs/components/dialog.md)
 
 Real usage (from `apps/`):
 ```tsx
-<Icon icon={User} />
+<Icon icon={X} />
 ```
 
 Contract: [docs/components/icon.md](../docs/components/icon.md)
