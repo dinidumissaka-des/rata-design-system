@@ -2,6 +2,8 @@
 
 A token-first, multi-layer design system for web apps and websites. Benchmark: [eBay Playbook](https://playbook.ebay.com/design-system/components).
 
+**Live preview:** [rata-design-system.vercel.app](https://rata-design-system.vercel.app) — the component gallery and status matrix (`apps/playground`), deployed on Vercel.
+
 ## Architecture
 
 | Layer | Package | What it is | Distribution |
