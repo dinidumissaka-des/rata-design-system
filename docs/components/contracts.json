@@ -1476,6 +1476,141 @@
     "example": "<Dialog\n        open={open}\n        onClose={() => setOpen(false)}\n        title={title}\n        description={description}\n        size={size}\n        dismissible={dismissible}\n        initialFocus={cancelRef}\n        footer={\n          <>\n            <Button ref={cancelRef} variant=\"secondary\" onClick={() => setOpen(false)}>\n              Cancel\n            </Button>\n            <Button variant={destructive ? \"destructive\" : \"primary\"} onClick={() => setOpen(false)}>\n              {destructive ? \"Delete\" : \"Save\"}\n            </Button>\n          </>\n        }\n      >\n        This cannot be undone.\n      </Dialog>"
   },
   {
+    "name": "heading",
+    "title": "Heading",
+    "description": "A heading whose outline level and visual size are stated separately.",
+    "family": "content",
+    "tier": "free",
+    "status": {
+      "css": {
+        "state": "future"
+      },
+      "react": {
+        "state": "future"
+      },
+      "figma": {
+        "state": "future"
+      }
+    },
+    "dependencies": [],
+    "importPath": "@rata/react",
+    "mode": "spec",
+    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "extends": null,
+    "props": [
+      {
+        "name": "level",
+        "type": "1 | 2 | 3 | 4 | 5 | 6",
+        "optional": false,
+        "description": null,
+        "declared": false,
+        "summary": "Where this heading sits in the document outline.",
+        "use": [
+          "The level below whatever heading contains this one — a heading inside a section headed `h2` takes `3`."
+        ],
+        "dont": [
+          "Picking it for size. That is `role`, and the two exist separately so this one can stay correct."
+        ],
+        "conflicts": [],
+        "a11y": "Becomes the element: `level={3}` renders an `<h3>`. A skipped level breaks heading navigation, which is how many readers move through a page — and only the caller knows the depth, which is why there is no default."
+      },
+      {
+        "name": "role",
+        "type": "HeadingRole",
+        "optional": true,
+        "default": "the `heading-{level}` step",
+        "description": null,
+        "declared": false,
+        "summary": "How large it looks, independent of its level.",
+        "use": [
+          "A display role on a page title: `level={1} role=\"display-3\"`.",
+          "A smaller role than the level suggests, when a deep heading should not shout: `level={3} role=\"heading-5\"`."
+        ],
+        "dont": [
+          "Using it to fix an outline. If the heading looks wrong at its correct level, this prop is the fix; if the level is wrong, change the level."
+        ],
+        "conflicts": [],
+        "a11y": "Purely visual. It changes no element and no announcement, which is the point: the outline stays whatever `level` says."
+      },
+      {
+        "name": "children",
+        "type": "ReactNode",
+        "optional": false,
+        "description": null,
+        "declared": false,
+        "summary": "The heading text.",
+        "use": [
+          "A short noun phrase naming what follows."
+        ],
+        "dont": [
+          "Anything interactive. A heading is a signpost, not a control."
+        ],
+        "conflicts": [],
+        "a11y": "Becomes the heading's accessible name, so it is what a reader hears when navigating by heading."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "optional": true,
+        "description": null,
+        "declared": false,
+        "summary": "Extra classes, for placement — not for restyling it.",
+        "use": [
+          "The margin the page wants around it, which this component deliberately does not own."
+        ],
+        "dont": [
+          "Overriding the size. That is what `role` is for, and a hand-written size drifts from the scale the moment the seed changes."
+        ],
+        "conflicts": [],
+        "a11y": null
+      }
+    ],
+    "usage": [],
+    "behavior": {
+      "summary": "An `h1` through `h6`, with its visual size stated independently of its level. No primitive: there is no keyboard interaction to own and no state to hold.",
+      "decisions": [
+        {
+          "decision": "`level` and `role` are two props, and that is the whole reason this component exists",
+          "why": "A heading's level is an outline decision — it is how a screen-reader user navigates a page, and skipping one breaks that. Its size is a visual decision about emphasis on the page. They are answers to different questions and they disagree constantly: a page's first subsection often wants to be visually large and is still an `h2`, and a small `h4`-sized label deep in a form may be the `h3` of its section. Every typography component that offers only `size`, or only `level`, forces the caller to pick which of the two to get wrong."
+        },
+        {
+          "decision": "`role` defaults to the matching heading step, and that is a convenience rather than a coupling",
+          "why": "`level={2}` with no role renders `heading-2`, because that is right most of the time and asking for both every time would make the common case worse. The point is that the default is overridable in one prop — the coupling is a starting position, not a constraint."
+        },
+        {
+          "decision": "`level` is required and has no default",
+          "why": "There is no level that is right by default. A component that defaulted to `h2` would produce a page of `h2`s, which is exactly the flat outline this playground was already guilty of — every page title was an `h2` and no page had an `h1`. The type refuses it instead of the contract asking nicely, the same way Dialog's `title` is required."
+        },
+        {
+          "decision": "The unnumbered `type.heading` role is not offered",
+          "why": "It resolves to the same size as `heading-3`, so offering both would be two names for one step and a caller would have to guess whether they differ. The numbered ladder is the one that maps onto levels."
+        },
+        {
+          "decision": "It carries no margin",
+          "why": "Only the page knows what a heading sits between — a title above a dense table wants different air from one above prose. A component that shipped its own margin would be overridden everywhere, and an overridden default is worse than none because it looks like a decision."
+        },
+        {
+          "decision": "Tracking comes with the display roles and not with the heading roles",
+          "why": "The type family carries `tracking.display-1/2/3` precisely because large type set at normal tracking reads loose, and it carries no tracking step for the heading roles because they do not need one. Taking the role whole means taking its tracking when it has one — the roles are generated from the seed in proportion to each other, and cherry-picking across them is what breaks that."
+        }
+      ]
+    },
+    "tokens": {
+      "base": {
+        "summary": "One type role, taken whole. Nothing else — a heading has no box of its own.",
+        "tokens": {
+          "font-size": "the size of the chosen role — type.display-1.size through type.heading-6.size",
+          "font-weight": "that same role's weight, which is 400 for the display roles and 600 for the heading roles",
+          "line-height": "that same role's line-height",
+          "letter-spacing": "type.tracking.display-1 / display-2 / display-3 for the display roles, and normal for the heading roles — large type set at normal tracking reads loose, which is why the scale carries a tracking step per display role",
+          "color": "currentColor — a heading takes the colour of the text around it, and the surface it sits on decides that",
+          "margin": "space.0 — every margin is the page's, since only the page knows what the heading sits between"
+        }
+      }
+    },
+    "example": null
+  },
+  {
     "name": "icon",
     "title": "Icon",
     "description": "A Lucide glyph sized from the size.icon.* scale, inheriting its colour from the text around it.",
@@ -5081,6 +5216,172 @@
       }
     },
     "example": "<Tabs\n        label=\"Invoice\"\n        items={[\n          { value: \"details\", label: \"Details\", content: \"Amount, dates, and the client.\" },\n          { value: \"history\", label: \"History\", content: \"Every change, most recent first.\" },\n          { value: \"notes\", label: \"Notes\", content: \"Anything the team wrote down.\" },\n        ]}\n      />"
+  },
+  {
+    "name": "text",
+    "title": "Text",
+    "description": "Body and supporting text at a named role from the type scale.",
+    "family": "content",
+    "tier": "free",
+    "status": {
+      "css": {
+        "state": "future"
+      },
+      "react": {
+        "state": "future"
+      },
+      "figma": {
+        "state": "future"
+      }
+    },
+    "dependencies": [],
+    "importPath": "@rata/react",
+    "mode": "spec",
+    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "extends": null,
+    "props": [
+      {
+        "name": "children",
+        "type": "ReactNode",
+        "optional": false,
+        "description": null,
+        "declared": false,
+        "summary": "The text.",
+        "use": [
+          "A paragraph, a sentence of help text, an eyebrow label."
+        ],
+        "dont": [
+          "Block content inside `as=\"p\"`. A paragraph cannot contain a list or another paragraph, and the browser will silently close it early."
+        ],
+        "conflicts": [],
+        "a11y": "Plain content. Nothing here is announced as anything but text, which is the point."
+      },
+      {
+        "name": "as",
+        "type": "TextElement",
+        "optional": true,
+        "default": "\"p\"",
+        "description": null,
+        "declared": false,
+        "summary": "Whether this is a block of text or a run inside one.",
+        "use": [
+          "`span` for text inside a sentence, a row or a control's label area."
+        ],
+        "dont": [
+          "`span` for a paragraph. It is not a block, so the page's spacing rules will not apply to it."
+        ],
+        "conflicts": [],
+        "a11y": "Neither element carries a role, so this changes nothing that is announced — it changes what the text is, structurally, for spacing and for selection."
+      },
+      {
+        "name": "role",
+        "type": "TextRole",
+        "optional": true,
+        "default": "\"body\"",
+        "description": null,
+        "declared": false,
+        "summary": "Which step of the scale this text is set at.",
+        "use": [
+          "`supporting` for help text under a field, a timestamp, secondary metadata in a row.",
+          "`large` for a standfirst — one paragraph introducing a page, set above body size.",
+          "`label` for an uppercase eyebrow over a section or a group of fields."
+        ],
+        "dont": [
+          "`supporting` to mean disabled. It is smaller, not dimmer, and it is still meant to be read — `tone` is the prop that changes emphasis."
+        ],
+        "conflicts": [],
+        "a11y": "`label` renders uppercase through `text-transform`, so the text stays lowercase in the accessibility tree and a screen reader does not spell it out letter by letter. Typing it in capitals would."
+      },
+      {
+        "name": "tone",
+        "type": "TextTone",
+        "optional": true,
+        "default": "\"primary\"",
+        "description": null,
+        "declared": false,
+        "summary": "Which of the three documented foreground steps it takes.",
+        "use": [
+          "`secondary` for text that supports the primary content and is still read in full.",
+          "`muted` for the least prominent text on a surface — a placeholder-like hint, a disabled row's caption."
+        ],
+        "dont": [
+          "A status or accent colour. Those belong to a role, and running text carrying one reads as a link or an error; Notice is the component for a coloured message.",
+          "`muted` for anything load-bearing. It is the lowest of the three and the first to fail on an unusual background."
+        ],
+        "conflicts": [],
+        "a11y": "All three are contrast-verified against canvas, surface and subtle. None of them is below the text floor — this prop cannot make text fail contrast on a documented background, which is why it is a closed set of three rather than a colour."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "optional": true,
+        "description": null,
+        "declared": false,
+        "summary": "Extra classes, for placement — not for restyling it.",
+        "use": [
+          "The margin or measure the page wants, neither of which this component owns."
+        ],
+        "dont": [
+          "Overriding size or colour. Those are `role` and `tone`, and a hand-written value drifts from the scale the moment the seed moves."
+        ],
+        "conflicts": [],
+        "a11y": null
+      }
+    ],
+    "usage": [],
+    "behavior": {
+      "summary": "A `<p>` or a `<span>` set to one named role of the type scale. No primitive and no state.",
+      "decisions": [
+        {
+          "decision": "Headings are a different component",
+          "why": "A heading enters the document outline and is a navigation target; body text is neither. That is a difference in semantics rather than in looks, which is this system's test for splitting a component — the same test that separated Tabs from SegmentedControl. A single `as=\"h2\"` prop here could not require a level only when the element happens to be a heading, and a heading without a level is the bug both components exist to prevent."
+        },
+        {
+          "decision": "`as` offers `p` and `span` and nothing else",
+          "why": "Those are the two things running text is: a block of prose, or a run inside one. `div` is the one that would turn this into a layout wrapper — and a `<div>` holding text is how a component like this stops being about type and starts being about boxes. A text block that must contain block content is not one paragraph and should not pretend to be."
+        },
+        {
+          "decision": "`tone` is part of it, even though the type roles carry no colour",
+          "why": "The type scale is size, weight and line-height only, so a caller styling text still has to pick a foreground — and picking wrongly is this system's most common token error, which `internal/vibe-tests` exists to measure. Three named steps that map onto the three documented and contrast-verified `theme.fg.*` values make the correct choice the shortest one. It is deliberately not open-ended: a role colour or a status colour on running text is a different decision, and Notice owns it."
+        },
+        {
+          "decision": "`code` is not a role here",
+          "why": "`type.code` exists, but inline code is a `<code>` ELEMENT — a semantic claim about the content, not a size. Offering it as a role would mean either rendering the wrong element or accepting `as=\"code\" role=\"code\"`, which says the same thing twice. Inline code belongs to a base layer styling `code` directly, which `@rata/css` does not ship yet and which is a separate gap from this component."
+        },
+        {
+          "decision": "No line clamping in this version",
+          "why": "`-webkit-line-clamp` is the only way to truncate at a line count and it needs three coupled declarations plus a fixed display mode, which changes how the element lays out — and truncated text needs its full value reachable some other way or the content is simply gone. It deserves its own pass rather than riding along with the scale."
+        }
+      ]
+    },
+    "tokens": {
+      "base": {
+        "summary": "One type role and one foreground step. No box: text has no padding, no background and no margin of its own.",
+        "tokens": {
+          "font-size": "the chosen role's size — type.body.size, type.large.size, type.supporting.size or type.label.size",
+          "font-weight": "that same role's weight",
+          "line-height": "that same role's line-height",
+          "margin": "space.0 — the page owns the space between blocks, for the reason Heading's contract gives"
+        }
+      },
+      "label": {
+        "summary": "The label role carries two things the others do not, and they come from the scale rather than from here.",
+        "tokens": {
+          "text-transform": "type.label.text-transform",
+          "letter-spacing": "type.label.letter-spacing — uppercase text needs the extra tracking to stay readable, which is why that step exists"
+        }
+      },
+      "tone": {
+        "summary": "The three documented foreground steps for text, and the reason this prop exists at all: it is the shortest path to the right colour, so nobody reaches for a palette token.",
+        "tokens": {
+          "primary": "theme.fg.primary",
+          "secondary": "theme.fg.secondary",
+          "muted": "theme.fg.muted",
+          "all three": "contrast-verified against theme.bg.canvas, theme.bg.surface and theme.bg.subtle — see the contrast page"
+        }
+      }
+    },
+    "example": null
   },
   {
     "name": "text-field",

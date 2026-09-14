@@ -28,6 +28,10 @@
     "title": "Dialog"
   },
   {
+    "name": "heading",
+    "title": "Heading"
+  },
+  {
     "name": "icon",
     "title": "Icon"
   },
@@ -90,6 +94,10 @@
   {
     "name": "tabs",
     "title": "Tabs"
+  },
+  {
+    "name": "text",
+    "title": "Text"
   },
   {
     "name": "text-field",

@@ -25,6 +25,7 @@ this path is the honest answer to when it last actually moved.
 | [button-group](../docs/components/button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [checkbox](../docs/components/checkbox.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [dialog](../docs/components/dialog.md) | `@rata/react` | overlays | latest / latest / future | free |
+| [heading](../docs/components/heading.md) | `@rata/react` | content | future / future / future | free |
 | [icon](../docs/components/icon.md) | `@rata/react` | content | latest / latest / future | free |
 | [menu](../docs/components/menu.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [menu-item](../docs/components/menu-item.md) | `@rata/react` | overlays | latest / latest / future | free |
@@ -41,6 +42,7 @@ this path is the honest answer to when it last actually moved.
 | [state-layer](../docs/components/state-layer.md) | `@rata/react` | foundations | latest / na / future | free |
 | [switch](../docs/components/switch.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [tabs](../docs/components/tabs.md) | `@rata/react` | navigation | latest / latest / future | free |
+| [text](../docs/components/text.md) | `@rata/react` | content | future / future / future | free |
 | [text-field](../docs/components/text-field.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [toggle-button](../docs/components/toggle-button.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [toggle-button-group](../docs/components/toggle-button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
@@ -235,6 +237,12 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/dialog.md](../docs/components/dialog.md)
+
+### Heading
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/heading.md](../docs/components/heading.md)
 
 ### Icon (`@rata/icons`)
 
@@ -678,6 +686,12 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/tabs.md](../docs/components/tabs.md)
+
+### Text
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/text.md](../docs/components/text.md)
 
 ### Input: Text field (`@rata/react`)
 
