@@ -1054,14 +1054,26 @@ code {
    while fg.primary does not. Using fg.primary would put dark content on a
    dark accent in one of the two schemes and look fine in the other.
 
-   The font-size is what sizes the glyph. Icon's default step is
-   size.icon.text — 1.15em — so it follows whatever text size it lands in
-   rather than needing a step of its own, and display-1 puts it at about 48px
-   in a 202px tile. */
+   The font-size is what sizes the glyph, and using it is not a workaround:
+   Icon's default step is size.icon.text — 1.15em — precisely so an icon
+   follows whatever text size it lands in. Overriding .rata-icon's own
+   inline-size from here would be restyling a component through a class meant
+   for placement.
+
+   The multiplier is off the CONTROL scale rather than the type scale, which
+   is the change from the first version. display-1 is the largest type role
+   and put the glyph at 48px — 31% of the tile's content box, small for the
+   only thing on a tile. But a decorative glyph is not text, and reaching for
+   a bigger type role to size one was the wrong scale to be climbing;
+   multiples of size.control.lg are how this system already states measures
+   that are not text, from Dialog's widths to Sheet's depths.
+
+   control-lg * 2 = 72px, so the glyph is 1.15em of that — about 83px, or
+   41% of a 202px tile, which is the proportion the reference had. */
 .pg-gallery-stage--accent {
   background: var(--rata-theme-accent-role-bg);
   color: var(--rata-theme-fg-on-accent);
-  font-size: var(--rata-type-display-1-size);
+  font-size: calc(var(--rata-size-control-lg) * 2);
 }
 
 .pg-gallery-name {
