@@ -8,6 +8,9 @@
     "packages/themes/*",
     "apps/*"
   ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "registry:check": "node scripts/check-registry-install.mjs",
     "playground:check": "node scripts/check-playground-examples.mjs",
