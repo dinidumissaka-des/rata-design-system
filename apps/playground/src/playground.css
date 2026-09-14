@@ -928,11 +928,49 @@ code {
   list-style: none;
 }
 
+/* The containing block for the click overlay below. */
 .pg-gallery-item {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--rata-space-stack-sm);
 }
+
+/* The whole tile navigates, and it does so by EXTENDING the name's hit area
+   rather than by wrapping the tile in a link.
+
+   Wrapping is not available: the tile holds a live component, and an <a> or
+   <button> cannot contain one. The standard answer is this — one real
+   control, with an absolutely positioned pseudo-element stretched over the
+   card. Everything follows from the overlay being part of the name element:
+   hovering anywhere on the tile is hovering the name, so the colour change
+   and the pointer cursor already defined for it fire from the whole area,
+   and there is exactly one tab stop per tile rather than one plus whatever
+   the specimen contains.
+
+   ::after and not ::before, which is the opposite of the rule for
+   components: that rule exists because .rata-state-layer owns ::after, and
+   this element does not compose it. It cannot — the state layer keys off the
+   hover of the element it sits on and would want this same pseudo-element. */
+.pg-gallery-name::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--rata-radius-container);
+}
+
+/* Hover feedback is the composed .rata-state-layer, on the <li> in the
+   markup. The first version of this swapped a background on the stage and
+   `npm run vibe` failed it as a hand-rolled hover, correctly.
+
+   The <li> is the only element the hover can be read from. The overlay below
+   sits on top of the stage, so `.pg-gallery-stage:hover` never fires — but
+   the overlay belongs to the name, and the <li> is the name's ancestor, so
+   hovering anywhere on the tile is hovering the <li>. It takes
+   --flush as well, having no border of its own for the layer to bleed into.
+
+   No collision with the overlay: the state layer owns the <li>'s ::after and
+   the overlay is the NAME's ::after — two elements, two pseudo-elements. */
 
 /* The same bargain .pg-example-stage makes — bg.subtle is documented as "a
    quiet section band inside a surface", and it has its own tone (97/15) so it
@@ -974,7 +1012,18 @@ code {
   color: var(--rata-theme-accent-role-fg);
 }
 
+/* rata-allow: focus-removed — the ring is RELOCATED, not removed: it is
+   declared on the overlay immediately below, which covers the whole tile.
+   An outline follows its element's own box, so a ring left here would circle
+   four characters of caption on a tile where clicking anywhere navigates —
+   telling a keyboard user the wrong thing about what they are about to
+   press. The checker cannot see that the next rule puts it back, which is
+   what this exception records. */
 .pg-gallery-name:focus-visible {
+  outline: none;
+}
+
+.pg-gallery-name:focus-visible::after {
   outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
   outline-offset: var(--rata-focus-ring-offset);
 }

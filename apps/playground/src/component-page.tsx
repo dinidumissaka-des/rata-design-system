@@ -2613,8 +2613,22 @@ export function ComponentIndex({ onOpen }: { onOpen: (name: string) => void }) {
       </p>
       <ul className="pg-gallery">
         {contracts.map((contract) => (
-          <li key={contract.name} className="pg-gallery-item">
-            <div className="pg-gallery-stage">
+          <li
+              key={contract.name}
+              className="pg-gallery-item rata-state-layer rata-state-layer--flush"
+            >
+            {/* INERT, which is the part that makes a clickable tile honest.
+                These specimens are live components with real controls in them
+                — buttons, tabs, a switch. Covering the tile with a click
+                target would leave those controls unreachable by pointer but
+                still in the tab order, so a keyboard could focus and press
+                twenty-eight tiles' worth of controls a mouse cannot touch.
+                `inert` removes the subtree from the tab order, from pointer
+                interaction and from the accessibility tree at once: the
+                thumbnail becomes a picture of the component, which is all a
+                gallery needs it to be. The working copy is on the component's
+                own page. */}
+            <div className="pg-gallery-stage" inert>
               <ComponentThumbnail name={contract.name} />
             </div>
             {/* The name and nothing else. Family and the three artifact
