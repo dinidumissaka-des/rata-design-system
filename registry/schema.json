@@ -2,27 +2,48 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "DS component registry entry",
   "type": "object",
-  "required": ["name", "title", "family", "description", "status"],
+  "required": [
+    "name",
+    "title",
+    "family",
+    "description",
+    "status"
+  ],
   "properties": {
-    "name": { "type": "string", "description": "kebab-case id, doubles as docs slug and CLI arg" },
-    "title": { "type": "string" },
+    "name": {
+      "type": "string",
+      "description": "kebab-case id, doubles as docs slug and CLI arg"
+    },
+    "title": {
+      "type": "string"
+    },
     "family": {
       "type": "string",
       "description": "Component family for docs IA (e.g. buttons, inputs, notices)"
     },
-    "description": { "type": "string" },
+    "description": {
+      "type": "string"
+    },
     "status": {
       "type": "object",
-      "description": "Per-artifact lifecycle status — drives the public status matrix",
+      "description": "Per-artifact lifecycle status \u2014 drives the public status matrix",
       "properties": {
-        "css": { "$ref": "#/definitions/artifact" },
-        "react": { "$ref": "#/definitions/artifact" },
-        "figma": { "$ref": "#/definitions/artifact" }
+        "css": {
+          "$ref": "#/definitions/artifact"
+        },
+        "react": {
+          "$ref": "#/definitions/artifact"
+        },
+        "figma": {
+          "$ref": "#/definitions/artifact"
+        }
       }
     },
     "dependencies": {
       "type": "array",
-      "items": { "type": "string" },
+      "items": {
+        "type": "string"
+      },
       "description": "Other registry components this one requires (CLI installs them too)"
     },
     "files": {
@@ -30,22 +51,185 @@
       "description": "Files the CLI copies into a consumer repo",
       "items": {
         "type": "object",
-        "required": ["source", "target"],
+        "required": [
+          "source",
+          "target"
+        ],
         "properties": {
-          "source": { "type": "string", "description": "Path relative to repo root" },
-          "target": { "type": "string", "description": "Path relative to the consumer's ds directory" }
+          "source": {
+            "type": "string",
+            "description": "Path relative to repo root"
+          },
+          "target": {
+            "type": "string",
+            "description": "Path relative to the consumer's rata directory"
+          }
         }
       }
     },
-    "tier": { "enum": ["free", "pro"], "default": "free" }
+    "tier": {
+      "enum": [
+        "free",
+        "pro"
+      ],
+      "default": "free"
+    },
+    "behavior": {
+      "type": "object",
+      "description": "The headless contract: what this component does independently of React and of any styling, plus the API decisions a parser cannot recover from source.",
+      "properties": {
+        "primitive": {
+          "type": "string",
+          "description": "Exported function in packages/primitives/src/<name>.ts. Verified to exist at build time."
+        },
+        "summary": {
+          "type": "string"
+        },
+        "decisions": {
+          "type": "array",
+          "description": "Design decisions worth defending, each with its reason \u2014 the record of what was approved at gate 1.",
+          "items": {
+            "type": "object",
+            "required": [
+              "decision",
+              "why"
+            ],
+            "properties": {
+              "decision": {
+                "type": "string"
+              },
+              "why": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "props": {
+      "type": "object",
+      "description": "The WRITTEN half of the component contract, keyed by prop name: what each prop is for, judgment a parser cannot recover. The DERIVED half (type, optionality, default, extends) is parsed from packages/react/src/<name>.tsx and must not be restated here once the component is implemented. While status.react is `future` there is no source to parse, so `type`/`default`/`required` are written here instead and the contract stands as the approved intent.",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "summary"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "summary": {
+            "type": "string",
+            "description": "One line: what this prop is for."
+          },
+          "use": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "When to reach for it."
+          },
+          "dont": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "What it is not for, and what to do instead."
+          },
+          "conflicts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Sibling props that should not be combined with this one. Each must be a real prop of this component."
+          },
+          "a11y": {
+            "type": "string",
+            "description": "The accessibility obligation this prop carries or places on the caller."
+          },
+          "type": {
+            "type": "string",
+            "description": "Spec mode only (status.react: future). Once implemented, type is derived from source."
+          },
+          "default": {
+            "type": "string",
+            "description": "Spec mode only. Once implemented, defaults are derived from the component's parameter list."
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Spec mode only. Once implemented, optionality is derived from the props interface."
+          }
+        }
+      }
+    },
+    "usage": {
+      "type": "array",
+      "description": "Worked use cases \u2014 the cross-prop guidance that no single prop entry owns.",
+      "items": {
+        "type": "object",
+        "required": [
+          "case"
+        ],
+        "properties": {
+          "case": {
+            "type": "string",
+            "description": "Short name for the situation."
+          },
+          "when": {
+            "type": "string",
+            "description": "The circumstances this applies to."
+          },
+          "example": {
+            "type": "string",
+            "description": "A real snippet. Linted against the token rules by internal/vibe-tests."
+          },
+          "notes": {
+            "type": "string",
+            "description": "What is easy to get wrong here."
+          }
+        }
+      }
+    },
+    "tokens": {
+      "type": "object",
+      "description": "This component's token recipe, one entry per variant (`base` for a single-variant component). Read by packages/tokens/src/theme/readContracts.mjs and rendered into TOKENS.md's component recipes.",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "tokens"
+        ],
+        "properties": {
+          "summary": {
+            "type": "string"
+          },
+          "tokens": {
+            "type": "object",
+            "description": "CSS property (or described role) \u2192 token path.",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
   },
   "definitions": {
     "artifact": {
       "type": "object",
-      "required": ["state"],
+      "required": [
+        "state"
+      ],
       "properties": {
-        "state": { "enum": ["latest", "in-progress", "future", "deprecated", "na"] },
-        "version": { "type": "string" }
+        "state": {
+          "enum": [
+            "latest",
+            "in-progress",
+            "future",
+            "deprecated",
+            "na"
+          ]
+        },
+        "version": {
+          "type": "string"
+        }
       }
     }
   }

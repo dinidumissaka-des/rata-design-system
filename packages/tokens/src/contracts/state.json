@@ -1,0 +1,22 @@
+{
+  "$contract": "state",
+  "$summary": "Interaction-state opacities, composed by the .rata-state-layer class.",
+  "tokens": {
+    "state": {
+      "layer": "base",
+      "summary": "Interaction-state opacities, composed by the .rata-state-layer class — do not write hand-rolled hover/press rules.",
+      "use": [
+        "Automatically applied by adding the rata-state-layer class alongside a component's own class.",
+        "state.disabled-opacity directly, on an aria-disabled element."
+      ],
+      "dont": [
+        "A new :hover/:active background-color rule — compose .rata-state-layer instead."
+      ],
+      "scale": {
+        "hover-opacity": "Overlay opacity on :hover.",
+        "press-opacity": "Overlay opacity on :active.",
+        "disabled-opacity": "Element opacity when aria-disabled=\"true\"."
+      }
+    }
+  }
+}

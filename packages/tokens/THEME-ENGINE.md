@@ -13,10 +13,10 @@ A theme states seeds. The engine expands them.
 
 ```js
 // packages/tokens/src/themes/base.mjs
-color:      { accent: "#2563EB", neutralStyle: "cool", contrast: "standard" },
+color:      { accent: "#1F7A5B", neutralStyle: "cool", contrast: "standard" },
 typography: { scale: { base: 14, ratio: 1.2 } },
 radius:     { base: 4, multiplier: 1, steps: {...} },
-motion:     { fast: 175, medium: 410, slow: 975, ratio: 0.75 },
+motion:     { fast: 130, medium: 210, slow: 700, ratio: 0.75 },
 ```
 
 That is the whole colour, type, radius and motion definition. 127 tokens come
@@ -44,7 +44,7 @@ promise in `usage.json` against each brand before it will emit a stylesheet.
 |---|---|
 | `src/theme/color.mjs` | Hex parsing, formatting, WCAG contrast |
 | `src/theme/hct.mjs` | HCT colour space and tonal palettes |
-| `src/theme/expandColorScale.mjs` | Accent seed → the semantic colour layer |
+| `src/theme/expandColorScale.mjs` | Accent seed → the semantic colour layer, plus the `color.accent.*` ramp |
 | `src/theme/expandTypeScale.mjs` | `{base, ratio}` → `font.size.*` and `type.*` |
 | `src/theme/expandRadiusScale.mjs` | `{base, multiplier, steps}` → `radius.*` |
 | `src/theme/expandMotionScale.mjs` | `{fast, medium, slow, ratio}` → `motion.duration.*` |
@@ -73,7 +73,20 @@ asked for.
 
 Generated: `theme.bg.*`, `theme.fg.*`, `theme.border.*`, `theme.accent-role.*`,
 `theme.secondary-role.*`, `theme.tertiary-role.fg`, `theme.focus-ring`,
-`font.size.*`, `type.*`, `radius.*`, `motion.duration.*`.
+`color.accent.*`, `font.size.*`, `type.*`, `radius.*`, `motion.duration.*`.
+
+`color.accent.*` is the one *palette* ramp that is generated. The other ramps
+(`color.neutral.*`, the status hues, `color.data.*`) are stated, because they
+are reference material rather than brand expression. The accent ramp is not:
+a ramp named `accent` that ignored the accent showed a blue scale under a red
+brand, which is the drift this whole file argues against. It is built from the
+seed's hue at a fixed tone / chroma / hue-drift curve — `ACCENT_RAMP_SHAPE` in
+`expandColorScale.mjs`, read off the hand-tuned ramp it replaced, so the base
+theme reproduces eight of its eleven steps exactly and the other three to
+within one unit of a channel. Step 600 *is* the seed. Unlike the `theme.*`
+roles it is one value per step rather than a `[light, dark]` pair: the palette
+layer promises a step looks the same in both schemes, and that promise is why
+components are told never to reach for one.
 
 Stated outright, and deliberately so:
 
@@ -93,11 +106,11 @@ Everything here was ported from Astryx (MIT). Four deliberate differences:
 **1. Dotted token paths, not flat CSS variable names.** Astryx keys tokens as
 `'--color-background-surface'`. This repo keys them as
 `theme.bg.surface` and derives the CSS name from the path. The dotted path is
-what `usage.json`, `TOKENS.md`, the `.d.ts` output and the `ds` CLI all
+what `usage.json`, `TOKENS.md`, the `.d.ts` output and the `rata` CLI all
 address tokens by; switching to flat names would have meant rewriting the
 documentation and enforcement layer to gain nothing this system was missing.
 
-**2. `--ds-` prefix and this system's own role names.** A design system's token
+**2. `--rata-` prefix and this system's own role names.** A design system's token
 names are part of its identity. Adopting Astryx's architecture is worth doing;
 adopting its namespace is not.
 
@@ -128,8 +141,8 @@ disabled text is.
 ## Adding a brand theme
 
 ```js
-import { defineTheme } from "@ds/tokens/theme";
-import { baseTheme } from "@ds/tokens/theme/base";
+import { defineTheme } from "@rata/tokens/theme";
+import { baseTheme } from "@rata/tokens/theme/base";
 
 export const myTheme = defineTheme({
   name: "my-brand",
@@ -140,7 +153,7 @@ export const myTheme = defineTheme({
 
 Then `node packages/tokens/build-theme.mjs src/myTheme.mjs -o dist/theme.css`.
 It emits only the tokens that differ from base, scoped to
-`[data-ds-theme="my-brand"]`, and **fails** if the brand breaks any contrast
+`[data-rata-theme="my-brand"]`, and **fails** if the brand breaks any contrast
 promise `usage.json` makes. `packages/themes/ember` and `packages/themes/slate`
 are worked examples; `npm run themes:check` verifies both.
 

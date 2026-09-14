@@ -1,5 +1,5 @@
 {
-  "name": "@ds/tokens",
+  "name": "@rata/tokens",
   "version": "0.1.0",
   "type": "module",
   "description": "Design tokens: single JSON source of truth, built to CSS variables, TypeScript, and a Tailwind preset.",

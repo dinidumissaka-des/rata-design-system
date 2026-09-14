@@ -1,0 +1,189 @@
+/* rata-allow: missing-focus-ring — this control's focus indicator is its own
+   border, not a theme.focus-ring outline, which is a deliberate departure from
+   the system rule and the only one in the library.
+
+   What replaces it: on :focus-visible the outline is theme.fg.primary at
+   border.2 rather than theme.focus-ring, with the border darkened to match so
+   the two read as one stroke. That is 16.75:1 against the field's fill where
+   theme.focus-ring gives 4.31:1 — a stronger indicator, still 2px thick as
+   WCAG 2.4.13 asks, and drawn out of flow so it changes no geometry.
+   What is lost is consistency: focus on this field does not look like focus on
+   a Button, and that is a real cost this comment exists to record. */
+
+/* Text field — a labelled single-line input with helper text and validation
+   states. Structure comes from the primitive: it puts data-status and
+   data-disabled on the root, so every state below is a selector on those
+   rather than a class the caller has to remember to add.
+
+   The rings are inset strokes (theme.*-role.ring), deliberately NOT the focus
+   ring. A field can be focused and invalid at the same time, so the two have
+   to coexist: the ring is inside the border box, the focus outline is drawn
+   outside it at focus.ring-offset. */
+.rata-text-field {
+  display: flex;
+  flex-direction: column;
+  /* stack.2xs, not stack.xs: the label and the helper text each carry their own
+     line-height leading, so the perceived gap is already larger than the
+     number and stack.xs read as separation rather than grouping. */
+  gap: var(--rata-space-stack-2xs);
+}
+
+.rata-text-field-label {
+  color: var(--rata-theme-fg-primary);
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-label-size);
+  font-weight: var(--rata-type-label-weight);
+  line-height: var(--rata-type-label-line-height);
+}
+
+
+/* Required-ness is information, not a fault, so this is not the danger tone.
+   It is also aria-hidden in the markup: aria-required already announces it,
+   and reading the marker aloud would say it twice. */
+.rata-text-field-required {
+  color: var(--rata-theme-fg-secondary);
+}
+
+.rata-text-field-input {
+  /* An input inherits neither family nor size from the page — browsers give it
+     their own — so both are stated. The size is the same constant the button
+     family uses, so a field and a button in one row measure their text alike. */
+  font-family: var(--rata-font-family-sans);
+  /* Constant across all three sizes: `size` changes the box, not the text — the
+     same bargain .rata-button makes, which is what lets a field and a button sit
+     in one row and measure their text alike. */
+  font-size: var(--rata-type-control-size-md);
+  line-height: var(--rata-type-control-line-height-md);
+  border: var(--rata-border-default) solid var(--rata-theme-border-strong);
+  border-radius: var(--rata-radius-element);
+  background: var(--rata-theme-bg-surface);
+  color: var(--rata-theme-fg-primary);
+  /* Stated rather than assumed: @rata/css does not normalise box-sizing, and this
+     control sets an explicit height alongside a border. Under content-box it
+     would measure 2px taller than size.control.md claims. */
+  box-sizing: border-box;
+  transition:
+    border-color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing),
+    box-shadow var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing);
+}
+
+
+/* Sizes — height and inline padding only, matching .rata-button--sm/md/lg step
+   for step so the two families line up in a shared row. */
+.rata-text-field-input--sm {
+  height: var(--rata-size-control-sm);
+  padding-inline: var(--rata-space-control-padding-inline-sm);
+}
+
+.rata-text-field-input--md {
+  height: var(--rata-size-control-md);
+  padding-inline: var(--rata-space-control-padding-inline-md);
+}
+
+.rata-text-field-input--lg {
+  height: var(--rata-size-control-lg);
+  padding-inline: var(--rata-space-control-padding-inline-lg);
+}
+
+.rata-text-field-input::placeholder {
+  color: var(--rata-theme-fg-muted);
+}
+
+/* Hover insets the fill by 2px with a band drawn *inside* the border, so the
+   border itself stays border.1 and the control's outer edge does not move at
+   all — the change is entirely internal.
+
+   Idle only, deliberately: the validation rings below are inset shadows
+   occupying this exact 2px, and box-shadow does not accumulate across rules,
+   so a hovered invalid field would have to pick one. The ring wins, because it
+   carries meaning and hover carries none. */
+.rata-text-field[data-status="idle"]:not([data-disabled]) .rata-text-field-input:hover {
+  box-shadow: inset 0 0 0 var(--rata-border-2) var(--rata-theme-bg-muted);
+}
+
+/* Focus sits flush against the border rather than standing off it. The
+   system's default focus.ring-offset exists to separate the ring from a filled
+   accent background; this control's background is a plain surface, so the gap
+   buys nothing here and reads as a detached halo.
+
+   Zero comes from space.0 because ring geometry has no zero step of its own —
+   the same borrowing the border scale already does in reverse, where border.3
+   is documented as "the focus ring's outline-offset". */
+.rata-text-field-input:focus-visible {
+  /* An outline, not a thicker border. `box-sizing: border-box` only constrains
+     an *explicit* width, and this control sets height but leaves width auto —
+     so growing the border did widen the field, which is what made the previous
+     version shift. An outline is drawn outside the border box and is out of
+     flow entirely, so it cannot move anything. */
+  /* focus.ring-width, not border.2 — both are 2px today, but this is a focus
+     indicator's thickness, so it should track the focus scale rather than
+     coincide with the border one. */
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-fg-primary);
+  outline-offset: var(--rata-space-0);
+  /* The border darkens on focus so the resting state reads as the lighter of
+     the two. It cannot be done the other way round — border.strong is
+     tone-walked to land exactly on the 3:1 that WCAG 1.4.11 requires of a form
+     control's boundary, so there is no headroom to lighten the resting state
+     (the next step down, border.default, measures 1.23:1).
+
+     The border darkens to the same tone as the outline, so the two read as
+     one 3px stroke rather than a dark ring around a lighter edge. Its width is
+     untouched — nothing here changes the control's geometry. */
+  border-color: var(--rata-theme-fg-primary);
+}
+
+/* Helper text — persistent, and always ahead of the message in the
+   description order, so a constraint is heard before a failure. */
+.rata-text-field-description {
+  margin: 0;
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-supporting-size);
+  line-height: var(--rata-type-supporting-line-height);
+}
+
+.rata-text-field-message {
+  margin: 0;
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-supporting-size);
+  line-height: var(--rata-type-supporting-line-height);
+}
+
+/* ---- Validation states, selected from the primitive's data-status --------
+   Each state changes more than colour: the ring is a second, non-chromatic
+   cue, and the message text is what actually carries the meaning. */
+
+.rata-text-field[data-status="validating"] .rata-text-field-input {
+  box-shadow: var(--rata-theme-accent-role-ring);
+}
+
+.rata-text-field[data-status="valid"] .rata-text-field-input {
+  box-shadow: var(--rata-theme-success-role-ring);
+}
+
+/* Outranks the focus rule above on specificity — a class plus an attribute
+   plus a class beats a class plus a pseudo-class — and that is the outcome we
+   want: a focused invalid field keeps its danger border, so focusing an error
+   does not look like clearing it. The focus ring still draws outside. */
+.rata-text-field[data-status="invalid"] .rata-text-field-input {
+  border-color: var(--rata-theme-danger-role-fg);
+  box-shadow: var(--rata-theme-danger-role-ring);
+}
+
+/* The error message takes the danger role's foreground, which is the tone
+   verified against surfaces — not the saturated bg, which is a non-text
+   indicator colour. */
+.rata-text-field[data-status="invalid"] .rata-text-field-message {
+  color: var(--rata-theme-danger-role-fg);
+}
+
+/* Disabled: readable and focusable, dimmed rather than removed. The input
+   carries readOnly and aria-disabled from the primitive; nothing here uses the
+   native disabled attribute. */
+.rata-text-field[data-disabled] {
+  opacity: var(--rata-state-disabled-opacity);
+}
+
+.rata-text-field[data-disabled] .rata-text-field-input {
+  cursor: not-allowed;
+}
+

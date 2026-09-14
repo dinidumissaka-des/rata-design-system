@@ -1,5 +1,5 @@
 {
-  "name": "ds-monorepo",
+  "name": "rata",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -8,19 +8,28 @@
     "packages/themes/*",
     "apps/*"
   ],
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "build": "npm run build -w @ds/tokens && npm run build:themes && npm run build -w @ds/css && npm run build -w @ds/primitives && npm run build -w @ds/react && npm run ui:sync",
-    "docs:check": "npm run docs:check -w @ds/tokens",
+    "registry:check": "node scripts/check-registry-install.mjs",
+    "playground:check": "node scripts/check-playground-examples.mjs",
+    "state-layer:check": "node scripts/check-state-layer-after.mjs --self-test && node scripts/check-state-layer-after.mjs",
+    "aria:check": "node scripts/check-aria-pairings.mjs --self-test && node scripts/check-aria-pairings.mjs",
+    "build": "npm run build -w @rata/tokens && npm run build:themes && npm run build -w @rata/css && npm run build -w @rata/primitives && npm run build -w @rata/icons && npm run build -w @rata/react && npm run registry:check && npm run aria:check && npm run state-layer:check && npm run docs:components && npm run playground:check && npm run ui:sync",
+    "docs:check": "npm run docs:check -w @rata/tokens && node scripts/generate-component-docs.mjs --check",
+    "docs:components": "node scripts/generate-component-docs.mjs",
     "vibe": "node internal/vibe-tests/run.mjs fixtures",
     "vibe:tasks": "node internal/vibe-tests/run.mjs tasks",
     "vibe:test": "node --test internal/vibe-tests/rules.test.mjs",
     "dev": "npm run build && npm run dev -w playground",
-    "test": "npm run test -w @ds/primitives && npm run test:theme",
+    "typecheck": "npm run typecheck -w @rata/react && npm run typecheck -w @rata/icons",
+    "test": "npm run typecheck && npm run test -w @rata/primitives && npm run test -w @rata/react && npm run test -w @rata/icons && npm run test:theme",
     "build:playground": "npm run build && npm run build -w playground",
-    "ui": "node packages/cli/bin/ds.mjs",
+    "ui": "node packages/cli/bin/rata.mjs",
     "ui:sync": "node scripts/generate-ui-context.mjs",
-    "build:themes": "npm run build -w @ds/theme-ember -w @ds/theme-slate",
-    "themes:check": "npm run check -w @ds/theme-ember -w @ds/theme-slate",
+    "build:themes": "npm run build -w @rata/theme-ember -w @rata/theme-slate -w @rata/theme-pine -w @rata/theme-lime -w @rata/theme-rust -w @rata/theme-ink -w @rata/theme-cobalt",
+    "themes:check": "npm run check -w @rata/theme-ember -w @rata/theme-slate -w @rata/theme-pine -w @rata/theme-lime -w @rata/theme-rust -w @rata/theme-ink -w @rata/theme-cobalt",
     "test:theme": "node --test packages/tokens/src/theme/theme.test.mjs"
   },
   "devDependencies": {

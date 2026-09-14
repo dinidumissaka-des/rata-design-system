@@ -9,7 +9,8 @@
  *
  * WHAT IS GENERATED (do not hand-write these — see THEME-ENGINE.md):
  *   color      → theme.bg.*, theme.fg.*, theme.border.*, theme.accent-role.*,
- *                theme.secondary-role.*, theme.tertiary-role.fg, theme.focus-ring
+ *                theme.secondary-role.*, theme.tertiary-role.fg, theme.focus-ring,
+ *                color.accent.* (the raw ramp too — step 600 is the seed)
  *   typography → font.size.*, type.<role>.{size,weight,line-height}
  *   radius     → radius.*
  *   motion     → motion.duration.*
@@ -35,7 +36,7 @@ export const baseTheme = defineTheme({
    * WCAG guarantees intact, which is the point of seeding rather than
    * picking. `cool` keeps a slight blue cast in the greys.
    */
-  color: { accent: "#2563EB", neutralStyle: "cool", contrast: "standard" },
+  color: { accent: "#1F7A5B", neutralStyle: "cool", contrast: "standard" },
 
   /**
    * base 14 / ratio 1.2 — the dense end of the range, which suits the
@@ -44,12 +45,12 @@ export const baseTheme = defineTheme({
   typography: {
     scale: { base: 14, ratio: 1.2 },
     body: {
-      family: "Market Sans",
+      family: "Google Sans",
       fallbacks:
         "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     },
     code: {
-      family: "SF Mono",
+      family: "Google Sans Code",
       fallbacks: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
     },
   },
@@ -64,8 +65,16 @@ export const baseTheme = defineTheme({
     steps: { inner: 2, element: 3, container: 4, chat: 7, page: 8 },
   },
 
-  /** Astryx's default tempo. */
-  motion: { fast: 175, medium: 410, slow: 975, ratio: 0.75 },
+  /**
+   * Tempo. Astryx's own numbers were 175/410/975, and the medium band was too
+   * slow for what this system uses it for: a menu took 410ms to appear and a
+   * dialog 545ms, both of which read as the interface lagging rather than as
+   * anything deliberate. The bands keep their meanings — fast for hover,
+   * medium for entrance/exit, slow for continuous animation — and only the
+   * tempo moved, so no role had to be remapped to a band it does not belong
+   * to. `ratio` is the spread within a band, not the speed, so it stays.
+   */
+  motion: { fast: 130, medium: 210, slow: 700, ratio: 0.75 },
 
   // ── Stated outright ───────────────────────────────────────────────────────
 

@@ -1,0 +1,28 @@
+/* rata-allow: missing-focus-ring — a utility class, not a component. It never
+   owns focus; the element it is composed onto does.
+   Visually hidden — off screen, still in the accessibility tree.
+
+   The whole point is what this is NOT. `display: none` and
+   `visibility: hidden` both remove an element from the accessibility tree, so
+   a label hidden either way takes its control's accessible name with it. This
+   clips to nothing instead: the element is still rendered, still bound by
+   `for`, still read aloud.
+
+   It is also a 1px box rather than a zero-size one, because some assistive
+   technology skips elements with no dimensions — and the negative margin means
+   that 1px costs no layout.
+
+   Extracted after the third copy of this recipe appeared (text-field,
+   checkbox, switch). Loaded LAST, so a component rule that happens to set
+   position or padding cannot out-cascade a class whose job is to hide. */
+.rata-visually-hidden {
+  position: absolute;
+  inline-size: var(--rata-border-1);
+  block-size: var(--rata-border-1);
+  margin: calc(-1 * var(--rata-border-1));
+  padding: var(--rata-space-0);
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: var(--rata-space-0);
+}

@@ -1,0 +1,163 @@
+{
+  "$contract": "theme.status-roles",
+  "$summary": "Status roles — success, warning and danger. Convention-bound rather than brand-derived: green means success whatever the accent is, so these are stated in the theme, not generated from the seed.",
+  "tokens": {
+    "theme.success-role.bg": {
+      "layer": "semantic",
+      "summary": "Saturated success fill — a non-text indicator color, not a text background.",
+      "use": [
+        "A status dot, chip fill, or progress-bar segment indicating success."
+      ],
+      "dont": [
+        "Behind any text, including theme.fg.on-accent — known contrast gap. Use theme.success-role.subtle with theme.success-role.fg for a success message instead."
+      ],
+      "instead": {
+        "A success message with text": "theme.success-role.subtle background with theme.success-role.fg text"
+      }
+    },
+    "theme.success-role.fg": {
+      "layer": "semantic",
+      "summary": "Success-colored text for messages and icons.",
+      "use": [
+        "Success banner/message text.",
+        "A success icon."
+      ],
+      "pairsWith": [
+        "theme.bg.canvas",
+        "theme.bg.surface",
+        "theme.success-role.subtle"
+      ]
+    },
+    "theme.success-role.subtle": {
+      "layer": "semantic",
+      "summary": "Tinted success background that safely carries text.",
+      "use": [
+        "Success banner/message background, paired with theme.success-role.fg."
+      ]
+    },
+    "theme.success-role.on": {
+      "layer": "semantic",
+      "summary": "The label colour for content sitting on theme.success-role.bg.",
+      "use": [
+        "Text or icon on a filled success indicator, in the rare case one carries a label."
+      ],
+      "dont": [
+        "As a general foreground — it is meaningful only against this role's filled bg.",
+        "Assuming it clears AA: success-role.bg is a non-text indicator fill and this pairing is a documented known gap. Put real success text on theme.success-role.subtle."
+      ],
+      "instead": {
+        "A readable success message": "theme.success-role.subtle background with theme.success-role.fg text"
+      }
+    },
+    "theme.warning-role.on": {
+      "layer": "semantic",
+      "summary": "The label colour for content sitting on theme.warning-role.bg — dark, because that fill is the lightest of the three.",
+      "use": [
+        "Text or icon on a filled warning indicator."
+      ],
+      "dont": [
+        "Swapping in theme.fg.on-accent, which is white and vanishes on this fill."
+      ],
+      "pairsWith": [
+        "theme.warning-role.bg"
+      ]
+    },
+    "theme.danger-role.on": {
+      "layer": "semantic",
+      "summary": "The label colour for content sitting on theme.danger-role.bg.",
+      "use": [
+        "Destructive button label and icon."
+      ],
+      "dont": [
+        "Reusing theme.fg.on-accent here — it inverts to dark in the dark scheme, which lands dark text on a dark red fill."
+      ],
+      "pairsWith": [
+        "theme.danger-role.bg"
+      ]
+    },
+    "theme.success-role.ring": {
+      "layer": "semantic",
+      "summary": "Inset success stroke for a control that just passed validation.",
+      "use": [
+        "A field's inset outline after a successful validation check."
+      ]
+    },
+    "theme.warning-role.bg": {
+      "layer": "semantic",
+      "summary": "Saturated warning fill — a non-text indicator color, not a text background.",
+      "use": [
+        "A status dot, chip fill, or progress-bar segment indicating warning."
+      ],
+      "dont": [
+        "Behind any text — known contrast gap even for large text. Use theme.warning-role.subtle with theme.warning-role.fg for a warning message."
+      ],
+      "instead": {
+        "A warning message with text": "theme.warning-role.subtle background with theme.warning-role.fg text"
+      }
+    },
+    "theme.warning-role.fg": {
+      "layer": "semantic",
+      "summary": "Warning-colored text for messages and icons.",
+      "pairsWith": [
+        "theme.bg.canvas",
+        "theme.bg.surface",
+        "theme.warning-role.subtle"
+      ]
+    },
+    "theme.warning-role.subtle": {
+      "layer": "semantic",
+      "summary": "Tinted warning background that safely carries text.",
+      "use": [
+        "Warning banner/message background, paired with theme.warning-role.fg."
+      ]
+    },
+    "theme.warning-role.ring": {
+      "layer": "semantic",
+      "summary": "Inset warning stroke for a control with an unresolved caution state.",
+      "use": [
+        "A field's inset outline when a value is valid but risky (e.g. approaching a limit)."
+      ]
+    },
+    "theme.danger-role.bg": {
+      "layer": "semantic",
+      "summary": "Filled danger background for a destructive action.",
+      "use": [
+        "Destructive button background (paired with theme.fg.on-accent text).",
+        "A status dot or chip fill indicating an error state."
+      ],
+      "instead": {
+        "An error message with text at any size": "theme.danger-role.subtle background with theme.danger-role.fg text (theme.danger-role.subtle with theme.fg.on-accent falls to AA-large in light — see Known gaps)"
+      },
+      "pairsWith": [
+        "theme.fg.on-accent"
+      ]
+    },
+    "theme.danger-role.fg": {
+      "layer": "semantic",
+      "summary": "Danger-colored text for validation errors and error messages.",
+      "use": [
+        "Field validation error text.",
+        "Error banner/message text and icon."
+      ],
+      "pairsWith": [
+        "theme.bg.canvas",
+        "theme.bg.surface",
+        "theme.danger-role.subtle"
+      ]
+    },
+    "theme.danger-role.subtle": {
+      "layer": "semantic",
+      "summary": "Tinted danger background that carries text at large sizes; use theme.fg.primary rather than theme.fg.on-accent for body-size text here.",
+      "use": [
+        "Error banner/message background, paired with theme.danger-role.fg."
+      ]
+    },
+    "theme.danger-role.ring": {
+      "layer": "semantic",
+      "summary": "Inset danger stroke for a control that failed validation.",
+      "use": [
+        "A field's inset outline after a failed validation check."
+      ]
+    }
+  }
+}

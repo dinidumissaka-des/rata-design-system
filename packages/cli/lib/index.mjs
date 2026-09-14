@@ -1,12 +1,13 @@
-// Shared logic behind `ds` (bin/ds.mjs) and the root ui-context generator
+// Shared logic behind `rata` (bin/rata.mjs) and the root ui-context generator
 // (scripts/generate-ui-context.mjs). Kept here, once, so the CLI an agent
 // runs interactively and the file an agent reads passively can never say two
 // different things about the same component.
 //
-// Everything below reads straight from source (registry manifests, @ds/react
-// .tsx files, @ds/tokens' build output) rather than a hand-maintained
+// Everything below reads straight from source (registry manifests, @rata/react
+// .tsx files, @rata/tokens' build output) rather than a hand-maintained
 // description. If it's wrong, the source is wrong — not a doc that drifted.
 import { readFile, readdir } from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import path from "node:path";
 
@@ -100,6 +101,38 @@ function parseDefaults(source, componentName) {
   return defaults;
 }
 
+// `variant?: ButtonVariant` says what compiles but not what you may type, and
+// the union members are one line away in the same file. Resolving them is what
+// lets a UI offer the four real variants instead of a free-text box — and,
+// like every other field here, it is read from source rather than restated.
+function parseTypeAliases(source) {
+  const aliases = {};
+  for (const match of source.matchAll(/export type (\w+)\s*=\s*([^;]+);/g)) {
+    aliases[match[1]] = match[2].trim();
+  }
+  return aliases;
+}
+
+/**
+ * The string-literal members of a union type, or undefined when the type is
+ * not one. Handles both an inline union (`"idle" | "valid"`) and a one-hop
+ * alias to one (`ButtonVariant`); anything else — a generic, an object type, a
+ * union of non-literals — has no enumerable set of values and gets none.
+ */
+export function unionValues(type, aliases = {}) {
+  const resolved = aliases[type?.trim()] ?? type;
+  if (typeof resolved !== "string") return undefined;
+  const parts = resolved.split("|").map((part) => part.trim());
+  if (parts.length < 2) return undefined;
+  const values = [];
+  for (const part of parts) {
+    const literal = part.match(/^"([^"]*)"$/);
+    if (!literal) return undefined;
+    values.push(literal[1]);
+  }
+  return values;
+}
+
 async function walkFiles(dir, exts, out = []) {
   let entries;
   try {
@@ -145,11 +178,61 @@ export async function getExamples(tagName, limit = 1) {
   return usages.slice(0, limit);
 }
 
-export async function getComponentProps(name, registry) {
-  const entry = registry[name];
-  if (!entry) return { error: `Unknown component: "${name}". Run \`ds list\` — don't guess.` };
+/**
+ * The published package name for a source path under packages/*.
+ *
+ * Read from that package's own package.json rather than guessed from the
+ * directory: `packages/icons` publishes as `@rata/icons`, and the two only
+ * happen to look alike. A component's documented import has to be the one a
+ * consumer would actually write.
+ */
+function packageNameFor(sourcePath) {
+  const dir = sourcePath.split("/")[1];
+  if (!dir) return "@rata/react";
+  try {
+    const manifest = JSON.parse(
+      readFileSync(path.join(repoRoot, "packages", dir, "package.json"), "utf8")
+    );
+    return manifest.name ?? "@rata/react";
+  } catch {
+    return "@rata/react";
+  }
+}
 
-  const reactFile = entry.files?.find((f) => f.source.startsWith("packages/react/src/"));
+/**
+ * The component that answers to `name`, following `alsoKnownAs`.
+ *
+ * The repo's premise is that looking a component up is cheaper than
+ * remembering it — which fails the moment someone looks up a real name this
+ * system happens to spell differently. `segmented-control` is the case that
+ * prompted this: it exists, as `toggle-button-group` in its default
+ * configuration, and asking for it by the name on every other design system's
+ * tin returned "Unknown component". That is the lookup surface being wrong,
+ * not the asker.
+ */
+export function resolveComponent(name, registry) {
+  if (registry[name]) return { name, entry: registry[name] };
+  for (const [canonical, entry] of Object.entries(registry)) {
+    if ((entry.alsoKnownAs ?? []).includes(name)) {
+      return { name: canonical, entry, via: name };
+    }
+  }
+  return {};
+}
+
+export async function getComponentProps(name, registry) {
+  const { name: resolved, entry, via } = resolveComponent(name, registry);
+  if (!entry) return { error: `Unknown component: "${name}". Run \`rata list\` — don't guess.` };
+  if (via !== undefined) {
+    console.log(`"${via}" is ${resolved} in this system — showing that.\n`);
+  }
+  name = resolved;
+
+  // The manifest declares where a component's React source lives, so this
+  // trusts it rather than assuming one package. @rata/icons holds its own
+  // component, and hardcoding packages/react/src/ made the docs build treat it
+  // as having no source at all — i.e. as an unimplemented spec.
+  const reactFile = entry.files?.find((f) => /^packages\/[^/]+\/src\/.+\.tsx$/.test(f.source));
   if (!reactFile) {
     const state = entry.status?.react?.state ?? "tbd";
     return {
@@ -167,16 +250,36 @@ export async function getComponentProps(name, registry) {
   const pascal = toPascalCase(name);
   const parsed = parsePropsInterface(source, `${pascal}Props`);
   const defaults = parseDefaults(source, pascal);
+
+  // A prop's union type may be declared in the primitive rather than beside the
+  // component — `orientation?: ButtonGroupOrientation` re-exported from
+  // @rata/primitives, say. Following that one hop is what keeps "look it up" true
+  // for types the component owns but does not declare; re-declaring them in the
+  // .tsx to keep the parser happy would be the second source of truth this
+  // whole module exists to prevent. Local declarations still win.
+  let aliases = parseTypeAliases(source);
+  try {
+    const primitiveSource = await readFile(
+      path.join(repoRoot, `packages/primitives/src/${name}.ts`),
+      "utf8"
+    );
+    aliases = { ...parseTypeAliases(primitiveSource), ...aliases };
+  } catch {
+    // No primitive for this component — nothing to resolve against.
+  }
   const props = (parsed?.props ?? []).map((prop) => ({
     ...prop,
     default: defaults[prop.name],
+    values: unionValues(prop.type, aliases),
   }));
   const [example] = await getExamples(pascal, 1);
 
   return {
     name,
     title: entry.title,
-    importPath: "@ds/react",
+    // Derived from where the source actually lives, so a component in its own
+    // package documents the import a consumer would really write.
+    importPath: packageNameFor(reactFile.source),
     implemented: true,
     extends: parsed?.extends ?? null,
     props,
@@ -185,7 +288,7 @@ export async function getComponentProps(name, registry) {
 }
 
 // Flat resolved token map, e.g. { "color-accent-500": "#3b82f6", "space-4": "16px" }.
-// Reads @ds/tokens' own build output rather than re-resolving base+theme JSON
+// Reads @rata/tokens' own build output rather than re-resolving base+theme JSON
 // a second time — one resolver (packages/tokens/build.mjs), two readers.
 export async function getTokens() {
   const distPath = path.join(repoRoot, "packages/tokens/dist/index.js");

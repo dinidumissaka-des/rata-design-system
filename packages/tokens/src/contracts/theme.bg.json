@@ -1,0 +1,74 @@
+{
+  "$contract": "theme.bg",
+  "$summary": "Background roles — the surface ladder, from the page canvas up to the most recessed well.",
+  "tokens": {
+    "theme.bg.canvas": {
+      "layer": "semantic",
+      "summary": "The page's own background, behind every surface.",
+      "use": [
+        "The <body> background.",
+        "Any full-bleed region that is not itself a raised surface."
+      ],
+      "dont": [
+        "Card, dialog, menu, or dropdown backgrounds — those are theme.bg.surface, one step up so they read as raised."
+      ],
+      "instead": {
+        "A card or panel background": "theme.bg.surface"
+      },
+      "pairsWith": [
+        "theme.fg.primary",
+        "theme.fg.secondary",
+        "theme.fg.muted"
+      ],
+      "example": {
+        "css": "body { background: var(--rata-theme-bg-canvas); color: var(--rata-theme-fg-primary); }"
+      }
+    },
+    "theme.bg.surface": {
+      "layer": "semantic",
+      "summary": "A raised surface sitting on top of the canvas — the default background for any container with an edge.",
+      "use": [
+        "Card, dialog, menu, popover, and dropdown backgrounds.",
+        "The default (unfilled) button background."
+      ],
+      "dont": [
+        "The page background itself — that is theme.bg.canvas."
+      ],
+      "pairsWith": [
+        "theme.fg.primary",
+        "theme.fg.secondary",
+        "theme.fg.muted"
+      ]
+    },
+    "theme.bg.subtle": {
+      "layer": "semantic",
+      "summary": "A quiet, faintly recessed or striped background — one step of emphasis below a surface, without reading as an interactive control.",
+      "use": [
+        "Table header rows and zebra stripes.",
+        "A quiet section band inside a surface."
+      ],
+      "dont": [
+        "An interactive hover/press background — use .rata-state-layer instead of a static fill."
+      ],
+      "pairsWith": [
+        "theme.fg.primary",
+        "theme.fg.secondary"
+      ]
+    },
+    "theme.bg.muted": {
+      "layer": "semantic",
+      "summary": "The most recessed background — an inset well, a track, or a skeleton-loading placeholder.",
+      "use": [
+        "A progress track behind its filled bar.",
+        "A skeleton-loading block.",
+        "An inset search field or well."
+      ],
+      "instead": {
+        "Body text on this background": "theme.fg.secondary, not theme.fg.muted, which falls to AA-large here"
+      },
+      "pairsWith": [
+        "theme.fg.secondary"
+      ]
+    }
+  }
+}

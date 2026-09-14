@@ -1,0 +1,183 @@
+/* Menu — a transient list of actions anchored to a trigger.
+
+   POSITIONED BY THE PLATFORM, with no dependency and no measurement code.
+   Two separate browser features do the work that a positioning library
+   usually does:
+
+     popover        puts the list in the top layer, so it escapes every
+                    overflow and stacking context on the page without a
+                    portal, and gives light-dismiss (click outside, Escape)
+                    for free.
+     anchor         `anchor-name` on the trigger and `position-anchor` here
+     positioning    tie the two together; `position-area` places the list and
+                    `position-try-fallbacks` flips it near a viewport edge.
+
+   Anchor positioning reached Baseline in early 2026, so every current engine
+   flips correctly. An older one falls back to the @supports block at the
+   bottom: the menu still opens in the right place under its trigger, it just
+   does not flip when it runs out of room. That is a documented gap rather
+   than a reason to take on a runtime dependency — this registry is a
+   copy-paste channel, and a dependency here becomes an install step for
+   every consumer. */
+
+/* The trigger is whatever the caller passed — usually a Button — so this adds
+   only the anchor name, and no appearance it did not ask for.
+
+   The name comes from the component as a custom property rather than being
+   written here, because `anchor-name` is a GLOBAL ident: when several elements
+   declare the same one, the spec resolves it to the last acceptable anchor in
+   tree order. Hard-coded, every menu on a page anchored itself to whichever
+   trigger came last. */
+/* rata-allow: unknown-token — not a design token but component plumbing: CSS
+   cannot generate a unique ident, so the component passes one in. */
+.rata-menu-trigger {
+  anchor-name: var(--rata-menu-anchor);
+}
+
+/* rata-allow: unknown-token — --rata-menu-anchor is the per-instance anchor
+   name the component passes in, not a value from the token set. */
+.rata-menu {
+  box-sizing: border-box;
+  /* The popover attribute supplies the top layer; these reset the UA styles
+     that come with it (a border, padding and margin of its own). */
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-1);
+  border: var(--rata-border-default) solid var(--rata-theme-border-default);
+  position-anchor: var(--rata-menu-anchor);
+  position: absolute;
+  position-area: block-end span-inline-end;
+  /* Tried in order: below, then above, then mirrored inline. The first that
+     fits wins, which is the whole of collision handling for a menu. */
+  position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  margin-block-start: var(--rata-space-gap-xs);
+  min-inline-size: calc(var(--rata-size-control-lg) * 4);
+  border-radius: var(--rata-radius-container);
+  background: var(--rata-theme-bg-surface);
+  box-shadow: var(--rata-theme-elevation-overlay);
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-control-size-sm);
+  flex-direction: column;
+}
+
+/* `popover` elements are display:none until shown, so there is no separate
+   open class to keep in step with aria-expanded — the state selector carries
+   `display` and nothing else.
+
+   `flex-direction` lives on the base rule above, not here. It does not bite
+   today because this menu animates in with keyframes and closes instantly, so
+   `display` never lingers. It would bite the moment anyone gave it an exit
+   transition: `display` would be held by `allow-discrete` while
+   `flex-direction`, which is not animatable, reverted at once and laid the
+   rows out side by side for the whole exit. That is exactly what happened to
+   the dialog. */
+.rata-menu:popover-open {
+  display: flex;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rata-menu:popover-open {
+    animation: rata-menu-enter var(--rata-motion-overlay-duration)
+      var(--rata-motion-easing-enter);
+  }
+}
+
+@keyframes rata-menu-enter {
+  from {
+    opacity: 0;
+    /* A short rise, not a scale: scaling a list makes its text crawl. */
+    translate: 0 calc(-1 * var(--rata-space-1));
+  }
+}
+
+.rata-menu-item {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--rata-space-gap-sm);
+  inline-size: 100%;
+  block-size: var(--rata-size-control-sm);
+  padding-inline: var(--rata-space-control-padding-inline-sm);
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-inner);
+  background: transparent;
+  color: var(--rata-theme-fg-primary);
+  font: inherit;
+  text-align: start;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* An action that removes something. The danger role's foreground on the
+   menu's own surface — a pairing the token contracts verify for text at any
+   size — rather than a tinted row, which would read as a status rather than
+   a thing you can do. */
+.rata-menu-item--destructive {
+  color: var(--rata-theme-danger-role-fg);
+}
+
+/* A menu standing in for a choice already made, where one row is the answer. */
+.rata-menu-item[aria-checked="true"],
+.rata-menu-item--selected {
+  background: var(--rata-theme-accent-role-subtle);
+  color: var(--rata-theme-fg-primary);
+}
+
+.rata-menu-item[aria-disabled="true"] {
+  opacity: var(--rata-state-disabled-opacity);
+  cursor: default;
+}
+
+/* The roving tabindex means an item, not the menu, is what focus lands on, so
+   the ring belongs here. */
+.rata-menu-item:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style)
+    var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+.rata-menu-separator {
+  margin-block: var(--rata-space-1);
+  border: var(--rata-space-0);
+  border-block-start: var(--rata-border-default) solid
+    var(--rata-theme-border-default);
+}
+
+/* Engines without anchor positioning — everything before the early-2026
+   Baseline, Firefox 147 being the last to ship it.
+
+   A popover is painted in the TOP LAYER, and a top-layer element's containing
+   block is the viewport, not its DOM parent. So CSS alone cannot put it under
+   its trigger here: there is no ancestor to resolve against, and `anchor()`
+   is the very feature this block exists because of. The choice is a JS
+   measurement loop or a presentation that does not need one.
+
+   This takes the second: a small centred sheet. It is never clipped, never
+   off-screen, and reads as deliberate rather than broken — the same shape a
+   menu takes on a narrow phone. The actions, their order and every keyboard
+   behaviour are identical; only where the list appears differs. */
+@supports not (anchor-name: --rata-menu-anchor) {
+  .rata-menu {
+    position: fixed;
+    inset: auto;
+    margin: var(--rata-space-0);
+    /* Centred rather than corner-pinned, so no edge can clip it. */
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    translate: -50% -50%;
+    min-inline-size: calc(var(--rata-size-control-lg) * 5);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .rata-menu:popover-open {
+      /* The rise implies a list growing out of its trigger, which this
+         placement does not do. Fade only. */
+      animation-name: rata-menu-enter-centred;
+    }
+  }
+}
+
+@keyframes rata-menu-enter-centred {
+  from {
+    opacity: 0;
+  }
+}

@@ -1,11 +1,11 @@
 /* Disabled — aria-disabled keeps the control focusable and discoverable;
-   activation is blocked in @ds/primitives. Opacity only, no color swap. */
+   activation is blocked in @rata/primitives. Opacity only, no color swap. */
 .button[aria-disabled="true"] {
-  opacity: var(--ds-state-disabled-opacity);
+  opacity: var(--rata-state-disabled-opacity);
   cursor: not-allowed;
 }
 
 .button:focus-visible {
-  outline: var(--ds-focus-ring-width) solid var(--ds-theme-focus-ring);
-  outline-offset: var(--ds-focus-ring-offset);
+  outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
 }

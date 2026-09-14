@@ -1,0 +1,25 @@
+{
+  "$contract": "radius",
+  "$summary": "Corner radius, generated from a base unit, a multiplier and a step table.",
+  "tokens": {
+    "radius": {
+      "layer": "base",
+      "summary": "Corner radius, generated from a base unit, a multiplier and a step table. Every name is a role: there is no raw sm/md/lg ramp underneath.",
+      "use": [
+        "border-radius, using the role that names the surface you are rounding."
+      ],
+      "dont": [
+        "Hand-writing a px radius — change the theme's `radius` seed instead, which moves the whole scale together."
+      ],
+      "scale": {
+        "none": "Square corners. A fixed anchor — the multiplier never touches it.",
+        "inner": "An element nested inside an already-rounded container.",
+        "element": "The default control radius — buttons, inputs, chips.",
+        "container": "A card or panel.",
+        "chat": "A chat bubble or similarly large rounded surface.",
+        "page": "A full-page or sheet-level surface.",
+        "pill": "A pill-shaped control or badge. A fixed anchor, like none."
+      }
+    }
+  }
+}

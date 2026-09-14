@@ -1,0 +1,36 @@
+/* rata-allow: missing-focus-ring — a container. Every focus ring here belongs to
+   a radio inside it; drawing one around the group would double the indicator.
+
+   Geometry only. Which option is checked, which one is the tab stop and what
+   the arrow keys do are all the primitive's business — the group's stylesheet
+   just decides how the options sit. */
+.rata-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-stack-2xs);
+  font-family: var(--rata-font-family-sans);
+}
+
+.rata-radio-group-label {
+  color: var(--rata-theme-fg-primary);
+  font-size: var(--rata-type-label-size);
+  font-weight: var(--rata-type-label-weight);
+  line-height: var(--rata-type-label-line-height);
+}
+
+.rata-radio-group-options {
+  display: flex;
+}
+
+.rata-radio-group-options[data-orientation="vertical"] {
+  flex-direction: column;
+  gap: var(--rata-space-stack-xs);
+}
+
+/* Wider than the vertical step on purpose: two options sharing a line need
+   more air between them than two stacked ones, or they read as one phrase. */
+.rata-radio-group-options[data-orientation="horizontal"] {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--rata-space-gap-lg);
+}

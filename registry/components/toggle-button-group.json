@@ -1,0 +1,272 @@
+{
+  "name": "toggle-button-group",
+  "title": "Toggle Button Group",
+  "family": "buttons",
+  "description": "A set of toggle buttons that holds a value: one choice out of several, or any number of independent states.",
+  "alsoKnownAs": [
+    "segmented-button",
+    "button-toggle-group"
+  ],
+  "status": {
+    "css": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "react": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "toggle-button",
+    "button",
+    "state-layer"
+  ],
+  "files": [
+    {
+      "source": "packages/css/src/toggle-button-group.css",
+      "target": "styles/toggle-button-group.css"
+    },
+    {
+      "source": "packages/react/src/toggle-button-group.tsx",
+      "target": "components/toggle-button-group.tsx"
+    },
+    {
+      "source": "packages/react/src/toggle-button-group-context.ts",
+      "target": "lib/toggle-button-group-context.ts"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
+  "tier": "free",
+  "behavior": {
+    "primitive": "getToggleButtonGroupProps",
+    "summary": "Selection state, the ARIA pattern that state implies, and — in single mode — roving focus with arrow-key navigation. Nothing here touches the DOM: where the radio pattern requires focus to move, the primitive reports which value should receive it and the wrapper does the focusing.",
+    "decisions": [
+      {
+        "decision": "Which of three, when they all look like one bar of options",
+        "why": "Three components here can look like one enclosed bar of options, so each one's contract says which is which. SegmentedControl is a question with a short fixed set of answers: single, always filled, cannot be cleared. ToggleButtonGroup is the same ARIA pattern with a wider API — multiple selection, deselection, vertical orientation, the toggle-button variants — so reach for it when you need any of those. Tabs is a different pattern entirely: tabs reveal a region, each naming a panel and each panel naming its tab, and if what is being chosen is which content is shown rather than what gets submitted, it is Tabs — which can be drawn to look exactly like the other two and is still announced as a tablist."
+      },
+      {
+        "decision": "The selection mode picks the ARIA pattern: `single` is a radiogroup, `multiple` is a group of pressed toggles",
+        "why": "They are different controls wearing the same clothes. \"One of these\" is a radio group, and announcing it as one is what tells a screen-reader user how many options there are and which is chosen. \"Any of these\" is a set of independent toggles, and forcing it into radio semantics would claim the options are mutually exclusive when they are not."
+      },
+      {
+        "decision": "Focus behaviour differs between the two modes, deliberately",
+        "why": "Single mode is one tab stop with arrow keys between options, because that is the radio pattern and users of radio groups expect it. Multiple mode gives every item its own tab stop, consistent with `button-group` and with every other button in this system. The inconsistency is the ARIA patterns', not ours — matching them is what makes each mode behave the way its users already know."
+      },
+      {
+        "decision": "Roving tabindex is derived from the value, never stored",
+        "why": "In a radio group the selected option is the tab stop, and an empty group is entered at its first option. Deriving it means focus position and value cannot disagree, because there is no second piece of state to fall out of step."
+      },
+      {
+        "decision": "Arrow keys select as they move, but a disabled option only takes focus",
+        "why": "Selecting on arrow is the radio pattern. This system's disabled controls stay focusable and announced, so a disabled option must still be reachable — it just must not become the answer. Skipping it entirely would hide from a keyboard user that the option exists at all."
+      },
+      {
+        "decision": "The selection is always reported in DOM order",
+        "why": "Multiple mode rebuilds the array from the item order rather than appending to it, so what the caller stores matches what the user sees. Click order is an implementation detail of how someone got there, and persisting it produces values that shuffle between sessions for no reason."
+      },
+      {
+        "decision": "Values are strings",
+        "why": "They end up in `data-` attributes, form fields, query params and saved preferences, all of which are strings. A generic value type would push the stringification into every call site instead of settling it once here."
+      },
+      {
+        "decision": "`aria-orientation` is announced in single mode only",
+        "why": "It is a promise that arrow keys move along that axis. Single mode keeps that promise; multiple mode deliberately does not implement arrow navigation, so announcing an orientation there would advertise a behaviour that isn't present."
+      },
+      {
+        "decision": "`size` belongs to the group; `variant` stays on the item",
+        "why": "Mixed sizes break the shape — a segmented bar with items of two heights is ragged — so the group owns the decision that has to be uniform. Variant is a per-item emphasis choice that stays legible when it varies, and moving it to the group would mean two places could set it."
+      }
+    ]
+  },
+  "props": {
+    "value": {
+      "summary": "The current selection: a value in single mode, a list in multiple mode, `null` or `[]` for none.",
+      "use": [
+        "Whenever the selection is state the rest of the page reads — which is most of the time, since a toggle group usually is the setting rather than a view of it."
+      ],
+      "dont": [
+        "Passing a bare string in multiple mode, or an array in single mode; the shape follows `selectionMode` and mixing them makes the selected state silently wrong.",
+        "Passing it without `onValueChange` — the group would render a selection and then refuse to change it."
+      ],
+      "conflicts": [
+        "defaultValue"
+      ],
+      "a11y": "Drives `aria-checked` in single mode and `aria-pressed` in multiple mode. It is also what places the group's single tab stop in single mode."
+    },
+    "defaultValue": {
+      "summary": "Starting selection for an uncontrolled group that owns its own value.",
+      "use": [
+        "A local view preference nothing else on the page reacts to."
+      ],
+      "dont": [
+        "Anything persisted or shared. Two readers of an uncontrolled value are two readers that will disagree.",
+        "Changing it later to reset the group — it is read once, at mount."
+      ],
+      "conflicts": [
+        "value"
+      ]
+    },
+    "onValueChange": {
+      "summary": "Called with the selection the group should move to — a value, a list in DOM order, or `null`.",
+      "use": [
+        "Applying the change and letting it flow back in through `value`."
+      ],
+      "dont": [
+        "Assuming it only fires on click; in single mode the arrow keys select as they move, which is the radio pattern working correctly.",
+        "Re-sorting the array it hands you — it is already in the order the user sees."
+      ]
+    },
+    "selectionMode": {
+      "summary": "Whether this group holds one answer or any number of independent states — which also decides its ARIA pattern.",
+      "use": [
+        "`single` for a choice: alignment, a date range preset, a view mode.",
+        "`multiple` for independent states that happen to sit together: bold, italic, underline."
+      ],
+      "dont": [
+        "`single` for navigation between views — that is a tab list, which announces itself as one and manages its own panels.",
+        "Switching it at runtime. The role, the focus model and the shape of `value` all change with it, so a mid-life switch is a different control appearing in place of the old one."
+      ],
+      "a11y": "`single` renders a `radiogroup` of `radio`s with one tab stop and arrow-key navigation; `multiple` renders a `group` of `aria-pressed` toggles, each its own tab stop."
+    },
+    "deselectable": {
+      "summary": "Single mode only: whether clicking the selected option clears the selection.",
+      "use": [
+        "Filters, where \"none of these\" is a real answer the user should be able to get back to."
+      ],
+      "dont": [
+        "Settings that must always have a value — a text alignment with nothing selected is a state the document cannot actually be in.",
+        "Multiple mode, where it means nothing: every item already deselects itself."
+      ],
+      "a11y": "Only clicking clears the selection. Arrow keys always move to an option and select it, because an arrow key that could empty a radio group would make the group impossible to navigate through."
+    },
+    "label": {
+      "summary": "Accessible name for the group — the question these options answer.",
+      "use": [
+        "Always, unless `labelledBy` points at a visible label that already asks it.",
+        "Naming the question, not the widget: \"Text alignment\", not \"Alignment toggle group\"."
+      ],
+      "dont": [
+        "Leaving it off. An unnamed radiogroup is announced as a group of options with nothing to say what they choose between."
+      ],
+      "conflicts": [
+        "labelledBy"
+      ],
+      "a11y": "Becomes the group's `aria-label`. In single mode this is the name a screen reader reads before \"1 of 3\", so without it the count is meaningless."
+    },
+    "labelledBy": {
+      "summary": "Id of a visible element that already names this group.",
+      "use": [
+        "A field label or heading sits above the group and says exactly what the name would."
+      ],
+      "dont": [
+        "Pointing at an element that may not render — a dangling reference leaves the group unnamed with nothing on screen to show it."
+      ],
+      "conflicts": [
+        "label"
+      ],
+      "a11y": "Wins over `label` when both are passed: it names the group with text the user can see."
+    },
+    "orientation": {
+      "summary": "Which way the options stack, and — in single mode — which arrows move between them.",
+      "use": [
+        "`vertical` in a narrow rail where a row of options would wrap."
+      ],
+      "dont": [
+        "Assuming it constrains the keys: both axes' arrow keys move in single mode regardless, because a user who reaches for Down in a horizontal group should not hit a dead end."
+      ],
+      "a11y": "Announced as `aria-orientation` in single mode only, where arrow-key navigation actually exists to back the promise up."
+    },
+    "size": {
+      "summary": "Control height and text size for every option, from the `size.control.*` scale.",
+      "use": [
+        "Matching the density of the surrounding controls — set once here rather than on each option."
+      ],
+      "dont": [
+        "Setting it per option. A set of options that measure differently is a ragged bar, which is why this prop lives on the group and not on the items."
+      ]
+    },
+    "attached": {
+      "summary": "Joins the options into one continuous bar, with shared borders and only the outer corners rounded.",
+      "use": [
+        "The default, and right whenever the options are one question: they close up so they read as one control rather than several buttons that happen to sit together."
+      ],
+      "dont": [
+        "Keeping it attached when the options wrap onto a second line — a broken bar reads as two controls.",
+        "Reaching for this to build a segmented control. `SegmentedControl` is the component for that — narrower on purpose, and drawn as a well with the answer raised out of it. This one is the wider API: multiple selection, deselection, vertical orientation, the toggle-button variants."
+      ],
+      "a11y": "Visual only. The role, the selection and the focus model are the same either way."
+    },
+    "disabled": {
+      "summary": "Blocks activation for every option while keeping them focusable, announced, and readable in their current state.",
+      "use": [
+        "The whole question is unavailable — a filter over data that hasn't loaded, say."
+      ],
+      "dont": [
+        "Disabling one option; that belongs on the option itself, which stays reachable and just refuses to become the answer.",
+        "Expressing \"nothing selected\" — an empty group and a disabled group are different facts."
+      ],
+      "a11y": "Emits `aria-disabled` on each option, never the native `disabled` attribute. Arrow keys still move focus through the group so its options remain discoverable."
+    }
+  },
+  "usage": [
+    {
+      "case": "Single choice — one question, several answers",
+      "when": "The default: one answer out of a few, all visible at once.",
+      "example": "<ToggleButtonGroup\n  label=\"Text alignment\"\n  value={align}\n  onValueChange={setAlign}\n>\n  <ToggleButton value=\"left\" iconOnly aria-label=\"Align left\">⇤</ToggleButton>\n  <ToggleButton value=\"center\" iconOnly aria-label=\"Align center\">↔</ToggleButton>\n  <ToggleButton value=\"right\" iconOnly aria-label=\"Align right\">⇥</ToggleButton>\n</ToggleButtonGroup>",
+      "notes": "A radiogroup: one tab stop, arrows move and select. Each icon-only option still needs its own `aria-label` — the group's name is the question, not the answers. For a plain segmented control reach for `SegmentedControl` instead; this shape is for when you need something it deliberately cannot do, such as icon-only options or a vertical bar."
+    },
+    {
+      "case": "Independent states that sit together",
+      "when": "Several on/off states that are not alternatives to each other.",
+      "example": "<ToggleButtonGroup\n  label=\"Text style\"\n  selectionMode=\"multiple\"\n  value={styles}\n  onValueChange={setStyles}\n>\n  <ToggleButton value=\"bold\">Bold</ToggleButton>\n  <ToggleButton value=\"italic\">Italic</ToggleButton>\n</ToggleButtonGroup>",
+      "notes": "Each option keeps its own tab stop here, and the value comes back in DOM order however the user clicked into it."
+    },
+    {
+      "case": "A filter that can be cleared",
+      "when": "\"None of these\" is a real answer, so re-clicking the selected option should get back to it.",
+      "example": "<ToggleButtonGroup\n  label=\"Status filter\"\n  deselectable\n  value={status}\n  onValueChange={setStatus}\n>\n  <ToggleButton value=\"open\">Open</ToggleButton>\n  <ToggleButton value=\"closed\">Closed</ToggleButton>\n</ToggleButtonGroup>",
+      "notes": "Only clicking clears it. Arrow keys always land on an option and select it — an arrow that could empty the group would make it impossible to move through."
+    },
+    {
+      "case": "Reaching for the wrong component",
+      "when": "The options switch between views rather than setting a value.",
+      "example": "<ToggleButtonGroup label=\"Section\" value={section} onValueChange={setSection}>\n  <ToggleButton value=\"overview\">Overview</ToggleButton>\n  <ToggleButton value=\"activity\">Activity</ToggleButton>\n</ToggleButtonGroup>",
+      "notes": "Don't. Navigation between panels is a tab list: it announces itself as one, owns the relationship to the panels, and moves focus into them. This system has no Tabs yet — flag the gap rather than dressing a toggle group up as one."
+    }
+  ],
+  "tokens": {
+    "attached": {
+      "summary": "The default, and what a segmented control is: the options are one question, so they close up into one bar and only the outer corners round.",
+      "tokens": {
+        "gap": "space.0",
+        "inner corner border-radius": "radius.none",
+        "outer corner border-radius": "radius.element, as logical corners so the bar flips in RTL",
+        "collapsed shared border": "negative margin of border.1, so two adjacent borders read as one stroke",
+        "focused item stacking": "raised above its neighbours so the focus ring is not clipped by the overlapping border — a stacking fix, not a token",
+        "item height": "size.control.md — set once on the group and pushed to every option, because a bar of options at two heights is ragged",
+        "transition-duration": "motion.interactive.duration",
+        "transition-timing-function": "motion.interactive.easing",
+        "outline (focus-visible)": "focus.ring-width solid theme.focus-ring, offset focus.ring-offset — owned by the option, never drawn around the group"
+      }
+    },
+    "spaced": {
+      "summary": "Options that belong together but read as separate controls — the right shape when they can wrap, since a broken bar reads as two controls.",
+      "tokens": {
+        "gap": "space.gap.sm",
+        "item border-radius": "radius.element — each option keeps the corners it sets for itself",
+        "item height": "size.control.md — set once on the group and pushed to every option, because a bar of options at two heights is ragged",
+        "transition-duration": "motion.interactive.duration",
+        "transition-timing-function": "motion.interactive.easing",
+        "outline (focus-visible)": "focus.ring-width solid theme.focus-ring, offset focus.ring-offset — owned by the option, never drawn around the group"
+      }
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "name": "@ds/primitives",
+  "name": "@rata/primitives",
   "version": "0.1.0",
   "type": "module",
   "description": "Headless, accessible component logic. No styles, no DOM opinions — consumed by framework packages.",

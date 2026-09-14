@@ -3,15 +3,58 @@
   "title": "Loading: Spinner",
   "family": "loading",
   "description": "Inline loading indicator that scales with font size.",
+  "alsoKnownAs": [
+    "loader",
+    "loading-indicator"
+  ],
   "status": {
-    "css": { "state": "latest", "version": "0.1.0" },
-    "react": { "state": "latest", "version": "0.1.0" },
-    "figma": { "state": "future" }
+    "css": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "react": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "figma": {
+      "state": "future"
+    }
   },
   "dependencies": [],
   "files": [
-    { "source": "packages/css/src/spinner.css", "target": "styles/spinner.css" },
-    { "source": "packages/react/src/spinner.tsx", "target": "components/spinner.tsx" }
+    {
+      "source": "packages/css/src/spinner.css",
+      "target": "styles/spinner.css"
+    },
+    {
+      "source": "packages/react/src/spinner.tsx",
+      "target": "components/spinner.tsx"
+    }
   ],
-  "tier": "free"
+  "tier": "free",
+  "props": {
+    "label": {
+      "summary": "Accessible name for the loading state.",
+      "use": [
+        "A standalone spinner, where nothing else announces that something is loading."
+      ],
+      "dont": [
+        "A spinner inside a Button — the button already carries `aria-busy` and its own label, so a second announcement is noise."
+      ],
+      "a11y": "Omitting this is correct only when a parent already conveys the loading state."
+    }
+  },
+  "usage": [
+    {
+      "case": "Standalone region loading",
+      "when": "A panel or list fetching its first page.",
+      "example": "<Spinner label=\"Loading results\" />"
+    },
+    {
+      "case": "Inside a button",
+      "when": "Composed automatically by Button's `loading` prop — you rarely write this yourself.",
+      "example": "<Spinner />",
+      "notes": "No label: Button's `aria-busy` already reports the state."
+    }
+  ]
 }

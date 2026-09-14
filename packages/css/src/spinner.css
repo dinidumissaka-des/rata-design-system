@@ -1,22 +1,27 @@
 /* Spinner — inline loading indicator sized relative to its container's font. */
-.ds-spinner {
+.rata-spinner {
   display: inline-block;
   width: 1em;
   height: 1em;
-  border: 2px solid currentColor;
+  /* Without this the 2px ring is added to the 1em box, so a spinner claiming to
+     scale with its font size actually rendered 4px larger than it. */
+  box-sizing: border-box;
+  /* border.2 rather than a literal 2px: the ring is a stroke width, and this
+     scale is where stroke widths live. */
+  border: var(--rata-border-2) solid currentColor;
   border-right-color: transparent;
-  border-radius: var(--ds-radius-pill);
-  animation: ds-spin var(--ds-motion-duration-spin) linear infinite;
+  border-radius: var(--rata-radius-pill);
+  animation: rata-spin var(--rata-motion-duration-spin) linear infinite;
 }
 
-@keyframes ds-spin {
+@keyframes rata-spin {
   to {
     transform: rotate(360deg);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ds-spinner {
-    animation-duration: var(--ds-motion-duration-spin-reduced);
+  .rata-spinner {
+    animation-duration: var(--rata-motion-duration-spin-reduced);
   }
 }

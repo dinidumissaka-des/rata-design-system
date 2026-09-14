@@ -6,3 +6,4 @@ dist/
 coverage/
 internal/vibe-tests/runs/
 packages/themes/*/dist/
+.vercel/

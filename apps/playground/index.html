@@ -3,7 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DS Playground</title>
+    <title>Ratā Playground</title>
+
+    <!-- The typeface the theme seed names. @rata/css only *names* families in
+         font.family.*; loading them is the consuming app's job, which is why
+         nothing under packages/ has an @font-face. Weights are the four the
+         type scale actually uses (400/500/600/700) — requesting more would
+         download faces nothing renders. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=Google+Sans+Code:wght@400;500;600;700&display=swap"
+    />
   </head>
   <body>
     <div id="root"></div>

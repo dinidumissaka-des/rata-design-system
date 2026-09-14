@@ -1,0 +1,122 @@
+/* Notice — an inline banner carrying an informational, success, warning or
+   error message.
+
+   Every variant pairs a tinted background with a foreground that reads on it.
+   The saturated role fills are not used at all here: they are non-text
+   indicator tones, and text on them is a recorded contrast gap. The tint and
+   the icon carry the severity between them.
+
+   The variant sets `color` on the notice itself and everything inside takes
+   currentColor, so the icon and the close control can never drift away from
+   the message they belong to. */
+.rata-notice {
+  /* Kept after the leading bar was removed: padding plus any width a caller
+     sets still needs border-box, and five components in this system shipped
+     that bug because the playground's global reset hid it. */
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rata-space-gap-sm);
+  padding: var(--rata-space-padding-sm) var(--rata-space-padding-md);
+  border-radius: var(--rata-radius-element);
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-body-size);
+  line-height: var(--rata-type-body-line-height);
+}
+
+/* info — tinted neutral, deliberately. There is no info role in the token set,
+   and the obvious substitute (the accent role's subtle tint) moves with the
+   brand: in a red or orange theme an informational notice would read as an
+   error, which is a worse failure than looking plain. This is the same pairing
+   Badge's neutral variant uses. */
+.rata-notice--info {
+  background: var(--rata-theme-bg-muted);
+  color: var(--rata-theme-fg-primary);
+}
+
+.rata-notice--success {
+  background: var(--rata-theme-success-role-subtle);
+  color: var(--rata-theme-success-role-fg);
+}
+
+.rata-notice--warning {
+  background: var(--rata-theme-warning-role-subtle);
+  color: var(--rata-theme-warning-role-fg);
+}
+
+.rata-notice--danger {
+  background: var(--rata-theme-danger-role-subtle);
+  color: var(--rata-theme-danger-role-fg);
+}
+
+/* Sized from the icon scale's text step, so it tracks the message's font-size
+   the way every other icon in this system does. The extra leading nudge aligns
+   its optical centre with the first line's cap height rather than its box. */
+.rata-notice-icon {
+  flex-shrink: 0;
+  margin-block-start: calc(
+    (1em * var(--rata-type-body-line-height) - var(--rata-size-icon-text)) / 2
+  );
+}
+
+.rata-notice-content {
+  display: flex;
+  flex-direction: column;
+  /* No gap: the title and message each carry their own line-height leading,
+     and the stack tokens below space them deliberately where it matters. */
+  flex: 1;
+  min-inline-size: 0;
+}
+
+/* A paragraph, never a heading element: a notice cannot know the heading level
+   it sits under, and a wrong one breaks heading navigation for the whole page.
+   The weight is what makes it read as a title. */
+.rata-notice-title {
+  margin: var(--rata-space-0);
+  margin-block-end: var(--rata-space-stack-2xs);
+  font-weight: var(--rata-type-label-weight);
+}
+
+.rata-notice-message {
+  margin: var(--rata-space-0);
+}
+
+.rata-notice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rata-space-gap-sm);
+  margin-block-start: var(--rata-space-stack-xs);
+}
+
+/* The close control. Not a Button: a tertiary Button brings its own foreground
+   colour, which would clash on a tinted surface. currentColor guarantees the
+   glyph matches whichever variant it lands in.
+
+   `size.control.sm` is 28px, under WCAG 2.5.8's 44px, and conforms the same
+   way the checkbox and radio rows do — through the spacing exception, since
+   nothing interactive sits adjacent to it inside the notice. */
+.rata-notice-dismiss {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--rata-size-control-sm);
+  block-size: var(--rata-size-control-sm);
+  padding: var(--rata-space-0);
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-inner);
+  background: transparent;
+  color: currentColor;
+  cursor: pointer;
+  /* Pulls the control back to the frame's padding edge so a 28px target does
+     not push the notice taller than its own text needs. */
+  margin-block: calc(-1 * var(--rata-space-stack-2xs));
+  margin-inline-end: calc(-1 * var(--rata-space-stack-2xs));
+}
+
+.rata-notice-dismiss:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style)
+    var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}

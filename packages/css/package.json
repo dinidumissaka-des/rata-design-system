@@ -1,8 +1,8 @@
 {
-  "name": "@ds/css",
+  "name": "@rata/css",
   "version": "0.1.0",
   "type": "module",
-  "description": "Framework-free component CSS built on @ds/tokens. Usable with plain HTML; consumed by every framework wrapper.",
+  "description": "Framework-free component CSS built on @rata/tokens. Usable with plain HTML; consumed by every framework wrapper.",
   "exports": {
     "./index.css": "./dist/index.css",
     "./components/*": "./dist/components/*"
@@ -14,6 +14,6 @@
     "build": "node build.mjs"
   },
   "dependencies": {
-    "@ds/tokens": "*"
+    "@rata/tokens": "*"
   }
 }

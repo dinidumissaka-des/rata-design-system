@@ -1,0 +1,28 @@
+{
+  "$contract": "theme.border",
+  "$summary": "Border roles — the decorative hairline and the emphasized boundary that outlines form controls.",
+  "tokens": {
+    "theme.border.default": {
+      "layer": "semantic",
+      "summary": "The standard, low-contrast divider and card outline.",
+      "use": [
+        "Card/panel outline.",
+        "A divider between list rows or sections."
+      ],
+      "instead": {
+        "An input or outlined-button border, which needs to read as interactive": "theme.border.strong"
+      }
+    },
+    "theme.border.strong": {
+      "layer": "semantic",
+      "summary": "A higher-contrast border for elements that need to read as interactive or as a boundary the eye should stop at.",
+      "use": [
+        "Text input and select borders.",
+        "The outlined (secondary) button border."
+      ],
+      "instead": {
+        "A quiet divider": "theme.border.default"
+      }
+    }
+  }
+}

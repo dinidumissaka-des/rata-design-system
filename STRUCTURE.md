@@ -2,7 +2,7 @@
 
 ```
 packages/
-  tokens/       @ds/tokens — the token engine and the default theme.
+  tokens/       @rata/tokens — the token engine and the default theme.
     src/theme/      the generator: hct + colour maths, the four expanders,
                     defineTheme (composition/extends), resolveTokens (the shared
                     resolve pipeline). Ported from Astryx — see THEME-ENGINE.md.
@@ -13,25 +13,38 @@ packages/
                     font family/weight/tracking)
     src/semantics/  *.json — theme-invariant roles a generator cannot produce
                     (spacing roles, border default, focus, state, motion roles)
-    src/usage.json  the hand-written doc source; TOKENS.md is generated from it
+    src/contracts/  the hand-written doc source, one file per token family
+                    (theme.bg.json, focus.json, …) plus system.json for the
+                    rules and contrast pairings that belong to no single
+                    token; TOKENS.md is generated from these
     → dist/css/tokens.css, dist/index.{js,d.ts}, dist/tailwind/preset.cjs,
       dist/usage.json, TOKENS.md
-  themes/       @ds/theme-* — brand themes: a few seeds + `extends: baseTheme`,
+  themes/       @rata/theme-* — brand themes: a few seeds + `extends: baseTheme`,
                 built by tokens/build-theme.mjs into scoped override CSS that
                 only emits if the brand holds every contrast promise
-  css/          @ds/css — framework-free component CSS, built from packages/css/src/*.css
+  css/          @rata/css — framework-free component CSS, built from packages/css/src/*.css
                 → dist/index.css (concatenated) + dist/components/*.css (per-file)
-  primitives/   @ds/primitives — headless behavior, pure functions, no DOM/React
-  react/        @ds/react — styled components: primitives behavior + css appearance
+  primitives/   @rata/primitives — headless behavior, pure functions, no DOM/React
+  react/        @rata/react — styled components: primitives behavior + css appearance
                 (source of truth the CLI copies from)
-  cli/          @ds/cli — the `ds` binary
-    bin/ds.mjs    entry point: list/add (distribution) + props/tokens/pages (agent lookup)
-    lib/index.mjs shared logic behind both — reads registry + @ds/react src + tokens dist
+  cli/          @rata/cli — the `rata` binary
+    bin/rata.mjs    entry point: list/add (distribution) + props/contract/tokens/pages
+                  (agent lookup)
+    lib/index.mjs shared logic behind both — reads registry + @rata/react src + tokens dist
+    lib/contract.mjs  merges each component's WRITTEN contract (its manifest) with its
+                  DERIVED props (parsed from @rata/react source) and fails on any
+                  disagreement between them
 
 registry/
-  schema.json           the manifest shape (status states, files, tier)
+  schema.json           the manifest shape (status states, files, tier, contract blocks)
   components/*.json     one manifest per component — name, family, status matrix,
-                         dependencies, which files `ds add` copies where
+                         dependencies, which files `rata add` copies where, its token
+                         recipe, and its written contract (behavior/props/usage)
+
+docs/
+  components/*.md       GENERATED — one contract page per component, plus an index.
+                         Regenerate with `npm run docs:components`; `npm run
+                         docs:check` fails if stale
 
 apps/
   playground/           the one page in this repo today (Vite + React)
@@ -39,6 +52,8 @@ apps/
 
 scripts/
   generate-ui-context.mjs   writes .claude/ui-context.md from packages/cli/lib
+  generate-component-docs.mjs  writes docs/components/*.md from the manifests +
+                         @rata/react source; --check fails instead of writing
 
 .claude/
   ui-context.md         GENERATED — regenerate with `npm run ui:sync`
@@ -61,7 +76,7 @@ signed off on, or wired to tokens that get renamed once someone actually
 looks at them.
 
 0. `registry/components/<name>.json` — the manifest, even before any code
-   exists (status: `future`). This is what `ds list` and the playground's
+   exists (status: `future`). This is what `rata list` and the playground's
    status table read. No approval needed — it's a declaration of intent,
    not a decision.
 
@@ -69,6 +84,13 @@ looks at them.
    states, keyboard/ARIA handling, the props API shape. Pure function, no
    DOM, no styling, no token references. This is the contract everything
    else builds on.
+
+   Write the manifest's `behavior` and `props` blocks in the same step — the
+   contract in *spec* mode (see "Component contracts" below). It records the
+   props API and the decisions behind it while they are still being argued
+   about, which is exactly when they are cheap to change, and it is the thing
+   you are asking approval *for*. `npm run docs:components` renders it to
+   `docs/components/<name>.md` so the approval has something to point at.
    → **Stop. Get this approved** — the behavior and the props API — before
    writing a line of CSS or React. Changing the primitive after the
    component is styled is expensive; changing it before is free.
@@ -79,8 +101,8 @@ looks at them.
    `type.*`/`motion.*` in `semantics/*.json`, per
    [TOKENS.md](packages/tokens/TOKENS.md)). Go
    state by state, not as one batch — each mapping is its own decision
-   (e.g. "disabled → `--ds-state-disabled-opacity`", "primary background →
-   `--ds-theme-accent-role-bg`", "control padding → `--ds-space-control-padding-inline-md`"),
+   (e.g. "disabled → `--rata-state-disabled-opacity`", "primary background →
+   `--rata-theme-accent-role-bg`", "control padding → `--rata-space-control-padding-inline-md`"),
    and each gets approved on its own before moving to the next. Prefer an
    existing token — check `npm run ui -- tokens` first; only add a new one
    if nothing already fits, and that addition is its own approval too — run
@@ -97,19 +119,73 @@ looks at them.
    token mappings approved in step 2 — add it to `ORDER` in
    `packages/css/build.mjs` if load order matters relative to another
    component — and `packages/react/src/<name>.tsx`, wiring the approved
-   primitive's behavior to the approved CSS's `ds-<name>` classes. Its
+   primitive's behavior to the approved CSS's `rata-<name>` classes. Its
    exported `<Name>Props` interface and the function's default-parameter
    values are exactly what `npm run ui -- props <name>` reads — no separate
    doc to keep in sync.
 
 4. Flip the manifest's `status.css`/`status.react` to `latest`, add `files`
-   entries so `ds add <name>` can copy it, run `npm run build` (regenerates
-   `.claude/ui-context.md` as its last step).
+   entries so `rata add <name>` can copy it, run `npm run build` (regenerates
+   `docs/components/` and `.claude/ui-context.md` as its last steps).
+
+   Flipping the status is what switches the contract from *spec* to
+   *documented*, and the build now cross-checks the React you just wrote
+   against the props API approved back at step 1: a prop you added along the
+   way and never documented fails, and so does a documented prop you quietly
+   renamed. Delete the hand-written `type`/`default`/`required` fields from
+   the manifest in the same change — from here they are parsed from source,
+   and the build rejects a second copy. This is the one place the build order
+   above stops being purely a process rule.
+
+## Component contracts
+
+`registry/components/<name>.json` carries three blocks beyond distribution
+metadata — `behavior`, `props` and `usage` — that `scripts/generate-component-docs.mjs`
+renders into one page per component under `docs/components/`.
+
+This is the same machine as the token contracts one layer up: hand-written
+JSON in, generated Markdown out, and a build that fails rather than emit a
+page it cannot verify. The split that makes it work is by **provenance**, not
+by topic:
+
+- **Derived** — prop name, type, optionality, default, `extends` — is parsed
+  from `packages/react/src/<name>.tsx` and never written by hand, so it cannot
+  drift from the component it describes.
+- **Written** — what a prop is for, when not to reach for it, what it
+  conflicts with, the obligation it puts on the caller, worked use cases — is
+  judgment no parser can recover, so it lives in the manifest beside the
+  component's status, files, tier and token recipe. One file answers
+  everything about that component, which is the same reason the token recipes
+  moved here rather than staying in a central catalogue.
+
+The cross-check is the load-bearing part. A contract entry naming a prop that
+does not exist fails the build; a declared prop with no contract entry fails
+the build; and once a component is implemented, writing `type`, `default` or
+`required` by hand fails the build too, because those are derived and a
+hand-written copy is precisely the drift the whole arrangement exists to
+prevent. Prose that nothing verifies is prose that rots, and a rotted contract
+is worse than none — it is the file agents are told to trust.
+
+Three modes, decided by `status.react`:
+
+| Mode | When | What the page means |
+|---|---|---|
+| `spec` | `future` | The approved intent — the props API signed off at gate 1, with no code behind it. `type`/`default`/`required` are written by hand because there is nothing to parse. |
+| `documented` | `latest` | Both halves exist and both directions of the cross-check are enforced. |
+| `css-only` | `na` | No props API by design (`state-layer`). A `props` block here is itself an error; use `usage`. |
+
+Because a contract can be written before its component, gate 1's approval
+becomes something gate 4 verifies rather than something everyone remembers.
+Worked `usage[].example` snippets are additionally linted through
+`internal/vibe-tests/rules.mjs`, restricted to presence-based rules — a
+fragment cannot be judged for what it lacks, only for what it contains.
 
 ## What doesn't exist yet
 
-Per `registry/components/`: `dialog` and `text-field` have manifests but no
-files. There is no `card`, `table`, or `list` component — CLAUDE.md's layout
+Per `registry/components/`: `dialog`, `menu`, `notice` and `text-field` have
+manifests but no files. `text-field` additionally has an approved primitive
+(`packages/primitives/src/text-field.ts`) and a spec-mode contract; the other
+three have a token recipe and nothing else. There is no `card`, `table`, or `list` component — CLAUDE.md's layout
 guidance references these categories generically; until they're built here,
 compose plain `<section>`s rather than inventing one.
 
@@ -135,7 +211,7 @@ reaching for the skill's `scripts/validate-tokens.mjs` directly:
 - **The built CSS has no `var()` chain.** `build.mjs` resolves every
   reference to a literal before writing `dist/css/tokens.css`, so both
   primitive and semantic custom properties land as raw values (e.g.
-  `--ds-theme-accent-role-bg: #2563EB`) — retheming happens by rebuilding
+  `--rata-theme-accent-role-bg: #2563EB`) — retheming happens by rebuilding
   from the seeds, not by cascade override. This is a deliberate divergence
   from Astryx, which keeps `var()` chains so a scoped override re-themes a
   subtree at runtime: a `var()` chain has no measurable contrast ratio, and
@@ -147,8 +223,10 @@ reaching for the skill's `scripts/validate-tokens.mjs` directly:
   and all four description fields for every semantic token, kept there
   rather than at the skill's assumed path. Unlike the skill's version, it's
   build-enforced, not just hand-maintained prose: it's generated from
-  `packages/tokens/src/usage.json` (rules, per-token descriptions, contrast
-  pairings, known gaps, component recipes), and the build fails if a token
+  the contracts under `packages/tokens/src/contracts/` (per-token
+  descriptions, plus system.json's rules, contrast pairings and known gaps)
+  together with each component's recipe in `registry/components/*.json`,
+  and the build fails if a token
   is undocumented, if `usage.json` names a token that doesn't exist, or if a
   documented contrast pairing stops holding when a palette value changes —
   see the provenance entry below on how that layer was merged in.
@@ -180,7 +258,7 @@ reference nothing / are theme-invariant" if copied in as-is).
 for the non-color scales were built out too: `accent-role`/`danger-role`'s
 `bg-hover`/`bg-active` were removed (dead — modeled a color-swap hover
 mechanism this system doesn't use), and `secondary-role`/`tertiary-role`
-were added so `.ds-button--secondary`/`--tertiary` have their own semantic
+were added so `.rata-button--secondary`/`--tertiary` have their own semantic
 sets instead of reaching into generic `bg`/`border`/`fg` tokens.
 
 **Primitives are now exactly seven scales** — `color`, `space`, `radius`,
@@ -221,8 +299,8 @@ deeper under a new shared `"theme"` JSON key instead of `"color"`; a new
 `elevation.sm`/`md`/`lg` primitive steps — extended with `sm-strong`/
 `md-strong`/`lg-strong` for dark, since a light-mode shadow opacity barely
 reads against a dark canvas) sits alongside it. Emitted CSS custom
-properties moved with it: `--ds-color-bg-canvas` → `--ds-theme-bg-canvas`,
-etc.; primitive color (`--ds-color-accent-600`, `--ds-color-neutral-*`, …)
+properties moved with it: `--rata-color-bg-canvas` → `--rata-theme-bg-canvas`,
+etc.; primitive color (`--rata-color-accent-600`, `--rata-color-neutral-*`, …)
 is untouched — only the semantic layer's prefix changed, not the raw
 palette. `packages/css/src/button.css` and `apps/playground/src/{app.tsx,
 playground.css}` (the only two consumers at the time) were updated to
@@ -259,7 +337,7 @@ hover feedback is opacity-only (see the removed `bg-hover`/`bg-active`
 tokens, above), and a ring-based hover cue would reintroduce exactly the
 second feedback channel that decision removed. `packages/tokens/TOKENS.md`
 documents the full fetch method and every new token's four description
-fields; nothing outside `@ds/tokens` needed touching beyond the same two
+fields; nothing outside `@rata/tokens` needed touching beyond the same two
 consumers as before, since the semantic *names* (`theme.elevation.raised`/
 `overlay`/`modal`) didn't change — only what they resolve to.
 
@@ -272,8 +350,8 @@ with it. `semantics/typography.json` was rebuilt alongside it to mirror
 eBay's own named composites (`title`/`body`/`signal`) where this repo has a
 real matching use. This was the one primitive/semantics update with real
 fallout in unretouched component CSS: `packages/css/src/button.css` kept
-referencing `--ds-font-weight-medium`, `--ds-font-line-height-tight`, and
-`--ds-font-size-base/lg` — names that stopped existing under the rebuilt
+referencing `--rata-font-weight-medium`, `--rata-font-line-height-tight`, and
+`--rata-font-size-base/lg` — names that stopped existing under the rebuilt
 scale — until the `usage.json` merge below added a checker that caught it;
 `button.css` now goes through `type.control.*` like everything else.
 
@@ -281,68 +359,40 @@ scale — until the `usage.json` merge below added a checker that caught it;
 separate line of work on this same token pipeline.** That work started from
 the pre-split, single-file `base.json` + `themes/{light,dark}.json` layout
 (the state this repo's tokens were in *before* the primitives/semantics
-split above) and added: `src/usage.json` (the hand-written source `TOKENS.md`
-now generates from — rules, one entry per token with Use for/Do not use
-for/Use instead/Pairs with, contrast pairings and known gaps verified from
-the *resolved* token values every build, and component recipes),
-`npm run docs:check` (fails CI if `TOKENS.md` is stale relative to
-`usage.json`), and `internal/vibe-tests/` (scores generated component code
-against rules derived from the token build's own output, and self-tests via
-a committed A/B fixture pair so the checker itself can't silently stop
-discriminating). Merging it onto the already-split `primitives/*.json` +
-`semantics/theme/*.json` layout — rather than adopting the other side's
-flat `base.json` — meant porting `build.mjs`'s coverage/contrast logic to
-read this repo's actual file layout and CSS-var-prefix scheme (`theme.*`,
-not `color.*`, for the semantic layer) rather than pulling in the other
-branch's stale, pre-real-values palette. Two real bugs surfaced by writing
-`usage.json` against the *actual* resolved values: dark-theme
-`accent-role.bg`/`danger-role.bg` were one step too light (`accent.500`/
-`danger.500`) for `theme.fg.on-accent` to clear AA contrast on them — fixed
-to `.600`, matching what the other branch's own equivalent fix had
-independently converged on — and a literal `*/` inside a `usage.json` prose
-string was silently corrupting the generated `.d.ts` (a JSDoc comment
-closing early, so the parser treated real code after it as more comment);
-`build.mjs` now rejects any usage entry containing `*/` before it writes
-anything.
+split above) and added a hand-written documentation source that `TOKENS.md`
+is generated from — one entry per token with Use for / Do not use for / Use
+instead / Pairs with, plus system rules, contrast pairings and known gaps
+verified against the *resolved* values every build, and component recipes.
+It also added `npm run docs:check` (CI fails if `TOKENS.md` is stale) and
+`internal/vibe-tests/` (scores generated component code against rules
+derived from the token build, self-tested via a committed A/B fixture pair
+so the checker itself cannot silently stop discriminating).
 
-**The hand-listed scales were then replaced by a generator ported from
-[Astryx](https://github.com/facebook/astryx)** (Meta's open-source design
-system — MIT, and the same source the primitive values above were read off).
-Colour, typography, radius and duration are no longer enumerated anywhere:
-`packages/tokens/src/themes/base.mjs` states four seeds and the expanders in
-`src/theme/` produce 127 tokens from them.
+**That documentation source was later split into one contract per thing.**
+It had grown to 1134 hand-edited lines in a single `src/usage.json` — the
+one file in the repo that did not follow the one-file-per-thing pattern the
+primitives, the semantic roles and the component manifests all already used,
+and a standing merge-conflict hazard (a large auto-merged file had already
+been corrupted once, see the `.claude/ui-context.md` incident). It is now:
 
-The argument for doing this is in the repo's own history. The motion scale
-above was transcribed from Astryx's *published output* rather than derived
-from its formula, and two of the nine steps were wrong — `fast-max` read 230ms
-against a true 235ms (`175 ÷ 0.75`), `medium-max` 550ms against 545ms. Nothing
-caught it, because a list of values has nothing to be checked against. The
-colour generator carries the point further: HCT tone is CIE L*, which pins
-relative luminance independently of hue, so the tone assignments hold their
-WCAG guarantees *for any accent a brand seeds* — `theme.test.mjs` asserts that
-across five unrelated seeds.
+- `src/contracts/<family>.json` — one contract per token family, with the
+  `theme.*` roles split further by role group (`theme.bg`, `theme.fg`,
+  `theme.accent-role`, `theme.status-roles`, `theme.support-roles`,
+  `theme.border`, `theme.elevation`);
+- `src/contracts/system.json` — the system rules, contrast pairings and
+  known gaps. These stay central deliberately: a pairing names a foreground
+  *and* a background, so it belongs to a relationship rather than to either
+  token, and a rule names no token at all;
+- `registry/components/<name>.json` — each component's token recipe now sits
+  in its own manifest, beside its status, files and tier, so one file answers
+  everything about that component. This gave `menu` and `notice` their first
+  manifests, since both had recipes but no registry entry.
 
-Four real defects surfaced during the port, each caught by the enforcement
-layer rather than by review:
-
-- The build's private contrast helper read `#RRGGBBAA` by slicing off the
-  first six characters, so a translucent colour measured as if it were opaque
-  — a 12%-alpha tint scored identically to the solid hue behind it, and a 1:1
-  pairing passed as compliant. Contrast now comes from `src/theme/color.mjs`,
-  which composites a translucent foreground and refuses a translucent
-  background outright.
-- `theme.fg.on-accent` was doing duty as the label for every filled role. Once
-  the generator made the accent invert in the dark scheme (light fill, dark
-  label) while the status fills stayed dark, that put dark text on a dark red
-  destructive button. Each role owns its label now (`theme.danger-role.on`,
-  `-warning-role.on`, `-success-role.on`), matching Astryx's own
-  `--color-on-success` / `-warning` / `-error` split.
-- `usage.json`'s `radius`, `font` and `type` entries documented scale steps the
-  generator had replaced. The build now rejects a `scale` block whose keys are
-  not real tokens.
-- A theme that does not `extends` the base produced a bare stack trace when a
-  semantic role referenced a scale it had no seed for. The resolver names the
-  token and the reference it wanted.
+`src/theme/readContracts.mjs` assembles the same model the single file used
+to produce — `TOKENS.md` came out byte-identical apart from section order,
+which now follows the contracts and reads more coherently for it. The split
+also bought a new check: a token documented in two contracts fails the build,
+which a single catalogue could not express.
 
 `packages/themes/*` are brand themes: a few seeds plus `extends: baseTheme`,
 built by `build-theme.mjs` into scoped CSS containing only what differs from

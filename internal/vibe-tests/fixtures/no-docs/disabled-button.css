@@ -2,6 +2,6 @@
 .button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background: var(--ds-color-neutral-300);
-  color: var(--ds-color-neutral-500);
+  background: var(--rata-color-neutral-300);
+  color: var(--rata-color-neutral-500);
 }

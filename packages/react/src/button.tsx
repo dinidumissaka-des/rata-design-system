@@ -1,6 +1,6 @@
 import { forwardRef } from "react";
 import type { ButtonHTMLAttributes, MouseEvent, ReactNode } from "react";
-import { getButtonProps } from "@ds/primitives";
+import { getButtonProps } from "@rata/primitives";
 import { cx } from "./cx.js";
 import { Spinner } from "./spinner.js";
 
@@ -49,11 +49,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       data-loading={behavior["data-loading"]}
       onClick={behavior.onClick as (event: MouseEvent<HTMLButtonElement>) => void}
       className={cx(
-        "ds-button",
-        "ds-state-layer",
-        `ds-button--${variant}`,
-        `ds-button--${size}`,
-        iconOnly && "ds-icon-button",
+        "rata-button",
+        "rata-state-layer",
+        `rata-button--${variant}`,
+        `rata-button--${size}`,
+        iconOnly && "rata-icon-button",
         className
       )}
     >

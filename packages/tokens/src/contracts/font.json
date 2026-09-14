@@ -1,0 +1,46 @@
+{
+  "$contract": "font",
+  "$summary": "Typography primitives. Sizes are generated; family, weight and letter-spacing are stated.",
+  "tokens": {
+    "font": {
+      "layer": "base",
+      "summary": "Typography primitives. Sizes are generated from the theme's {base, ratio} seed; weight and letter-spacing are stated, because no ratio can produce them. The families here are the system fallback — a theme's typography seed supplies the actual typeface and overrides them.",
+      "use": [
+        "font.family.* and font.weight.* directly; font.size.* via a type.* role rather than on its own."
+      ],
+      "dont": [
+        "Reaching for font.size.* in component CSS when a type.* role already names the situation."
+      ],
+      "instead": {
+        "Any text sizing decision": "font.size.base, type.body.size, type.heading.size, type.label.size, or type.control.size.md"
+      },
+      "scale": {
+        "family.sans": "The UI typeface, supplied by the theme's typography.body seed. The primitives layer underneath holds only a brand-neutral system stack, for a theme that names no family — a brand font is never restated there.",
+        "family.mono": "The monospace typeface, supplied by the theme's typography.code seed. As with family.sans, the primitive underneath is a brand-neutral fallback stack.",
+        "family.heading": "Heading typeface, from the theme's typography.heading seed. Falls back to the body family when a theme names no separate one.",
+        "weight.regular": "Default text weight.",
+        "weight.medium": "One step up — the label role.",
+        "weight.semibold": "Emphasis weight — headings and control text.",
+        "weight.bold": "The heaviest step.",
+        "size.4xs": "Five steps below body.",
+        "size.3xs": "Four steps below body.",
+        "size.2xs": "Three steps below body.",
+        "size.xs": "Two steps below body — h6.",
+        "size.sm": "One step below body — h5 and supporting text.",
+        "size.base": "Body size — the seed. h4, body, label and code all sit here.",
+        "size.lg": "One step above body — h3 and large text.",
+        "size.xl": "Two above — h2.",
+        "size.2xl": "Three above — h1.",
+        "size.3xl": "Four above — display-3.",
+        "size.4xl": "Five above — display-2.",
+        "size.5xl": "Six above — display-1.",
+        "letter-spacing.tightest": "Tightest tracking, for the largest display text.",
+        "letter-spacing.tighter": "Very tight tracking.",
+        "letter-spacing.tight": "Slightly tight tracking.",
+        "letter-spacing.normal": "No adjustment.",
+        "letter-spacing.wide": "Slightly open tracking — the label role's uppercase treatment.",
+        "letter-spacing.wider": "More open tracking."
+      }
+    }
+  }
+}

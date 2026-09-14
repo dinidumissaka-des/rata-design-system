@@ -1,0 +1,25 @@
+{
+  "$contract": "focus",
+  "$summary": "Focus-ring geometry. Always used together with theme.focus-ring.",
+  "tokens": {
+    "focus": {
+      "layer": "base",
+      "summary": "Focus-ring geometry. Always used together with theme.focus-ring.",
+      "use": [
+        "outline-width and outline-offset in a :focus-visible rule."
+      ],
+      "dont": [
+        "Removing the ring or shrinking it below these values.",
+        "Setting the offset to 0 on a filled accent control — the gap is what separates the ring from the accent fill behind it."
+      ],
+      "scale": {
+        "ring-width": "The outline thickness, thick enough to see at a glance.",
+        "ring-offset": "The gap between the element and the ring, which keeps the ring legible against a filled background.",
+        "ring-style": "Always solid."
+      },
+      "example": {
+        "css": ":focus-visible { outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring); outline-offset: var(--rata-focus-ring-offset); }"
+      }
+    }
+  }
+}

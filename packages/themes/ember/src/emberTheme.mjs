@@ -10,8 +10,8 @@
  * Re-seeding is the whole edit.
  */
 
-import { defineTheme } from "@ds/tokens/theme";
-import { baseTheme } from "@ds/tokens/theme/base";
+import { defineTheme } from "@rata/tokens/theme";
+import { baseTheme } from "@rata/tokens/theme/base";
 
 export const emberTheme = defineTheme({
   name: "ember",

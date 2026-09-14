@@ -1,0 +1,119 @@
+/* Panel — a titled region beside the content it describes.
+
+   NOT A SHEET, and the difference is the whole reason both exist. A sheet is
+   a modal <dialog> in the top layer: it covers the page and makes everything
+   behind it inert. A panel is in normal flow, so the page reflows around it
+   and everything beside it stays usable — which is the only reason to choose
+   one. Reading a token's contract while still seeing the swatch grid IS the
+   task; the same content in a sheet would answer a different question.
+
+   What follows from that, and is worth knowing before editing this file: no
+   elevation, no scrim, no motion, no radius. Each of those would claim the
+   panel is floating above the page, and it is not. */
+.rata-panel {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: var(--rata-space-padding-md);
+  background: var(--rata-theme-bg-surface);
+  color: var(--rata-theme-fg-primary);
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-body-size);
+  line-height: var(--rata-type-body-line-height);
+  /* Flush against the content on one side and the viewport on the other
+     three, so a radius here shows as a gap rather than as a corner. */
+  border-radius: var(--rata-radius-none);
+}
+
+/* The one border, on the edge the panel meets the content across. Which edge
+   that is is what `edge` states — the token mapping asked the question the
+   props API had not answered, and it was added at gate 2 rather than being
+   left to `className`, since a border is styling and that prop is for
+   placement.
+
+   Logical, so a panel in a right-to-left document draws its border on the
+   side facing the content without the caller doing anything. */
+.rata-panel--inline-end {
+  border-inline-start: var(--rata-border-default) solid
+    var(--rata-theme-border-default);
+}
+
+.rata-panel--inline-start {
+  border-inline-end: var(--rata-border-default) solid
+    var(--rata-theme-border-default);
+}
+
+.rata-panel-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rata-space-gap-sm);
+  margin-block-end: var(--rata-space-stack-sm);
+}
+
+/* A real heading at a level the CALLER states, which is the split from
+   Dialog's and Sheet's hardcoded h2. Those can hardcode it because everything
+   behind a modal is inert and the outline inside genuinely starts fresh. A
+   panel sits inside the page's existing outline and cannot know its depth —
+   the same problem Notice has, which Notice escapes by not being a heading at
+   all. A panel cannot take that way out, because the heading is what names
+   the landmark. */
+.rata-panel-heading {
+  flex: 1;
+  min-inline-size: 0;
+  margin: var(--rata-space-0);
+  font-size: var(--rata-type-heading-size);
+  font-weight: var(--rata-type-heading-weight);
+  line-height: var(--rata-type-heading-line-height);
+  /* A token path is the commonest thing to put in one of these and it has no
+     spaces to break at, so it breaks anywhere rather than widening the panel
+     past the measure the page gave it. */
+  overflow-wrap: anywhere;
+}
+
+/* Scrolls on its own rather than letting the panel grow, so the title and the
+   close control stay in view. A panel is tall and narrow by nature, which
+   makes the title the first thing to scroll away and the way out go with it.
+
+   `min-block-size: 0` is what makes it work: a flex item's default
+   `min-height: auto` refuses to shrink below its content, so `overflow-y`
+   never engages — the same trap dialog.css records. */
+.rata-panel-body {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Same construction as Dialog's and Sheet's dismiss: currentColor on a
+   transparent background, so a close button is the same control everywhere in
+   this system. */
+.rata-panel-dismiss {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--rata-size-control-sm);
+  block-size: var(--rata-size-control-sm);
+  padding: var(--rata-space-0);
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-inner);
+  background: transparent;
+  color: currentColor;
+  cursor: pointer;
+  /* Centred on the title's first line, derived from the heading's own metrics
+     so it stays right if the type scale moves. `1em` would be wrong: the
+     button inherits the body size, not the heading's. */
+  margin-block-start: calc(
+    (
+        var(--rata-type-heading-size) * var(--rata-type-heading-line-height) -
+          var(--rata-size-control-sm)
+      ) / 2
+  );
+}
+
+.rata-panel-dismiss:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style)
+    var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}

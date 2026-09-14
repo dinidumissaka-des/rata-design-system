@@ -1,0 +1,24 @@
+{
+  "$contract": "elevation",
+  "$summary": "The box-shadow scale. Reached through theme.elevation.*, never directly.",
+  "tokens": {
+    "elevation": {
+      "layer": "base",
+      "summary": "Box-shadow scale expressing how far a surface floats above the page. Height encodes how temporary a surface is. Each step has a '-strong' twin with a darker shadow, used in the dark theme where a shadow this soft would be nearly invisible.",
+      "use": [
+        "box-shadow on a raised surface, via the theme.elevation.* role that names the situation — never this scale directly."
+      ],
+      "dont": [
+        "Reaching for elevation.low/med/high directly in component CSS — use theme.elevation.raised/overlay/modal so the dark-theme '-strong' swap happens automatically."
+      ],
+      "scale": {
+        "low": "Resting cards and panels — content that is part of the page. Light-theme value of theme.elevation.raised.",
+        "med": "Dropdowns, menus, popovers, tooltips — transient surfaces anchored to a trigger. Light-theme value of theme.elevation.overlay.",
+        "high": "Dialogs, drawers, sheets — surfaces that take over the screen. Light-theme value of theme.elevation.modal.",
+        "low-strong": "Dark-theme value of theme.elevation.raised.",
+        "med-strong": "Dark-theme value of theme.elevation.overlay.",
+        "high-strong": "Dark-theme value of theme.elevation.modal."
+      }
+    }
+  }
+}

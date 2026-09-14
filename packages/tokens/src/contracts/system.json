@@ -1,0 +1,226 @@
+{
+  "$contract": "system",
+  "$summary": "System-wide token rules, and the contrast facts that belong to a *pair* of tokens rather than to either one. These cannot live in a per-token contract: a pairing names a foreground and a background, and a rule names none.",
+  "rules": [
+    "Never use a raw palette token (color.neutral.*, color.accent.*, color.success.*, color.warning.*, color.danger.*, color.white, color.black) in a component. They are identical in both themes, so a component using one is broken in the other. Use a theme.* semantic token instead. color.data.* is the one exception — it exists for direct use in data visualization.",
+    "Every color decision has exactly one correct semantic token. If none fits, the theme needs a new semantic token — add it in packages/tokens/src/themes/base.mjs via the design-tokens skill, not by reaching into the palette.",
+    "Backgrounds come from theme.bg.* or a role's bg/subtle. Text and icons come from theme.fg.* or a role's fg. Never put a role's bg behind text unless a pairing below allows it.",
+    "Reference tokens as CSS variables (var(--rata-<path-with-dashes>)), not as literal values. theme.accent-role.bg is var(--rata-theme-accent-role-bg).",
+    "Use the space scale for every margin, padding, and gap. Never write an arbitrary pixel value; pick the nearest step, or the rolled-up gap/stack/padding/page/control role that already names the situation.",
+    "Interactive controls get their height from size.control.*, their hover/press feedback from the .rata-state-layer class (not from hand-written hover colors), their focus ring from focus.* plus theme.focus-ring, and validation/selection emphasis from a role's ring (an inset stroke, not the focus outline).",
+    "theme.* is the only family whose value differs between light and dark. Primitives and the generated scales (font.size.*, type.*, radius.*, motion.duration.*) are scheme-independent, as is color.data.*.",
+    "aria-disabled, not the disabled attribute, on interactive primitives — the control stays focusable and screen-reader discoverable, styled with state.disabled-opacity.",
+    "Do not hand-write a value a seed already generates. Colour, type, radius and duration all come from the theme's seeds in packages/tokens/src/themes/base.mjs — change the seed, not the output."
+  ],
+  "pairings": [
+    {
+      "fg": "theme.fg.primary",
+      "bg": "theme.bg.canvas",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.fg.primary",
+      "bg": "theme.bg.surface",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.fg.primary",
+      "bg": "theme.bg.subtle",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.fg.primary",
+      "bg": "theme.bg.muted",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.fg.primary",
+      "bg": "theme.accent-role.subtle",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.fg.primary",
+      "bg": "theme.success-role.subtle",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.fg.primary",
+      "bg": "theme.warning-role.subtle",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.fg.primary",
+      "bg": "theme.danger-role.subtle",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.fg.secondary",
+      "bg": "theme.bg.canvas",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.fg.secondary",
+      "bg": "theme.bg.surface",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.fg.secondary",
+      "bg": "theme.bg.subtle",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.fg.secondary",
+      "bg": "theme.bg.muted",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.fg.muted",
+      "bg": "theme.bg.canvas",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.fg.muted",
+      "bg": "theme.bg.surface",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.fg.muted",
+      "bg": "theme.bg.subtle",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.fg.muted",
+      "bg": "theme.bg.muted",
+      "requires": "AA-large",
+      "note": "Large text and non-text only. For body-size text on theme.bg.muted use theme.fg.secondary."
+    },
+    {
+      "fg": "theme.accent-role.fg",
+      "bg": "theme.bg.canvas",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.accent-role.fg",
+      "bg": "theme.bg.surface",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.accent-role.fg",
+      "bg": "theme.accent-role.subtle",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.tertiary-role.fg",
+      "bg": "theme.bg.canvas",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.tertiary-role.fg",
+      "bg": "theme.bg.surface",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.secondary-role.fg",
+      "bg": "theme.secondary-role.bg",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.accent-role.fg",
+      "bg": "theme.secondary-role.bg",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.success-role.fg",
+      "bg": "theme.bg.canvas",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.success-role.fg",
+      "bg": "theme.bg.surface",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.success-role.fg",
+      "bg": "theme.success-role.subtle",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.warning-role.fg",
+      "bg": "theme.bg.canvas",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.warning-role.fg",
+      "bg": "theme.bg.surface",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.warning-role.fg",
+      "bg": "theme.warning-role.subtle",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.danger-role.fg",
+      "bg": "theme.bg.canvas",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.danger-role.fg",
+      "bg": "theme.bg.surface",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.danger-role.fg",
+      "bg": "theme.danger-role.subtle",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.fg.on-accent",
+      "bg": "theme.accent-role.bg",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.focus-ring",
+      "bg": "theme.bg.canvas",
+      "requires": "AA-nontext"
+    },
+    {
+      "fg": "theme.focus-ring",
+      "bg": "theme.bg.surface",
+      "requires": "AA-nontext"
+    },
+    {
+      "fg": "theme.danger-role.on",
+      "bg": "theme.danger-role.bg",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.warning-role.on",
+      "bg": "theme.warning-role.bg",
+      "requires": "AA-text"
+    }
+  ],
+  "knownGaps": [
+    {
+      "fg": "theme.fg.on-accent",
+      "bg": "theme.danger-role.subtle",
+      "themes": [
+        "light"
+      ],
+      "below": "AA-large",
+      "note": "theme.fg.on-accent is white; theme.danger-role.subtle is a light tint in the light theme, so white text disappears on it.",
+      "workaround": "Use theme.danger-role.fg for text on theme.danger-role.subtle, or theme.fg.on-accent only on theme.danger-role.bg."
+    },
+    {
+      "fg": "theme.success-role.on",
+      "bg": "theme.success-role.bg",
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "below": "AA-text",
+      "note": "theme.success-role.bg is a non-text indicator colour in both schemes; white on it lands in the low 3s.",
+      "workaround": "Put success text on theme.success-role.subtle using theme.success-role.fg."
+    }
+  ]
+}

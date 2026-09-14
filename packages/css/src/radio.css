@@ -1,0 +1,111 @@
+/* Radio — the same construction as the checkbox: a native input laid over a
+   drawn control at zero opacity, so it keeps the tab order, the semantics and
+   the form participation while the visual is painted separately.
+
+   Loaded after checkbox.css. The one thing that must differ before either is
+   read is the shape: a circle says "one of these", a square says "any of
+   these", and that distinction is doing real work for a user scanning a form. */
+.rata-radio {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rata-space-gap-sm);
+  font-family: var(--rata-font-family-sans);
+}
+
+.rata-radio-control {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  block-size: calc(var(--rata-type-control-size-md) * var(--rata-type-control-line-height-md));
+  align-items: center;
+}
+
+.rata-radio-input {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: var(--rata-space-0);
+  opacity: 0;
+  cursor: pointer;
+}
+
+.rata-radio-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--rata-size-icon-md);
+  block-size: var(--rata-size-icon-md);
+  border: var(--rata-border-default) solid var(--rata-theme-border-strong);
+  /* Stated, not inherited from the consumer's reset: this rule sets an explicit
+     size alongside a border, so under content-box it renders 2px larger than the
+     token says. @rata/css deliberately ships no global reset — a library has no
+     business restyling a consumer's own elements — so each component that
+     measures itself declares this. */
+  box-sizing: border-box;
+  border-radius: var(--rata-radius-pill);
+  pointer-events: none;
+  transition:
+    background-color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing),
+    border-color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing);
+}
+
+/* A radio is filled, not ticked: the dot is the mark. */
+.rata-radio-dot {
+  inline-size: var(--rata-space-gap-sm);
+  block-size: var(--rata-space-gap-sm);
+  border-radius: var(--rata-radius-pill);
+  background: var(--rata-theme-fg-on-accent);
+  transform: scale(0);
+  transition: transform var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing);
+}
+
+.rata-radio[data-state="checked"] .rata-radio-circle {
+  background: var(--rata-theme-accent-role-bg);
+  border-color: var(--rata-theme-accent-role-bg);
+}
+
+.rata-radio[data-state="checked"] .rata-radio-dot {
+  transform: scale(1);
+}
+
+.rata-radio-input:focus-visible + .rata-radio-circle {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+.rata-radio-text {
+  display: flex;
+  flex-direction: column;
+  /* No gap: the label and the description each carry line-height leading of
+     their own — 3px below the label and 4px above the description — which
+     already reads as 7px of separation. Adding space.stack.2xs on top of that
+     made 11px, which looked like the two were unrelated.
+
+     Tightening further would mean giving the description another role's
+     line-height while keeping supporting's size, and the type contract is
+     explicit that each role carries a matched size, weight and line-height.
+     Not worth breaking that for 2px. */
+}
+
+.rata-radio-label {
+  color: var(--rata-theme-fg-primary);
+  font-size: var(--rata-type-control-size-md);
+  line-height: var(--rata-type-control-line-height-md);
+  cursor: pointer;
+}
+
+.rata-radio-description {
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-supporting-size);
+  line-height: var(--rata-type-supporting-line-height);
+}
+
+.rata-radio[data-disabled] {
+  opacity: var(--rata-state-disabled-opacity);
+}
+
+.rata-radio[data-disabled] .rata-radio-input,
+.rata-radio[data-disabled] .rata-radio-label {
+  cursor: not-allowed;
+}

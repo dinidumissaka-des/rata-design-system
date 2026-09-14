@@ -1,8 +1,8 @@
-/* Hover and press — hand-rolled background swaps instead of .ds-state-layer. */
+/* Hover and press — hand-rolled background swaps instead of .rata-state-layer. */
 .button:hover {
-  background: var(--ds-theme-accent-role-subtle);
+  background: var(--rata-theme-accent-role-subtle);
 }
 
 .button:active {
-  background: var(--ds-theme-bg-muted);
+  background: var(--rata-theme-bg-muted);
 }

@@ -1,12 +1,12 @@
 /* Hover and press — composed, not hand-rolled. The element carries
-   .ds-state-layer alongside .button; no background swap is needed. */
+   .rata-state-layer alongside .button; no background swap is needed. */
 .button {
   transition:
-    background-color var(--ds-motion-interactive-duration) var(--ds-motion-interactive-easing),
-    border-color var(--ds-motion-interactive-duration) var(--ds-motion-interactive-easing);
+    background-color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing),
+    border-color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing);
 }
 
 .button:focus-visible {
-  outline: var(--ds-focus-ring-width) solid var(--ds-theme-focus-ring);
-  outline-offset: var(--ds-focus-ring-offset);
+  outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
 }

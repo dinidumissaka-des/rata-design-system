@@ -1,0 +1,57 @@
+{
+  "$contract": "theme.support-roles",
+  "$summary": "Supporting roles — the secondary (outlined) and tertiary (text-only) control roles, and the keyboard focus indicator.",
+  "tokens": {
+    "theme.secondary-role.bg": {
+      "layer": "semantic",
+      "summary": "Background for the secondary (outlined) button and similar lower-priority filled controls.",
+      "use": [
+        "Secondary button background — paired with theme.secondary-role.border and theme.secondary-role.fg."
+      ],
+      "instead": {
+        "A plain container background, not a control": "theme.bg.surface"
+      }
+    },
+    "theme.secondary-role.fg": {
+      "layer": "semantic",
+      "summary": "Text/icon color for content on theme.secondary-role.bg.",
+      "pairsWith": [
+        "theme.secondary-role.bg"
+      ]
+    },
+    "theme.secondary-role.border": {
+      "layer": "semantic",
+      "summary": "Border for the secondary (outlined) button and similar controls.",
+      "use": [
+        "Secondary button border."
+      ]
+    },
+    "theme.tertiary-role.fg": {
+      "layer": "semantic",
+      "summary": "Text color for the lowest-emphasis (tertiary/text) button variant — same hue as accent-role.fg, kept as its own role so a future rebrand can diverge them.",
+      "use": [
+        "The tertiary button's label color."
+      ],
+      "instead": {
+        "An inline link inside body copy": "theme.accent-role.fg"
+      }
+    },
+    "theme.focus-ring": {
+      "layer": "semantic",
+      "summary": "The keyboard focus indicator color, always used with focus.ring-width and focus.ring-offset.",
+      "use": [
+        "outline-color in a :focus-visible rule, on every interactive element."
+      ],
+      "dont": [
+        "Removing the ring, or reusing this color for anything that isn't a focus indicator."
+      ],
+      "pairsWith": [
+        "theme.bg.canvas",
+        "theme.bg.surface"
+      ],
+      "example": {
+        "css": ":focus-visible { outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring); outline-offset: var(--rata-focus-ring-offset); }"
+      }
+    }
+  }
+}

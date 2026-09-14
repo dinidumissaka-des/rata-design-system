@@ -1,5 +1,5 @@
 // Token build: resolves {references} in the JSON source, validates that every
-// token is documented in src/usage.json, verifies the documented contrast
+// token is documented in src/contracts/, verifies the documented contrast
 // pairings against the resolved values, and emits
 //   dist/css/tokens.css      — CSS custom properties (:root + [data-theme="dark"]), annotated
 //   dist/index.js|.d.ts      — typed token object + cssVar() helper, with usage in JSDoc
@@ -14,14 +14,29 @@ import path from "node:path";
 
 import { contrastRatio } from "./src/theme/color.mjs";
 import { resolveTheme } from "./src/theme/resolveTokens.mjs";
+import { readContracts } from "./src/theme/readContracts.mjs";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
-const PREFIX = "ds";
+const PREFIX = "rata";
 const CHECK_ONLY = process.argv.includes("--check");
 
 const readJson = async (p) => JSON.parse(await readFile(path.join(root, p), "utf8"));
 
-const usage = await readJson("src/usage.json");
+// Documentation is assembled from one contract per thing (src/contracts/*.json
+// plus each component's registry manifest), not one catalogue file.
+let usage;
+try {
+  usage = await readContracts({ root, repoRoot: path.resolve(root, "../..") });
+} catch (error) {
+  // A malformed contract set is an authoring mistake, not a crash — the
+  // message already names the files involved.
+  console.error("@rata/tokens: the token contracts do not load\n");
+  console.error(`  • ${error.message}`);
+  process.exit(1);
+}
+
+/** Name the contract an entry came from, so an error points at a file. */
+const contractOf = (key) => usage.sources.get(key) ?? "a contract";
 
 // The theme is code, not data: it declares a handful of seeds and the
 // expanders in src/theme/ generate the rest. Everything scheme-dependent
@@ -70,7 +85,7 @@ for (const key of Object.keys(usage.tokens)) {
   const existsAsLeaf = allPaths.has(key);
   const existsAsGroup = [...allPaths].some((p) => p.startsWith(`${key}.`));
   if (!existsAsLeaf && !existsAsGroup) {
-    errors.push(`usage.json documents "${key}", which is not a token or token group.`);
+    errors.push(`${contractOf(key)} documents "${key}", which is not a token or token group.`);
   }
 }
 
@@ -83,15 +98,15 @@ for (const token of flatLight) {
   const doc = docFor(token.path);
   if (variantPaths.has(token.path)) {
     if (!doc || !doc.exact) {
-      errors.push(`Scheme-dependent token "${token.path}" has no entry of its own in usage.json.`);
+      errors.push(`Scheme-dependent token "${token.path}" has no entry of its own in any contract under src/contracts/.`);
     }
   } else if (!doc) {
-    errors.push(`Generated token "${token.path}" is undocumented in usage.json.`);
+    errors.push(`Generated token "${token.path}" is undocumented in src/contracts/.`);
   }
 }
 
 for (const token of flatBase) {
-  if (!docFor(token.path)) errors.push(`Base token "${token.path}" is undocumented in usage.json.`);
+  if (!docFor(token.path)) errors.push(`Base token "${token.path}" is undocumented in src/contracts/.`);
 }
 
 // A literal "*/" anywhere in an entry's prose closes the JSDoc comment block
@@ -113,24 +128,24 @@ for (const [name, entry] of Object.entries(usage.tokens)) {
             : [];
     for (const s of strings) {
       if (typeof s === "string" && s.includes("*/")) {
-        errors.push(`usage.json entry "${name}" field "${field}" contains a literal "*/", which breaks the generated JSDoc comment.`);
+        errors.push(`${contractOf(name)}: entry "${name}" field "${field}" contains a literal "*/", which breaks the generated JSDoc comment.`);
       }
     }
   }
   for (const field of ["summary"]) {
-    if (!entry[field]) errors.push(`usage.json entry "${name}" is missing "${field}".`);
+    if (!entry[field]) errors.push(`${contractOf(name)}: entry "${name}" is missing "${field}".`);
   }
   for (const ref of Object.values(entry.instead ?? {})) {
     // "instead" values are prose that names one or more replacement tokens;
     // every dotted path mentioned must be real.
     for (const candidate of ref.match(/\b[a-z][a-z0-9-]*(?:\.[a-z0-9-]+)+\b/g) ?? []) {
       if (!allPaths.has(candidate) && !usage.tokens[candidate]) {
-        errors.push(`usage.json entry "${name}" points at unknown token "${candidate}".`);
+        errors.push(`${contractOf(name)}: entry "${name}" points at unknown token "${candidate}".`);
       }
     }
   }
   for (const ref of entry.pairsWith ?? []) {
-    if (!allPaths.has(ref)) errors.push(`usage.json entry "${name}" pairsWith unknown token "${ref}".`);
+    if (!allPaths.has(ref)) errors.push(`${contractOf(name)}: entry "${name}" pairsWith unknown token "${ref}".`);
   }
 
   // A `scale` block documents the steps of a real scale, so every key in it
@@ -141,7 +156,7 @@ for (const [name, entry] of Object.entries(usage.tokens)) {
   for (const step of Object.keys(entry.scale ?? {})) {
     if (!allPaths.has(`${name}.${step}`)) {
       errors.push(
-        `usage.json entry "${name}" documents step "${step}", which is not a token ` +
+        `${contractOf(name)}: entry "${name}" documents step "${step}", which is not a token ` +
           `("${name}.${step}" does not exist). If it is commentary rather than a step, move it to "notes".`,
       );
     }
@@ -231,7 +246,7 @@ for (const [name, recipe] of Object.entries(usage.recipes)) {
 }
 
 if (errors.length) {
-  console.error(`@ds/tokens: ${errors.length} documentation error(s)\n`);
+  console.error(`@rata/tokens: ${errors.length} documentation error(s)\n`);
   for (const e of errors) console.error(`  • ${e}`);
   process.exit(1);
 }
@@ -243,7 +258,7 @@ if (errors.length) {
 // Every leaf token keyed by its CSS variable name, with the layer it belongs to.
 // Token segments contain "-" of their own (accent-role, on-accent), so a variable
 // name cannot be parsed back into a token path — tools that need to classify a
-// `var(--ds-…)` reference read this index instead of guessing by prefix.
+// `var(--rata-…)` reference read this index instead of guessing by prefix.
 const tokenIndex = Object.fromEntries(
   [...flatBase, ...flatLight].map((token) => [
     `${PREFIX}-${token.name}`,
@@ -310,14 +325,14 @@ function cssBlock(selector, tokens, { groupHeaders }) {
 
 const css = [
   [
-    "/* Generated by @ds/tokens — do not edit by hand.",
+    "/* Generated by @rata/tokens — do not edit by hand.",
     " * Edit src/primitives/*.json, src/semantics/*.json, src/semantics/theme/*.json,",
-    " * or src/usage.json and rebuild.",
+    " * or src/contracts/*.json and rebuild.",
     " *",
-    " * Comments come from src/usage.json. Full guidance, contrast data, and",
+    " * Comments come from src/contracts/*.json. Full guidance, contrast data, and",
     " * component recipes live in packages/tokens/TOKENS.md.",
     " *",
-    " * Palette tokens (--ds-color-neutral-*, --ds-color-accent-*, and the other",
+    " * Palette tokens (--rata-color-neutral-*, --rata-color-accent-*, and the other",
     " * numbered ramps) are identical in both themes. Never use them in a",
     " * component — use the theme.* semantic tokens below them instead",
     " * (color.data.* is the one palette group meant for direct use, in charts).",
@@ -372,7 +387,7 @@ function toType(node, dotted = "", indent = "  ") {
   return `{\n${inner}\n${indent.slice(2)}}`;
 }
 
-const js = `// Generated by @ds/tokens — do not edit by hand.
+const js = `// Generated by @rata/tokens — do not edit by hand.
 export const tokens = ${JSON.stringify(merged, null, 2)};
 export const cssVar = (tokenPath) => \`var(--${PREFIX}-\${tokenPath.replaceAll(".", "-")})\`;
 export const usage = ${JSON.stringify(usage.tokens, null, 2)};
@@ -381,7 +396,7 @@ export const contrast = ${JSON.stringify({ pairings: contrastReport, knownGaps: 
 export const recipes = ${JSON.stringify(usage.recipes, null, 2)};
 `;
 
-const dts = `// Generated by @ds/tokens — do not edit by hand.
+const dts = `// Generated by @rata/tokens — do not edit by hand.
 
 /**
  * Resolved token values, with the light theme's semantic values as defaults.
@@ -395,7 +410,7 @@ export declare const tokens: ${toType(merged)};
  * Returns the CSS variable reference for a dotted token path.
  *
  * \`\`\`ts
- * cssVar("theme.accent-role.bg"); // "var(--ds-theme-accent-role-bg)"
+ * cssVar("theme.accent-role.bg"); // "var(--rata-theme-accent-role-bg)"
  * \`\`\`
  */
 export declare const cssVar: (tokenPath: string) => string;
@@ -430,7 +445,7 @@ export declare const contrast: {
 export declare const recipes: Record<string, { summary: string; tokens: Record<string, string> }>;
 `;
 
-const tw = `// Generated by @ds/tokens — Tailwind preset (do not edit by hand).
+const tw = `// Generated by @rata/tokens — Tailwind preset (do not edit by hand).
 // Only semantic tokens are exposed: the palette ramps are deliberately absent
 // so utilities cannot bypass the theme. See packages/tokens/TOKENS.md.
 const v = (name) => \`var(--${PREFIX}-\${name})\`;
@@ -488,7 +503,7 @@ module.exports = {
 
 const usageJson = JSON.stringify(
   {
-    $comment: "Generated by @ds/tokens — do not edit by hand. Source: src/usage.json.",
+    $comment: "Generated by @rata/tokens — do not edit by hand. Source: src/contracts/*.json and registry/components/*.json.",
     rules: usage.rules,
     index: tokenIndex,
     tokens: Object.fromEntries(
@@ -517,8 +532,8 @@ const usageJson = JSON.stringify(
 const md = [];
 const bullets = (items) => items.map((i) => `- ${i}`).join("\n");
 
-md.push("<!-- Generated by @ds/tokens from src/usage.json — do not edit by hand. -->");
-md.push("<!-- Regenerate with `npm run build -w @ds/tokens`. -->");
+md.push("<!-- Generated by @rata/tokens from src/contracts/*.json and registry/components/*.json — do not edit by hand. -->");
+md.push("<!-- Regenerate with `npm run build -w @rata/tokens`. -->");
 md.push("");
 md.push("# Token usage reference");
 md.push("");
@@ -566,7 +581,7 @@ for (const [what, token] of [
   ["A success or warning message", "the role's `subtle` background with its `fg` text — never its `bg`"],
   ["A status dot or non-text indicator", "the role's `bg`"],
   ["The keyboard focus ring", "`theme.focus-ring` with `focus.ring-width` / `focus.ring-offset`"],
-  ["Hover or press feedback", "the `.ds-state-layer` class — not a color swap"],
+  ["Hover or press feedback", "the `.rata-state-layer` class — not a color swap"],
   ["A raised card's shadow", "`theme.elevation.raised`"],
   ["A dropdown/menu/popover shadow", "`theme.elevation.overlay`"],
   ["A dialog/sheet shadow", "`theme.elevation.modal`"],
@@ -740,12 +755,12 @@ if (CHECK_ONLY) {
   const existing = await readFile(mdPath, "utf8").catch(() => null);
   if (existing !== markdown) {
     console.error(
-      "@ds/tokens: TOKENS.md is out of date with src/usage.json.\n" +
-        "Run `npm run build -w @ds/tokens` and commit the result."
+      "@rata/tokens: TOKENS.md is out of date with the contracts in src/contracts/.\n" +
+        "Run `npm run build -w @rata/tokens` and commit the result."
     );
     process.exit(1);
   }
-  console.log("@ds/tokens: TOKENS.md is up to date.");
+  console.log("@rata/tokens: TOKENS.md is up to date.");
   process.exit(0);
 }
 
@@ -760,7 +775,7 @@ await writeFile(path.join(root, "dist/usage.json"), usageJson);
 await writeFile(mdPath, markdown);
 
 console.log(
-  `@ds/tokens built: theme "${themeName}" — ${flatBase.length} base + ` +
+  `@rata/tokens built: theme "${themeName}" — ${flatBase.length} base + ` +
     `${flatLight.length} generated (${variantPaths.size} scheme-dependent), ` +
     `${Object.keys(usage.tokens).length} documented entries, ` +
     `${contrastReport.length} verified pairings, ${gapReport.length} known gaps, ` +

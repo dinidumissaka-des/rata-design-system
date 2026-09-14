@@ -1,0 +1,35 @@
+{
+  "$contract": "size",
+  "$summary": "Interactive control sizing and the icon scale derived from it.",
+  "tokens": {
+    "size": {
+      "layer": "base",
+      "summary": "Control heights, and icon sizes — one relative step that follows text, plus fixed steps for standalone glyphs.",
+      "use": [
+        "height (and usually min-width) of buttons, inputs, and other controls, via size.control.*.",
+        "width and height of an icon that sits with text, via size.icon.text — it follows whatever font-size it lands in, so it needs no per-control choice.",
+        "width and height of a standalone glyph with no text to size from, via size.icon.xs / .sm / .md / .lg."
+      ],
+      "scale": {
+        "control.sm": "Compact control height, e.g. a dense table's inline actions.",
+        "control.md": "The default control height for buttons and inputs.",
+        "control.lg": "A prominent, standalone control.",
+        "icon.text": "An icon sized from the text it sits with — 1.15x the inherited font-size. The default for any icon next to a label.",
+        "icon.xs": "Fixed 12px, for a glyph in a table cell or badge where no text sets the scale.",
+        "icon.sm": "Fixed 16px — what icon.text resolves to at the default control text.",
+        "icon.md": "Fixed 20px, for a standalone icon-only control.",
+        "icon.lg": "Fixed 24px. Lucide's native size, so it renders unscaled."
+      },
+      "dont": [
+        "Container, avatar or media dimensions — the fixed icon steps stop at 24px because that is the largest an icon gets; past it a graphic is illustration, not iconography.",
+        "Spacing of any kind. Distance between things is space.*; this scale is the size of the things.",
+        "A fixed step for an icon that has text beside it — it will stop matching the moment that text changes size. That is what size.icon.text is for."
+      ],
+      "notes": [
+        "size.icon.text is 1.15em: an icon reads at the same visual weight as the text beside it at about 1.15x its font-size, because a glyph fills less of its box than a letterform does. At this system's control text (14px) it computes to 16.1px, effectively the size.icon.sm step — so the relative and fixed scales agree at the default and diverge only where the text does.",
+        "Control size and text size are independent here: size.control.* changes the box, while a control's text stays at type.control.size.md across all three. So an icon inside a control does not change size with the control either — it follows the text, which did not move.",
+        "The fixed steps are a 4px arithmetic scale, 12 through 24, for a glyph with no text context to inherit from: a status dot in a table cell, an icon-only control whose label is an aria-label rather than text."
+      ]
+    }
+  }
+}

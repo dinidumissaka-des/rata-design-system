@@ -1,0 +1,121 @@
+/* Toggle button: a button that carries a pressed state. Geometry and the off
+   state are the button's, so the two measure and read as one family; the on
+   state is a tint rather than a fill, because a saturated accent background
+   reads as "the action to take" and a toggle is "a state you are in".
+   Composes .rata-state-layer for hover/press, like every other interactive
+   component — the pressed state must not be expressed by a :hover rule. */
+.rata-toggle-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rata-space-gap-xs);
+  border: var(--rata-border-default) solid transparent;
+  /* Stated, not inherited from the consumer's reset: this rule sets an explicit
+     size alongside a border, so under content-box it renders 2px larger than the
+     token says. @rata/css deliberately ships no global reset — a library has no
+     business restyling a consumer's own elements — so each component that
+     measures itself declares this. */
+  box-sizing: border-box;
+  border-radius: var(--rata-radius-element);
+  font-family: var(--rata-font-family-sans);
+  /* Constant across sizes, exactly as .rata-button — the two are one family, so
+     a toggle beside a button of the same size must set type identically. */
+  font-size: var(--rata-type-control-size-md);
+  line-height: var(--rata-type-control-line-height-md);
+  font-weight: var(--rata-type-control-weight);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition:
+    background-color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing),
+    border-color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing),
+    color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing);
+}
+
+.rata-toggle-button:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* Sizes */
+.rata-toggle-button--sm {
+  height: var(--rata-size-control-sm);
+  padding-inline: var(--rata-space-control-padding-inline-sm);
+}
+
+.rata-toggle-button--md {
+  height: var(--rata-size-control-md);
+  padding-inline: var(--rata-space-control-padding-inline-md);
+}
+
+.rata-toggle-button--lg {
+  height: var(--rata-size-control-lg);
+  padding-inline: var(--rata-space-control-padding-inline-lg);
+}
+
+/* Off state — `variant` is how loud the toggle is when it is NOT pressed.
+   Both mappings are the button's own, so an unpressed toggle and a button
+   sitting beside it are indistinguishable, which is the point. */
+.rata-toggle-button--secondary {
+  background: var(--rata-theme-secondary-role-bg);
+  color: var(--rata-theme-secondary-role-fg);
+  border-color: var(--rata-theme-secondary-role-border);
+}
+
+.rata-toggle-button--tertiary {
+  background: none;
+  color: var(--rata-theme-tertiary-role-fg);
+  /* Border held transparent rather than absent: the pressed state paints one
+     on the secondary variant, and the box must not resize between states. */
+  border-color: transparent;
+}
+
+/* On state. Two selectors, not one, because the two ARIA patterns this
+   component serves report "on" differently: a standalone toggle emits
+   aria-pressed, while a toggle inside a single-select toggle-button-group is a
+   radio and emits aria-checked. Both are the real attribute for their pattern,
+   so this is not a second copy of one fact — dropping either would leave one
+   whole mode unstyled. There is still deliberately no data-pressed attribute,
+   which would be a duplicate. */
+.rata-toggle-button--secondary[aria-pressed="true"],
+.rata-toggle-button--secondary[aria-checked="true"] {
+  background: var(--rata-theme-accent-role-subtle);
+  color: var(--rata-theme-accent-role-fg);
+  border-color: var(--rata-theme-accent-role-fg);
+}
+
+.rata-toggle-button--tertiary[aria-pressed="true"],
+.rata-toggle-button--tertiary[aria-checked="true"] {
+  background: var(--rata-theme-accent-role-subtle);
+  color: var(--rata-theme-accent-role-fg);
+  border-color: transparent;
+}
+
+/* States — aria-disabled, never the native attribute, so the control keeps
+   its place in the tab order and goes on announcing which state it is in. */
+.rata-toggle-button[aria-disabled="true"] {
+  opacity: var(--rata-state-disabled-opacity);
+  cursor: not-allowed;
+}
+
+.rata-toggle-button[data-loading] {
+  cursor: progress;
+}
+
+/* Icon-only — square control holding a single icon. Requires an aria-label;
+   nothing else supplies an accessible name. */
+.rata-toggle-button--icon-only {
+  padding-inline: 0;
+}
+
+.rata-toggle-button--icon-only.rata-toggle-button--sm {
+  width: var(--rata-size-control-sm);
+}
+
+.rata-toggle-button--icon-only.rata-toggle-button--md {
+  width: var(--rata-size-control-md);
+}
+
+.rata-toggle-button--icon-only.rata-toggle-button--lg {
+  width: var(--rata-size-control-lg);
+}

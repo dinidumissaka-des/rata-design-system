@@ -1,27 +1,27 @@
 /* Dropdown — the menu recipe. */
 .menu {
-  background: var(--ds-theme-bg-surface);
-  border-radius: var(--ds-radius-container);
-  box-shadow: var(--ds-theme-elevation-overlay);
-  padding: var(--ds-space-1);
-  transition: opacity var(--ds-motion-overlay-duration) var(--ds-motion-easing-enter);
+  background: var(--rata-theme-bg-surface);
+  border-radius: var(--rata-radius-container);
+  box-shadow: var(--rata-theme-elevation-overlay);
+  padding: var(--rata-space-1);
+  transition: opacity var(--rata-motion-overlay-duration) var(--rata-motion-easing-enter);
 }
 
 .menu__item {
-  height: var(--ds-size-control-sm);
-  padding-inline: var(--ds-space-control-padding-inline-sm);
-  color: var(--ds-theme-fg-primary);
+  height: var(--rata-size-control-sm);
+  padding-inline: var(--rata-space-control-padding-inline-sm);
+  color: var(--rata-theme-fg-primary);
 }
 
 .menu__item--destructive {
-  color: var(--ds-theme-danger-role-fg);
+  color: var(--rata-theme-danger-role-fg);
 }
 
 .menu__item--selected {
-  background: var(--ds-theme-accent-role-subtle);
+  background: var(--rata-theme-accent-role-subtle);
 }
 
 .menu__item:focus-visible {
-  outline: var(--ds-focus-ring-width) solid var(--ds-theme-focus-ring);
-  outline-offset: var(--ds-focus-ring-offset);
+  outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
 }

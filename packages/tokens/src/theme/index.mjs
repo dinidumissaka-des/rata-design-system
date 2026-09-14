@@ -1,7 +1,7 @@
 /**
  * @file index.mjs
  * @output The theme-authoring surface — what a brand theme imports
- * @position Public entry for @ds/tokens/theme
+ * @position Public entry for @rata/tokens/theme
  *
  * A brand theme should need `defineTheme` and nothing else. The expanders and
  * colour maths are exported for tooling and tests, not because a theme is

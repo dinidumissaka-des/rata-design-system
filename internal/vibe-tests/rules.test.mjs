@@ -9,7 +9,7 @@ const rules = (css) => evaluateSource(css, model).violations.map((v) => v.rule);
 const find = (css, rule) => evaluateSource(css, model).violations.find((v) => v.rule === rule);
 
 test("flags a palette token used in a component", () => {
-  assert.ok(rules(".a { color: var(--ds-color-neutral-900); }").includes("palette-token"));
+  assert.ok(rules(".a { color: var(--rata-color-neutral-900); }").includes("palette-token"));
 });
 
 test("does not mistake a theme role token for a palette token", () => {
@@ -17,11 +17,11 @@ test("does not mistake a theme role token for a palette token", () => {
   // confuse a palette ramp with a same-named role. theme.* and color.* are
   // now separate top-level families, but keep the guard.
   for (const token of [
-    "--ds-theme-warning-role-subtle",
-    "--ds-theme-warning-role-fg",
-    "--ds-theme-accent-role-bg",
-    "--ds-theme-danger-role-fg",
-    "--ds-theme-success-role-subtle",
+    "--rata-theme-warning-role-subtle",
+    "--rata-theme-warning-role-fg",
+    "--rata-theme-accent-role-bg",
+    "--rata-theme-danger-role-fg",
+    "--rata-theme-success-role-subtle",
   ]) {
     assert.ok(
       !rules(`.a { color: var(${token}); }`).includes("palette-token"),
@@ -31,7 +31,7 @@ test("does not mistake a theme role token for a palette token", () => {
 });
 
 test("flags an unknown token separately from a palette one", () => {
-  const r = rules(".a { color: var(--ds-color-does-not-exist); }");
+  const r = rules(".a { color: var(--rata-color-does-not-exist); }");
   assert.ok(r.includes("unknown-token"));
   assert.ok(!r.includes("palette-token"));
 });
@@ -42,7 +42,7 @@ test("a pairing that fails in every theme is an error", () => {
   // the example here, but it now carries a dark label token that passes —
   // the gap moved rather than disappearing.
   const v = find(
-    ".toast { background: var(--ds-theme-success-role-bg); color: var(--ds-theme-success-role-on); }",
+    ".toast { background: var(--rata-theme-success-role-bg); color: var(--rata-theme-success-role-on); }",
     "forbidden-pairing"
   );
   assert.ok(v, "expected the white-on-success-fill pairing to be caught");
@@ -55,7 +55,7 @@ test("each role's own label token clears AA on its fill", () => {
   // in the dark scheme, because on-accent inverts with the accent and the
   // status fills do not.
   for (const role of ["danger", "warning"]) {
-    const css = `.b { background: var(--ds-theme-${role}-role-bg); color: var(--ds-theme-${role}-role-on); }`;
+    const css = `.b { background: var(--rata-theme-${role}-role-bg); color: var(--rata-theme-${role}-role-on); }`;
     assert.equal(find(css, "forbidden-pairing"), undefined, `${role} label must clear AA`);
   }
 });
@@ -66,11 +66,11 @@ test("a pairing verified in one theme is a warning, not an error", () => {
   // model so the branch stays covered no matter what the real ramps measure.
   const synthetic = {
     index: {
-      "ds-fg": { path: "fg", layer: "semantic" },
-      "ds-bg": { path: "bg", layer: "semantic" },
-      "ds-bg2": { path: "bg2", layer: "semantic" },
+      "rata-fg": { path: "fg", layer: "semantic" },
+      "rata-bg": { path: "bg", layer: "semantic" },
+      "rata-bg2": { path: "bg2", layer: "semantic" },
     },
-    validVars: new Set(["ds-fg", "ds-bg", "ds-bg2"]),
+    validVars: new Set(["rata-fg", "rata-bg", "rata-bg2"]),
     forbidden: new Map([
       ["fg|bg", { below: "AA-text", themes: ["dark"], measured: { dark: 3.68 }, workaround: "" }],
       ["fg|bg2", { below: "AA-text", themes: ["light", "dark"], measured: { light: 2.1 }, workaround: "" }],
@@ -78,7 +78,7 @@ test("a pairing verified in one theme is a warning, not an error", () => {
     verified: new Set(["fg|bg"]),
   };
   const severityFor = (bg) =>
-    evaluateSource(`.a { background: var(--ds-${bg}); color: var(--ds-fg); }`, synthetic)
+    evaluateSource(`.a { background: var(--rata-${bg}); color: var(--rata-fg); }`, synthetic)
       .violations.find((v) => v.rule === "forbidden-pairing")?.severity;
 
   assert.equal(severityFor("bg"), "warn", "verified somewhere → warning");
@@ -90,13 +90,13 @@ test("the primary and destructive button pairings are clean in both themes", () 
   // 500) so white text clears AA in both themes; this guards against them
   // drifting back.
   for (const bg of ["accent", "danger"]) {
-    const css = `.button { background: var(--ds-theme-${bg}-role-bg); color: var(--ds-theme-fg-on-accent); }`;
+    const css = `.button { background: var(--rata-theme-${bg}-role-bg); color: var(--rata-theme-fg-on-accent); }`;
     assert.equal(find(css, "forbidden-pairing"), undefined, `${bg} fill must clear AA in both themes`);
   }
 });
 
 test("accepts the documented success and warning notice recipe", () => {
-  const css = `.n { background: var(--ds-theme-success-role-subtle); color: var(--ds-theme-success-role-fg); }`;
+  const css = `.n { background: var(--rata-theme-success-role-subtle); color: var(--rata-theme-success-role-fg); }`;
   assert.deepEqual(rules(css), []);
 });
 
@@ -114,9 +114,9 @@ test("allows font-relative sizing", () => {
 
 test("accepts scale tokens in place of raw values", () => {
   const css = `.a {
-    padding: var(--ds-space-4);
-    font-weight: var(--ds-font-weight-bold);
-    transition: opacity var(--ds-motion-duration-fast) var(--ds-motion-easing-standard);
+    padding: var(--rata-space-4);
+    font-weight: var(--rata-font-weight-bold);
+    transition: opacity var(--rata-motion-duration-fast) var(--rata-motion-easing-standard);
   }`;
   assert.deepEqual(rules(css), []);
 });
@@ -124,15 +124,15 @@ test("accepts scale tokens in place of raw values", () => {
 test("requires a focus ring on a focusable control", () => {
   assert.ok(rules(".btn { cursor: pointer; }").includes("missing-focus-ring"));
   const ok = `.btn { cursor: pointer; }
-    .btn:focus-visible { outline: var(--ds-focus-ring-width) solid var(--ds-theme-focus-ring); }`;
+    .btn:focus-visible { outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring); }`;
   assert.ok(!rules(ok).includes("missing-focus-ring"));
 });
 
 test("does not demand a focus ring from a non-focusable overlay primitive", () => {
-  // Regression: .ds-state-layer has :hover/:active rules but is never focused.
-  const stateLayer = `.ds-state-layer::after { opacity: 0; pointer-events: none; }
-    .ds-state-layer:hover::after { opacity: var(--ds-state-hover-opacity); }
-    .ds-state-layer:active::after { opacity: var(--ds-state-press-opacity); }`;
+  // Regression: .rata-state-layer has :hover/:active rules but is never focused.
+  const stateLayer = `.rata-state-layer::after { opacity: 0; pointer-events: none; }
+    .rata-state-layer:hover::after { opacity: var(--rata-state-hover-opacity); }
+    .rata-state-layer:active::after { opacity: var(--rata-state-press-opacity); }`;
   assert.ok(!rules(stateLayer).includes("missing-focus-ring"));
 });
 
@@ -142,25 +142,52 @@ test("flags a removed focus ring", () => {
 
 test("warns on hand-rolled hover and native disabled styling", () => {
   assert.ok(
-    rules(".btn:hover { background: var(--ds-theme-accent-role-subtle); }").includes("hand-rolled-hover")
+    rules(".btn:hover { background: var(--rata-theme-accent-role-subtle); }").includes("hand-rolled-hover")
   );
   assert.ok(rules(".btn:disabled { opacity: 0.5; }").includes("native-disabled-styling"));
   assert.ok(
-    !rules('.btn[aria-disabled="true"] { opacity: var(--ds-state-disabled-opacity); }').includes(
+    !rules('.btn[aria-disabled="true"] { opacity: var(--rata-state-disabled-opacity); }').includes(
       "native-disabled-styling"
     )
   );
 });
 
-test("ds-allow records a deliberate exception", () => {
-  const css = `/* ds-allow: hardcoded-motion — the spin cycle has no token */
+test("flags layout scoped to an overlay's open state", () => {
+  // The bug this exists for: `display` is the one property a top-layer overlay
+  // transitions with allow-discrete, so it is held at its open value for the
+  // whole exit while everything else on the same selector reverts at once.
+  // flex-direction cannot ease, so it snaps and the children re-lay-out for
+  // the length of the closing animation.
+  assert.ok(
+    rules(".d[open] { display: flex; flex-direction: column; }").includes("state-scoped-layout")
+  );
+  assert.ok(
+    rules(".m:popover-open { display: flex; grid-auto-flow: row; }").includes(
+      "state-scoped-layout"
+    )
+  );
+
+  // `display` alone is the whole point of the state selector.
+  assert.ok(!rules(".d[open] { display: flex; }").includes("state-scoped-layout"));
+  // Animatable, or meant to revert at once — neither snaps visibly.
+  assert.ok(
+    !rules(".d[open] { opacity: 1; translate: 0 0; pointer-events: auto; }").includes(
+      "state-scoped-layout"
+    )
+  );
+  // Nothing to do with an overlay's open state.
+  assert.ok(!rules(".card { flex-direction: column; }").includes("state-scoped-layout"));
+});
+
+test("rata-allow records a deliberate exception", () => {
+  const css = `/* rata-allow: hardcoded-motion — the spin cycle has no token */
     .spinner { animation: spin 0.8s linear infinite; }`;
   assert.ok(!rules(css).includes("hardcoded-motion"));
 });
 
-test("ds-allow covers only the block it precedes", () => {
+test("rata-allow covers only the block it precedes", () => {
   // A file-wide exemption would quietly cover violations added later.
-  const css = `/* ds-allow: hardcoded-dimension — app layout constant */
+  const css = `/* rata-allow: hardcoded-dimension — app layout constant */
     .shell { width: 960px; }
     .later { padding: 13px; }`;
   const v = evaluateSource(css, model).violations.filter((x) => x.rule === "hardcoded-dimension");
@@ -175,12 +202,12 @@ test("layout constraints are not scale violations", () => {
 
 test("scoring reports a missing required token", () => {
   const prompt = { id: "x", mustUse: ["theme.warning-role.subtle"] };
-  const bad = scoreCandidate(".n { color: var(--ds-theme-fg-primary); }", prompt, model);
+  const bad = scoreCandidate(".n { color: var(--rata-theme-fg-primary); }", prompt, model);
   assert.equal(bad.pass, false);
   assert.ok(bad.violations.some((v) => v.rule === "missing-required-token"));
 
   const good = scoreCandidate(
-    ".n { background: var(--ds-theme-warning-role-subtle); color: var(--ds-theme-warning-role-fg); }",
+    ".n { background: var(--rata-theme-warning-role-subtle); color: var(--rata-theme-warning-role-fg); }",
     prompt,
     model
   );

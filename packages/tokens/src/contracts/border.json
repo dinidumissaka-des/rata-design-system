@@ -1,0 +1,19 @@
+{
+  "$contract": "border",
+  "$summary": "Border widths — the raw px scale plus the semantic default.",
+  "tokens": {
+    "border": {
+      "layer": "base",
+      "summary": "Border widths — a raw px scale, plus a semantic default step.",
+      "use": [
+        "border-width, or a component's default border shorthand via border.default."
+      ],
+      "scale": {
+        "1": "Hairline — the default border/divider width.",
+        "2": "Emphasis border, e.g. a focus ring's outline-width.",
+        "3": "The focus ring's outline-offset, borrowed here so ring geometry stays on this same scale.",
+        "default": "1px — border.1. The width for theme.border.default / theme.border.strong."
+      }
+    }
+  }
+}

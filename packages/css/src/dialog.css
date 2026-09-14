@@ -1,0 +1,241 @@
+/* Dialog — a modal surface that takes over the screen.
+
+   A NATIVE <dialog> OPENED WITH showModal(), which is the whole point. The
+   browser supplies the things that are hardest to hand-roll and easiest to
+   get subtly wrong: a real focus trap, `inert` on everything behind it, the
+   top layer, ::backdrop, Escape-to-close, and focus returned to the opener.
+   A hand-written focus trap is the most bug-prone thing in any design
+   system; the browser's is correct by construction.
+
+   What CSS still has to do is the part the platform leaves open: the
+   appearance, and animating in and out of `display: none`. */
+.rata-dialog {
+  box-sizing: border-box;
+  /* The UA stylesheet centres a modal dialog with auto margins and gives it a
+     border and its own padding; all three are replaced here. */
+  margin: auto;
+  padding: var(--rata-space-padding-lg);
+  border: var(--rata-space-0);
+  max-inline-size: calc(100% - var(--rata-space-padding-lg) * 2);
+  max-block-size: calc(100% - var(--rata-space-padding-lg) * 2);
+  border-radius: var(--rata-radius-page);
+  background: var(--rata-theme-bg-surface);
+  color: var(--rata-theme-fg-primary);
+  box-shadow: var(--rata-theme-elevation-modal);
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-body-size);
+  line-height: var(--rata-type-body-line-height);
+  /* Here and NOT on [open], which is the trap. `display` is transitioned with
+     `allow-discrete`, so on close it stays `flex` for the whole exit — while
+     every other declaration scoped to [open] reverts the instant the attribute
+     goes. `flex-direction` is not animatable, so it snapped back to `row` and
+     the header, body and footer laid out side by side for the length of the
+     closing animation.
+
+     The invariant that keeps this from coming back: [open] carries `display`
+     and nothing else that layout depends on. Anything scoped there must be
+     either animatable or something that is *meant* to revert at once, like
+     pointer-events. */
+  flex-direction: column;
+}
+
+/* A dialog is display:none until opened, so `[open]` is the switch and there
+   is no separate class to keep in step with the element's real state. */
+.rata-dialog[open] {
+  display: flex;
+}
+
+/* Three widths from the control scale rather than a size.dialog.* family:
+   a dialog is measured in controls, and a scale with one consumer is a list.
+
+   Each is min()'d with the viewport inset rather than just stating the width.
+   `max-inline-size` on the modifier otherwise REPLACES the inset on the base
+   rule, and since `inline-size: 100%` resolves against the viewport for a
+   top-layer element, a dialog narrower than its own max went edge to edge
+   with no margin at all. */
+.rata-dialog--sm {
+  inline-size: 100%;
+  max-inline-size: min(
+    calc(var(--rata-size-control-lg) * 10),
+    calc(100% - var(--rata-space-padding-lg) * 2)
+  );
+}
+
+.rata-dialog--md {
+  inline-size: 100%;
+  max-inline-size: min(
+    calc(var(--rata-size-control-lg) * 14),
+    calc(100% - var(--rata-space-padding-lg) * 2)
+  );
+}
+
+.rata-dialog--lg {
+  inline-size: 100%;
+  max-inline-size: min(
+    calc(var(--rata-size-control-lg) * 20),
+    calc(100% - var(--rata-space-padding-lg) * 2)
+  );
+}
+
+/* theme.scrim exists for exactly this. It is not theme.bg.muted at an alpha:
+   a scrim implies the page behind it is inert, which is true here and false
+   for a menu, so the two must not share a token. */
+.rata-dialog::backdrop {
+  background: var(--rata-theme-scrim);
+}
+
+/* Animating to and from display:none needs both of these: `allow-discrete`
+   lets `display` and `overlay` flip at the right end of the transition
+   instead of immediately, and @starting-style supplies the from-state for an
+   element that was not in the rendering tree a moment ago. Without the
+   `overlay` transition the dialog drops out of the top layer the instant it
+   starts closing and the exit animation plays behind the page.
+
+   BOTH the dialog and its backdrop transition `overlay`, and the backdrop
+   needs it as much as the dialog does. `overlay` is what holds an element in
+   the top layer for the length of its exit; leaving it off the backdrop drops
+   the scrim the instant `close()` runs, so the dialog spends its whole exit
+   animating over a live, undimmed page. Which is the bug this comment
+   previously argued for, on the grounds that a backdrop "has no such
+   property" — it participates in the top layer with its originating element,
+   and it does.
+
+   A rise as well as a fade: opacity alone reads as the surface being revealed
+   rather than arriving, which is the wrong impression for something that
+   takes the screen over. */
+@media (prefers-reduced-motion: no-preference) {
+  .rata-dialog {
+    transition:
+      opacity var(--rata-motion-modal-duration) var(--rata-motion-easing-exit),
+      translate var(--rata-motion-modal-duration) var(--rata-motion-easing-exit),
+      display var(--rata-motion-modal-duration) allow-discrete,
+      overlay var(--rata-motion-modal-duration) allow-discrete;
+    opacity: 0;
+    translate: 0 var(--rata-space-2);
+    /* The flip side of holding the top layer for the length of the exit: for
+       those 280ms the backdrop is still there, invisible and still catching
+       clicks, so the page ignores the reader right after they closed it.
+       Restored on [open] below. */
+    pointer-events: none;
+  }
+
+  .rata-dialog::backdrop {
+    transition:
+      opacity var(--rata-motion-modal-duration) var(--rata-motion-easing-exit),
+      display var(--rata-motion-modal-duration) allow-discrete,
+      overlay var(--rata-motion-modal-duration) allow-discrete;
+    opacity: 0;
+  }
+
+  .rata-dialog[open],
+  .rata-dialog[open]::backdrop {
+    opacity: 1;
+    transition-timing-function: var(--rata-motion-easing-enter);
+  }
+
+  .rata-dialog[open] {
+    translate: 0 var(--rata-space-0);
+    pointer-events: auto;
+  }
+
+  /* Last, so it wins over the [open] rules above for the one frame it
+     applies to. */
+  @starting-style {
+    .rata-dialog[open],
+    .rata-dialog[open]::backdrop {
+      opacity: 0;
+    }
+
+    .rata-dialog[open] {
+      translate: 0 var(--rata-space-2);
+    }
+  }
+}
+
+.rata-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rata-space-gap-sm);
+}
+
+/* A real heading element, unlike Notice's title.
+   The difference is that a modal genuinely is its own context — everything
+   behind it is inert — so the outline inside it starts fresh and h2 is the
+   top of it. A notice sits inside the page's existing outline and cannot
+   know what level it is at. */
+.rata-dialog-heading {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+.rata-dialog-title {
+  margin: var(--rata-space-0);
+  font-size: var(--rata-type-heading-size);
+  font-weight: var(--rata-type-heading-weight);
+  line-height: var(--rata-type-heading-line-height);
+}
+
+.rata-dialog-description {
+  margin: var(--rata-space-0);
+  margin-block-start: var(--rata-space-stack-2xs);
+  color: var(--rata-theme-fg-secondary);
+}
+
+/* Scrolls on its own rather than letting the whole dialog grow past the
+   viewport, so the title stays put and the actions stay reachable.
+
+   `min-block-size: 0` is what makes that actually happen. A flex item's
+   default `min-height: auto` refuses to shrink below its content, so
+   `overflow-y` never engaged: tall content pushed the footer out of the
+   dialog's own max-block-size instead of scrolling inside it. */
+.rata-dialog-body {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  margin-block-start: var(--rata-space-stack-md);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.rata-dialog-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--rata-space-gap-sm);
+  margin-block-start: var(--rata-space-stack-md);
+}
+
+/* Same construction as Notice's dismiss: currentColor on a transparent
+   background, so the glyph matches the surface's own foreground. */
+.rata-dialog-dismiss {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--rata-size-control-sm);
+  block-size: var(--rata-size-control-sm);
+  padding: var(--rata-space-0);
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-inner);
+  background: transparent;
+  color: currentColor;
+  cursor: pointer;
+  /* Centred on the title's FIRST line rather than on the whole heading block,
+     which is what `align-items: flex-start` gives it, and pulled back by the
+     difference so a 28px control does not make the header taller than the
+     24px line beside it. Derived from the heading's own metrics, so it stays
+     right if the type scale moves — `1em` would be wrong here because the
+     button inherits the body size, not the heading's. */
+  margin-block-start: calc(
+    (
+        var(--rata-type-heading-size) * var(--rata-type-heading-line-height) -
+          var(--rata-size-control-sm)
+      ) / 2
+  );
+}
+
+.rata-dialog-dismiss:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style)
+    var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}

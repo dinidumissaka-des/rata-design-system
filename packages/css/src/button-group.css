@@ -1,0 +1,66 @@
+/* rata-allow: missing-focus-ring — this is a container: every focus ring here
+   belongs to a button inside it, and drawing a second one around the group
+   would double the indicator. The checker's heuristic sees "button" in these
+   class names and expects the component to own a ring. */
+
+/* Button group — a named set of related buttons, spaced or attached into one
+   bar. Loaded after button.css: the attached form overrides the corner radius
+   the buttons set for themselves. */
+.rata-button-group {
+  display: inline-flex;
+  gap: var(--rata-space-gap-sm);
+}
+
+.rata-button-group[data-orientation="vertical"] {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Attached — the buttons read as one control, so the gaps close, the inner
+   corners square off, and adjacent borders collapse into one. */
+.rata-button-group--attached {
+  gap: var(--rata-space-0);
+}
+
+.rata-button-group--attached > * {
+  /* Needed for the focus z-index below; the buttons already have it from
+     .rata-state-layer, but the group must not depend on what its children compose. */
+  position: relative;
+  border-radius: var(--rata-radius-none);
+}
+
+/* A focused button's ring would otherwise be clipped by the neighbour whose
+   collapsed border overlaps it. */
+.rata-button-group--attached > :focus-visible {
+  z-index: 1;
+}
+
+/* Logical properties throughout, so an attached group flips correctly in RTL
+   without a second set of rules. */
+.rata-button-group--attached[data-orientation="horizontal"] > * + * {
+  margin-inline-start: calc(-1 * var(--rata-border-1));
+}
+
+.rata-button-group--attached[data-orientation="horizontal"] > :first-child {
+  border-start-start-radius: var(--rata-radius-element);
+  border-end-start-radius: var(--rata-radius-element);
+}
+
+.rata-button-group--attached[data-orientation="horizontal"] > :last-child {
+  border-start-end-radius: var(--rata-radius-element);
+  border-end-end-radius: var(--rata-radius-element);
+}
+
+.rata-button-group--attached[data-orientation="vertical"] > * + * {
+  margin-block-start: calc(-1 * var(--rata-border-1));
+}
+
+.rata-button-group--attached[data-orientation="vertical"] > :first-child {
+  border-start-start-radius: var(--rata-radius-element);
+  border-start-end-radius: var(--rata-radius-element);
+}
+
+.rata-button-group--attached[data-orientation="vertical"] > :last-child {
+  border-end-start-radius: var(--rata-radius-element);
+  border-end-end-radius: var(--rata-radius-element);
+}

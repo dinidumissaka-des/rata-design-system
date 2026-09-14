@@ -1,0 +1,126 @@
+{
+  "name": "avatar",
+  "title": "Avatar",
+  "family": "content",
+  "description": "A person or entity's image, falling back to initials when there is none.",
+  "alsoKnownAs": [
+    "profile-picture"
+  ],
+  "status": {
+    "css": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "react": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [],
+  "files": [
+    {
+      "source": "packages/css/src/avatar.css",
+      "target": "styles/avatar.css"
+    },
+    {
+      "source": "packages/react/src/avatar.tsx",
+      "target": "components/avatar.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
+  "tier": "free",
+  "props": {
+    "name": {
+      "summary": "The person or entity's name. Required — it is both the fallback initials and the accessible name.",
+      "use": [
+        "Always. The name is what makes the fallback possible and the image describable."
+      ],
+      "dont": [
+        "Passing an email or a user id. Initials derived from `a.hartley@` are not initials, and the accessible name would be an address."
+      ],
+      "a11y": "Used as the image's `alt` when `decorative` is not set. When the image is missing, the initials are shown but the full name is still what is announced — a screen reader should never hear 'AH'."
+    },
+    "src": {
+      "summary": "Image URL. Omit, or let it fail, to fall back to initials.",
+      "use": [
+        "A real photo or logo. The fallback is automatic, so there is no need to branch on whether one exists."
+      ]
+    },
+    "size": {
+      "summary": "Diameter, from the `size.control.*` scale so an avatar lines up with the controls beside it.",
+      "dont": [
+        "Mixing sizes within one stack of avatars — they read as a set."
+      ]
+    },
+    "decorative": {
+      "summary": "Marks the avatar as redundant to a name already on screen.",
+      "use": [
+        "An avatar immediately beside the person's name in a row — announcing it again is noise."
+      ],
+      "dont": [
+        "Anything standing alone. Without adjacent text the avatar is the only thing identifying the person, so hiding it removes that identification entirely."
+      ],
+      "a11y": "Renders `aria-hidden` with an empty `alt`. The `name` is still required, because it still produces the initials."
+    },
+    "className": {
+      "summary": "Class for the avatar's wrapper.",
+      "use": [
+        "Placing the component in its surrounding layout — a span, a width, a margin the parent cannot express."
+      ],
+      "dont": [
+        "Overriding the size — the three steps are the scale, and a fourth written in a component's CSS is the drift the scale exists to prevent.",
+        "Restyling the component's internals through descendant selectors. Those are the approved token mapping, and overriding them here puts a second answer somewhere the contract cannot see."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "A photo with its name beside it",
+      "when": "A row in a member list, where the name is already text.",
+      "example": "<Avatar name=\"Ada Hartley\" src={user.photo} decorative />\n<span>Ada Hartley</span>",
+      "notes": "`decorative` because the name is right there — announcing it twice is noise. Note `name` is still required: it is what produces the initials if the photo fails to load."
+    },
+    {
+      "case": "Standing alone",
+      "when": "An avatar in a toolbar or a stack, with no adjacent name.",
+      "example": "<Avatar name=\"Ada Hartley\" src={user.photo} />",
+      "notes": "Not decorative: the avatar is the only thing identifying this person, so it carries the name."
+    },
+    {
+      "case": "No image at all",
+      "when": "A user who has not uploaded a photo — which is most of them.",
+      "example": "<Avatar name=\"Ada Hartley\" />",
+      "notes": "Initials are shown and the full name is announced. There is nothing to branch on: omitting `src`, and an `src` that 404s, land in the same place."
+    }
+  ],
+  "tokens": {
+    "base": {
+      "summary": "A circular image, falling back to initials on the most recessed surface.",
+      "tokens": {
+        "size": "size.control.md, with the sm and lg steps at the other sizes — an avatar lines up with the controls beside it, which is the whole reason it borrows the control scale",
+        "border-radius": "radius.pill",
+        "fallback background": "theme.bg.muted — the most recessed surface, so initials read as a placeholder rather than a filled badge",
+        "fallback color": "theme.fg.secondary — the pairing the muted background documents for text; theme.fg.muted falls to AA-large there",
+        "fallback font-size": "type.supporting.size",
+        "fallback font-weight": "type.control.weight",
+        "image fit": "cover, so a non-square photo is cropped rather than squashed — a layout fact, not a token",
+        "background": "theme.bg.muted — the most recessed step, so initials read as a placeholder rather than a filled badge. No drawn edge: it had one only because a section band and this fill used to be the same colour, which theme.bg.subtle having a tone of its own has fixed"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "",
+    "decisions": [
+      {
+        "decision": "No drawn edge on the circle",
+        "why": "It had one, because the fallback sits on theme.bg.muted and vanished against any container using that same tone — unavoidable while the background ladder had four names and three distinct values, and sections had taken theme.bg.muted for want of a usable theme.bg.subtle. With subtle given a tone of its own, a section band and a placeholder circle are different colours and the ring bought nothing; on a small circle it read as a border round a border.\n\nThe remaining case, stated because it is real rather than hypothetical: an avatar placed directly on a theme.bg.muted surface still has no visible edge. Sections use theme.bg.subtle now, so that is an unusual placement — but it is the one to remember, and the separation is modest everywhere else too (1.26:1 on a surface)."
+      }
+    ]
+  }
+}

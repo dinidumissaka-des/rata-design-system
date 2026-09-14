@@ -1,0 +1,69 @@
+{
+  "$contract": "theme.accent-role",
+  "$summary": "The accent role — the single highest-priority action in a view, and the tint and stroke that belong to it.",
+  "tokens": {
+    "theme.accent-role.bg": {
+      "layer": "semantic",
+      "summary": "Filled accent background for the single highest-priority action in a view.",
+      "use": [
+        "Primary button background.",
+        "Selected state of a toggle, tab indicator, or segmented control.",
+        "Filled accent badge, or the filled portion of a progress bar."
+      ],
+      "dont": [
+        "More than one action per view — a screen with two primary buttons has no primary button.",
+        "Large background regions; it is a control fill, not a page color.",
+        "Behind theme.fg.primary or theme.fg.secondary — the only foreground permitted here is theme.fg.on-accent."
+      ],
+      "instead": {
+        "A second, lower-priority action": "theme.bg.surface with theme.border.strong (secondary button), or theme.secondary-role.bg",
+        "A tinted accent region": "theme.accent-role.subtle"
+      },
+      "pairsWith": [
+        "theme.fg.on-accent"
+      ],
+      "example": {
+        "css": ".rata-button--primary { background: var(--rata-theme-accent-role-bg); color: var(--rata-theme-fg-on-accent); }"
+      }
+    },
+    "theme.accent-role.fg": {
+      "layer": "semantic",
+      "summary": "Accent-colored text for a link or a text-only action.",
+      "use": [
+        "Inline link color.",
+        "The tertiary/text button variant's label.",
+        "Icon or text on an accent-role.subtle background."
+      ],
+      "pairsWith": [
+        "theme.bg.canvas",
+        "theme.bg.surface",
+        "theme.accent-role.subtle"
+      ]
+    },
+    "theme.accent-role.subtle": {
+      "layer": "semantic",
+      "summary": "A tinted, low-saturation accent background that carries text safely.",
+      "use": [
+        "Informational banner background (paired with theme.accent-role.fg text).",
+        "A selected menu item or nav item's background."
+      ],
+      "dont": [
+        "As a substitute for theme.accent-role.bg on a primary action — this is a tint, not a fill."
+      ]
+    },
+    "theme.accent-role.ring": {
+      "layer": "semantic",
+      "summary": "Inset accent stroke marking a selected or actively-validating control — distinct from the keyboard focus ring.",
+      "use": [
+        "A checked/selected input's inset outline, alongside its own background/border.",
+        "An in-progress validation state on a field (e.g. while checking availability)."
+      ],
+      "dont": [
+        "As a replacement for the :focus-visible outline (theme.focus-ring) — the two can coexist but answer different questions (keyboard focus vs. selection/validation state)."
+      ],
+      "example": {
+        "css": ".rata-input--selected { box-shadow: var(--rata-theme-accent-role-ring); }"
+      }
+    }
+  }
+}

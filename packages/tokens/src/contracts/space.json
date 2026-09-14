@@ -1,0 +1,53 @@
+{
+  "$contract": "space",
+  "$summary": "The spacing scale and the rolled-up roles that name a spacing situation.",
+  "tokens": {
+    "space": {
+      "layer": "base",
+      "summary": "The spacing scale, plus rolled-up roles (gap/stack/padding/control/page/section) that name a specific spacing situation instead of a raw step.",
+      "use": [
+        "Every margin, padding, and gap — prefer the matching role (space.gap.md, space.page.gutter, …) over a raw step when one names the situation."
+      ],
+      "dont": [
+        "An arbitrary pixel value anywhere spacing is needed."
+      ],
+      "scale": {
+        "0": "0px.",
+        "0-5": "2px — hairline spacing.",
+        "1": "4px.",
+        "1-5": "6px.",
+        "2": "8px.",
+        "3": "12px.",
+        "4": "16px — the most common padding/gap step.",
+        "5": "20px.",
+        "6": "24px.",
+        "7": "28px.",
+        "8": "32px.",
+        "9": "36px.",
+        "10": "40px.",
+        "11": "44px.",
+        "12": "48px.",
+        "gap.xs": "Tightest inline gap, e.g. an icon and its label.",
+        "gap.sm": "A compact row's internal gap.",
+        "gap.md": "The default gap between related inline items.",
+        "gap.lg": "A looser gap between grouped inline items.",
+        "stack.2xs": "The tightest vertical step: a control and the label or helper text bound to it, where stack.xs still reads as separation. Note the line-height of the text either side adds leading on top of this, so the perceived gap is larger than the number.",
+        "stack.xs": "Tightest vertical rhythm, e.g. a label and its helper text.",
+        "stack.sm": "Compact vertical rhythm within a component.",
+        "stack.md": "The default vertical gap between stacked elements.",
+        "stack.lg": "A looser vertical gap between sections of one component.",
+        "padding.xs": "Compact component padding.",
+        "padding.sm": "Small component padding.",
+        "padding.md": "The default component padding.",
+        "padding.lg": "Generous component padding.",
+        "section": "Vertical gap between major page sections.",
+        "control.padding-inline.sm": "Horizontal padding for a size.control.sm control.",
+        "control.padding-inline.md": "Horizontal padding for a size.control.md control.",
+        "control.padding-inline.lg": "Horizontal padding for a size.control.lg control.",
+        "page.gutter": "The page's left/right edge padding.",
+        "page.block-start": "Vertical padding above a page's first section.",
+        "page.block-end": "Vertical padding below a page's last section."
+      }
+    }
+  }
+}

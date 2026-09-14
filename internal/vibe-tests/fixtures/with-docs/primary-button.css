@@ -1,23 +1,23 @@
 /* Primary button — the button-primary recipe. Hover/press come from
-   .ds-state-layer, which the element composes. */
+   .rata-state-layer, which the element composes. */
 .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--ds-space-gap-xs);
-  height: var(--ds-size-control-md);
-  padding-inline: var(--ds-space-control-padding-inline-md);
+  gap: var(--rata-space-gap-xs);
+  height: var(--rata-size-control-md);
+  padding-inline: var(--rata-space-control-padding-inline-md);
   border: 1px solid transparent;
-  border-radius: var(--ds-radius-element);
-  background: var(--ds-theme-accent-role-bg);
-  color: var(--ds-theme-fg-on-accent);
-  font-size: var(--ds-type-control-size-md);
-  font-weight: var(--ds-type-control-weight);
-  line-height: var(--ds-type-control-line-height-md);
+  border-radius: var(--rata-radius-element);
+  background: var(--rata-theme-accent-role-bg);
+  color: var(--rata-theme-fg-on-accent);
+  font-size: var(--rata-type-control-size-md);
+  font-weight: var(--rata-type-control-weight);
+  line-height: var(--rata-type-control-line-height-md);
   cursor: pointer;
 }
 
 .button:focus-visible {
-  outline: var(--ds-focus-ring-width) solid var(--ds-theme-focus-ring);
-  outline-offset: var(--ds-focus-ring-offset);
+  outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
 }

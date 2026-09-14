@@ -1,0 +1,133 @@
+/* Checkbox — a native input carrying the semantics, with a drawn box on top.
+
+   The input is not hidden with display:none or visibility:hidden, which would
+   take it out of the tab order and the accessibility tree along with the
+   pixels. It is laid over the box at zero opacity: still focusable, still
+   announced, still a real form control — the box is only paint.
+
+   States come from the primitive's data-state on the root, so nothing here
+   depends on a class the caller has to remember. */
+.rata-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rata-space-gap-sm);
+  font-family: var(--rata-font-family-sans);
+}
+
+.rata-checkbox-control {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  /* Exactly one line tall, so the box centres on the label's first line rather
+     than its whole block — which is what keeps a two-line description from
+     dragging the box down the middle of it.
+
+     The line-height token is a unitless *ratio*, so it is not a length on its
+     own: `block-size: 1.4286` is invalid and the browser silently drops the
+     declaration. Multiplied by the font size it is the 20px a line occupies. */
+  block-size: calc(var(--rata-type-control-size-md) * var(--rata-type-control-line-height-md));
+  align-items: center;
+}
+
+.rata-checkbox-input {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: var(--rata-space-0);
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* The box is sized to the glyph it holds, so it takes the icon scale — the
+   control scale is a row height and would dwarf it. */
+.rata-checkbox-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--rata-size-icon-md);
+  block-size: var(--rata-size-icon-md);
+  border: var(--rata-border-default) solid var(--rata-theme-border-strong);
+  /* Stated, not inherited from the consumer's reset: this rule sets an explicit
+     size alongside a border, so under content-box it renders 2px larger than the
+     token says. @rata/css deliberately ships no global reset — a library has no
+     business restyling a consumer's own elements — so each component that
+     measures itself declares this. */
+  box-sizing: border-box;
+  border-radius: var(--rata-radius-inner);
+  color: var(--rata-theme-fg-on-accent);
+  pointer-events: none;
+  transition:
+    background-color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing),
+    border-color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing);
+}
+
+/* Both filled states wear the same fill: "partly checked" is a degree of
+   checked, not a third colour. Only the mark inside differs. */
+.rata-checkbox[data-state="checked"] .rata-checkbox-box,
+.rata-checkbox[data-state="indeterminate"] .rata-checkbox-box {
+  background: var(--rata-theme-accent-role-bg);
+  border-color: var(--rata-theme-accent-role-bg);
+}
+
+.rata-checkbox-mark {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+/* Drawn on the input, shown on the box — the focusable thing and the painted
+   thing are different elements. The offset is kept: at 20px the box has no
+   room for a flush ring to read as separate from its own border. */
+.rata-checkbox-input:focus-visible + .rata-checkbox-box {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+.rata-checkbox-text {
+  display: flex;
+  flex-direction: column;
+  /* No gap: the label and the description each carry line-height leading of
+     their own — 3px below the label and 4px above the description — which
+     already reads as 7px of separation. Adding space.stack.2xs on top of that
+     made 11px, which looked like the two were unrelated.
+
+     Tightening further would mean giving the description another role's
+     line-height while keeping supporting's size, and the type contract is
+     explicit that each role carries a matched size, weight and line-height.
+     Not worth breaking that for 2px. */
+}
+
+/* Nothing visible to lay out beside the box, so the row does not reserve a
+   text column for it. The label element is still in there, clipped. */
+.rata-checkbox[data-label-hidden] {
+  gap: var(--rata-space-0);
+}
+
+.rata-checkbox-label {
+  color: var(--rata-theme-fg-primary);
+  font-size: var(--rata-type-control-size-md);
+  line-height: var(--rata-type-control-line-height-md);
+  cursor: pointer;
+}
+
+
+.rata-checkbox-required {
+  color: var(--rata-theme-fg-secondary);
+}
+
+.rata-checkbox-description {
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-supporting-size);
+  line-height: var(--rata-type-supporting-line-height);
+}
+
+/* aria-disabled with a guarded activation, never the native attribute: the box
+   stays focusable and keeps announcing its state. */
+.rata-checkbox[data-disabled] {
+  opacity: var(--rata-state-disabled-opacity);
+}
+
+.rata-checkbox[data-disabled] .rata-checkbox-input,
+.rata-checkbox[data-disabled] .rata-checkbox-label {
+  cursor: not-allowed;
+}

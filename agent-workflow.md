@@ -204,23 +204,23 @@ scripts/
 
 This repo (`DS`) is not the Next.js/shadcn stack the workflow above assumes
 — it's a token-first design system, and the "consumer app" is `apps/playground`
-plus, eventually, whatever installs `@ds/react`. The porting differences,
+plus, eventually, whatever installs `@rata/react`. The porting differences,
 made explicit rather than silently assumed:
 
 - **Layer 0 & 1 share one implementation**, not two. `packages/cli/lib/index.mjs`
   holds the parsing (registry, props-interface, tokens, pages); both
-  `packages/cli/bin/ds.mjs` (Layer 1's live commands) and
+  `packages/cli/bin/rata.mjs` (Layer 1's live commands) and
   `scripts/generate-ui-context.mjs` (Layer 0's static file) call into it. Two
   copies of the same source-reading logic is exactly the kind of drift this
   workflow exists to prevent.
 - **`ui:sync` runs at the end of `npm run build`, not in `postinstall`.**
-  The generator's token section needs `@ds/tokens` built; on a fresh clone
+  The generator's token section needs `@rata/tokens` built; on a fresh clone
   `postinstall` fires before any workspace has been built, so it would either
   no-op or lie. `npm run build` is the point where every artifact it reads
   actually exists.
-- **The lookup CLI *is* the distribution CLI** (`ds`/`@ds/cli`), not a second
+- **The lookup CLI *is* the distribution CLI** (`rata`/`@rata/cli`), not a second
   script. This repo already ships a registry-driven CLI for copy-paste
-  distribution (`ds list`, `ds add`); Layer 1's `props`/`tokens`/`pages`
+  distribution (`rata list`, `rata add`); Layer 1's `props`/`tokens`/`pages`
   were added as subcommands of it rather than a parallel `scripts/ui.mjs`,
   aliased at the root as `npm run ui`.
 - See [CLAUDE.md](CLAUDE.md) for the resulting ritual, anti-patterns, and

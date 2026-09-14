@@ -199,8 +199,21 @@ export function hctToHex({ hue, chroma, tone }) {
   return bestHex;
 }
 
-/** The tone stops a tonal palette is generated at. */
-const PALETTE_TONES = [0, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99, 100];
+/**
+ * The tone stops a tonal palette is generated at.
+ *
+ * 15 and 97 exist for one reason: `theme.bg.subtle` had nowhere to sit. It is
+ * documented as "one step of emphasis below a surface", and the stops either
+ * side of surface were 95 and 99 in light and 5 and 20 in dark — so it was
+ * given 95 and 10, which are exactly `bg.canvas` and `bg.surface`. Four named
+ * background steps resolved to three distinct values in each scheme, and a
+ * component wanting a recessed fill had to share a token with whatever it was
+ * sitting on.
+ *
+ * Adding a stop changes nothing that exists: a palette is a lookup keyed by
+ * tone, so the values already referenced are untouched.
+ */
+const PALETTE_TONES = [0, 5, 10, 15, 20, 30, 40, 50, 60, 70, 80, 90, 95, 97, 99, 100];
 
 /**
  * Generate a tonal palette — one hex per standard tone stop, at a fixed

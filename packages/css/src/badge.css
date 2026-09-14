@@ -1,0 +1,55 @@
+/* Badge — a small inline label for a status, a count, or a category.
+
+   Every variant pairs a role's *subtle* tint with that role's foreground,
+   never the saturated `bg`. Those fills are non-text indicator tones: white on
+   success-role.bg measures in the low 3s and is recorded as a known gap. The
+   text is what carries the meaning here, so it has to be readable. */
+.rata-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rata-space-gap-xs);
+  block-size: var(--rata-size-icon-lg);
+  padding-inline: var(--rata-space-gap-sm);
+  border-radius: var(--rata-radius-pill);
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-supporting-size);
+  /* Heavier than the text around it: a badge has to be found before it is read. */
+  font-weight: var(--rata-type-control-weight);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.rata-badge--neutral {
+  background: var(--rata-theme-bg-muted);
+  color: var(--rata-theme-fg-secondary);
+}
+
+.rata-badge--accent {
+  background: var(--rata-theme-accent-role-subtle);
+  color: var(--rata-theme-accent-role-fg);
+}
+
+.rata-badge--success {
+  background: var(--rata-theme-success-role-subtle);
+  color: var(--rata-theme-success-role-fg);
+}
+
+.rata-badge--warning {
+  background: var(--rata-theme-warning-role-subtle);
+  color: var(--rata-theme-warning-role-fg);
+}
+
+.rata-badge--danger {
+  background: var(--rata-theme-danger-role-subtle);
+  color: var(--rata-theme-danger-role-fg);
+}
+
+/* The dot repeats what the text already says, so it is aria-hidden in the
+   markup and takes currentColor here — it can never disagree with its label. */
+.rata-badge-dot {
+  inline-size: var(--rata-space-gap-sm);
+  block-size: var(--rata-space-gap-sm);
+  border-radius: var(--rata-radius-pill);
+  background: currentColor;
+  flex-shrink: 0;
+}

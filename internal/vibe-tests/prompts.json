@@ -89,7 +89,7 @@
         "hand-rolled-hover"
       ],
       "prompt": "Add hover and pressed states to the primary button.",
-      "trap": "Swapping the background to a different role or step instead of composing .ds-state-layer.",
+      "trap": "Swapping the background to a different role or step instead of composing .rata-state-layer.",
       "mustUse": []
     },
     {

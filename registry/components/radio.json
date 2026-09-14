@@ -1,0 +1,118 @@
+{
+  "name": "radio",
+  "title": "Radio",
+  "family": "inputs",
+  "description": "One option inside a radio group. Not usable on its own.",
+  "status": {
+    "css": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "react": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "state-layer"
+  ],
+  "files": [
+    {
+      "source": "packages/css/src/radio.css",
+      "target": "styles/radio.css"
+    },
+    {
+      "source": "packages/react/src/radio.tsx",
+      "target": "components/radio.tsx"
+    },
+    {
+      "source": "packages/react/src/radio-group-context.ts",
+      "target": "lib/radio-group-context.ts"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
+  "tier": "free",
+  "behavior": {
+    "summary": "An option rendered by its group, with no primitive of its own. It holds no state: getRadioGroupProps decides whether this one is checked, whether it is the tab stop, and what happens when it is activated. That is the point — a radio that owned any of those could disagree with its siblings.",
+    "decisions": [
+      {
+        "decision": "A Radio outside a RadioGroup is a mistake, not a fallback",
+        "why": "Alone it has no name to share, no siblings to be exclusive with, and no way to be reached by arrow keys — everything that makes it a radio lives in the group. Rendering one standalone would produce a control that looks right and behaves like nothing."
+      },
+      {
+        "decision": "`value` is required and is the item's whole identity",
+        "why": "It is what the group compares against, what arrow keys walk, and what a form submits. Without it the group has no way to refer to this option."
+      }
+    ]
+  },
+  "props": {
+    "value": {
+      "summary": "This option's value. What the group reports when it is chosen.",
+      "dont": [
+        "Reusing a value across two radios in one group — the group would consider both chosen."
+      ]
+    },
+    "label": {
+      "summary": "The option's label.",
+      "a11y": "A real `<label for>`, so the text is part of the hit target."
+    },
+    "description": {
+      "summary": "Helper text under the label, for an option whose consequence is not obvious.",
+      "dont": [
+        "Restating the label in more words."
+      ]
+    },
+    "disabled": {
+      "summary": "Blocks this one option while leaving it focusable and readable.",
+      "a11y": "Emits `aria-disabled`. Arrow keys still land on it; it just does not become the answer."
+    },
+    "className": {
+      "summary": "Class for the option's wrapper.",
+      "use": [
+        "Placing the component in its surrounding layout — a span, a width, a margin the parent cannot express."
+      ],
+      "dont": [
+        "Setting a width to align options — that is the group's layout decision, not the item's.",
+        "Restyling the component's internals through descendant selectors. Those are the approved token mapping, and overriding them here puts a second answer somewhere the contract cannot see."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "Inside its group",
+      "when": "The only correct use — and the reason any example of a Radio necessarily shows a group.",
+      "example": "<RadioGroup label=\"Support plan\" value={plan} onValueChange={setPlan}>\n  <Radio value=\"standard\" label=\"Standard\" />\n  <Radio value=\"priority\" label=\"Priority\" description=\"One business day response\" />\n  <Radio value=\"dedicated\" label=\"Dedicated\" disabled />\n</RadioGroup>",
+      "notes": "Everything that makes this a radio comes from the group: the shared name, the exclusivity, and the arrow-key reachability. That is why no example can show a Radio truly on its own — rendered outside a group it throws rather than degrading. Keep the group to one option when the subject is the option itself, and name it with `labelledBy` pointing at an off-screen element: `label` would render a heading above a single row, and leaving it unnamed is the mistake that prop's contract warns about."
+    }
+  ],
+  "tokens": {
+    "base": {
+      "summary": "One option in a radio group. Circular, so its shape says 'one of these' before the label is read.",
+      "tokens": {
+        "box size": "size.icon.md — the box is sized to the glyph it holds, so it takes the icon scale rather than the control one; the control heights are row heights and would dwarf the box itself",
+        "row height": "no reserved row height. An earlier version set it to size.control.md for a bigger hit target, but with the box aligned to the first line that reserved 12px of dead space under every row and inflated the list's pitch to 40px. At the resulting 28px pitch the target conforms through WCAG 2.5.8's spacing exception: 24px circles centred on adjacent targets do not intersect. The label is bound, so the target is the full width of the text as well",
+        "control height": "one line tall, from calc(type.control.size.md x type.control.line-height.md) = 20px. The line-height token is a unitless ratio, so it is not a length on its own — used alone the browser drops the declaration",
+        "border": "border.default solid theme.border.strong — the same boundary tone text-field uses, tone-walked to the 3:1 WCAG 1.4.11 asks of a control's edge",
+        "gap between box and label": "space.gap.sm — the inline role, because this pairing is horizontal",
+        "gap between label and description": "none — the label and the description each carry line-height leading, which already reads as 7px of separation. A gap on top of that made 11px and read as two unrelated lines",
+        "label color": "theme.fg.primary",
+        "label font-size": "type.control.size.md",
+        "description color": "theme.fg.secondary",
+        "description font-size": "type.supporting.size",
+        "checked background": "theme.accent-role.bg",
+        "hover/press": "compose the .rata-state-layer class — never a hand-written hover rule",
+        "outline (focus-visible)": "focus.ring-width solid theme.focus-ring, offset focus.ring-offset — the offset is kept here, unlike text-field: a 20px box has no room for a flush ring to read as separate from its own border",
+        "opacity (aria-disabled)": "state.disabled-opacity",
+        "transition": "motion.interactive.duration with motion.interactive.easing",
+        "border-radius": "radius.pill — a circle, which is the one thing that tells a radio from a checkbox before either is read",
+        "checked mark": "theme.fg.on-accent as a centred dot; a radio is filled, not ticked"
+      }
+    }
+  }
+}

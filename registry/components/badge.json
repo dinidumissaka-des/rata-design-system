@@ -1,0 +1,157 @@
+{
+  "name": "badge",
+  "title": "Badge",
+  "family": "content",
+  "description": "A small inline label for a status, a count, or a category.",
+  "status": {
+    "css": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "react": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [],
+  "files": [
+    {
+      "source": "packages/css/src/badge.css",
+      "target": "styles/badge.css"
+    },
+    {
+      "source": "packages/react/src/badge.tsx",
+      "target": "components/badge.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
+  "tier": "free",
+  "props": {
+    "children": {
+      "summary": "The badge's text.",
+      "dont": [
+        "A sentence. A badge that wraps is a Notice wearing the wrong component."
+      ]
+    },
+    "variant": {
+      "summary": "Which role's tone the badge wears.",
+      "use": [
+        "`neutral` for a count or a category — the default, and right whenever the badge is not reporting health.",
+        "`success` / `warning` / `danger` only for actual status, where the colour is telling the reader something the text also says."
+      ],
+      "dont": [
+        "Colour as decoration. Five badges in five colours that mean nothing teaches readers to ignore the colour on the one that does.",
+        "`danger` for 'important'. It means something is wrong."
+      ],
+      "a11y": "Every variant uses its role's subtle background with that role's foreground — never the saturated `bg`, which is a non-text indicator tone. The text carries the meaning; colour only reinforces it, so a badge is never colour-only."
+    },
+    "dot": {
+      "summary": "Renders a status dot before the text.",
+      "use": [
+        "A status badge in a dense table, where the dot is findable at a glance and the text confirms it."
+      ],
+      "dont": [
+        "A dot with no text. A bare coloured dot is colour-only information, which is exactly what the variant contract forbids."
+      ],
+      "a11y": "Decorative and `aria-hidden` — it repeats what the text already says."
+    }
+  },
+  "usage": [
+    {
+      "case": "A count beside a label",
+      "when": "The commonest case: a number qualifying something next to it.",
+      "example": "<Button>\n  Messages\n  <Badge>3</Badge>\n</Button>",
+      "notes": "Neutral by default: a count is not a status, and colouring it would imply something about the number."
+    },
+    {
+      "case": "A status in a table row",
+      "when": "Reporting health, where the colour reinforces text that already says it.",
+      "example": "<Badge variant=\"danger\" dot>Failed</Badge>",
+      "notes": "The dot is decorative and aria-hidden. Removing it would lose nothing for a screen reader, which is the test of whether a visual flourish is safe."
+    },
+    {
+      "case": "Reaching for the wrong component",
+      "when": "The text is a sentence explaining something.",
+      "example": "<Badge variant=\"warning\">Your trial ends in three days, renew to keep your data</Badge>",
+      "notes": "Don't. That is a Notice: it has room for the sentence, a heading, and somewhere to put the action. A badge that wraps onto two lines has already stopped being a badge."
+    }
+  ],
+  "tokens": {
+    "neutral": {
+      "summary": "The default: a count or a category, saying nothing about health.",
+      "tokens": {
+        "background": "theme.bg.muted",
+        "color": "theme.fg.secondary — verified on that background at AA",
+        "block-size": "size.icon.lg — a badge is glyph-height, not control-height; it sits inside a line of text rather than beside a button",
+        "padding-inline": "space.gap.sm",
+        "border-radius": "radius.pill",
+        "font-size": "type.supporting.size",
+        "font-weight": "type.control.weight — heavier than the text around it, because a badge has to be found before it is read",
+        "gap between dot and text": "space.gap.xs",
+        "dot size": "space.gap.sm — a dot is a mark, not a glyph, so it takes a spacing step rather than the icon scale"
+      }
+    },
+    "accent": {
+      "summary": "A category the brand wants noticed, still not a status.",
+      "tokens": {
+        "background": "theme.accent-role.subtle",
+        "color": "theme.accent-role.fg — a verified pairing on that tint",
+        "block-size": "size.icon.lg — a badge is glyph-height, not control-height; it sits inside a line of text rather than beside a button",
+        "padding-inline": "space.gap.sm",
+        "border-radius": "radius.pill",
+        "font-size": "type.supporting.size",
+        "font-weight": "type.control.weight — heavier than the text around it, because a badge has to be found before it is read",
+        "gap between dot and text": "space.gap.xs",
+        "dot size": "space.gap.sm — a dot is a mark, not a glyph, so it takes a spacing step rather than the icon scale"
+      }
+    },
+    "success": {
+      "summary": "Healthy, passing, complete.",
+      "tokens": {
+        "background": "theme.success-role.subtle",
+        "color": "theme.success-role.fg — never theme.success-role.bg, which is a non-text indicator tone that fails contrast under white",
+        "block-size": "size.icon.lg — a badge is glyph-height, not control-height; it sits inside a line of text rather than beside a button",
+        "padding-inline": "space.gap.sm",
+        "border-radius": "radius.pill",
+        "font-size": "type.supporting.size",
+        "font-weight": "type.control.weight — heavier than the text around it, because a badge has to be found before it is read",
+        "gap between dot and text": "space.gap.xs",
+        "dot size": "space.gap.sm — a dot is a mark, not a glyph, so it takes a spacing step rather than the icon scale"
+      }
+    },
+    "warning": {
+      "summary": "Degraded, expiring, needs attention but not broken.",
+      "tokens": {
+        "background": "theme.warning-role.subtle",
+        "color": "theme.warning-role.fg — same reason as success: the saturated bg carries no text",
+        "block-size": "size.icon.lg — a badge is glyph-height, not control-height; it sits inside a line of text rather than beside a button",
+        "padding-inline": "space.gap.sm",
+        "border-radius": "radius.pill",
+        "font-size": "type.supporting.size",
+        "font-weight": "type.control.weight — heavier than the text around it, because a badge has to be found before it is read",
+        "gap between dot and text": "space.gap.xs",
+        "dot size": "space.gap.sm — a dot is a mark, not a glyph, so it takes a spacing step rather than the icon scale"
+      }
+    },
+    "danger": {
+      "summary": "Failed, revoked, blocked.",
+      "tokens": {
+        "background": "theme.danger-role.subtle",
+        "color": "theme.danger-role.fg",
+        "block-size": "size.icon.lg — a badge is glyph-height, not control-height; it sits inside a line of text rather than beside a button",
+        "padding-inline": "space.gap.sm",
+        "border-radius": "radius.pill",
+        "font-size": "type.supporting.size",
+        "font-weight": "type.control.weight — heavier than the text around it, because a badge has to be found before it is read",
+        "gap between dot and text": "space.gap.xs",
+        "dot size": "space.gap.sm — a dot is a mark, not a glyph, so it takes a spacing step rather than the icon scale"
+      }
+    }
+  }
+}

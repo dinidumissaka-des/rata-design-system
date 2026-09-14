@@ -16,7 +16,7 @@ export function loadTokenModel() {
   for (const f of [TOKENS_CSS, USAGE_JSON]) {
     if (!existsSync(f)) {
       throw new Error(
-        `Missing ${path.relative(root, f)} — run \`npm run build -w @ds/tokens\` first.`
+        `Missing ${path.relative(root, f)} — run \`npm run build -w @rata/tokens\` first.`
       );
     }
   }
@@ -58,7 +58,7 @@ const lineOf = (text, index) => text.slice(0, index).split("\n").length;
 // Split a stylesheet into { selector, declarations } blocks. Good enough for the
 // flat component CSS this system produces; nested at-rules are flattened out.
 // Parses the original source, comments included, so reported line numbers match
-// the file and a `ds-allow` comment can be tied to the block it precedes.
+// the file and a `rata-allow` comment can be tied to the block it precedes.
 function parseBlocks(css) {
   const blocks = [];
   const re = /([^{}]+)\{([^{}]*)\}/g;
@@ -101,12 +101,12 @@ export function evaluateSource(source, model, { filename = "input" } = {}) {
 
   const blocks = parseBlocks(source);
 
-  // `/* ds-allow: rule-name, other-rule — why */` records a deliberate exception
+  // `/* rata-allow: rule-name, other-rule — why */` records a deliberate exception
   // in the file itself, so the reason travels with the code. It covers the rule
   // block it sits inside or immediately precedes — never the whole file, so a
   // later violation of the same rule is still reported.
   const allows = [];
-  for (const m of source.matchAll(/\/\*\s*ds-allow:\s*([a-z-,\s]+?)(?:—|--|\*\/)/g)) {
+  for (const m of source.matchAll(/\/\*\s*rata-allow:\s*([a-z-,\s]+?)(?:—|--|\*\/)/g)) {
     const line = lineOf(source, m.index);
     const scope = blocks.find((b) => b.endLine >= line) ?? null;
     for (const rule of m[1].split(",").map((r) => r.trim()).filter(Boolean)) {
@@ -123,7 +123,7 @@ export function evaluateSource(source, model, { filename = "input" } = {}) {
   };
 
   // --- token references -------------------------------------------------
-  for (const m of source.matchAll(/var\(\s*--(ds-[a-z0-9-]+)\s*[,)]/g)) {
+  for (const m of source.matchAll(/var\(\s*--(rata-[a-z0-9-]+)\s*[,)]/g)) {
     const name = m[1];
     tokensUsed.add(name);
     if (!model.validVars.has(name)) {
@@ -164,10 +164,10 @@ export function evaluateSource(source, model, { filename = "input" } = {}) {
         add("hardcoded-font-weight", "error", `\`font-weight: ${value}\` — use a type.*.weight token.`, block.index);
       }
       if (/^(transition|animation)(-(duration|timing-function))?$/.test(prop)) {
-        if (/\b\d+m?s\b/.test(value) && !value.includes("var(--ds-motion-duration")) {
+        if (/\b\d+m?s\b/.test(value) && !value.includes("var(--rata-motion-duration")) {
           add("hardcoded-motion", "error", `\`${prop}: ${value}\` — use a motion.duration.* token.`, block.index);
         }
-        if (/\b(ease|ease-in|ease-out|ease-in-out)\b|cubic-bezier\(/.test(value) && !value.includes("var(--ds-motion-easing")) {
+        if (/\b(ease|ease-in|ease-out|ease-in-out)\b|cubic-bezier\(/.test(value) && !value.includes("var(--rata-motion-easing")) {
           add("hardcoded-motion", "error", `\`${prop}: ${value}\` — use a motion.easing.* token.`, block.index);
         }
       }
@@ -176,8 +176,8 @@ export function evaluateSource(source, model, { filename = "input" } = {}) {
     // --- forbidden foreground/background pairing ------------------------
     const decl = (names) =>
       block.declarations.filter((d) => names.includes(d.prop)).map((d) => d.value).pop();
-    const fgVar = (decl(["color"]) ?? "").match(/var\(\s*--(ds-[a-z0-9-]+)/)?.[1];
-    const bgVar = (decl(["background", "background-color"]) ?? "").match(/var\(\s*--(ds-[a-z0-9-]+)/)?.[1];
+    const fgVar = (decl(["color"]) ?? "").match(/var\(\s*--(rata-[a-z0-9-]+)/)?.[1];
+    const bgVar = (decl(["background", "background-color"]) ?? "").match(/var\(\s*--(rata-[a-z0-9-]+)/)?.[1];
     if (fgVar && bgVar) {
       const fgPath = model.index[fgVar]?.path;
       const bgPath = model.index[bgVar]?.path;
@@ -199,19 +199,19 @@ export function evaluateSource(source, model, { filename = "input" } = {}) {
     }
 
     // --- state and focus handling ---------------------------------------
-    if (/:hover\b/.test(block.selector) && !block.selector.includes(".ds-state-layer")) {
+    if (/:hover\b/.test(block.selector) && !block.selector.includes(".rata-state-layer")) {
       // Any token-backed background counts, palette or theme: theme.bg.* /
       // theme.*-role.* live under the "theme" family here (not "color", as in
       // a single-file token source), so a hand-rolled swap is just as likely
       // to reach for a theme role as a raw palette step.
       const touchesBg = block.declarations.some(
-        (d) => (d.prop === "background" || d.prop === "background-color") && d.value.includes("var(--ds-")
+        (d) => (d.prop === "background" || d.prop === "background-color") && d.value.includes("var(--rata-")
       );
       if (touchesBg) {
         add(
           "hand-rolled-hover",
           "warn",
-          `\`${block.selector}\` swaps a background for hover. Compose the .ds-state-layer class instead.`,
+          `\`${block.selector}\` swaps a background for hover. Compose the .rata-state-layer class instead.`,
           block.index
         );
       }
@@ -233,17 +233,63 @@ export function evaluateSource(source, model, { filename = "input" } = {}) {
   }
 
   // A focusable control must draw a focus ring. Hover rules alone are not enough:
-  // a composable overlay primitive (.ds-state-layer) has them and is never focused.
+  // An overlay whose open/shown state carries layout as well as `display`.
+  //
+  // `display` is the one property a top-layer overlay transitions with
+  // `allow-discrete`, so on close it is HELD at its open value for the length
+  // of the exit. Everything else scoped to the same state selector reverts the
+  // instant the attribute or pseudo-class goes — and a property that is not
+  // animatable cannot ease, it snaps. So a `flex-direction: column` sitting
+  // beside `display: flex` on `[open]` lays the children out in a row for the
+  // whole closing animation, which reads as the layout breaking rather than as
+  // the overlay leaving.
+  //
+  // This is a real bug that shipped in this repo's Dialog. The rule is narrow
+  // on purpose: only properties that restructure layout, and only on a state
+  // selector that an overlay actually toggles.
+  const DISCRETE_STATE = /\[open\]|:popover-open/;
+  const SNAPS_BACK = new Set([
+    "flex-direction",
+    "flex-flow",
+    "flex-wrap",
+    "grid-auto-flow",
+    "grid-template-columns",
+    "grid-template-rows",
+    "position",
+    "float",
+  ]);
+  for (const block of blocks) {
+    if (!DISCRETE_STATE.test(block.selector)) continue;
+    for (const { prop: property } of block.declarations) {
+      if (!SNAPS_BACK.has(property)) continue;
+      add(
+        "state-scoped-layout",
+        "warn",
+        `\`${property}\` on \`${block.selector}\` reverts the moment the state does, while ` +
+          `\`display\` is held by allow-discrete — so it snaps and the layout breaks for the ` +
+          `length of the exit. Put it on the base rule; leave only \`display\` on the state.`,
+        block.index
+      );
+    }
+  }
+
+  // a composable overlay primitive (.rata-state-layer) has them and is never focused.
+  // `user-select` is a CSS property, not a <select> element, and \bselect\b
+  // matches inside it because the hyphen is a word boundary — which demanded a
+  // focus ring from Avatar, an element that cannot be focused. Stripped rather
+  // than excluded by lookbehind, because the names are also meant to match
+  // inside *class* names (`.rata-button` should still count as interactive).
+  const forElementTest = source.replace(/user-select/g, "");
   const looksInteractive =
     /cursor:\s*pointer|\bbutton\b|\binput\b|\bselect\b|\btextarea\b|role="(button|link|menuitem|tab)"/.test(
-      source
+      forElementTest
     );
-  const hasFocusRing = source.includes("--ds-theme-focus-ring");
+  const hasFocusRing = source.includes("--rata-theme-focus-ring");
   if (looksInteractive && !hasFocusRing) {
     add(
       "missing-focus-ring",
       "error",
-      "Interactive component with no :focus-visible ring using --ds-color-focus-ring.",
+      "Interactive component with no :focus-visible ring using --rata-theme-focus-ring.",
       0
     );
   } else if (hasFocusRing && !/:focus-visible/.test(source)) {
@@ -257,7 +303,7 @@ export function evaluateSource(source, model, { filename = "input" } = {}) {
 export function scoreCandidate(source, prompt, model, opts = {}) {
   const { violations, tokensUsed } = evaluateSource(source, model, opts);
   const missing = (prompt.mustUse ?? []).filter((tokenPath) => {
-    const varName = `ds-${tokenPath.replaceAll(".", "-")}`;
+    const varName = `rata-${tokenPath.replaceAll(".", "-")}`;
     return !tokensUsed.has(varName);
   });
   for (const tokenPath of missing) {

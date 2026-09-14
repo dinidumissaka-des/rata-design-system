@@ -1,0 +1,22 @@
+{
+  "name": "@rata/theme-cobalt",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Cobalt accent option for the Ratā design system — one seed; every token is generated.",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/cobaltTheme.mjs",
+    "./theme.css": "./dist/theme.css"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "node ../../tokens/build-theme.mjs src/cobaltTheme.mjs -o dist/theme.css",
+    "check": "node ../../tokens/build-theme.mjs src/cobaltTheme.mjs --check"
+  },
+  "peerDependencies": {
+    "@rata/tokens": "0.1.0"
+  }
+}

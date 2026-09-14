@@ -1,0 +1,49 @@
+/* Icon: a Lucide glyph sized from the icon scale.
+
+   Lucide renders width/height as SVG presentation attributes (24 by default),
+   and CSS properties beat presentation attributes — so setting them here
+   overrides Lucide's own sizing without passing numbers through JS, which
+   means the value stays in a token rather than being read out of a variable
+   at runtime.
+
+   Colour is deliberately absent: Lucide strokes with `currentColor`, so a
+   glyph takes the colour of the text it sits in. That is why an icon needs no
+   colour token of its own, and why it cannot contradict the label beside it. */
+.rata-icon {
+  display: inline-block;
+  /* A glyph beside text must not be squeezed by it. */
+  flex-shrink: 0;
+  /* Sits on the text baseline rather than hanging below it. */
+  vertical-align: middle;
+}
+
+/* The default: sized from the text it sits in. An icon beside a label should
+   move when that label does — and since a control's size no longer changes its
+   text, this no longer changes with the control either. Expressed as a
+   modifier like every other step rather than on the base class, so the size
+   always comes from exactly one place. */
+.rata-icon--text {
+  inline-size: var(--rata-size-icon-text);
+  block-size: var(--rata-size-icon-text);
+}
+
+/* Fixed steps — a standalone glyph, where no surrounding text sets the scale. */
+.rata-icon--xs {
+  inline-size: var(--rata-size-icon-xs);
+  block-size: var(--rata-size-icon-xs);
+}
+
+.rata-icon--sm {
+  inline-size: var(--rata-size-icon-sm);
+  block-size: var(--rata-size-icon-sm);
+}
+
+.rata-icon--md {
+  inline-size: var(--rata-size-icon-md);
+  block-size: var(--rata-size-icon-md);
+}
+
+.rata-icon--lg {
+  inline-size: var(--rata-size-icon-lg);
+  block-size: var(--rata-size-icon-lg);
+}

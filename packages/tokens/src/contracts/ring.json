@@ -1,0 +1,25 @@
+{
+  "$contract": "ring",
+  "$summary": "Inset validation and selection strokes, one per role. Reached through a role's ring.",
+  "tokens": {
+    "ring": {
+      "layer": "base",
+      "summary": "Inset box-shadow scale for validation/selection strokes, one per role plus a neutral pair. Always reached via a role's theme.*-role.ring, never directly.",
+      "use": [
+        "The value behind theme.accent-role.ring, theme.success-role.ring, theme.warning-role.ring, and theme.danger-role.ring."
+      ],
+      "dont": [
+        "Using ring.* directly in component CSS instead of the theme role — the role is what varies by (future) theme; the raw ring color does not need to today, but routing through the role keeps every consumer on one lookup path.",
+        "Using a ring in place of the keyboard focus outline (theme.focus-ring) — rings mark selection/validation state, not keyboard focus."
+      ],
+      "scale": {
+        "neutral": "An unfocused/unvalidated inset stroke, for a control that needs a resting inset outline without implying a role.",
+        "neutral-strong": "The dark-theme twin of neutral.",
+        "accent": "Backing value for theme.accent-role.ring.",
+        "success": "Backing value for theme.success-role.ring.",
+        "warning": "Backing value for theme.warning-role.ring.",
+        "danger": "Backing value for theme.danger-role.ring."
+      }
+    }
+  }
+}

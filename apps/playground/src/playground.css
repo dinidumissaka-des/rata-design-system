@@ -2,26 +2,93 @@
   box-sizing: border-box;
 }
 
+/* The header is sticky, so anything scrolled to by an anchor would otherwise
+   arrive underneath it. Nothing links by fragment today — the routes are
+   paths — which is exactly why this is worth setting now rather than after
+   the first anchor is added and lands behind the bar. On the scrolling
+   element, which is html, not body. */
+html {
+  /* The header's height, derived rather than guessed: the component states no
+     height — it comes from its padding plus whatever is tallest in the row —
+     and three separate rules depend on it, so they cannot be allowed to
+     disagree.
+
+     On the root because that is the only element every reader inherits from.
+     A custom property flows down the tree and not sideways or up: declared on
+     .pg-header the sticky sidebar could not see it (a sibling), and declared
+     on .pg-app this rule could not (an ancestor). Both were wrong in turn
+     before this. */
+  --pg-header-block-size: calc(
+    var(--rata-size-control-lg) + var(--rata-space-padding-sm) * 2 +
+      var(--rata-border-default)
+  );
+  /* The header is sticky, so anything scrolled to by an anchor would
+     otherwise arrive underneath it. Nothing links by fragment today — the
+     routes are paths — which is why it is worth setting now rather than after
+     the first anchor lands behind the bar. */
+  scroll-padding-block-start: var(--pg-header-block-size);
+}
+
 body {
   margin: 0;
-  font-family: var(--ds-font-family-sans);
-  background: var(--ds-theme-bg-canvas);
-  color: var(--ds-theme-fg-primary);
-  font-size: var(--ds-type-body-size);
-  font-weight: var(--ds-type-body-weight);
-  line-height: var(--ds-type-body-line-height);
+  font-family: var(--rata-font-family-sans);
+  background: var(--rata-theme-bg-canvas);
+  color: var(--rata-theme-fg-primary);
+  font-size: var(--rata-type-body-size);
+  font-weight: var(--rata-type-body-weight);
+  line-height: var(--rata-type-body-line-height);
+}
+
+/* Browsers default `code` to their own monospace family at a smaller size than
+   the surrounding text; this is the system's mono face at the body size, so
+   inline code sits on the same line rhythm as the prose around it. */
+code {
+  font-family: var(--rata-font-family-mono);
+  font-size: var(--rata-type-body-size);
 }
 
 .pg-app {
   min-height: 100vh;
 }
 
+/* The header is a TopNav now, so the bar, its padding and its border come
+   from the component. All that is left here is the page gutter, which is the
+   page's own measurement rather than the component's. */
+/* Sticky rather than fixed. Fixed takes the bar out of flow, which means
+   every page below it needs padding to replace the space it used to occupy —
+   one more number to keep in step with the bar's height. Sticky keeps it in
+   flow and pins it once the page scrolls, which is what "fixed to the top"
+   actually asks for, and needs no compensation anywhere.
+
+   Its height is not stated by the component — it comes from the padding plus
+   whatever is tallest in the row — so it is derived here rather than guessed,
+   because the sidebar below has to stick underneath it and the two cannot
+   disagree. */
 .pg-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--ds-space-4) var(--ds-space-page-gutter);
-  border-bottom: var(--ds-border-1) solid var(--ds-theme-border-default);
+  position: sticky;
+  inset-block-start: var(--rata-space-0);
+  /* Above the content scrolling under it, and above the sticky sidebar, which
+     takes no z-index of its own. */
+  z-index: 1;
+  padding-inline: var(--rata-space-page-gutter);
+}
+
+/* The drawer holds the same sections the rail does, so it only earns its
+   place where the rail does not fit. Which width that is depends on the rail
+   and the page around it — which is exactly why MobileNav ships no breakpoint
+   of its own, and why this media query lives here. */
+.pg-drawer-trigger {
+  display: none;
+}
+
+@media (max-width: 60rem) {
+  .pg-drawer-trigger {
+    display: inline-flex;
+  }
+
+  .pg-sidebar {
+    display: none;
+  }
 }
 
 .pg-layout {
@@ -29,243 +96,180 @@ body {
   align-items: flex-start;
 }
 
+/* Holds the Search and the SideNav. The rail's own padding and row spacing
+   are the component's; what is left here is the column: how wide it is, that
+   it sticks, and that it scrolls — the three things SideNav deliberately
+   leaves to the page. */
 .pg-sidebar {
-  width: 220px;
+  inline-size: calc(var(--rata-size-control-lg) * 6);
   flex-shrink: 0;
   position: sticky;
-  top: 0;
-  height: 100vh;
+  /* Below the sticky header, not under it. Same derivation as the header's own
+     height, declared on :root so both can read it. */
+  inset-block-start: var(--pg-header-block-size);
+  block-size: calc(100vh - var(--pg-header-block-size));
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: var(--ds-space-gap-md);
-  padding: var(--ds-space-page-block-start) var(--ds-space-4);
-  border-right: var(--ds-border-1) solid var(--ds-theme-border-default);
-}
-
-.pg-search {
-  display: flex;
-  align-items: center;
-  gap: var(--ds-space-gap-xs);
-  padding: var(--ds-space-2) var(--ds-space-3);
-  border-radius: var(--ds-radius-pill);
-  border: var(--ds-border-1) solid var(--ds-theme-border-default);
-  background: var(--ds-theme-bg-surface);
+  gap: var(--rata-space-gap-md);
+  padding-block-start: var(--rata-space-page-block-start);
+  padding-inline: var(--rata-space-4);
+  border-inline-end: var(--rata-border-1) solid var(--rata-theme-border-default);
 }
 
 /* The input's own outline is suppressed below (a pill-shaped container needs
    the ring drawn on the container, not clipped to the input's own box) — the
    ring still needs to land somewhere, so it lands here on :focus-within. */
 .pg-search:focus-within {
-  outline: var(--ds-focus-ring-width) solid var(--ds-theme-focus-ring);
-  outline-offset: var(--ds-focus-ring-offset);
+  outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
 }
 
-.pg-search-icon {
-  color: var(--ds-theme-fg-muted);
-  font-size: var(--ds-type-body-size);
-}
+/* PROSE FILLS ITS COLUMN. There was a 68ch measure on five prose rules —
+   the family docs, the rules list, a component's description, the callouts
+   and each prop block — on the usual reasoning that a long line is harder to
+   read.
 
-/* ds-allow: focus-removed — the ring moves to .pg-search:focus-within above,
-   not dropped: a pill-shaped container needs the ring on its own box. */
-.pg-search-input {
-  flex: 1;
-  min-width: 0;
-  border: none;
-  background: none;
-  outline: none;
-  color: var(--ds-theme-fg-primary);
-  font-family: inherit;
-  font-size: var(--ds-type-body-size);
-}
+   It was the wrong trade at this column width. `ch` is the width of the "0"
+   glyph, not a character, so 68ch resolves to roughly 500px — inside a 912px
+   content box that left 40% of the width empty, and a panel with its right
+   half blank reads as broken long before a line reads as too long. The column
+   is capped at 960px already, which is the constraint doing the real work.
 
-.pg-search-input::placeholder {
-  color: var(--ds-theme-fg-muted);
-}
+   Seven rules carried one in the end: those five, the lede under every page's
+   heading at 60ch, and an example card's prose at 80ch.
 
-.pg-nav-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.pg-nav-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  text-align: left;
-  padding: var(--ds-space-2) var(--ds-space-3);
-  border-radius: var(--ds-radius-pill);
-  border: none;
-  background: none;
-  color: var(--ds-theme-fg-primary);
-  font-family: inherit;
-  font-size: var(--ds-type-body-size);
-  cursor: pointer;
-}
-
-.pg-nav-item:hover {
-  background: var(--ds-theme-bg-muted);
-}
-
-.pg-nav-item:focus-visible {
-  outline: var(--ds-focus-ring-width) solid var(--ds-theme-focus-ring);
-  outline-offset: var(--ds-focus-ring-offset);
-}
-
-.pg-nav-item.is-active {
-  background: var(--ds-theme-accent-role-subtle);
-  color: var(--ds-theme-accent-role-fg);
-  font-weight: var(--ds-type-heading-weight);
-}
-
-.pg-nav-item--child {
-  padding-left: var(--ds-space-6);
-  color: var(--ds-theme-fg-secondary);
-}
-
-.pg-nav-chevron {
-  color: var(--ds-theme-fg-muted);
-  transition-property: transform;
-  transition-duration: var(--ds-motion-interactive-duration);
-  transition-timing-function: var(--ds-motion-interactive-easing);
-}
-
-.pg-nav-chevron.is-open {
-  transform: rotate(180deg);
-}
-
-.pg-nav-children {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ds-space-0-5);
-  margin-top: var(--ds-space-0-5);
-}
-
+   If a line ever does need shortening, narrow .pg-main rather than the prose
+   inside it: then the container and its content agree and nothing looks
+   unfilled. */
 .pg-main {
   flex: 1;
   min-width: 0;
   max-width: 960px;
-  padding: var(--ds-space-page-block-start) var(--ds-space-page-gutter) var(--ds-space-page-block-end);
+  /* `flex: 1` grows the column until max-width caps it, and the leftover space
+     then sits entirely on the right because the flex line packs to the start.
+     Auto inline margins absorb that slack on both sides instead, centring the
+     column in whatever room the sidebar leaves. */
+  margin-inline: auto;
+  padding: var(--rata-space-page-block-start) var(--rata-space-page-gutter) var(--rata-space-page-block-end);
 }
 
 .pg-section {
-  margin-bottom: var(--ds-space-section);
+  margin-bottom: var(--rata-space-section);
 }
 
 .pg-section h2 {
-  font-size: var(--ds-type-heading-size);
-  font-weight: var(--ds-type-heading-weight);
-  line-height: var(--ds-type-heading-line-height);
-  margin: 0 0 var(--ds-space-4);
+  font-size: var(--rata-type-heading-size);
+  font-weight: var(--rata-type-heading-weight);
+  line-height: var(--rata-type-heading-line-height);
+  margin: 0 0 var(--rata-space-4);
 }
 
 .pg-row {
   display: flex;
   align-items: center;
-  gap: var(--ds-space-gap-sm);
+  gap: var(--rata-space-gap-sm);
   flex-wrap: wrap;
-  margin-bottom: var(--ds-space-stack-sm);
+  margin-bottom: var(--rata-space-stack-sm);
 }
 
-/* ds-allow: hardcoded-dimension — the label gutter is a playground layout
+/* rata-allow: hardcoded-dimension — the label gutter is a playground layout
    constant, not a step on the sizing scale */
 .pg-row-label {
   width: 96px;
-  font-size: var(--ds-type-label-size);
-  font-weight: var(--ds-type-label-weight);
-  color: var(--ds-theme-fg-muted);
-  text-transform: var(--ds-type-label-text-transform);
-  letter-spacing: var(--ds-type-label-letter-spacing);
+  font-size: var(--rata-type-label-size);
+  font-weight: var(--rata-type-label-weight);
+  color: var(--rata-theme-fg-muted);
+  text-transform: var(--rata-type-label-text-transform);
+  letter-spacing: var(--rata-type-label-letter-spacing);
 }
 
 .pg-note {
-  font-size: var(--ds-type-label-size);
-  color: var(--ds-theme-fg-muted);
+  font-size: var(--rata-type-label-size);
+  color: var(--rata-theme-fg-muted);
 }
 
 .pg-ramp-title {
-  font-size: var(--ds-type-label-size);
-  font-weight: var(--ds-type-label-weight);
-  text-transform: var(--ds-type-label-text-transform);
-  letter-spacing: var(--ds-type-label-letter-spacing);
-  color: var(--ds-theme-fg-secondary);
-  margin-bottom: var(--ds-space-gap-xs);
+  font-size: var(--rata-type-label-size);
+  font-weight: var(--rata-type-label-weight);
+  text-transform: var(--rata-type-label-text-transform);
+  letter-spacing: var(--rata-type-label-letter-spacing);
+  color: var(--rata-theme-fg-secondary);
+  margin-bottom: var(--rata-space-gap-xs);
 }
 
 .pg-ramp-group {
   display: flex;
   flex-direction: column;
-  gap: var(--ds-space-stack-lg);
+  gap: var(--rata-space-stack-lg);
 }
 
 .pg-swatches {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-  gap: var(--ds-space-gap-sm);
+  gap: var(--rata-space-gap-sm);
 }
 
-/* ds-allow: hardcoded-dimension — the swatch preview box is a playground
+/* rata-allow: hardcoded-dimension — the swatch preview box is a playground
    layout constant, not a step on the sizing scale */
 .pg-swatch {
-  border-radius: var(--ds-radius-inner);
-  border: var(--ds-border-1) solid var(--ds-theme-border-default);
+  border-radius: var(--rata-radius-inner);
+  border: var(--rata-border-1) solid var(--rata-theme-border-default);
   height: 48px;
 }
 
 .pg-swatch--elevation {
   border: none;
-  background: var(--ds-theme-bg-surface);
+  background: var(--rata-theme-bg-surface);
 }
 
 .pg-swatch-name {
-  font-size: var(--ds-font-size-xs);
-  color: var(--ds-theme-fg-muted);
-  margin-top: var(--ds-space-0-5);
+  font-size: var(--rata-font-size-xs);
+  color: var(--rata-theme-fg-muted);
+  margin-top: var(--rata-space-0-5);
 }
 
 /* Spacing bars */
 .pg-bars-group {
   display: flex;
   flex-direction: column;
-  gap: var(--ds-space-stack-lg);
+  gap: var(--rata-space-stack-lg);
 }
 
 .pg-bar-row {
   display: flex;
   align-items: center;
-  gap: var(--ds-space-gap-sm);
-  margin-bottom: var(--ds-space-gap-xs);
+  gap: var(--rata-space-gap-sm);
+  margin-bottom: var(--rata-space-gap-xs);
 }
 
 .pg-bar-label {
-  width: 140px;
+  inline-size: calc(var(--rata-size-control-lg) * 4 - var(--rata-space-1));
   flex-shrink: 0;
-  font-size: var(--ds-type-label-size);
-  color: var(--ds-theme-fg-muted);
+  font-size: var(--rata-type-label-size);
+  color: var(--rata-theme-fg-muted);
 }
 
 .pg-bar-track {
   flex: 1;
-  background: var(--ds-theme-bg-muted);
-  border-radius: var(--ds-radius-inner);
+  background: var(--rata-theme-bg-muted);
+  border-radius: var(--rata-radius-inner);
   overflow: hidden;
-  height: 12px;
+  block-size: var(--rata-space-3);
 }
 
 .pg-bar {
   display: block;
   height: 100%;
-  background: var(--ds-theme-accent-role-bg);
-  border-radius: var(--ds-radius-inner);
+  background: var(--rata-theme-accent-role-bg);
+  border-radius: var(--rata-radius-inner);
 }
 
 .pg-bar-value {
-  width: 72px;
+  inline-size: calc(var(--rata-size-control-lg) * 2);
   flex-shrink: 0;
-  font-size: var(--ds-type-label-size);
-  color: var(--ds-theme-fg-muted);
+  font-size: var(--rata-type-label-size);
+  color: var(--rata-theme-fg-muted);
   text-align: right;
 }
 
@@ -273,137 +277,1027 @@ body {
 .pg-radii {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--ds-space-gap-md);
-  margin-bottom: var(--ds-space-stack-md);
+  gap: var(--rata-space-gap-md);
+  margin-bottom: var(--rata-space-stack-md);
 }
 
+/* rata-allow: hardcoded-dimension — a preview tile's size is a demo artifact,
+   not a design value: nothing in the product is 64px because of this, and
+   snapping it to the space scale would either change what the sample shows or
+   need a contrived sum of steps to land on the same number. */
 .pg-radius-item {
-  width: 88px;
+  inline-size: 88px;
 }
 
 .pg-radius-preview {
-  width: 64px;
-  height: 64px;
-  background: var(--ds-theme-bg-muted);
-  border: var(--ds-border-1) solid var(--ds-theme-border-default);
+  inline-size: 64px;
+  block-size: 64px;
+  background: var(--rata-theme-bg-muted);
+  border: var(--rata-border-1) solid var(--rata-theme-border-default);
 }
 
 /* Typography samples */
+/* Baseline alignment, because that is the line a type sample is read against
+   — with samples from 12px to a heading size in one column, centring them
+   would make the label drift up and down the row.
+
+   The vertical padding is a stack step rather than a gap step: gap is for
+   space *between* things in a row, stack is for space between stacked
+   blocks, and these rows are stacked. They read the same at 8px today, which
+   is exactly why the wrong one went unnoticed. */
 .pg-type-sample-row {
   display: flex;
   align-items: baseline;
-  gap: var(--ds-space-gap-md);
-  padding: var(--ds-space-gap-xs) 0;
-  border-bottom: var(--ds-border-1) solid var(--ds-theme-border-default);
+  gap: var(--rata-space-gap-md);
+  padding-block: var(--rata-space-stack-xs);
+  border-block-end: var(--rata-border-1) solid var(--rata-theme-border-default);
 }
 
+/* Fills the rest of the row. It was sized by its own content, so a row was as
+   wide as the sentence happened to be at that font size — short rows at 12px,
+   overflowing ones at a heading size, and a ragged right edge down a column
+   whose whole point is comparing one line against another. */
 .pg-type-sample-text {
+  flex: 1;
+  min-inline-size: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--ds-theme-fg-primary);
+  color: var(--rata-theme-fg-primary);
 }
 
 /* Motion tracks */
 .pg-motion-group {
-  margin-bottom: var(--ds-space-stack-lg);
+  margin-bottom: var(--rata-space-stack-lg);
 }
 
 .pg-motion-item {
   display: flex;
   align-items: center;
-  gap: var(--ds-space-gap-md);
-  margin-bottom: var(--ds-space-gap-xs);
+  gap: var(--rata-space-gap-md);
+  margin-bottom: var(--rata-space-gap-xs);
 }
 
+/* Fills the row, like .pg-bar-track beside it. It was a fixed 160px in a flex
+   row that had room for three times that, which is why these read as short
+   stubs in a wide column while the spacing and radius bars filled properly —
+   same markup, one missing `flex`.
+
+   The size is the control scale's small step with the chip inset by one space
+   step on each side, so 28 = 20 + 4 + 4 falls out of the tokens rather than
+   being three numbers that happen to add up. */
 .pg-motion-track {
   position: relative;
-  width: 160px;
-  height: 28px;
-  background: var(--ds-theme-bg-muted);
-  border-radius: var(--ds-radius-pill);
+  flex: 1;
+  block-size: var(--rata-size-control-sm);
+  background: var(--rata-theme-bg-muted);
+  border-radius: var(--rata-radius-pill);
   overflow: hidden;
 }
 
 .pg-motion-chip {
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 22px;
-  height: 22px;
-  border-radius: var(--ds-radius-pill);
-  background: var(--ds-theme-accent-role-bg);
-  transition-property: transform;
+  inset-block-start: var(--rata-space-1);
+  inset-inline-start: var(--rata-space-1);
+  inline-size: var(--rata-size-icon-md);
+  block-size: var(--rata-size-icon-md);
+  border-radius: var(--rata-radius-pill);
+  background: var(--rata-theme-accent-role-bg);
+  /* Not `transform`: translateX is a percentage of the CHIP, so a fluid track
+     cannot express "travel to the far end" that way — the old rule hardcoded
+     132px, which was 160 minus 28, two magic numbers agreeing with a third.
+     A percentage inset resolves against the track, so the distance derives
+     itself and stays right at any width. */
+  transition-property: inset-inline-start;
 }
 
 .pg-motion-track:hover .pg-motion-chip {
-  transform: translateX(132px);
+  inset-inline-start: calc(100% - var(--rata-size-icon-md) - var(--rata-space-1));
 }
 
 /* Elevation previews */
 .pg-elevation-row {
   display: flex;
-  gap: var(--ds-space-gap-lg);
-  margin-bottom: var(--ds-space-stack-md);
+  gap: var(--rata-space-gap-lg);
+  margin-bottom: var(--rata-space-stack-md);
 }
 
+/* rata-allow: hardcoded-dimension — a preview tile's size is a demo artifact,
+   not a design value: nothing in the product is 64px because of this, and
+   snapping it to the space scale would either change what the sample shows or
+   need a contrived sum of steps to land on the same number. */
 .pg-elevation-item {
-  width: 88px;
+  inline-size: 88px;
 }
 
 .pg-elevation-preview {
-  width: 64px;
-  height: 64px;
-  background: var(--ds-theme-bg-surface);
-  border-radius: var(--ds-radius-element);
+  inline-size: 64px;
+  block-size: 64px;
+  background: var(--rata-theme-bg-surface);
+  border-radius: var(--rata-radius-element);
 }
 
 .pg-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: var(--ds-type-body-size);
+  font-size: var(--rata-type-body-size);
 }
 
 .pg-table th,
 .pg-table td {
   text-align: left;
-  padding: var(--ds-space-2) var(--ds-space-3);
-  border-bottom: var(--ds-border-1) solid var(--ds-theme-border-default);
+  padding: var(--rata-space-2) var(--rata-space-3);
+  border-bottom: var(--rata-border-1) solid var(--rata-theme-border-default);
 }
 
 .pg-table th {
-  font-size: var(--ds-type-label-size);
-  font-weight: var(--ds-type-label-weight);
-  text-transform: var(--ds-type-label-text-transform);
-  letter-spacing: var(--ds-type-label-letter-spacing);
-  color: var(--ds-theme-fg-muted);
+  font-size: var(--rata-type-label-size);
+  font-weight: var(--rata-type-label-weight);
+  text-transform: var(--rata-type-label-text-transform);
+  letter-spacing: var(--rata-type-label-letter-spacing);
+  color: var(--rata-theme-fg-muted);
 }
 
-.pg-status {
+/* rata-allow: hardcoded-dimension — prose measure for the doc columns below is a
+   playground layout constant; this system has no measure/max-width token */
+
+/* ---- Token documentation ------------------------------------------------
+   The contract for a token, rendered beside the swatch it belongs to.
+   Everything here reads from @rata/tokens/usage — see src/token-docs.tsx. */
+
+.pg-swatch-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  border-radius: var(--rata-radius-inner);
+}
+
+.pg-swatch-button:focus-visible {
+  outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* rata-allow: hardcoded-dimension — the inspector rail is a playground layout
+   constant, the same kind as .pg-sidebar's width, not a step on the scale */
+/* Placement only, which is all that is left now Panel draws the rail. The
+   surface, the border, the head, the close control and the body's scrolling
+   all come from the component — this states where it sits and how wide it is,
+   which its contract says is the page's job.
+
+   The measure was `width: 340px`. It is control-lg x 9 = 324px now: close to
+   the number that was there, but derived, so it moves with the scale instead
+   of being a value someone once liked.
+
+   Sticks BELOW the header rather than at 0. It was `top: 0` from before the
+   top nav became fixed, which put the panel's own heading underneath it. */
+.pg-inspector {
+  flex-shrink: 0;
+  inline-size: calc(var(--rata-size-control-lg) * 9);
+  position: sticky;
+  inset-block-start: var(--pg-header-block-size);
+  max-block-size: calc(100dvh - var(--pg-header-block-size));
+}
+
+.pg-inspector-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--rata-space-gap-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--rata-space-stack-sm);
+}
+
+.pg-inspector-var {
+  font-size: var(--rata-font-size-xs);
+  color: var(--rata-theme-fg-secondary);
+  word-break: break-all;
+}
+
+.pg-layer {
+  font-size: var(--rata-font-size-xs);
+  padding: var(--rata-space-0-5) var(--rata-space-1);
+  border-radius: var(--rata-radius-inner);
+  background: var(--rata-theme-bg-muted);
+  color: var(--rata-theme-fg-secondary);
+}
+
+.pg-layer--semantic {
+  background: var(--rata-theme-accent-role-subtle);
+  color: var(--rata-theme-accent-role-fg);
+}
+
+.pg-doc-block {
+  margin-bottom: var(--rata-space-stack-md);
+}
+
+.pg-doc-block h4 {
+  margin: 0 0 var(--rata-space-1);
+  font-size: var(--rata-type-label-size);
+  font-weight: var(--rata-type-label-weight);
+  color: var(--rata-theme-fg-secondary);
+  text-transform: uppercase;
+}
+
+.pg-doc-block p {
+  margin: 0 0 var(--rata-space-1);
+  font-size: var(--rata-type-body-size);
+  color: var(--rata-theme-fg-primary);
+}
+
+.pg-doc-block ul,
+.pg-doc-block ol {
+  margin: 0;
+  padding-left: var(--rata-space-4);
+  font-size: var(--rata-type-body-size);
+}
+
+.pg-doc-block li {
+  margin-bottom: var(--rata-space-0-5);
+}
+
+/* The role's subtle tint with its own fg — never the saturated bg, which is
+   for non-text indicators only. */
+.pg-doc-block--dont {
+  background: var(--rata-theme-danger-role-subtle);
+  color: var(--rata-theme-danger-role-fg);
+  padding: var(--rata-space-2);
+  border-radius: var(--rata-radius-element);
+}
+
+.pg-doc-block--dont h4,
+.pg-doc-block--dont p {
+  color: var(--rata-theme-danger-role-fg);
+}
+
+.pg-instead {
+  margin: 0;
+  font-size: var(--rata-type-body-size);
+}
+
+.pg-instead dt {
+  color: var(--rata-theme-fg-secondary);
+}
+
+.pg-instead dd {
+  margin: 0 0 var(--rata-space-1);
+}
+
+.pg-ratio {
   display: inline-block;
-  padding: var(--ds-space-0-5) var(--ds-space-2);
-  border-radius: var(--ds-radius-pill);
-  font-size: var(--ds-type-label-size);
-  font-weight: var(--ds-type-label-weight);
+  font-size: var(--rata-font-size-xs);
+  color: var(--rata-theme-fg-secondary);
+  margin-left: var(--rata-space-1);
+  white-space: nowrap;
 }
 
-.pg-status--latest {
-  background: var(--ds-theme-success-role-subtle);
-  color: var(--ds-theme-success-role-fg);
+.pg-requires {
+  display: inline-block;
+  font-size: var(--rata-font-size-xs);
+  color: var(--rata-theme-fg-muted);
+  margin-left: var(--rata-space-1);
 }
 
-.pg-status--in-progress {
-  background: var(--ds-theme-warning-role-subtle);
-  color: var(--ds-theme-warning-role-fg);
+.pg-pairing-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: var(--rata-type-body-size);
 }
 
-.pg-status--future {
-  background: var(--ds-theme-bg-muted);
-  color: var(--ds-theme-fg-secondary);
+.pg-pairing-list li {
+  margin-bottom: var(--rata-space-stack-xs);
 }
 
-.pg-status--na,
-.pg-status--deprecated {
-  background: var(--ds-theme-bg-muted);
-  color: var(--ds-theme-fg-muted);
+.pg-pairing-list--gaps li {
+  background: var(--rata-theme-danger-role-subtle);
+  color: var(--rata-theme-danger-role-fg);
+  padding: var(--rata-space-2);
+  border-radius: var(--rata-radius-element);
+  margin-bottom: var(--rata-space-stack-sm);
 }
+
+.pg-code {
+  margin: 0;
+  padding: var(--rata-space-2);
+  background: var(--rata-theme-bg-muted);
+  border-radius: var(--rata-radius-element);
+  font-size: var(--rata-font-size-xs);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.pg-family-doc {
+  margin-bottom: var(--rata-space-stack-md);
+}
+
+.pg-family-summary {
+  margin: 0 0 var(--rata-space-1);
+  color: var(--rata-theme-fg-primary);
+}
+
+.pg-family-dont {
+  margin: 0;
+  font-size: var(--rata-type-label-size);
+  color: var(--rata-theme-fg-secondary);
+}
+
+.pg-rules {
+  padding-left: var(--rata-space-4);
+}
+
+.pg-rules li {
+  margin-bottom: var(--rata-space-stack-xs);
+}
+
+.pg-recipe {
+  margin-bottom: var(--rata-space-stack-lg);
+}
+
+/* ---- Component pages ----------------------------------------------------
+   One page per component: demo, props table, per-prop contract, use cases and
+   token recipe. Rendered from docs/components/contracts.json — see
+   src/component-page.tsx. */
+
+.pg-section h3 {
+  font-size: var(--rata-type-heading-3-size);
+  font-weight: var(--rata-type-heading-3-weight);
+  line-height: var(--rata-type-heading-3-line-height);
+  margin: 0 0 var(--rata-space-3);
+}
+
+.pg-component-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--rata-space-gap-md);
+  flex-wrap: wrap;
+}
+
+.pg-component-status {
+  display: flex;
+  gap: var(--rata-space-gap-xs);
+  flex-wrap: wrap;
+}
+
+.pg-component-description {
+  margin: 0 0 var(--rata-space-1);
+}
+
+.pg-callout {
+  margin: var(--rata-space-stack-sm) 0 0;
+  padding: var(--rata-space-padding-xs);
+  border-radius: var(--rata-radius-element);
+  background: var(--rata-theme-bg-muted);
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-label-size);
+}
+
+/* A spec page is an approved intent with no code behind it — the warning
+   role's subtle tint with its own fg, never the saturated bg, which is for
+   non-text indicators only. */
+.pg-callout--spec {
+  background: var(--rata-theme-warning-role-subtle);
+  color: var(--rata-theme-warning-role-fg);
+}
+
+.pg-prop-list {
+  margin-top: var(--rata-space-stack-lg);
+}
+
+.pg-prop {
+  padding: var(--rata-space-padding-sm);
+  margin-bottom: var(--rata-space-stack-sm);
+  border: var(--rata-border-1) solid var(--rata-theme-border-default);
+  border-radius: var(--rata-radius-container);
+  background: var(--rata-theme-bg-surface);
+}
+
+.pg-prop-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--rata-space-gap-sm);
+  flex-wrap: wrap;
+  margin-bottom: var(--rata-space-1);
+}
+
+.pg-prop-head h4 {
+  margin: 0;
+  font-size: var(--rata-type-heading-4-size);
+  font-weight: var(--rata-type-heading-4-weight);
+  line-height: var(--rata-type-heading-4-line-height);
+}
+
+.pg-prop-signature {
+  font-size: var(--rata-font-size-xs);
+  color: var(--rata-theme-fg-muted);
+}
+
+/* Host element for the state-layer demo: a neutral surface whose only job is
+   to have the class composed onto it. */
+.pg-demo-surface {
+  border: var(--rata-border-1) solid var(--rata-theme-border-default);
+  border-radius: var(--rata-radius-element);
+  background: var(--rata-theme-bg-surface);
+  color: var(--rata-theme-fg-primary);
+  font: inherit;
+  padding: var(--rata-space-padding-xs) var(--rata-space-padding-sm);
+  cursor: pointer;
+}
+
+.pg-demo-surface:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+.pg-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--rata-theme-accent-role-fg);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.pg-link:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* ---- Props as controls ---------------------------------------------------
+   The preview stage, then one row per prop: name, type and guidance, and the
+   control that sets it on the preview. See PropertiesTab in
+   src/component-page.tsx. */
+
+.pg-stage {
+  margin-bottom: var(--rata-space-stack-lg);
+}
+
+.pg-stage-canvas {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rata-space-gap-md);
+  /* rata-allow: hardcoded-dimension — the stage is a viewport for the component,
+     sized to be roomy on this page rather than to a step on the sizing scale */
+  min-height: 220px;
+  padding: var(--rata-space-padding-lg);
+  background: var(--rata-theme-bg-surface);
+  border: var(--rata-border-1) solid var(--rata-theme-border-default);
+  border-radius: var(--rata-radius-page);
+}
+
+.pg-stage-code-toggle {
+  position: absolute;
+  top: var(--rata-space-3);
+  right: var(--rata-space-3);
+  height: var(--rata-size-control-sm);
+  padding: 0 var(--rata-space-2);
+  border: 0;
+  border-radius: var(--rata-radius-inner);
+  background: transparent;
+  color: var(--rata-theme-fg-muted);
+  font-family: var(--rata-font-family-mono);
+  font-size: var(--rata-type-control-size-sm);
+  cursor: pointer;
+}
+
+.pg-stage-code-toggle:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+.pg-stage-code {
+  margin-top: var(--rata-space-stack-xs);
+}
+
+.pg-props {
+  border-top: var(--rata-border-1) solid var(--rata-theme-border-default);
+}
+
+.pg-props-group {
+  padding: var(--rata-space-3) 0 var(--rata-space-1);
+  font-size: var(--rata-type-label-size);
+  font-weight: var(--rata-type-label-weight);
+  color: var(--rata-theme-fg-muted);
+}
+
+.pg-prop-row {
+  display: grid;
+  /* rata-allow: hardcoded-dimension — a three-column reading grid: a name column,
+     a control column, and everything left over for the prose between them */
+  grid-template-columns: 160px minmax(0, 1fr) 220px;
+  gap: var(--rata-space-gap-lg);
+  align-items: start;
+  padding: var(--rata-space-4) 0;
+  border-bottom: var(--rata-border-1) solid var(--rata-theme-border-default);
+}
+
+.pg-props--static .pg-prop-row {
+  /* rata-allow: hardcoded-dimension — same name column as above, without the
+     control column there is nothing to drive */
+  grid-template-columns: 160px minmax(0, 1fr);
+}
+
+.pg-props--static .pg-prop-control {
+  display: none;
+}
+
+.pg-prop-name code {
+  font-weight: var(--rata-type-control-weight);
+  color: var(--rata-theme-fg-primary);
+}
+
+.pg-prop-type {
+  display: block;
+  color: var(--rata-theme-fg-primary);
+  margin-bottom: var(--rata-space-1);
+}
+
+.pg-prop-type-line {
+  display: block;
+}
+
+.pg-prop-default {
+  color: var(--rata-theme-fg-muted);
+}
+
+.pg-prop-summary {
+  margin: 0 0 var(--rata-space-1);
+  color: var(--rata-theme-fg-secondary);
+}
+
+.pg-prop-guidance {
+  margin-top: var(--rata-space-2);
+}
+
+.pg-prop-guidance summary {
+  font-size: var(--rata-type-label-size);
+  color: var(--rata-theme-fg-muted);
+  cursor: pointer;
+}
+
+.pg-prop-guidance summary:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+  border-radius: var(--rata-radius-inner);
+}
+
+.pg-prop-guidance[open] summary {
+  margin-bottom: var(--rata-space-2);
+}
+
+/* Was a right-aligned row when every control was a single native input. The
+   union control is a stacked RadioGroup now, so the column aligns its content
+   to the start of the block and lets it be as tall as it needs. */
+.pg-prop-control {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* A conflict is a rule the compiler won't enforce, so it reads as a warning,
+   not an error: the role's subtle tint with its own fg. */
+.pg-callout--conflict {
+  max-width: none;
+  background: var(--rata-theme-warning-role-subtle);
+  color: var(--rata-theme-warning-role-fg);
+}
+
+/* One column below the reading width: the control belongs under the prose it
+   belongs to, not squeezed beside it. */
+@media (max-width: 900px) {
+  .pg-prop-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--rata-space-gap-sm);
+  }
+
+  /* The column already starts its content at the block start, so the narrow
+     breakpoint has nothing left to correct here. */
+}
+
+/* ---- Component page head -------------------------------------------------
+   The Overview / Properties / Accessibility bar above the panels is the Tabs
+   component now. It used to be a hand-rolled <nav> of anchors with its own
+   underline, hover transition and active colour — a second drawing of an
+   appearance .rata-tabs already owns, and one that had drifted: border-1
+   against border-default, control-size-md against sm, and no state layer at
+   all. The comment here used to defend the anchors on the grounds that each
+   tab is a real URL. That mistook having an address for being a
+   destination. These are three views of one contract — Tabs' own example of
+   what it is for — and driving its `value` from the URL is the documented
+   way to keep them linkable.
+
+.pg-section--head {
+  margin-bottom: var(--rata-space-stack-lg);
+}
+
+/* The measure a Panel example needs, because Panel deliberately has none of
+   its own — where one stops fitting depends on its content and the page
+   around it, which is the page's knowledge. So the page states it, which is
+   also what the component's contract tells a caller to do. Bounded in block
+   size too, so the body's own scrolling is visible rather than theoretical. */
+.pg-panel-stage {
+  display: flex;
+  inline-size: 100%;
+  max-inline-size: calc(var(--rata-size-control-lg) * 9);
+  block-size: calc(var(--rata-size-control-lg) * 5);
+  justify-content: flex-end;
+}
+
+.pg-panel-stage > .rata-panel {
+  inline-size: 100%;
+}
+
+/* ---- Accent switcher ----------------------------------------------------
+   Five accent options, each a brand theme scoped to [data-rata-theme]. The
+   swatches take their colour from the theme they stand for rather than from a
+   hex written here, so this block never has to be updated when a seed moves. */
+
+.pg-visually-hidden {
+  position: absolute;
+  inline-size: var(--rata-border-1);
+  block-size: var(--rata-border-1);
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The switcher is a SegmentedControl now, so the bar, its track, the selected
+   option's treatment, the hover and the focus ring all come from the
+   component. What is left here is only the inside of each option's label: a
+   swatch beside a name.
+
+   Gone with the hand-rolled version: the fieldset's own border and padding,
+   an :hover that duplicated the state layer, and a :has(input:checked) rule
+   selecting an input that no longer exists. */
+.pg-accent-option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rata-space-2);
+}
+
+/* Reads its own theme's generated fill through the data-rata-theme on itself,
+   so a swatch cannot drift from the theme it stands for. */
+.pg-accent-swatch {
+  inline-size: var(--rata-space-4);
+  block-size: var(--rata-space-4);
+  flex-shrink: 0;
+  border-radius: var(--rata-radius-pill);
+  background: var(--rata-theme-accent-role-bg);
+  box-shadow: inset 0 0 0 var(--rata-border-1) var(--rata-theme-border-strong);
+}
+
+/* Five names are wide. Below the sidebar breakpoint the swatches carry the
+   control alone — clipped rather than removed, so each option keeps the
+   accessible name the component reads from its label. */
+@media (max-width: 60rem) {
+  .pg-accent-name {
+    position: absolute;
+    inline-size: var(--rata-border-1);
+    block-size: var(--rata-border-1);
+    margin: calc(-1 * var(--rata-border-1));
+    padding: var(--rata-space-0);
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: var(--rata-space-0);
+  }
+
+  .pg-accent-option {
+    gap: var(--rata-space-0);
+  }
+}
+
+/* ---- Component overview: hero + specimens --------------------------------
+   The overview leads with the component at its defaults, then gives each
+   variant and each state its own specimen beside what the contract says it is
+   for. The grids are generated from the contract, so this block styles a
+   shape rather than any one component's list of variants. */
+
+/* The showcase: one large panel holding the component's headline variants side
+   by side. Deliberately generous — it is the first thing on the page and the
+   only part that is purely "what does this look like", so it gets room rather
+   than being packed. radius.chat is the token for a large rounded surface;
+   radius.container (a card) reads too tight at this size. */
+.pg-showcase {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rata-space-5);
+  flex-wrap: wrap;
+  min-block-size: 22rem;
+  padding: var(--rata-space-7);
+  border-radius: var(--rata-radius-chat);
+  /* The system's white: bg.surface is the lifted tone (#F3FFF9 in light), and
+     it inverts to the dark surface in the dark scheme. Not color.white — that
+     is a palette token, which this system forbids in components precisely
+     because it is the same value in both schemes, so a hard #fff panel would
+     stay white in dark mode. */
+  background: var(--rata-theme-bg-surface);
+}
+
+/* A bare specimen — no card, no background of its own. The panel is the
+   surface; these just sit on it. */
+.pg-showcase-item {
+  display: flex;
+  align-items: center;
+  gap: var(--rata-space-3);
+}
+
+.pg-section-lede {
+  margin: 0 0 var(--rata-space-4);
+  color: var(--rata-theme-fg-secondary);
+}
+
+@media (max-width: 60rem) {
+  .pg-showcase {
+    min-block-size: 14rem;
+    padding: var(--rata-space-5);
+  }
+}
+
+/* ---- Token layer separation ---------------------------------------------
+   The palette / semantic boundary is the token system's central rule, so the
+   foundation pages state which layer a group belongs to rather than leaving
+   the reader to infer it from a token's prefix. The tag is not decorative:
+   "palette layer" is a warning, "use these" is an instruction. */
+
+.pg-layer-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--rata-space-3);
+  flex-wrap: wrap;
+  margin-block-end: var(--rata-space-2);
+}
+
+.pg-layer-head h3 {
+  margin: 0;
+}
+
+/* Default is the palette warning tone: these are the tokens a component must
+   not reach for. Text on the role's subtle tint, never on its saturated bg. */
+.pg-layer-tag {
+  padding: 0 var(--rata-space-2);
+  border-radius: var(--rata-radius-pill);
+  background: var(--rata-theme-warning-role-subtle);
+  color: var(--rata-theme-warning-role-fg);
+  font-size: var(--rata-type-supporting-size);
+  font-weight: var(--rata-type-control-weight);
+  white-space: nowrap;
+}
+
+.pg-layer-tag--semantic {
+  background: var(--rata-theme-success-role-subtle);
+  color: var(--rata-theme-success-role-fg);
+}
+
+/* Neutral variant: a group that is raw material but not forbidden — the
+   spacing scale, where a raw step is a legitimate choice and the roles are
+   merely preferred. Using the warning tone here would overstate the rule. */
+.pg-layer-tag--neutral {
+  background: var(--rata-theme-bg-muted);
+  color: var(--rata-theme-fg-secondary);
+}
+
+/* ---- Example cards -------------------------------------------------------
+   One card per entry in a contract's `usage` array: a specimen on a stage,
+   then a bar that switches between the contract's prose and the contract's
+   snippet. The split matters — a rendered example answers "what does this
+   look like" and the code answers "what do I type", and putting both on
+   screen at once is what made the old flat list hard to scan. */
+
+.pg-examples {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-5);
+}
+
+.pg-example {
+  border: var(--rata-border-1) solid var(--rata-theme-border-default);
+  border-radius: var(--rata-radius-container);
+  overflow: hidden;
+  background: var(--rata-theme-bg-surface);
+}
+
+.pg-example-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--rata-space-4);
+  padding: var(--rata-space-4) var(--rata-space-5);
+}
+
+.pg-example-titleblock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-2);
+  min-width: 0;
+}
+
+/* The <h4> inside the button-group example that `labelledBy` points at — not
+   the card's own title. */
+.pg-example-heading {
+  margin: 0 0 var(--rata-space-2);
+  font-size: var(--rata-type-label-size);
+}
+
+.pg-example-titleline {
+  display: flex;
+  align-items: center;
+  gap: var(--rata-space-3);
+}
+
+.pg-example-title {
+  font-weight: var(--rata-type-control-weight);
+}
+
+/* The contract's prose, under the title. Fills the card like everything else:
+   an example card is already narrower than the page, so a measure inside it
+   was capping content that was not wide to begin with. */
+.pg-example-desc {
+  margin: 0;
+  color: var(--rata-theme-fg-secondary);
+}
+
+.pg-example-open {
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--rata-theme-accent-role-fg);
+  font: inherit;
+  cursor: pointer;
+}
+
+.pg-example-open:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+  border-radius: var(--rata-radius-inner);
+}
+
+.pg-example-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 12rem;
+  padding: var(--rata-space-6) var(--rata-space-5);
+  border-block-start: var(--rata-border-1) solid var(--rata-theme-border-default);
+  /* bg.subtle, which is what that step is documented for: "a quiet section
+     band inside a surface". It used to be unusable here — tone 95 in light
+     made it identical to bg.canvas and tone 10 in dark identical to
+     bg.surface, so a stage using it merged into the page in one scheme or
+     into its own card in the other, and this rule took bg.muted instead.
+
+     That was borrowing the token for an inset well, and it collided the
+     moment a component wanted one: the segmented control's track is bg.muted
+     and vanished into this stage. bg.subtle has its own tone now (97/15), so
+     both can have the step they were always meant to have. */
+  background: var(--rata-theme-bg-subtle);
+}
+
+/* The stage is on bg.muted, where fg.muted measures 4.19:1 in dark — the token
+   documents that pairing as AA-large only and names fg.secondary as the
+   body-text answer. Only the empty-stage fallback text is affected. */
+.pg-example-stage .pg-note {
+  color: var(--rata-theme-fg-secondary);
+}
+
+.pg-example-render {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rata-space-3);
+  flex-wrap: wrap;
+}
+
+/* A case the contract includes in order to say "don't". Marked with a flag and
+   a border, never rendered live — and colour is not the only cue. */
+.pg-example--counter {
+  border-color: var(--rata-theme-danger-role-fg);
+}
+
+.pg-example-flag {
+  padding: 0 var(--rata-space-2);
+  border-radius: var(--rata-radius-pill);
+  background: var(--rata-theme-danger-role-subtle);
+  color: var(--rata-theme-danger-role-fg);
+  font-size: var(--rata-type-supporting-size);
+  font-weight: var(--rata-type-control-weight);
+  text-transform: uppercase;
+}
+
+/* Demo width for the text field. Lives here, not in the component: a field's
+   width is the form's decision, which is why TextField ships none and its
+   className contract names "a column span, a width" as the reason that prop
+   exists. Raw px matches this file's idiom for layout dimensions (the sidebar
+   and main column are px too) — these are demo measurements, not tokens. */
+.pg-field {
+  inline-size: 300px;
+  max-inline-size: 100%;
+}
+
+/* Layout for the example stages that show a component beside or above other
+   content — an avatar next to its name, a parent checkbox over its rows. */
+.pg-example-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rata-space-gap-sm);
+}
+
+.pg-example-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-stack-2xs);
+  text-align: start;
+}
+
+/* The nested rows of a "select all" group sit in from their parent, so the
+   relationship is visible rather than implied by order alone. */
+.pg-example-stack > * + * {
+  margin-inline-start: var(--rata-space-gap-lg);
+}
+
+/* A plain vertical stack for full-width examples — notices, and anything else
+   that fills its line. Deliberately not .pg-example-stack, which indents each
+   sibling to show a parent/child relationship these do not have. */
+/* A narrow column, for the fullWidth example — the case that prop is for. */
+.pg-rail-width {
+  inline-size: calc(var(--rata-size-control-lg) * 6);
+}
+
+/* The rail's width is the page's decision, not the component's, so the
+   examples state one here rather than SideNav shipping it. */
+.pg-rail {
+  inline-size: calc(var(--rata-size-control-lg) * 6);
+  /* The gutter is the page's, not the rail's: SideNav's rows fill its width so
+     they line up with anything else placed beside them, which means the inset
+     has to come from here. The same split as the width and the border. */
+  padding-inline: var(--rata-space-4);
+  border-inline-end: var(--rata-border-default) solid var(--rata-theme-border-default);
+}
+
+/* The wordmark in the TopNav examples — a stand-in for whatever a product
+   puts in the brand slot. */
+.pg-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--rata-space-gap-sm);
+}
+
+/* Both axes stated, because the file itself is 300px square and an <img>
+   lays out at its intrinsic size for the frame before the stylesheet
+   arrives — a 300px logo shoving the bar open, once.
+
+   icon-lg is 24px, which is also the wordmark's line box at heading size
+   (17px x 1.41). The mark and the name therefore occupy the same band,
+   which is what makes them read as one lockup rather than two things that
+   happen to be adjacent. */
+.pg-brand-mark {
+  inline-size: var(--rata-size-icon-lg);
+  block-size: var(--rata-size-icon-lg);
+}
+
+.pg-brand-name {
+  color: var(--rata-theme-fg-primary);
+  font-size: var(--rata-type-heading-size);
+  font-weight: var(--rata-type-heading-weight);
+}
+
+/* The filter example's result list — plain rows, so the search is the thing
+   being demonstrated rather than the list. */
+.pg-search-results {
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-stack-2xs);
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-supporting-size);
+}
+
+.pg-search-empty,
+.pg-search-status {
+  color: var(--rata-theme-fg-muted);
+  font-size: var(--rata-type-supporting-size);
+  margin: var(--rata-space-0);
+}
+
+.pg-block-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--rata-space-stack-sm);
+}
+

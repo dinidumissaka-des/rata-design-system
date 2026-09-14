@@ -1,0 +1,160 @@
+{
+  "name": "button-group",
+  "title": "Button Group",
+  "family": "buttons",
+  "description": "A named set of related buttons, spaced or attached into one bar, horizontal or vertical.",
+  "status": {
+    "css": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "react": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "button"
+  ],
+  "files": [
+    {
+      "source": "packages/css/src/button-group.css",
+      "target": "styles/button-group.css"
+    },
+    {
+      "source": "packages/react/src/button-group.tsx",
+      "target": "components/button-group.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
+  "tier": "free",
+  "behavior": {
+    "primitive": "getButtonGroupProps",
+    "summary": "The group's accessible name and its grouping role — the two things the buttons inside cannot own between them. No selection state and no value: a button group runs actions, it does not hold an answer.",
+    "decisions": [
+      {
+        "decision": "`role=\"group\"` with a required accessible name, not `role=\"toolbar\"`",
+        "why": "A toolbar is a single tab stop with arrow-key navigation between its controls. That is right for a dense, persistent bar of many actions and wrong for the common case here — two or three buttons in a card footer — where collapsing them into one tab stop makes them harder to reach, not easier. Groups that genuinely want toolbar semantics should say so explicitly rather than getting them by accident from a layout wrapper."
+      },
+      {
+        "decision": "Each button keeps its own tab stop",
+        "why": "Follows from the role decision above. It also keeps the group composable: a `Button` inside a group behaves exactly like a `Button` outside one, so nothing about focus or activation has to be re-learned."
+      },
+      {
+        "decision": "Orientation is a data attribute, not `aria-orientation`",
+        "why": "Orientation here changes how the group stacks and nothing else. `aria-orientation` announces a navigation direction, which would promise arrow-key movement this group deliberately does not implement."
+      },
+      {
+        "decision": "No per-item position data — corner joining is `:first-child`/`:last-child` in CSS",
+        "why": "The DOM already knows which button is first and last. Emitting `data-position` would be a second copy of that fact, and a copy that goes stale the moment a button is conditionally rendered."
+      },
+      {
+        "decision": "Not a selection control",
+        "why": "A group whose items hold a pressed state is `toggle-button-group`: it needs a value, a selection mode, and roving focus, none of which belong in a container for plain actions. Keeping them separate is what stops this component growing a `value` prop that only makes sense half the time."
+      }
+    ]
+  },
+  "props": {
+    "label": {
+      "summary": "Accessible name for the group — what these buttons have in common.",
+      "use": [
+        "Always, unless `labelledBy` points at a visible heading that already says it.",
+        "Naming the group by its subject rather than its shape: \"Row actions\", not \"Button group\"."
+      ],
+      "dont": [
+        "Restating the buttons' own labels — \"Save and Cancel\" tells a screen reader what it is about to read anyway.",
+        "Leaving it off because the group looks obvious on screen; an unnamed group adds a level to navigate and says nothing about what is inside it."
+      ],
+      "conflicts": [
+        "labelledBy"
+      ],
+      "a11y": "Becomes the group's `aria-label`. Every group MUST have a name from this or from `labelledBy` — the component cannot supply one, because only the caller knows what the buttons have in common."
+    },
+    "labelledBy": {
+      "summary": "Id of an element that already names this group, used instead of a written label.",
+      "use": [
+        "A visible heading sits directly above the group and says the same thing a label would."
+      ],
+      "dont": [
+        "Pointing at an element that is conditionally rendered — a dangling `aria-labelledby` leaves the group unnamed with no visible sign of it."
+      ],
+      "conflicts": [
+        "label"
+      ],
+      "a11y": "Wins over `label` when both are passed, because it points at text the user can see: when the visible heading changes, the name changes with it."
+    },
+    "orientation": {
+      "summary": "Which way the buttons stack.",
+      "use": [
+        "`vertical` in a narrow rail or a menu-like column where a row would wrap."
+      ],
+      "dont": [
+        "`vertical` as a substitute for a menu — a list of navigation choices is a menu, not a stack of buttons.",
+        "Switching orientation per breakpoint by swapping the prop mid-interaction; pick one per layout and let the group wrap if it must."
+      ],
+      "a11y": "Presentational only. It sets a data attribute for styling and deliberately does not set `aria-orientation`, which would promise arrow-key navigation this group does not implement."
+    },
+    "attached": {
+      "summary": "Joins the buttons into one continuous bar, with shared borders and only the outer corners rounded.",
+      "use": [
+        "Actions that are variations of one thing and are read as a unit — a pager's Previous/Next, a split of one action into its two directions."
+      ],
+      "dont": [
+        "Actions of different weight. Attaching a primary to a destructive makes them look like one control with two halves, which is exactly the moment a mis-click costs the most.",
+        "Expressing a choice. Attached buttons that hold a selected state are a `toggle-button-group`, and it says so to assistive technology; this one does not."
+      ],
+      "a11y": "Visual only — nothing about the attached form changes what is announced. The buttons stay separately focusable either way."
+    }
+  },
+  "usage": [
+    {
+      "case": "Two actions at the end of a form",
+      "when": "The default case: a primary action and its escape hatch, spaced rather than joined.",
+      "example": "<ButtonGroup label=\"Form actions\">\n  <Button variant=\"secondary\">Cancel</Button>\n  <Button>Save changes</Button>\n</ButtonGroup>",
+      "notes": "Spaced, not attached — these are two different decisions, and joining them makes them read as one control."
+    },
+    {
+      "case": "Attached pager",
+      "when": "Two halves of the same action, which is what `attached` is for.",
+      "example": "<ButtonGroup label=\"Pagination\" attached>\n  <Button variant=\"secondary\" iconOnly aria-label=\"Previous page\">‹</Button>\n  <Button variant=\"secondary\" iconOnly aria-label=\"Next page\">›</Button>\n</ButtonGroup>",
+      "notes": "`iconOnly` still requires its own `aria-label` on each button — the group's name says what the pair is, not what each half does."
+    },
+    {
+      "case": "Named by a heading that is already on screen",
+      "when": "The group sits under a heading that says exactly what the label would have said.",
+      "example": "<h3 id=\"export-actions\">Export</h3>\n<ButtonGroup labelledBy=\"export-actions\">\n  <Button variant=\"secondary\">CSV</Button>\n  <Button variant=\"secondary\">JSON</Button>\n</ButtonGroup>",
+      "notes": "Prefer this to a written `label` whenever the heading exists: one string, visible, and it cannot drift from what the group actually contains."
+    },
+    {
+      "case": "Vertical rail",
+      "when": "A narrow column where a horizontal row would wrap into an unreadable grid.",
+      "example": "<ButtonGroup label=\"Layer actions\" orientation=\"vertical\">\n  <Button variant=\"tertiary\">Bring forward</Button>\n  <Button variant=\"tertiary\">Send backward</Button>\n</ButtonGroup>",
+      "notes": "Still tab-navigated, not arrow-navigated. If the column is long enough that tabbing through it is tedious, it wants to be a menu."
+    }
+  ],
+  "tokens": {
+    "spaced": {
+      "summary": "The default: buttons that belong together but read as separate controls.",
+      "tokens": {
+        "gap": "space.gap.sm",
+        "item border-radius": "radius.element — each button keeps the corners it sets for itself"
+      }
+    },
+    "attached": {
+      "summary": "Buttons joined into one continuous bar.",
+      "tokens": {
+        "gap": "space.0",
+        "inner corner border-radius": "radius.none",
+        "outer corner border-radius": "radius.element, as logical corners so the bar flips in RTL",
+        "collapsed shared border": "negative margin of border.1, so adjacent borders read as one",
+        "focused item stacking": "raised above its neighbours so the focus ring is not clipped — a stacking fix, not a token"
+      }
+    }
+  }
+}

@@ -166,11 +166,75 @@ test("heading weight overrides reach the generated tokens", () => {
 
 // ── colour scale ────────────────────────────────────────────────────────────
 
-test("expandColorScale emits light/dark tuples for every generated role", () => {
+test("expandColorScale emits light/dark tuples for every generated theme role", () => {
   const t = expandColorScale({ accent: "#0064E0" });
   for (const [key, value] of Object.entries(t)) {
+    if (!key.startsWith("theme.")) continue;
     assert.ok(Array.isArray(value) && value.length === 2, `${key} is not a tuple`);
   }
+});
+
+test("the generated accent ramp is one value per step, not a per-scheme pair", () => {
+  // The palette layer promises a step is the same value in both schemes —
+  // that promise is the reason components are told never to use one directly.
+  // A [light, dark] ramp would quietly break it, so the shape is asserted
+  // rather than assumed.
+  const t = expandColorScale({ accent: "#0064E0" });
+  const steps = Object.keys(t).filter((k) => k.startsWith("color.accent."));
+  assert.equal(steps.length, 11, "expected 11 ramp steps, 50 → 950");
+  for (const step of steps) {
+    assert.equal(typeof t[step], "string", `${step} should be scheme-independent`);
+  }
+});
+
+test("the accent ramp is anchored on the seed's hue at step 600", () => {
+  // Step 600 is the seed: the ramp is built around the colour the brand named,
+  // which is what makes "the accent ramp" mean the accent rather than a fixed
+  // palette that happens to be filed under that name.
+  //
+  // The tolerance is 10 degrees, not 0, because tone and chroma are forced to
+  // the ramp's curve and the result is gamut-mapped into sRGB — which moves
+  // hue a little. Sweeping the whole hue circle at four chromas and four tones
+  // puts the worst case at 8.1 degrees (a high-chroma green at #64C100, where
+  // sRGB has least room). A wrong hue is out by tens of degrees, so this still
+  // fails loudly for the mistake it is guarding against.
+  for (const accent of ["#2563EB", "#B7410E", "#22C55E", "#7C3AED", "#FD0100"]) {
+    const t = expandColorScale({ accent });
+    const seedHue = hexToHct(accent).hue;
+    const anchorHue = hexToHct(t["color.accent.600"]).hue;
+    const drift = Math.abs(anchorHue - seedHue);
+    assert.ok(
+      Math.min(drift, 360 - drift) < 10,
+      `step 600 hue ${anchorHue.toFixed(1)} should track the seed's ${seedHue.toFixed(1)}`
+    );
+  }
+});
+
+test("the accent ramp's tone falls monotonically from 50 to 950", () => {
+  // The structural promise: 50 is the lightest step and 950 the darkest, for
+  // every seed. Callers read the ramp as an ordered scale — the orientation
+  // note in the contract maps step ranges to uses — so a seed that reordered
+  // it would invalidate that guidance rather than just look different.
+  const steps = ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900", "950"];
+  for (const accent of ["#2563EB", "#B7410E", "#22C55E", "#7C3AED", "#FD0100", "#111111"]) {
+    const t = expandColorScale({ accent });
+    const tones = steps.map((step) => hexToHct(t[`color.accent.${step}`]).tone);
+    for (let i = 1; i < tones.length; i += 1) {
+      assert.ok(
+        tones[i] < tones[i - 1],
+        `${accent}: step ${steps[i]} (tone ${tones[i].toFixed(1)}) should be darker than ` +
+          `${steps[i - 1]} (tone ${tones[i - 1].toFixed(1)})`
+      );
+    }
+  }
+});
+
+test("an accent-less config leaves the stated accent ramp alone", () => {
+  // Same reasoning as the accent roles: defaulting the seed would silently
+  // re-colour the ramp of every neutral-only brand.
+  const t = expandColorScale({ neutralStyle: "cool" });
+  const steps = Object.keys(t).filter((k) => k.startsWith("color.accent."));
+  assert.equal(steps.length, 0);
 });
 
 test("generated text clears WCAG AA against every generated surface", () => {

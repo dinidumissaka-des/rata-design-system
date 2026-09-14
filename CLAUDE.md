@@ -20,7 +20,9 @@ this file is that workflow applied to this specific repo.
 npm run ui -- list                 # every component, one line each
 npm run ui -- props <name>         # props, types, defaults — read from source
 npm run ui -- props <name> --example  # + a real usage snippet from apps/
-npm run ui -- tokens [filter]      # --ds-* custom properties, optionally filtered
+npm run ui -- contract <name>      # what each prop is FOR, when not to use it,
+                                   #   the a11y obligation, worked use cases
+npm run ui -- tokens [filter]      # --rata-* custom properties, optionally filtered
 npm run ui -- pages                # existing page shells (find the precedent)
 ```
 
@@ -31,10 +33,16 @@ its last step, so it's never more than one build behind the source. Prefer
 the live commands when investigating one component; read the file when you
 want the whole surface at once.
 
+`props` answers *what the props are*. `contract` answers *what each one is
+for* — and that is usually the question you actually have. Reach for it
+before writing a prop you haven't used in this repo before.
+
 **Component names are `kebab-case` and match the registry exactly**
 (`button`, `state-layer`, `text-field`) — check `npm run ui -- list` before
-typing one from memory, including the ones that don't exist yet
-(`card`, `table`, `dialog` is real but unbuilt — see below).
+typing one from memory. `card` and `table` are the names most often reached
+for that are not in the registry at all — see the Card note below. As of
+`dialog` shipping, no registry entry is in the `future` state; the next one
+added will be, and the contract will say so before any code exists.
 
 ## Pre-write ritual
 
@@ -50,10 +58,20 @@ Before writing any UI code in `apps/*` or adding a component under `packages/`:
    new code touches, no exceptions for "obvious" ones. `Button` is small and
    still has a non-default prop (`iconOnly`, `loading` with the aria-disabled
    pattern below) that's easy to invent wrong.
+4. **Read the contract for anything non-obvious.**
+   `npm run ui -- contract <name>`, or
+   [`docs/components/<name>.md`](docs/components/README.md). A prop's type
+   tells you what compiles; the contract tells you what's correct —
+   `iconOnly` *requires* an `aria-label`, `loading` and `disabled` are
+   mutually exclusive, and a disabled `text-field` still submits its value.
+   None of that is recoverable from a type signature.
 
 If the command says *"There is nothing to look up — don't invent props for
-this one"* (`dialog`, `text-field` today), that component doesn't exist yet.
-Say so and stop — don't write a plausible-looking `<Dialog>` API.
+this one"*, that component doesn't exist yet. Say so and stop — don't write a
+plausible-looking API for it. **Don't hardcode which components those are,
+here or in your head** — this paragraph named `dialog` and `text-field` long
+after both shipped, which is the same staleness the lookup commands exist to
+prevent. Ask the command.
 
 ## Adding a new component — gated build order
 
@@ -66,6 +84,36 @@ blocks skipping ahead, so don't skip ahead. Concretely: don't write
 `packages/css/src/<name>.css` until the primitive's behavior/API is approved
 *and* every state's token mapping is approved individually; don't guess at a
 mapping to keep moving.
+
+## Component contracts
+
+Every component has a contract in its registry manifest, rendered to one page
+each under [`docs/components/`](docs/components/README.md). It has two halves
+and they are never mixed:
+
+| Half | Lives in | Written by |
+|---|---|---|
+| **Derived** — prop names, types, optionality, defaults, `extends` | `packages/react/src/<name>.tsx` | nobody; parsed from source |
+| **Written** — what a prop is *for*, when not to use it, conflicts, the a11y obligation, worked use cases | `registry/components/<name>.json` | you |
+
+`npm run docs:components` regenerates the pages; `npm run docs:check` fails if
+they're stale, and **the build fails if the two halves disagree** — a
+documented prop that no longer exists, a declared prop nobody documented, or
+a written `type`/`default` restating something the parser already knows. That
+last rule is the point: restating a derived fact by hand recreates the second
+source of truth this whole repo exists to prevent.
+
+A contract can exist before the component does. While `status.react` is
+`future` the page is marked **spec** — the props API approved at gate 1,
+with no code behind it yet — and `type`/`default`/`required` are written by
+hand because there is nothing to parse. When the component ships and the
+status flips to `latest`, the cross-check turns on and verifies the
+implementation against the API that was approved. Writing the contract first
+is what makes the gated build order below checkable instead of honour-system.
+
+Worked `usage[].example` snippets are linted against the same token rules
+`npm run vibe` scores generated code with, so a contract example can't
+contradict the token discipline the rest of the docs preach.
 
 ## Frame-first layout
 
@@ -85,7 +133,7 @@ exists to prevent. Use a plain `<section>` and flag the gap instead.
 
 ## Token discipline
 
-Every value comes from `@ds/tokens`, exposed as `--ds-<path>` custom
+Every value comes from `@rata/tokens`, exposed as `--rata-<path>` custom
 properties (`npm run ui -- tokens` for the full list). Never a bare hex or
 pixel value in component CSS or inline styles.
 
@@ -93,8 +141,8 @@ pixel value in component CSS or inline styles.
 anything.** It documents every token — what it is for, what it is *not* for,
 what to use instead, which foreground/background pairs are contrast-verified,
 and token-by-token recipes for common components (button, text field, notice,
-dialog, menu, …). It is generated from `packages/tokens/src/usage.json`, so
-it is never out of date with the token values. The same documentation ships
+dialog, menu, …). It is generated from the token contracts, so it is never
+out of date with the token values. The same documentation ships
 in three other forms:
 
 | Where | What you get |
@@ -105,8 +153,8 @@ in three other forms:
 
 The rules that matter most:
 
-- **Semantic first.** Reach for `--ds-theme-accent-role-bg` before
-  `--ds-color-accent-600` — the `-role-*` tokens are the ones that survive a
+- **Semantic first.** Reach for `--rata-theme-accent-role-bg` before
+  `--rata-color-accent-600` — the `-role-*` tokens are the ones that survive a
   theme or brand change; the numbered scale under them is raw material.
   (`theme` is the semantic layer — colors *and* elevation, since both branch
   by light/dark; `color` on its own, with no `-role-*`/`bg`/`fg` suffix, is
@@ -126,8 +174,8 @@ The rules that matter most:
   its `fg` text.** The saturated `bg` of those roles is for non-text
   indicators (status dots, bars) only, never text.
 - **Compose the state layer, don't reinvent it.** Interactive components get
-  hover/press feedback by adding the `ds-state-layer` class alongside their
-  own (see `.ds-button` in `packages/react/src/button.tsx`), not by writing
+  hover/press feedback by adding the `rata-state-layer` class alongside their
+  own (see `.rata-button` in `packages/react/src/button.tsx`), not by writing
   a new `:hover` background rule.
 - **Focus is `theme.focus-ring` with `focus.ring-width` and
   `focus.ring-offset`, on `:focus-visible`.** Never remove the ring; never
@@ -182,30 +230,36 @@ write against the same rules — see [internal/vibe-tests/README.md](internal/vi
 | Don't | Instead |
 |---|---|
 | Invent a prop | `npm run ui -- props <name>` first |
-| Hardcode a color or pixel value | The matching `--ds-*` token |
-| A palette token (`--ds-color-neutral-*`, `--ds-color-accent-*`, …) directly in a component | The matching `theme.*` semantic token — palette tokens are identical in both themes |
+| Guess what a prop is *for* from its type | `npm run ui -- contract <name>` — the type compiles, the contract is correct |
+| Add a prop without documenting it in the manifest | The build fails on it — write the contract entry in the same change |
+| Restate a prop's type or default in the manifest of an implemented component | Delete it — both are parsed from source; a hand-written copy is the drift |
+| Hardcode a color or pixel value | The matching `--rata-*` token |
+| A palette token (`--rata-color-neutral-*`, `--rata-color-accent-*`, …) directly in a component | The matching `theme.*` semantic token — palette tokens are identical in both themes |
 | `theme.fg.on-accent` on a status fill | That role's own label token (`theme.danger-role.on`, …) — `on-accent` inverts in dark, the status fills don't |
 | Hand-writing a colour, size, radius or duration | Change the seed in `packages/tokens/src/themes/base.mjs` — the scale is generated |
 | Forking the tokens for a new brand | A theme package under `packages/themes/*` with `extends: baseTheme` |
 | `disabled` attribute on a new interactive primitive | `aria-disabled` + a click guard, like `getButtonProps` |
-| A new `:hover`/`:active` rule for feedback | Compose `.ds-state-layer` |
+| A new `:hover`/`:active` rule for feedback | Compose `.rata-state-layer` |
 | A `<div className="card">` wrapper | Plain `<section>` — there's no Card yet, don't invent one |
-| Wrap a component in a div just for spacing | A `--ds-space-*` token on the component or its parent |
+| Wrap a component in a div just for spacing | A `--rata-space-*` token on the component or its parent |
 | Add new component CSS and assume load order | Add the file to `ORDER` in `packages/css/build.mjs` |
 | Write CSS/React for a new component before its primitive and token mapping are approved | Follow the gated order above — primitives approved, then semantics approved state by state, then component |
 | Add or rename a token without a `usage.json` entry | The build fails on it — document it in the same change |
 
 ## Knowledge check
 
-Before writing code that touches `@ds/react`, you should be able to answer
+Before writing code that touches `@rata/react`, you should be able to answer
 these without looking — if you can't, run the lookup commands above first:
 
 1. What is the exact import path for `Spinner`'s CSS if a consumer isn't
    using React?
 2. What prop makes `Button` show a spinner and refuse clicks while staying
    focusable?
-3. Is `Dialog` implemented? What does `npm run ui -- props dialog` tell you
-   to do about it?
+3. `Dialog` is a native `<dialog>` opened with `showModal()`. Why does
+   rendering `<dialog open>` instead not give you a modal, and why doesn't
+   React's `autoFocus` work inside one?
+4. What does `Button`'s contract say you MUST pass alongside `iconOnly`, and
+   which prop does `loading` conflict with?
 
 (Answers are in `.claude/ui-context.md` and `packages/react/src/button.tsx`
 — the point isn't memorizing them, it's noticing when you'd have to guess.)
@@ -215,8 +269,10 @@ these without looking — if you can't, run the lookup commands above first:
 | Trigger | Action |
 |---|---|
 | Component added, renamed, or its props changed | `npm run ui:sync` (or just `npm run build`, which runs it last) |
+| A prop added, renamed, or removed | Update that component's `props` block in `registry/components/<name>.json` — the build fails until you do |
+| A component contract changed | `npm run docs:components`; `npm run docs:check` verifies it's committed current (CI runs both) |
 | A registry manifest changes (`registry/components/*.json`) | Same — `npm run build` |
-| A token is added, renamed, or its value changes | `npm run build -w @ds/tokens` regenerates `TOKENS.md`; `npm run docs:check` verifies it's committed current (CI runs both) |
+| A token is added, renamed, or its value changes | `npm run build -w @rata/tokens` regenerates `TOKENS.md`; `npm run docs:check` verifies it's committed current (CI runs both) |
 | A theme seed changes | `npm run build` regenerates everything downstream; `npm run themes:check` re-verifies every brand's contrast |
 | You're not sure a token change is actually enforced | `npm run vibe` — the A/B self-test fails if the checker stops discriminating documented answers from naive ones |
 | You give the same correction twice in one session | It belongs in this file, not a chat message |
@@ -225,7 +281,8 @@ these without looking — if you can't, run the lookup commands above first:
 
 ```sh
 npm run build        # tokens → css → primitives → react → ui:sync
-npm run docs:check   # fail if TOKENS.md is out of date with usage.json
+npm run docs:check   # fail if TOKENS.md or docs/components/ is out of date
+npm run docs:components  # regenerate docs/components/*.md from the manifests
 npm run vibe         # score the token-guidance A/B fixtures
 npm run vibe:test    # unit-test the vibe-tests checker itself
 npm run themes:check # re-verify every brand theme's contrast promises

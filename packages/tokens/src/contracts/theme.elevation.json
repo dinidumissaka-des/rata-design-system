@@ -1,0 +1,30 @@
+{
+  "$contract": "theme.elevation",
+  "$summary": "Elevation roles — how far a surface floats above the page. The one non-colour family that still branches by scheme: a light-mode shadow opacity barely registers against a dark canvas.",
+  "tokens": {
+    "theme.elevation.raised": {
+      "layer": "semantic",
+      "summary": "Shadow for content that is part of the page but sits slightly above it.",
+      "use": [
+        "Resting cards and panels."
+      ],
+      "instead": {
+        "Separating two elements in the same plane": "theme.border.default, not elevation"
+      }
+    },
+    "theme.elevation.overlay": {
+      "layer": "semantic",
+      "summary": "Shadow for a transient surface anchored to a trigger.",
+      "use": [
+        "Dropdowns, menus, popovers, tooltips."
+      ]
+    },
+    "theme.elevation.modal": {
+      "layer": "semantic",
+      "summary": "Shadow for a surface that takes over the screen.",
+      "use": [
+        "Dialogs, drawers, sheets."
+      ]
+    }
+  }
+}

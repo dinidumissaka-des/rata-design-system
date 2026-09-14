@@ -1,106 +1,104 @@
-/* Button family: base button + variants. Composes .ds-state-layer for hover/press. */
-.ds-button {
+/* Button family: base button + variants. Composes .rata-state-layer for hover/press. */
+.rata-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--ds-space-2);
-  border: 1px solid transparent;
-  border-radius: var(--ds-radius-element);
-  font-family: var(--ds-font-family-sans);
-  font-weight: var(--ds-type-control-weight);
+  gap: var(--rata-space-2);
+  border: var(--rata-border-default) solid transparent;
+  /* Stated, not inherited from the consumer's reset: this rule sets an explicit
+     size alongside a border, so under content-box it renders 2px larger than the
+     token says. @rata/css deliberately ships no global reset — a library has no
+     business restyling a consumer's own elements — so each component that
+     measures itself declares this. */
+  box-sizing: border-box;
+  border-radius: var(--rata-radius-element);
+  font-family: var(--rata-font-family-sans);
+  /* One text size across all three control sizes. `size` changes the box the
+     label sits in, not the label — a large button is a bigger target for the
+     same action, not a louder sentence. It also means an icon inside, which is
+     sized from this font-size, does not move when the control does. */
+  font-size: var(--rata-type-control-size-md);
+  line-height: var(--rata-type-control-line-height-md);
+  font-weight: var(--rata-type-control-weight);
   cursor: pointer;
   user-select: none;
   text-decoration: none;
   white-space: nowrap;
   transition:
-    background-color var(--ds-motion-duration-fast) var(--ds-motion-easing-standard),
-    border-color var(--ds-motion-duration-fast) var(--ds-motion-easing-standard);
+    background-color var(--rata-motion-duration-fast) var(--rata-motion-easing-standard),
+    border-color var(--rata-motion-duration-fast) var(--rata-motion-easing-standard);
 }
 
-.ds-button:focus-visible {
-  outline: var(--ds-focus-ring-width) solid var(--ds-theme-focus-ring);
-  outline-offset: var(--ds-focus-ring-offset);
+.rata-button:focus-visible {
+  outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
 }
 
 /* Sizes */
-.ds-button--sm {
-  height: var(--ds-size-control-sm);
-  padding-inline: var(--ds-space-3);
-  font-size: var(--ds-type-control-size-sm);
-  line-height: var(--ds-type-control-line-height-sm);
+.rata-button--sm {
+  height: var(--rata-size-control-sm);
+  padding-inline: var(--rata-space-3);
 }
 
-.ds-button--md {
-  height: var(--ds-size-control-md);
-  padding-inline: var(--ds-space-4);
-  font-size: var(--ds-type-control-size-md);
-  line-height: var(--ds-type-control-line-height-md);
+.rata-button--md {
+  height: var(--rata-size-control-md);
+  padding-inline: var(--rata-space-4);
 }
 
-.ds-button--lg {
-  height: var(--ds-size-control-lg);
-  padding-inline: var(--ds-space-5);
-  font-size: var(--ds-type-control-size-lg);
-  line-height: var(--ds-type-control-line-height-lg);
+.rata-button--lg {
+  height: var(--rata-size-control-lg);
+  padding-inline: var(--rata-space-5);
 }
 
 /* Variants */
-.ds-button--primary {
-  background: var(--ds-theme-accent-role-bg);
-  color: var(--ds-theme-fg-on-accent);
+.rata-button--primary {
+  background: var(--rata-theme-accent-role-bg);
+  color: var(--rata-theme-fg-on-accent);
 }
 
-.ds-button--secondary {
-  background: var(--ds-theme-bg-surface);
-  color: var(--ds-theme-fg-primary);
-  border-color: var(--ds-theme-border-strong);
+.rata-button--secondary {
+  background: var(--rata-theme-secondary-role-bg);
+  /* Accent-toned, not neutral: at this fill the border carries almost nothing,
+     so a neutral label leaves the control reading as an inert box. */
+  color: var(--rata-theme-accent-role-fg);
+  border-color: var(--rata-theme-secondary-role-border);
 }
 
-.ds-button--tertiary {
+.rata-button--tertiary {
   background: transparent;
-  color: var(--ds-theme-accent-role-fg);
+  color: var(--rata-theme-accent-role-fg);
 }
 
-.ds-button--destructive {
-  background: var(--ds-theme-danger-role-bg);
-  color: var(--ds-theme-fg-on-accent);
+.rata-button--destructive {
+  background: var(--rata-theme-danger-role-bg);
+  color: var(--rata-theme-fg-on-accent);
 }
 
 /* States — aria-disabled keeps the control focusable/discoverable for AT */
-.ds-button:disabled,
-.ds-button[aria-disabled="true"] {
-  opacity: var(--ds-state-disabled-opacity);
+.rata-button:disabled,
+.rata-button[aria-disabled="true"] {
+  opacity: var(--rata-state-disabled-opacity);
   cursor: not-allowed;
 }
 
-.ds-button[data-loading] {
+.rata-button[data-loading] {
   cursor: progress;
 }
 
 /* Icon button — square control that holds a single icon */
-.ds-icon-button {
+.rata-icon-button {
   padding-inline: 0;
 }
 
-.ds-icon-button.ds-button--sm {
-  width: var(--ds-size-control-sm);
+.rata-icon-button.rata-button--sm {
+  width: var(--rata-size-control-sm);
 }
 
-.ds-icon-button.ds-button--md {
-  width: var(--ds-size-control-md);
+.rata-icon-button.rata-button--md {
+  width: var(--rata-size-control-md);
 }
 
-.ds-icon-button.ds-button--lg {
-  width: var(--ds-size-control-lg);
+.rata-icon-button.rata-button--lg {
+  width: var(--rata-size-control-lg);
 }
 
-/* Link button — button semantics, link appearance */
-.ds-link-button {
-  background: none;
-  border: none;
-  height: auto;
-  padding: 0;
-  color: var(--ds-theme-accent-role-fg);
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}

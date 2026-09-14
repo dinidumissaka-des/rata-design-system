@@ -1,10 +1,10 @@
 /* Card — white background and a literal grey border. */
 .card {
   background: #ffffff;
-  border: 1px solid var(--ds-color-neutral-200);
+  border: 1px solid var(--rata-color-neutral-200);
   border-radius: 10px;
   padding: 16px;
-  color: var(--ds-color-neutral-900);
+  color: var(--rata-color-neutral-900);
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 }
 

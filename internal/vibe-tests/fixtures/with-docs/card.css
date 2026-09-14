@@ -2,19 +2,19 @@
    (There is no Card component in the registry; this fixture only probes
    token discipline for a raised-surface pattern, not a component API.) */
 .card {
-  background: var(--ds-theme-bg-surface);
-  border: 1px solid var(--ds-theme-border-default);
-  border-radius: var(--ds-radius-container);
-  padding: var(--ds-space-4);
-  color: var(--ds-theme-fg-primary);
-  box-shadow: var(--ds-theme-elevation-raised);
+  background: var(--rata-theme-bg-surface);
+  border: 1px solid var(--rata-theme-border-default);
+  border-radius: var(--rata-radius-container);
+  padding: var(--rata-space-4);
+  color: var(--rata-theme-fg-primary);
+  box-shadow: var(--rata-theme-elevation-raised);
 }
 
 .card__title {
-  font-size: var(--ds-type-heading-size);
-  font-weight: var(--ds-type-heading-weight);
+  font-size: var(--rata-type-heading-size);
+  font-weight: var(--rata-type-heading-weight);
 }
 
 .card__body {
-  color: var(--ds-theme-fg-secondary);
+  color: var(--rata-theme-fg-secondary);
 }

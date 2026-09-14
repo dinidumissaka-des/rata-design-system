@@ -7,7 +7,7 @@
   padding: 0 16px;
   border: none;
   border-radius: 6px;
-  background: var(--ds-color-accent-600);
+  background: var(--rata-color-accent-600);
   color: #ffffff;
   font-size: 14px;
   font-weight: 500;
@@ -15,7 +15,7 @@
 }
 
 .button:hover {
-  background: var(--ds-color-accent-700);
+  background: var(--rata-color-accent-700);
 }
 
 .button:focus {

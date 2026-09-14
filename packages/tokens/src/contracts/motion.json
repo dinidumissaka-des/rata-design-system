@@ -1,0 +1,35 @@
+{
+  "$contract": "motion",
+  "$summary": "Duration and easing, plus the roles that name which band a transition belongs to.",
+  "tokens": {
+    "motion": {
+      "layer": "base",
+      "summary": "Duration and easing. The duration bands are generated from the theme's {fast, medium, slow, ratio} seed; the roles below name which band a transition belongs to.",
+      "use": [
+        "transition-duration / transition-timing-function, via a role (motion.interactive.*, motion.overlay.*, motion.modal.*) rather than a raw duration when one names the situation."
+      ],
+      "scale": {
+        "duration.fast-min": "Fastest step of the fast band.",
+        "duration.fast": "Micro-interactions — hover, toggle.",
+        "duration.fast-max": "Slowest step of the fast band.",
+        "duration.medium-min": "Fastest step of the medium band.",
+        "duration.medium": "Entrance/exit — menus, popovers.",
+        "duration.medium-max": "Slowest step of the medium band.",
+        "duration.slow-min": "Fastest step of the slow band.",
+        "duration.slow": "Continuous animation.",
+        "duration.slow-max": "Slowest step of the slow band.",
+        "duration.spin": "A full spinner rotation.",
+        "duration.spin-reduced": "A slowed spinner rotation for prefers-reduced-motion.",
+        "easing.standard": "The default curve.",
+        "easing.enter": "Something appearing.",
+        "easing.exit": "Something leaving.",
+        "interactive.duration": "Hover/press feedback, toggles.",
+        "interactive.easing": "Curve for interactive transitions.",
+        "overlay.duration": "Menus, popovers, tooltips.",
+        "overlay.easing": "Curve for overlay transitions.",
+        "modal.duration": "Dialogs, sheets, drawers.",
+        "modal.easing": "Curve for modal transitions."
+      }
+    }
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "name": "icon",
+  "title": "Icon",
+  "family": "content",
+  "description": "A Lucide glyph sized from the size.icon.* scale, inheriting its colour from the text around it.",
+  "status": {
+    "css": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "react": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [],
+  "files": [
+    {
+      "source": "packages/css/src/icon.css",
+      "target": "styles/icon.css"
+    },
+    {
+      "source": "packages/icons/src/icon.tsx",
+      "target": "components/icon.tsx"
+    }
+  ],
+  "tier": "free",
+  "props": {
+    "icon": {
+      "summary": "The Lucide component to render, passed as a value rather than a name.",
+      "use": [
+        "Any icon imported from `@rata/icons` — the curated set — or from `lucide-react` directly when the set is missing one.",
+        "Passing the component itself (`icon={Trash2}`), which is what keeps the icon set tree-shakeable: a string name would force every icon into the bundle."
+      ],
+      "dont": [
+        "Rendering the Lucide component directly instead of through `Icon`. It would take Lucide's default 24px rather than a step from the scale, and it would not get the a11y switch below.",
+        "An emoji or a text glyph as a stand-in. Those inherit font metrics rather than the icon scale, so they will not line up with real icons beside them."
+      ],
+      "a11y": "Rendered `aria-hidden` unless `label` is set — see `label`."
+    },
+    "size": {
+      "summary": "Which step of the `size.icon.*` scale the glyph is drawn at. Defaults to following the surrounding text.",
+      "use": [
+        "Leave it alone for anything with text near it — the default `text` step is 1.15em, so the glyph tracks whatever font-size it lands in and needs no decision per control.",
+        "`xs` / `sm` / `md` / `lg` only for a standalone glyph with no text to inherit from: a status dot in a table cell, or an icon-only control whose name is an `aria-label` rather than visible text.",
+        "`lg` when the glyph should render unscaled — 24px is Lucide's native artboard."
+      ],
+      "dont": [
+        "Picking a fixed step to match a control's size. A control's `size` changes its box, not its text, so an icon inside it should not change either — and a fixed step stops matching the moment the surrounding text does change.",
+        "Mixing steps within one row of icons — they read as a set, so they measure as a set."
+      ]
+    },
+    "label": {
+      "summary": "Accessible name, for an icon that carries meaning nothing else conveys.",
+      "use": [
+        "An icon that is the only thing communicating something — a status glyph in a table cell with no adjacent text."
+      ],
+      "dont": [
+        "An icon inside a `Button` with `iconOnly`. That button already carries the `aria-label` the contract requires, so labelling the icon too announces the same thing twice.",
+        "An icon sitting beside a visible text label. The text is the name; the icon is decoration and must stay hidden from assistive technology."
+      ],
+      "a11y": "Present, the glyph becomes `role=\"img\"` with this as its name. Absent, it is `aria-hidden` — the same switch `Spinner` uses for the same reason, and the reason the decorative case needs no thought to get right."
+    },
+    "className": {
+      "summary": "Extra classes on the glyph, for placement — not for restyling it.",
+      "use": [
+        "A layout concern the parent cannot express, such as a margin token when the icon is not already inside a flex row with a gap."
+      ],
+      "dont": [
+        "Overriding the size. The four steps are the scale; a fifth size written in a component's CSS is the drift `size.icon.*` exists to prevent — add a step to the scale instead.",
+        "Setting a colour. The glyph strokes with `currentColor` so it always matches the text it sits in; colouring it separately is how an icon ends up contradicting its own label."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "Inside an icon-only button",
+      "when": "The most common pairing, and the one where the a11y split matters most.",
+      "example": "<Button iconOnly aria-label=\"Delete row\">\n  <Icon icon={Trash2} />\n</Button>",
+      "notes": "No `label` on the icon: the button owns the accessible name, so the glyph stays `aria-hidden`. `size` is left at `md`, which is what a 32px control wants."
+    },
+    {
+      "case": "Beside a text label",
+      "when": "An action whose icon reinforces a word rather than replacing it.",
+      "example": "<Button>\n  <Icon icon={Download} />\n  Export CSV\n</Button>",
+      "notes": "No `size`: the default `text` step is 1.15em, so the glyph is sized from the button's own label and stays matched to it. The icon is decorative here, so it takes no `label` either."
+    },
+    {
+      "case": "Carrying meaning on its own",
+      "when": "A status glyph in a dense row, with no adjacent text to name it.",
+      "example": "<Icon icon={CircleAlert} size=\"xs\" label=\"Needs review\" />",
+      "notes": "This is the only case that takes a `label`. Without one the row would announce nothing at all where a sighted user sees a warning."
+    }
+  ],
+  "tokens": {
+    "base": {
+      "summary": "A glyph sized from the text around it, taking its colour from that text too.",
+      "tokens": {
+        "width": "size.icon.text — 1.15em, so it follows the inherited font-size. size.icon.xs / .sm / .md / .lg for a standalone glyph.",
+        "height": "same step as width; the scale is one number and the glyph is square",
+        "stroke": "currentColor — the icon inherits the colour of the text it sits in, so it needs no colour token of its own and cannot contradict its label",
+        "flex-shrink": "0 — a glyph beside text must not be squeezed by it, which is a layout fact rather than a token"
+      }
+    }
+  }
+}

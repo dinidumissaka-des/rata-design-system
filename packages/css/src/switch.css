@@ -1,0 +1,143 @@
+/* Switch — a track the thumb slides along.
+
+   Same construction as checkbox and radio: a native input laid over the drawn
+   control at zero opacity, so it keeps the tab order, the semantics and the
+   form participation while the visual is painted separately. The role on that
+   input is what makes it a switch; everything here is paint.
+
+   The state is said twice over — the track fills AND the thumb moves — so the
+   setting is never carried by colour alone. */
+.rata-switch {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rata-space-gap-sm);
+  font-family: var(--rata-font-family-sans);
+}
+
+.rata-switch-control {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  /* One line tall, so the track centres on the label's first line rather than
+     its whole block — which keeps a two-line description from dragging the
+     track down the middle of it. Multiplied out because the line-height token
+     is a unitless ratio, not a length. */
+  block-size: calc(var(--rata-type-control-size-md) * var(--rata-type-control-line-height-md));
+}
+
+.rata-switch-input {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: var(--rata-space-0);
+  opacity: 0;
+  cursor: pointer;
+}
+
+.rata-switch-track {
+  display: inline-flex;
+  align-items: center;
+  /* Twice the thumb plus its inset at both ends: that difference is the
+     distance the thumb has to travel, and it is why the track borrows a
+     control step rather than an icon one. */
+  inline-size: var(--rata-size-control-lg);
+  block-size: var(--rata-size-icon-md);
+  /* The same height as a checkbox's box, so a switch and a checkbox in one
+     settings column line up. */
+  box-sizing: border-box;
+  /* A tighter inset than the checkbox's, because the thumb is deliberately
+     large in the track — the channel reads as a channel with a couple of
+     pixels showing, not a wide gutter. */
+  padding: var(--rata-space-0-5);
+  border: var(--rata-border-default) solid var(--rata-theme-border-strong);
+  border-radius: var(--rata-radius-pill);
+  /* An off track is an empty channel, not a filled control. */
+  background: var(--rata-theme-bg-muted);
+  pointer-events: none;
+  transition:
+    background-color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing),
+    border-color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing);
+}
+
+.rata-switch-thumb {
+  /* A spacing step, not the icon scale: the thumb is a mark rather than a
+     glyph — the same reasoning the radio's dot follows. At 16px it fills 89% of
+     the track's inner height, which is the proportion a switch reads as. */
+  inline-size: var(--rata-space-gap-lg);
+  block-size: var(--rata-space-gap-lg);
+  border-radius: var(--rata-radius-pill);
+  background: var(--rata-theme-fg-secondary);
+  /* transform, not a layout property: the thumb slides, so nothing around it
+     reflows as it moves. */
+  transform: translateX(0);
+  transition:
+    transform var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing),
+    background-color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing);
+}
+
+.rata-switch[data-state="on"] .rata-switch-track {
+  background: var(--rata-theme-accent-role-bg);
+  /* On, the accent fill is its own boundary, so the border matches it rather
+     than drawing a second edge inside one. */
+  border-color: var(--rata-theme-accent-role-bg);
+}
+
+.rata-switch[data-state="on"] .rata-switch-thumb {
+  background: var(--rata-theme-fg-on-accent);
+  /* The full width of the track, less the thumb and both insets. Derived rather
+     than a magic number, so it follows if any of the three change. */
+  transform: translateX(
+    calc(
+      var(--rata-size-control-lg) - var(--rata-space-gap-lg) - (2 * var(--rata-space-0-5)) -
+        (2 * var(--rata-border-default))
+    )
+  );
+}
+
+.rata-switch-input:focus-visible + .rata-switch-track {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+.rata-switch-text {
+  display: flex;
+  flex-direction: column;
+  /* No gap: the label and the description each carry line-height leading of
+     their own — 3px below the label and 4px above the description — which
+     already reads as 7px of separation. Adding space.stack.2xs on top of that
+     made 11px, which looked like the two were unrelated.
+
+     Tightening further would mean giving the description another role's
+     line-height while keeping supporting's size, and the type contract is
+     explicit that each role carries a matched size, weight and line-height.
+     Not worth breaking that for 2px. */
+}
+
+.rata-switch-label {
+  color: var(--rata-theme-fg-primary);
+  font-size: var(--rata-type-control-size-md);
+  line-height: var(--rata-type-control-line-height-md);
+  cursor: pointer;
+}
+
+
+.rata-switch[data-label-hidden] {
+  gap: var(--rata-space-0);
+}
+
+.rata-switch-description {
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-supporting-size);
+  line-height: var(--rata-type-supporting-line-height);
+}
+
+.rata-switch[data-disabled] {
+  opacity: var(--rata-state-disabled-opacity);
+}
+
+.rata-switch[data-disabled] .rata-switch-input,
+.rata-switch[data-disabled] .rata-switch-label {
+  cursor: not-allowed;
+}

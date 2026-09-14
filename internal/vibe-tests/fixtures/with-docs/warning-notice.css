@@ -3,13 +3,13 @@
 .warning-notice {
   display: flex;
   align-items: flex-start;
-  gap: var(--ds-space-gap-xs);
-  padding: var(--ds-space-padding-sm) var(--ds-space-padding-md);
-  border-radius: var(--ds-radius-element);
-  background: var(--ds-theme-warning-role-subtle);
-  color: var(--ds-theme-warning-role-fg);
+  gap: var(--rata-space-gap-xs);
+  padding: var(--rata-space-padding-sm) var(--rata-space-padding-md);
+  border-radius: var(--rata-radius-element);
+  background: var(--rata-theme-warning-role-subtle);
+  color: var(--rata-theme-warning-role-fg);
 }
 
 .warning-notice__title {
-  font-weight: var(--ds-type-heading-weight);
+  font-weight: var(--rata-type-heading-weight);
 }

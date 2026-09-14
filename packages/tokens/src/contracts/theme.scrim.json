@@ -1,0 +1,30 @@
+{
+  "$contract": "theme.scrim",
+  "$summary": "The wash that dims the page behind a modal surface.",
+  "tokens": {
+    "theme.scrim": {
+      "layer": "semantic",
+      "summary": "A translucent wash over everything behind a modal, so the surface in front reads as the only thing you can act on.",
+      "use": [
+        "A modal dialog's `::backdrop`.",
+        "Any full-screen wash whose job is to make the layer above it the only interactive one."
+      ],
+      "dont": [
+        "As a background for content. It is translucent, so whatever is behind shows through and no contrast promise about text on it can hold.",
+        "For a non-modal overlay. A menu or popover does not dim the page, because the page is still live behind it — dimming implies the rest is inert, and for a menu it is not.",
+        "As a hover or press wash. That is the state layer, which tints a control rather than covering the page."
+      ],
+      "instead": {
+        "A raised surface's own background": "theme.bg.surface",
+        "Hover or press feedback on a control": "compose the .rata-state-layer class",
+        "A recessed well behind content": "theme.bg.muted"
+      },
+      "pairsWith": [
+        "theme.elevation.modal"
+      ],
+      "example": {
+        "css": ".rata-dialog::backdrop { background: var(--rata-theme-scrim); }"
+      }
+    }
+  }
+}

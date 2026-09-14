@@ -8,13 +8,13 @@ A token-first, multi-layer design system for web apps and websites. Benchmark: [
 
 | Layer | Package | What it is | Distribution |
 |---|---|---|---|
-| Tokens | `@ds/tokens` | Seed-driven token engine → CSS variables, TypeScript, Tailwind preset, [usage docs](packages/tokens/TOKENS.md) | npm |
-| Themes | `@ds/theme-*` | Brand themes: a few seeds + `extends`, built to scoped override CSS | npm (pro tier) |
-| CSS components | `@ds/css` | Framework-free, per-component versioned CSS (works with plain HTML) | npm |
-| Primitives | `@ds/primitives` | Headless, accessible behavior (pure functions — portable beyond React) | npm |
-| React components | `@ds/react` | Styled components: primitives behavior + CSS appearance | npm **and** CLI copy-paste |
+| Tokens | `@rata/tokens` | Seed-driven token engine → CSS variables, TypeScript, Tailwind preset, [usage docs](packages/tokens/TOKENS.md) | npm |
+| Themes | `@rata/theme-*` | Brand themes: a few seeds + `extends`, built to scoped override CSS | npm (pro tier) |
+| CSS components | `@rata/css` | Framework-free, per-component versioned CSS (works with plain HTML) | npm |
+| Primitives | `@rata/primitives` | Headless, accessible behavior (pure functions — portable beyond React) | npm |
+| React components | `@rata/react` | Styled components: primitives behavior + CSS appearance | npm **and** CLI copy-paste |
 | Registry | `registry/` | Per-component manifests: family, status matrix, files, tier (free/pro) | drives CLI + docs |
-| CLI | `@ds/cli` | `ds list`, `ds add <component>` — copies source into consumer repos; `ds props/tokens/pages` — agent lookup, read straight from source | npm |
+| CLI | `@rata/cli` | `rata list`, `rata add <component>` — copies source into consumer repos; `rata props/tokens/pages` — agent lookup, read straight from source | npm |
 | Playground | `apps/playground` | Live component gallery + status matrix | internal (docs site later) |
 
 Key decisions:
@@ -24,7 +24,7 @@ Key decisions:
 - **State layer as its own primitive**: uniform hover/press feedback across all interactive components.
 - **Status matrix from registry metadata**: honest per-artifact lifecycle (latest / in-progress / future / deprecated / na), published on the docs site.
 - **Open core**: tokens + primitives + base components free (MIT); composed blocks/templates and multi-brand theming are the paid tier (`tier: "pro"` in registry manifests).
-- **Documented tokens are enforced tokens**: every token carries usage rules in `packages/tokens/src/usage.json`, and the build fails if a token is undocumented, if the docs name a token that does not exist, if a documented scale step no longer exists, or if a documented contrast pairing stops holding.
+- **Documented tokens are enforced tokens**: every token carries a contract in `packages/tokens/src/contracts/` — one file per token family, plus each component's recipe in its own registry manifest — and the build fails if a token is undocumented, documented twice, named but nonexistent, if a documented scale step no longer exists, or if a documented contrast pairing stops holding.
 - **Generated, not enumerated**: colour, typography, radius and motion come from four seeds per theme, expanded by a generator ported from [Astryx](https://github.com/facebook/astryx). Because HCT tone fixes relative luminance independently of hue, the WCAG guarantees hold *for any brand colour a theme seeds* — and every brand re-measures them at build time. See [THEME-ENGINE.md](packages/tokens/THEME-ENGINE.md).
 
 ## Using the tokens
@@ -33,9 +33,9 @@ Key decisions:
 
 The same content ships in three machine-readable forms, so an editor or a coding agent gets the rules without leaving the code:
 
-- `@ds/tokens/css` — each CSS variable annotated with its usage
-- `@ds/tokens` types — usage rules as JSDoc, shown on hover and in completions
-- `@ds/tokens/usage` — JSON with the rules, resolved values per theme, measured contrast ratios, and component recipes
+- `@rata/tokens/css` — each CSS variable annotated with its usage
+- `@rata/tokens` types — usage rules as JSDoc, shown on hover and in completions
+- `@rata/tokens/usage` — JSON with the rules, resolved values per theme, measured contrast ratios, and component recipes
 
 Whether that documentation actually changes what an agent writes is measured, not assumed: [`internal/vibe-tests`](internal/vibe-tests) scores generated component code against rules derived from the token build, and CI fails if the checker stops distinguishing documented answers from naive ones.
 
@@ -55,7 +55,7 @@ Try the CLI (distribution):
 
 ```sh
 npm run ui -- list
-node packages/cli/bin/ds.mjs add button --dir /tmp/demo
+node packages/cli/bin/rata.mjs add button --dir /tmp/demo
 ```
 
 ## Agent-ready workflow
@@ -67,7 +67,7 @@ usage rules — instead of recalling either from memory. Start with
 
 ```sh
 npm run ui -- props button --example   # props, types, defaults + a real usage snippet
-npm run ui -- tokens color             # --ds-* custom properties, filtered
+npm run ui -- tokens color             # --rata-* custom properties, filtered
 npm run ui -- pages                    # existing page shells in this repo
 ```
 
@@ -82,10 +82,10 @@ token itself goes through the `design-tokens` skill
 (`.claude/skills/design-tokens/`), not an ad hoc edit to the theme JSON.
 
 **This context is monorepo-local, not distributed yet.** `npm install
-@ds/react` carries prop names/types/JSDoc via the `.d.ts` output (real, if
+@rata/react` carries prop names/types/JSDoc via the `.d.ts` output (real, if
 partial, context — confirmed by checking `packages/react/dist/button.d.ts`).
-`ds add <name>` carries none of it: it copies raw source only, no manifest,
-no context file, and `ds props/tokens/pages` don't work once installed
+`rata add <name>` carries none of it: it copies raw source only, no manifest,
+no context file, and `rata props/tokens/pages` don't work once installed
 outside this monorepo (their path resolution assumes they're still sitting
 at `packages/cli/bin/`). See Open items below.
 
@@ -103,10 +103,10 @@ at `packages/cli/bin/`). See Open items below.
   references these categories generically; none exist in the registry yet
 - CSS cascade layers (`@layer`) — component CSS currently relies on the
   manual `ORDER` array in `packages/css/build.mjs` rather than a layer boundary
-- Agent-lookup context doesn't travel past this monorepo — `ds add` copies
-  raw source with no manifest/context, and `ds props/tokens/pages` don't
-  work from an installed `@ds/cli` (path resolution assumes it's still
+- Agent-lookup context doesn't travel past this monorepo — `rata add` copies
+  raw source with no manifest/context, and `rata props/tokens/pages` don't
+  work from an installed `@rata/cli` (path resolution assumes it's still
   inside `packages/cli/`). Two directions worth weighing later: teach
-  `ds add` to drop a per-component context file alongside the source, or
+  `rata add` to drop a per-component context file alongside the source, or
   bundle the registry + a props snapshot into the published CLI so the
   live commands work post-install too

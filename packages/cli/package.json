@@ -1,10 +1,10 @@
 {
-  "name": "@ds/cli",
+  "name": "@rata/cli",
   "version": "0.1.0",
   "type": "module",
   "description": "Copy-paste distribution CLI: lists registry components, copies their source into a consumer project, and answers agent lookups (props/tokens/pages) straight from source.",
   "bin": {
-    "ds": "./bin/ds.mjs"
+    "rata": "./bin/rata.mjs"
   },
   "files": [
     "bin",

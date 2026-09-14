@@ -1,0 +1,176 @@
+{
+  "name": "radio-group",
+  "title": "Radio Group",
+  "family": "inputs",
+  "description": "A set of radios holding one answer, with the group owning the name, the value and the focus model.",
+  "status": {
+    "css": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "react": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "radio",
+    "state-layer"
+  ],
+  "files": [
+    {
+      "source": "packages/css/src/radio-group.css",
+      "target": "styles/radio-group.css"
+    },
+    {
+      "source": "packages/react/src/radio-group.tsx",
+      "target": "components/radio-group.tsx"
+    },
+    {
+      "source": "packages/react/src/radio-group-context.ts",
+      "target": "lib/radio-group-context.ts"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
+  "tier": "free",
+  "behavior": {
+    "primitive": "getRadioGroupProps",
+    "summary": "The radiogroup pattern: one tab stop, arrow keys that move and select, and a single value owned here rather than by any item. Native inputs carry the semantics; this decides which one is checked and which one is the tab stop.",
+    "decisions": [
+      {
+        "decision": "The group owns the value, not the items",
+        "why": "A radio's whole meaning is 'one of these'. Leaving the value on the item would let two claim to be checked, which is a state the control is supposed to make impossible."
+      },
+      {
+        "decision": "Native input[type=radio] sharing one `name`",
+        "why": "Grouping, arrow-key behaviour and form submission all come from the platform when the name is shared. Re-implementing them on divs is how a radio group ends up not announcing how many options it has."
+      },
+      {
+        "decision": "Roving tabindex is derived from the value",
+        "why": "The checked radio is the tab stop; a group with nothing chosen is entered at its first enabled option. Deriving it means focus and value cannot disagree, because there is no second piece of state."
+      },
+      {
+        "decision": "Arrow keys select as they move, and a disabled option only takes focus",
+        "why": "Selecting on arrow is the radio pattern. This system's disabled controls stay focusable and announced, so a disabled radio must still be reachable — it just must not become the answer."
+      },
+      {
+        "decision": "No deselect",
+        "why": "Unlike toggle-button-group, a radio group has no way back to nothing once answered. That is the platform's behaviour and users rely on it; a clearable set of options is a different control, and this system has toggle-button-group for it."
+      }
+    ]
+  },
+  "props": {
+    "label": {
+      "summary": "Accessible name for the group — the question these radios answer.",
+      "use": [
+        "Always, unless `labelledBy` points at a visible heading that already asks it."
+      ],
+      "dont": [
+        "Leaving both this and `labelledBy` unset; an unnamed radiogroup announces its options with no idea what they are options for."
+      ],
+      "conflicts": [
+        "labelledBy"
+      ],
+      "a11y": "Becomes `aria-label` on the group."
+    },
+    "labelledBy": {
+      "summary": "Id of a visible element that already names this group.",
+      "conflicts": [
+        "label"
+      ]
+    },
+    "value": {
+      "summary": "The chosen value, or null for nothing chosen yet.",
+      "dont": [
+        "Passing it without `onValueChange` — the group would render a choice and refuse to change it."
+      ],
+      "conflicts": [
+        "defaultValue"
+      ]
+    },
+    "defaultValue": {
+      "summary": "Starting choice for an uncontrolled group.",
+      "conflicts": [
+        "value"
+      ]
+    },
+    "onValueChange": {
+      "summary": "Called with the value the group should move to.",
+      "dont": [
+        "Assuming it only fires on click; arrow keys select as they move, which is the pattern working correctly."
+      ]
+    },
+    "name": {
+      "summary": "Form field name shared by every radio. Defaults to a generated one.",
+      "use": [
+        "A real form post, where the name is the key the server reads."
+      ]
+    },
+    "orientation": {
+      "summary": "Which way the options stack, and which arrows move between them.",
+      "use": [
+        "`vertical` for a list of options, which is the default and the readable shape for anything with more than two."
+      ],
+      "a11y": "Announced as `aria-orientation`. Both axes' arrow keys still move, so a user who reaches for Down in a horizontal group does not hit a dead end."
+    },
+    "disabled": {
+      "summary": "Blocks the whole question while keeping every option focusable and readable.",
+      "dont": [
+        "Disabling one option; that belongs on the radio itself."
+      ],
+      "a11y": "Emits `aria-disabled` on each option, never the native `disabled` attribute."
+    },
+    "required": {
+      "summary": "Marks the group as requiring an answer.",
+      "a11y": "Emits `aria-required` on the group."
+    }
+  },
+  "usage": [
+    {
+      "case": "Choosing one of a few",
+      "when": "The default: a short list of mutually exclusive options.",
+      "example": "<RadioGroup label=\"Billing period\" value={period} onValueChange={setPeriod}>\n  <Radio value=\"monthly\" label=\"Monthly\" />\n  <Radio value=\"annual\" label=\"Annual\" description=\"Two months free\" />\n</RadioGroup>",
+      "notes": "One tab stop for the whole group; arrows move between options and select as they go. That is the radio pattern, and it is why a radio group is not just several checkboxes."
+    },
+    {
+      "case": "An option that cannot be chosen yet",
+      "when": "One option unavailable while the rest remain answerable.",
+      "example": "<RadioGroup label=\"Shipping\" value={ship} onValueChange={setShip}>\n  <Radio value=\"standard\" label=\"Standard\" />\n  <Radio value=\"overnight\" label=\"Overnight\" disabled description=\"Not available to this address\" />\n</RadioGroup>",
+      "notes": "The disabled option still takes focus, so a keyboard user discovers it exists and reads why. Arrow keys land on it without selecting it."
+    },
+    {
+      "case": "Reaching for the wrong component",
+      "when": "The options are a filter that should be clearable, or a view switch.",
+      "example": "<RadioGroup label=\"Status\" value={status} onValueChange={setStatus}>\n  <Radio value=\"open\" label=\"Open\" />\n</RadioGroup>",
+      "notes": "Don't. A radio group cannot go back to nothing once answered — that is the platform's behaviour and users rely on it. A clearable set of options is toggle-button-group with `deselectable`; a view switch is a tab list, which this system does not have yet."
+    }
+  ],
+  "tokens": {
+    "vertical": {
+      "summary": "The default: a readable column of options.",
+      "tokens": {
+        "gap between options": "space.stack.xs",
+        "gap between group label and options": "space.stack.2xs",
+        "group label color": "theme.fg.primary",
+        "group label font-size": "type.label.size",
+        "group label font-weight": "type.label.weight"
+      }
+    },
+    "horizontal": {
+      "summary": "A row, for two or three short options that fit on one line.",
+      "tokens": {
+        "gap between options": "space.gap.lg — wider than the vertical step, so two options on one line do not read as one phrase",
+        "gap between group label and options": "space.stack.2xs",
+        "group label color": "theme.fg.primary",
+        "group label font-size": "type.label.size",
+        "group label font-weight": "type.label.weight"
+      }
+    }
+  }
+}

@@ -5,15 +5,21 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
-    "build:playground": "npm run build --prefix ../.. && npm run build"
+    "build": "tsc --noEmit && vite build"
   },
   "dependencies": {
-    "@ds/css": "*",
-    "@ds/react": "*",
-    "@ds/tokens": "*",
+    "@rata/css": "*",
+    "@rata/icons": "*",
+    "@rata/react": "*",
+    "@rata/theme-cobalt": "*",
+    "@rata/theme-ink": "*",
+    "@rata/theme-lime": "*",
+    "@rata/theme-pine": "*",
+    "@rata/theme-rust": "*",
+    "@rata/tokens": "*",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "@rata/primitives": "*"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

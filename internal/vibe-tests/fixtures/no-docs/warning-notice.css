@@ -5,8 +5,8 @@
   gap: 8px;
   padding: 12px 16px;
   border-radius: 6px;
-  background: var(--ds-theme-warning-role-bg);
-  color: var(--ds-theme-fg-on-accent);
+  background: var(--rata-theme-warning-role-bg);
+  color: var(--rata-theme-fg-on-accent);
 }
 
 .warning-notice__title {

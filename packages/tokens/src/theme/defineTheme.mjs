@@ -33,7 +33,7 @@ import { expandTypeScale } from "./expandTypeScale.mjs";
 import { expandRadiusScale } from "./expandRadiusScale.mjs";
 import { expandMotionScale } from "./expandMotionScale.mjs";
 
-const THEME_BRAND = Symbol.for("@ds/tokens.definedTheme");
+const THEME_BRAND = Symbol.for("@rata/tokens.definedTheme");
 
 /** Is this a theme produced by defineTheme()? */
 export function isDefinedTheme(value) {

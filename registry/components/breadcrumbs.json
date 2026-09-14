@@ -1,0 +1,95 @@
+{
+  "name": "breadcrumbs",
+  "title": "Breadcrumbs",
+  "family": "navigation",
+  "description": "The trail from the site's root to the current page.",
+  "alsoKnownAs": [
+    "breadcrumb"
+  ],
+  "status": {
+    "css": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "react": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [],
+  "files": [
+    {
+      "source": "packages/css/src/breadcrumbs.css",
+      "target": "styles/breadcrumbs.css"
+    },
+    {
+      "source": "packages/react/src/breadcrumbs.tsx",
+      "target": "components/breadcrumbs.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
+  "tier": "free",
+  "props": {
+    "items": {
+      "summary": "The trail in order, root first. The last item is the current page and is not a link.",
+      "use": [
+        "Every ancestor of the current page, ending with the page itself."
+      ],
+      "dont": [
+        "Omitting the current page. The trail ends at where you are; ending it at the parent leaves the reader unsure whether the last crumb is a link they are already on.",
+        "A trail that is not a hierarchy. Breadcrumbs say where this page sits, not how the user got here — history is the back button's job.",
+        "Giving the last item an `href`. It is the page you are on, and this component drops it."
+      ],
+      "a11y": "Rendered as an ordered list inside a `<nav>`, so the count and the order are announced. The last item gets `aria-current=\"page\"` and renders as text rather than a link."
+    },
+    "label": {
+      "summary": "Accessible name for the navigation landmark.",
+      "use": [
+        "Changing it only when a page has more than one navigation landmark and they need telling apart."
+      ],
+      "a11y": "Becomes the `<nav>`'s `aria-label`. A page with several landmarks needs distinct names or they are indistinguishable in a landmark list."
+    },
+    "separator": {
+      "summary": "What sits between crumbs.",
+      "dont": [
+        "A character that carries meaning, such as an arrow implying a flow. The separator is punctuation."
+      ],
+      "a11y": "Decorative and `aria-hidden`: the list structure already conveys the order, and announcing 'slash' between every crumb is noise."
+    }
+  },
+  "usage": [
+    {
+      "case": "A page three levels deep",
+      "when": "The ordinary case.",
+      "example": "<Breadcrumbs\n  items={[\n    { label: \"Home\", href: \"/\" },\n    { label: \"Reports\", href: \"/reports\" },\n    { label: \"Q3 revenue\" },\n  ]}\n/>",
+      "notes": "The last item has no `href` — it is the page you are on. It renders as text with `aria-current=\"page\"` rather than a link to itself."
+    },
+    {
+      "case": "One landmark among several",
+      "when": "A page that also has a primary nav and a pagination nav.",
+      "example": "<Breadcrumbs label=\"Breadcrumb\" items={trail} />",
+      "notes": "Distinct `aria-label`s are what make landmarks tellable apart in a screen reader's landmark list. Two navs both called 'Navigation' are worse than one."
+    }
+  ],
+  "tokens": {
+    "base": {
+      "summary": "A trail of links ending in the current page.",
+      "tokens": {
+        "gap between crumbs": "space.gap.xs",
+        "font-size": "type.supporting.size — a trail is orientation, not content, so it sits below body size",
+        "link color": "theme.accent-role.fg — the token documented for an inline link",
+        "current page color": "theme.fg.primary — the end of the trail is where you are, so it reads as text rather than as another link",
+        "current page font-weight": "type.control.weight",
+        "separator color": "theme.fg.muted — punctuation, quieter than either crumb",
+        "outline (focus-visible)": "focus.ring-width solid theme.focus-ring, offset focus.ring-offset",
+        "transition": "motion.interactive.duration with motion.interactive.easing"
+      }
+    }
+  }
+}

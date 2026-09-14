@@ -4,13 +4,37 @@
   "family": "foundations",
   "description": "Composable hover/press overlay that gives every interactive component identical state feedback.",
   "status": {
-    "css": { "state": "latest", "version": "0.1.0" },
-    "react": { "state": "na" },
-    "figma": { "state": "future" }
+    "css": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "react": {
+      "state": "na"
+    },
+    "figma": {
+      "state": "future"
+    }
   },
   "dependencies": [],
   "files": [
-    { "source": "packages/css/src/state-layer.css", "target": "styles/state-layer.css" }
+    {
+      "source": "packages/css/src/state-layer.css",
+      "target": "styles/state-layer.css"
+    }
   ],
-  "tier": "free"
+  "tier": "free",
+  "usage": [
+    {
+      "case": "Giving a new interactive component hover and press feedback",
+      "when": "Always — this is the only supported way to express interaction feedback in this system.",
+      "example": "<button className=\"rata-thing rata-state-layer\">…</button>",
+      "notes": "Add the class alongside the component's own; never write a competing `:hover` background rule. Feedback here is opacity-only by standing decision, which is why the role tokens carry no `bg-hover`/`bg-active` and why `ring.neutral` is deliberately unwired."
+    },
+    {
+      "case": "A host with no border",
+      "when": "The layer's default bleeds outward by border.default, so an unbordered host needs the opt-out or its tint sits a hairline proud of the element.",
+      "example": "<button className=\"rata-thing rata-state-layer rata-state-layer--flush\">…</button>",
+      "notes": "The layer is an absolutely positioned pseudo-element, and `inset` on one resolves against the containing block's padding box — which excludes the border. At `inset: 0` the tint stopped a border-width short on every side, invisible under a filled background but plainly smaller on a host whose only fill is the layer itself. It now bleeds by border.default, since every bordered host in this system uses that width, and CSS gives no way to read a containing block's computed border-width. `--flush` restores `inset: 0` for hosts with none."
+    }
+  ]
 }

@@ -10,9 +10,9 @@
 .menu__item {
   height: 32px;
   padding: 0 12px;
-  color: var(--ds-color-neutral-900);
+  color: var(--rata-color-neutral-900);
 }
 
 .menu__item:hover {
-  background: var(--ds-color-neutral-100);
+  background: var(--rata-color-neutral-100);
 }

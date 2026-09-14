@@ -1,0 +1,23 @@
+{
+  "$contract": "opacity",
+  "$summary": "Raw opacity values behind the state scale. Not for direct use.",
+  "tokens": {
+    "opacity": {
+      "layer": "base",
+      "summary": "Raw opacity values behind the state scale. Do not use directly — use state.*-opacity.",
+      "dont": [
+        "Direct use in components."
+      ],
+      "instead": {
+        "Hover feedback": "state.hover-opacity",
+        "Press feedback": "state.press-opacity",
+        "Disabled styling": "state.disabled-opacity"
+      },
+      "scale": {
+        "8": "Backing value for state.hover-opacity.",
+        "12": "Backing value for state.press-opacity.",
+        "50": "Backing value for state.disabled-opacity."
+      }
+    }
+  }
+}

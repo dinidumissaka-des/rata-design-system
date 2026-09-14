@@ -1,0 +1,52 @@
+/* Breadcrumbs — the trail from the root to the page you are on.
+
+   The structure does the accessible work: a <nav> landmark wrapping an ordered
+   list, so the count and the order are announced. The separators are
+   aria-hidden punctuation — the list already conveys sequence, and hearing
+   "slash" between every crumb is noise. */
+.rata-breadcrumbs-list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--rata-space-gap-xs);
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+  list-style: none;
+  font-family: var(--rata-font-family-sans);
+  /* Orientation rather than content, so it sits below body size. */
+  font-size: var(--rata-type-supporting-size);
+}
+
+.rata-breadcrumbs-item {
+  display: flex;
+  align-items: center;
+  gap: var(--rata-space-gap-xs);
+}
+
+.rata-breadcrumbs-link {
+  color: var(--rata-theme-accent-role-fg);
+  text-decoration: none;
+  border-radius: var(--rata-radius-inner);
+  transition: color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing);
+}
+
+.rata-breadcrumbs-link:hover {
+  text-decoration: underline;
+  text-underline-offset: var(--rata-border-2);
+}
+
+.rata-breadcrumbs-link:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* The end of the trail is where you are, so it reads as text. It is not a link
+   in the markup either — a link to the page you are on is a dead end. */
+.rata-breadcrumbs-current {
+  color: var(--rata-theme-fg-primary);
+  font-weight: var(--rata-type-control-weight);
+}
+
+.rata-breadcrumbs-separator {
+  color: var(--rata-theme-fg-muted);
+}

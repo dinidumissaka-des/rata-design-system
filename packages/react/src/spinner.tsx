@@ -6,7 +6,7 @@ export interface SpinnerProps {
 export function Spinner({ label }: SpinnerProps) {
   return (
     <span
-      className="ds-spinner"
+      className="rata-spinner"
       role={label ? "status" : undefined}
       aria-label={label}
       aria-hidden={label ? undefined : true}

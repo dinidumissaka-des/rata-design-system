@@ -48,8 +48,17 @@ Each candidate is checked for:
 | `missing-required-token` | error | The prompt's documented answer was not used |
 | `focus-removed` | error | `outline: none` with no replacement |
 | `missing-focus-ring` | error | A focusable control that never draws one |
-| `hand-rolled-hover` | warn | A background swap where `.ds-state-layer` belongs |
+| `hand-rolled-hover` | warn | A background swap where `.rata-state-layer` belongs |
 | `native-disabled-styling` | warn | `:disabled`, which drops the control from the tab order |
+| `state-scoped-layout` | warn | Layout on `[open]` / `:popover-open`, which snaps while `display` is held |
+
+`state-scoped-layout` comes from a bug that shipped in this repo's Dialog. A top-layer
+overlay transitions `display` with `allow-discrete`, so on close `display` is *held* at its
+open value for the length of the exit — while every other declaration on the same state
+selector reverts the instant the attribute goes. A property that cannot animate therefore
+snaps: `flex-direction: column` beside `display: flex` on `[open]` laid the dialog's header,
+body and footer out in a row for the whole closing animation. The invariant is that a state
+selector carries `display` and nothing else layout depends on.
 
 `forbidden-pairing` is an error when the combination fails in every theme (white on
 `theme.warning-role.bg`), and a warning when it is verified in one theme and a known gap in
@@ -81,5 +90,5 @@ node internal/vibe-tests/run.mjs check packages/css/src/button.css
 For a deliberate exception, state it in the file so the reason travels with the code:
 
 ```css
-/* ds-allow: hardcoded-motion — the spin cycle has no motion token */
+/* rata-allow: hardcoded-motion — the spin cycle has no motion token */
 ```

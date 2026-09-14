@@ -1,0 +1,61 @@
+{
+  "name": "visually-hidden",
+  "title": "Visually hidden",
+  "family": "foundations",
+  "description": "Takes an element off screen while leaving it in the accessibility tree.",
+  "status": {
+    "css": {
+      "state": "latest",
+      "version": "0.1.0"
+    },
+    "react": {
+      "state": "na"
+    },
+    "figma": {
+      "state": "na"
+    }
+  },
+  "dependencies": [],
+  "files": [
+    {
+      "source": "packages/css/src/visually-hidden.css",
+      "target": "styles/visually-hidden.css"
+    }
+  ],
+  "tier": "free",
+  "usage": [
+    {
+      "case": "A label whose text is redundant on screen",
+      "when": "The component's own `labelHidden` prop composes this — a field in a toolbar, a checkbox under a column heading that already names it.",
+      "example": "<label className=\"rata-text-field-label rata-visually-hidden\" htmlFor={id}>\n  Search\n</label>",
+      "notes": "The point is what it is *not*: `display: none` and `visibility: hidden` both remove the element from the accessibility tree, so a label hidden that way takes the control's accessible name with it. This clips instead — the element is still rendered, still bound, still read."
+    },
+    {
+      "case": "Naming a group with no visible heading",
+      "when": "A radiogroup whose question is obvious on screen but has no element to point `labelledBy` at.",
+      "example": "<span id={labelId} className=\"rata-visually-hidden\">Billing period</span>\n<RadioGroup labelledBy={labelId}>…</RadioGroup>",
+      "notes": "Better than leaving the group unnamed, and better than pointing `labelledBy` at an id that does not exist — a dangling reference leaves no accessible name at all."
+    },
+    {
+      "case": "Reaching for the wrong tool",
+      "when": "Content that should not be announced either.",
+      "example": "<span className=\"rata-visually-hidden\">Decorative flourish</span>",
+      "notes": "Don't. This keeps content in the accessibility tree — that is its entire purpose. Something a screen reader should skip wants `aria-hidden`, or simply not to be rendered."
+    }
+  ],
+  "tokens": {
+    "base": {
+      "summary": "Geometry only. Nothing here is a colour or a type decision, because the element is off screen rather than restyled.",
+      "tokens": {
+        "inline-size": "border.1 — a 1px box rather than a zero-size one, because some assistive technology skips elements with no dimensions",
+        "block-size": "border.1",
+        "margin": "negative border.1, so the 1px box does not occupy a pixel of layout",
+        "padding": "space.0",
+        "border": "space.0",
+        "clip-path": "inset(50%) — clips to nothing, which is what keeps the element in the accessibility tree while display:none and visibility:hidden would not",
+        "overflow": "hidden, so the clipped content cannot reappear as a scroll region",
+        "white-space": "nowrap, so a long string does not lay out and affect scroll height before it is clipped"
+      }
+    }
+  }
+}

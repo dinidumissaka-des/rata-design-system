@@ -1,0 +1,63 @@
+{
+  "$contract": "theme.fg",
+  "$summary": "Foreground roles — text and icon colours, plus the label that sits on a filled accent.",
+  "tokens": {
+    "theme.fg.primary": {
+      "layer": "semantic",
+      "summary": "The default, highest-emphasis text and icon color.",
+      "use": [
+        "Body copy, headings, and meaningful (non-decorative) icons."
+      ],
+      "pairsWith": [
+        "theme.bg.canvas",
+        "theme.bg.surface",
+        "theme.bg.subtle"
+      ]
+    },
+    "theme.fg.secondary": {
+      "layer": "semantic",
+      "summary": "Lower-emphasis text — supporting copy that should not compete with primary content.",
+      "use": [
+        "Helper text, captions, timestamps, metadata."
+      ],
+      "pairsWith": [
+        "theme.bg.canvas",
+        "theme.bg.surface",
+        "theme.bg.subtle",
+        "theme.bg.muted"
+      ]
+    },
+    "theme.fg.muted": {
+      "layer": "semantic",
+      "summary": "The lowest-emphasis foreground — placeholders and decorative icons only.",
+      "dont": [
+        "Body-size text on theme.bg.muted — falls to AA-large only there; use theme.fg.secondary for readable body text on that background."
+      ],
+      "use": [
+        "Input placeholder text.",
+        "A decorative icon that carries no meaning on its own."
+      ],
+      "pairsWith": [
+        "theme.bg.canvas",
+        "theme.bg.surface",
+        "theme.bg.subtle",
+        "theme.bg.muted"
+      ]
+    },
+    "theme.fg.on-accent": {
+      "layer": "semantic",
+      "summary": "White text/icon color for use on a filled, saturated role background.",
+      "use": [
+        "Label on a primary (accent) or destructive (danger) button.",
+        "Icon on a filled accent or danger badge."
+      ],
+      "dont": [
+        "On theme.success-role.bg or theme.warning-role.bg — both are known contrast gaps (see Known gaps). Use the role's subtle/fg pairing for text instead."
+      ],
+      "pairsWith": [
+        "theme.accent-role.bg",
+        "theme.danger-role.bg"
+      ]
+    }
+  }
+}

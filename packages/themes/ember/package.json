@@ -1,19 +1,22 @@
 {
-  "name": "@ds/theme-ember",
+  "name": "@rata/theme-ember",
   "version": "0.1.0",
   "type": "module",
-  "description": "ember brand theme for the DS design system — seeds only; every token is generated.",
+  "description": "ember brand theme for the Ratā design system — seeds only; every token is generated.",
   "license": "MIT",
   "exports": {
     ".": "./src/emberTheme.mjs",
     "./theme.css": "./dist/theme.css"
   },
-  "files": ["dist", "src"],
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "build": "node ../../tokens/build-theme.mjs src/emberTheme.mjs -o dist/theme.css",
     "check": "node ../../tokens/build-theme.mjs src/emberTheme.mjs --check"
   },
   "peerDependencies": {
-    "@ds/tokens": "0.1.0"
+    "@rata/tokens": "0.1.0"
   }
 }
