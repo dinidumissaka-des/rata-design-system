@@ -2785,21 +2785,27 @@
     "usage": [
       {
         "case": "An inspector beside the thing it documents",
-        "when": "A selection in a grid or list opens detail that is read AGAINST what is still on screen — the comparison is the task, so a modal would answer a different question.",
-        "example": "<div className=\"pg-with-inspector\">\n  <TokenGrid onSelect={setSelected} />\n\n  {selected !== null && (\n    <Panel\n      title={selected}\n      closeLabel={`Close documentation for ${selected}`}\n      onClose={() => setSelected(null)}\n    >\n      <TokenDoc path={selected} />\n    </Panel>\n  )}\n</div>",
-        "notes": "The measure comes from the page — `.pg-with-inspector` gives the panel its column — because where one stops fitting depends on the content and the page around it. `closeLabel` is spelled out because \"Close\" alone does not say what closes when the page holds more than one thing that can."
+        "when": "The reader needs to compare the detail against the grid, list or canvas it came from. This is the case the component exists for.",
+        "example": "<div className=\"page-with-rail\">\n  <TokenGrid onSelect={setSelected} />\n  {selected !== null && (\n    <Panel\n      title={selected}\n      onClose={() => setSelected(null)}\n      closeLabel=\"Close token documentation\"\n    >\n      <TokenContract path={selected} />\n    </Panel>\n  )}\n</div>",
+        "notes": "The width belongs to `.page-with-rail`, not to the Panel — there is no `size` prop, because where a panel stops fitting depends on the page around it. `closeLabel` is spelled out because \"Close\" alone is ambiguous on a page that can also close other things."
       },
       {
         "case": "A persistent properties rail",
-        "when": "The panel is part of the page's furniture rather than something a selection opens, so there is nothing for a close button to do.",
-        "example": "<Panel title=\"Properties\" headingLevel={3}>\n  <PropertyList node={focusedNode} />\n</Panel>",
-        "notes": "No `onClose`, so no close button is rendered at all — that is how a panel says it is persistent, rather than the caller passing a no-op to get a control they then have to ignore. `headingLevel={3}` because this one sits under a section already headed `<h2>`."
+        "when": "The panel is part of the page rather than a response to a selection, so there is nothing to close.",
+        "example": "<Panel title=\"Properties\" headingLevel={3}>\n  <PropertyList node={node} />\n</Panel>",
+        "notes": "No `onClose`, so no close button is rendered — that is how a persistent panel is said, rather than by passing a no-op handler to a control the reader can press. `headingLevel={3}` because this page's sections are already `h2`, and a skipped level breaks the heading navigation many readers use to move around."
       },
       {
         "case": "A filter column on the inline-start side",
-        "when": "Filters that stay put next to the results they narrow, on a viewport wide enough to show both.",
-        "example": "<Panel title=\"Filters\" edge=\"inline-start\" headingLevel={2}>\n  <CheckboxGroupList facets={facets} onChange={setFacets} />\n</Panel>",
-        "notes": "`edge=\"inline-start\"` moves the border to the side facing the results. It does not move the panel — that is the page's layout — it states which edge the panel meets the content across, so the border lands on the right one."
+        "when": "The panel sits before the content it refines rather than after it, which is where a filter column belongs.",
+        "example": "<Panel title=\"Filters\" edge=\"inline-start\" onClose={() => setFiltering(false)}>\n  <CheckboxGroup label=\"Status\" items={statuses} />\n</Panel>",
+        "notes": "`edge=\"inline-start\"` moves the border to the side facing the content — it does not move the panel, which is the page's layout. Logical, so in a right-to-left document this is the right-hand column and the border still faces the content."
+      },
+      {
+        "case": "The same content as a Sheet, chosen by width",
+        "when": "One piece of detail, beside the content when there is room and over it when there is not.",
+        "example": "wide ? (\n  <Panel title={record.name} onClose={close}>\n    <RecordDetail record={record} />\n  </Panel>\n) : (\n  <Sheet open onClose={close} edge=\"block-end\" title={record.name}>\n    <RecordDetail record={record} />\n  </Sheet>\n)",
+        "notes": "`wide` is the page's own media query, not a prop on either component: this system has no breakpoint tokens, because where a rail stops fitting is the page's knowledge. Note that the two are not interchangeable in behaviour — the Sheet traps focus and makes the page inert, and the Panel does neither."
       }
     ],
     "behavior": {
@@ -4121,21 +4127,21 @@
     "usage": [
       {
         "case": "A bottom sheet of filters on a narrow viewport",
-        "when": "The commonest use: a set of choices that would not fit beside the results, reachable where a thumb already is.",
-        "example": "const [filtering, setFiltering] = useState(false);\n\n<Button onClick={() => setFiltering(true)}>Filters</Button>\n\n<Sheet\n  open={filtering}\n  onClose={() => setFiltering(false)}\n  title=\"Filters\"\n  description=\"Narrows the 1,204 results below.\"\n  footer={\n    <>\n      <Button variant=\"secondary\" onClick={() => setFiltering(false)}>\n        Cancel\n      </Button>\n      <Button onClick={() => setFiltering(false)}>Apply</Button>\n    </>\n  }\n>\n  <SegmentedControl\n    label=\"Period\"\n    value={period}\n    onValueChange={setPeriod}\n    items={[\n      { value: \"week\", label: \"Week\" },\n      { value: \"month\", label: \"Month\" },\n    ]}\n  />\n</Sheet>",
-        "notes": "`edge` is left at its default, which is `block-end`. The footer holds the two ways out so neither is the close button, whose job is only to abandon the sheet."
+        "when": "The commonest bottom sheet: a set of choices too big for the bar they belong to, applied and dismissed in one go.",
+        "example": "const [filtering, setFiltering] = useState(false);\n\n<Button onClick={() => setFiltering(true)}>Filters</Button>\n\n<Sheet\n  open={filtering}\n  onClose={() => setFiltering(false)}\n  title=\"Filters\"\n  description=\"Applied to the list behind this sheet.\"\n  size=\"md\"\n  footer={\n    <>\n      <Button variant=\"secondary\" onClick={() => setFiltering(false)}>\n        Cancel\n      </Button>\n      <Button onClick={apply}>Apply</Button>\n    </>\n  }\n>\n  <SegmentedControl\n    label=\"Period\"\n    value={period}\n    onValueChange={setPeriod}\n    items={[\n      { value: \"week\", label: \"Week\" },\n      { value: \"month\", label: \"Month\" },\n    ]}\n  />\n</Sheet>",
+        "notes": "`block-end` is the default, so the edge is not stated. The footer holds both ways out, which is what makes Cancel reachable without hunting for the close button at the top of a sheet the reader's thumb is at the bottom of."
       },
       {
         "case": "A detail drawer from the inline edge",
-        "when": "The same content a Panel would hold, on a viewport too narrow to give the panel a column of its own.",
-        "example": "<Sheet\n  open={selected !== null}\n  onClose={() => setSelected(null)}\n  edge=\"inline-end\"\n  size=\"lg\"\n  title={selected?.path ?? \"\"}\n>\n  <TokenDoc path={selected.path} />\n</Sheet>",
-        "notes": "`inline-end` rather than `right`: the sheet follows the reading direction, so a right-to-left document gets it on the other side with no change here. This is the pattern's other half — the same content is a Panel when there is room for one, and the two take the same title."
+        "when": "The same content a Panel would hold, but over the page rather than beside it — because at this width there is no room to put it beside.",
+        "example": "<Sheet\n  open={selected !== null}\n  onClose={() => setSelected(null)}\n  edge=\"inline-end\"\n  size=\"lg\"\n  title={selected?.name ?? \"\"}\n>\n  <RecordDetail record={selected} />\n</Sheet>",
+        "notes": "`inline-end` is logical, so this arrives from the right in a left-to-right document and from the left in a right-to-left one. If the page DOES have room beside the content, this is the wrong component — reach for Panel, which leaves the page usable."
       },
       {
         "case": "A required choice with no way to dismiss it",
-        "when": "Something must be answered before the page behind it means anything — a workspace to act in, a term to accept.",
-        "example": "<Sheet\n  open={needsWorkspace}\n  onClose={() => {}}\n  dismissible={false}\n  size=\"sm\"\n  title=\"Choose a workspace\"\n  initialFocus={firstOptionRef}\n>\n  <RadioGroup\n    label=\"Workspace\"\n    value={workspace}\n    onValueChange={commitWorkspace}\n    items={workspaces}\n  />\n</Sheet>",
-        "notes": "`dismissible={false}` removes the close button and blocks both Escape and the backdrop, so the content itself has to be the way out — here, picking an option commits it. A sheet with neither is a dead end, and a reader will reload the page to escape it."
+        "when": "Rare, and worth resisting. A required choice with no sensible default is the only case that justifies it.",
+        "example": "const keepRef = useRef<HTMLButtonElement>(null);\n\n<Sheet\n  open={migrating}\n  onClose={() => {}}\n  title=\"Choose a workspace\"\n  description=\"Your account belongs to two, and this decides which one opens.\"\n  size=\"sm\"\n  dismissible={false}\n  initialFocus={keepRef}\n  footer={<Button ref={keepRef} onClick={choose}>Continue</Button>}\n>\n  <RadioGroup label=\"Workspace\" value={workspace} onValueChange={setWorkspace} items={workspaces} />\n</Sheet>",
+        "notes": "`dismissible={false}` removes the close button and blocks Escape and the backdrop, so the footer MUST contain a way out — here Continue is it. Without one the sheet is a dead end and the reader will reload the page instead."
       }
     ],
     "behavior": {

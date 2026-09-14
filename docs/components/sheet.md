@@ -279,7 +279,7 @@ Extra classes on the sheet, for placement — not for restyling it.
 
 ### A bottom sheet of filters on a narrow viewport
 
-The commonest use: a set of choices that would not fit beside the results, reachable where a thumb already is.
+The commonest bottom sheet: a set of choices too big for the bar they belong to, applied and dismissed in one go.
 
 ```tsx
 const [filtering, setFiltering] = useState(false);
@@ -290,13 +290,14 @@ const [filtering, setFiltering] = useState(false);
   open={filtering}
   onClose={() => setFiltering(false)}
   title="Filters"
-  description="Narrows the 1,204 results below."
+  description="Applied to the list behind this sheet."
+  size="md"
   footer={
     <>
       <Button variant="secondary" onClick={() => setFiltering(false)}>
         Cancel
       </Button>
-      <Button onClick={() => setFiltering(false)}>Apply</Button>
+      <Button onClick={apply}>Apply</Button>
     </>
   }
 >
@@ -312,11 +313,11 @@ const [filtering, setFiltering] = useState(false);
 </Sheet>
 ```
 
-`edge` is left at its default, which is `block-end`. The footer holds the two ways out so neither is the close button, whose job is only to abandon the sheet.
+`block-end` is the default, so the edge is not stated. The footer holds both ways out, which is what makes Cancel reachable without hunting for the close button at the top of a sheet the reader's thumb is at the bottom of.
 
 ### A detail drawer from the inline edge
 
-The same content a Panel would hold, on a viewport too narrow to give the panel a column of its own.
+The same content a Panel would hold, but over the page rather than beside it — because at this width there is no room to put it beside.
 
 ```tsx
 <Sheet
@@ -324,37 +325,36 @@ The same content a Panel would hold, on a viewport too narrow to give the panel 
   onClose={() => setSelected(null)}
   edge="inline-end"
   size="lg"
-  title={selected?.path ?? ""}
+  title={selected?.name ?? ""}
 >
-  <TokenDoc path={selected.path} />
+  <RecordDetail record={selected} />
 </Sheet>
 ```
 
-`inline-end` rather than `right`: the sheet follows the reading direction, so a right-to-left document gets it on the other side with no change here. This is the pattern's other half — the same content is a Panel when there is room for one, and the two take the same title.
+`inline-end` is logical, so this arrives from the right in a left-to-right document and from the left in a right-to-left one. If the page DOES have room beside the content, this is the wrong component — reach for Panel, which leaves the page usable.
 
 ### A required choice with no way to dismiss it
 
-Something must be answered before the page behind it means anything — a workspace to act in, a term to accept.
+Rare, and worth resisting. A required choice with no sensible default is the only case that justifies it.
 
 ```tsx
+const keepRef = useRef<HTMLButtonElement>(null);
+
 <Sheet
-  open={needsWorkspace}
+  open={migrating}
   onClose={() => {}}
-  dismissible={false}
-  size="sm"
   title="Choose a workspace"
-  initialFocus={firstOptionRef}
+  description="Your account belongs to two, and this decides which one opens."
+  size="sm"
+  dismissible={false}
+  initialFocus={keepRef}
+  footer={<Button ref={keepRef} onClick={choose}>Continue</Button>}
 >
-  <RadioGroup
-    label="Workspace"
-    value={workspace}
-    onValueChange={commitWorkspace}
-    items={workspaces}
-  />
+  <RadioGroup label="Workspace" value={workspace} onValueChange={setWorkspace} items={workspaces} />
 </Sheet>
 ```
 
-`dismissible={false}` removes the close button and blocks both Escape and the backdrop, so the content itself has to be the way out — here, picking an option commits it. A sheet with neither is a dead end, and a reader will reload the page to escape it.
+`dismissible={false}` removes the close button and blocks Escape and the backdrop, so the footer MUST contain a way out — here Continue is it. Without one the sheet is a dead end and the reader will reload the page instead.
 
 ## Real usage in this repo
 

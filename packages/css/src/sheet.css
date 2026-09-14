@@ -27,6 +27,24 @@
      every time: fill, then be capped. */
   inline-size: 100%;
   block-size: 100%;
+  /* Overriding the UA, and NOT optional. The UA stylesheet gives a modal
+     dialog `max-width: calc(100% - 6px - 2em)` and the same for height — the
+     6px being its 3px border on each side, the 2em its 1em of padding. Both
+     are replaced above, so the subtraction is for box parts this element does
+     not have, and neither constraint survives contact with a sheet:
+
+       an inline-edge sheet stopped 2em short of the viewport's height, which
+       is what "make the sheet full height" turned out to mean;
+
+       a block-edge sheet stopped 2em short of its width, so a bottom sheet
+       did not span the edge it was anchored to.
+
+     Each edge modifier below then caps the one axis it slides along. Stating
+     the base as 100% is what leaves the other axis alone. dialog.css sets
+     these to an inset instead, which is right for something centred and
+     wrong for something flush. */
+  max-inline-size: 100%;
+  max-block-size: 100%;
   border-radius: var(--rata-radius-none);
   background: var(--rata-theme-bg-surface);
   color: var(--rata-theme-fg-primary);
