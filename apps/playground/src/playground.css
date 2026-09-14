@@ -934,6 +934,25 @@ code {
 
 /* ---- Home page ----------------------------------------------------------- */
 
+/* The home page's title only, which is why it is scoped to the section rather
+   than changing `.pg-section h2` — that one rule is every page title on every
+   page, and a 42px heading over a dense reference page is not what display-1
+   is for. A landing page is.
+
+   Scoped this way for specificity as much as intent: `.pg-section h2` is one
+   class and one element, so a bare `.pg-home-title` would have lost to it.
+
+   display-1 taken whole, tracking included. Its weight is 400 — the display
+   roles all are, because type that large does not need weight for emphasis —
+   so this is larger and lighter than the 600 it inherited, not larger and
+   bolder. */
+.pg-section--home h2 {
+  font-size: var(--rata-type-display-1-size);
+  font-weight: var(--rata-type-display-1-weight);
+  line-height: var(--rata-type-display-1-line-height);
+  letter-spacing: var(--rata-type-tracking-display-1);
+}
+
 /* The one paragraph under the title. type.large is the role for a standfirst
    — one size above body, which is what the scale documents it for. */
 .pg-lede {

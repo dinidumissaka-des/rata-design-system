@@ -44,7 +44,7 @@ const ENTRIES: Array<{ id: Page; icon: LucideIcon; label: string; blurb: string 
 
 export function HomePage({ onOpen }: { onOpen: (page: Page) => void }) {
   return (
-    <section className="pg-section">
+    <section className="pg-section pg-section--home">
       <h2>Ratā</h2>
       <p className="pg-lede">
         A token-first, <strong>machine-readable</strong> design system. Every token carries a
