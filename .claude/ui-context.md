@@ -30,10 +30,12 @@ this path is the honest answer to when it last actually moved.
 | [menu-item](../docs/components/menu-item.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [mobile-nav](../docs/components/mobile-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [notice](../docs/components/notice.md) | `@rata/react` | feedback | latest / latest / future | free |
+| [panel](../docs/components/panel.md) | `@rata/react` | content | latest / latest / future | free |
 | [radio](../docs/components/radio.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [radio-group](../docs/components/radio-group.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [search](../docs/components/search.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [segmented-control](../docs/components/segmented-control.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [sheet](../docs/components/sheet.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [side-nav](../docs/components/side-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [spinner](../docs/components/spinner.md) | `@rata/react` | loading | latest / latest / future | free |
 | [state-layer](../docs/components/state-layer.md) | `@rata/react` | foundations | latest / na / future | free |
@@ -246,7 +248,7 @@ Contract: [docs/components/dialog.md](../docs/components/dialog.md)
 
 Real usage (from `apps/`):
 ```tsx
-<Icon icon={X} />
+<Icon icon={User} />
 ```
 
 Contract: [docs/components/icon.md](../docs/components/icon.md)
@@ -369,6 +371,40 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/notice.md](../docs/components/notice.md)
+
+### Panel (`@rata/react`)
+
+Extends: `Omit<HTMLAttributes<HTMLElement>, "title" | "children">`
+
+- `title: ReactNode`
+- `children: ReactNode`
+  The panel's content.
+- `headingLevel?: PanelHeadingLevel` — default: `2`
+  Where the title sits in the page's outline.
+- `edge?: PanelEdge` — default: `"inline-end"`
+  Which side of the content it is attached to.
+- `onClose?: () => void`
+- `closeLabel?: string` — default: `"Close"`
+  Accessible name for the close button.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Panel
+        title={title}
+        edge={edge}
+        headingLevel={3}
+        onClose={persistent ? undefined : () => setClosed(true)}
+        closeLabel={`Close ${typeof title === "string" ? title : "panel"}`}
+      >
+        <p className="pg-note">
+          Raw hue ramps, 50 &rarr; 950, generated from the theme&rsquo;s seed. The body
+          scrolls on its own so this heading and the close control stay in view.
+        </p>
+      </Panel>
+```
+
+Contract: [docs/components/panel.md](../docs/components/panel.md)
 
 ### Radio (`@rata/react`)
 
@@ -504,6 +540,60 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/segmented-control.md](../docs/components/segmented-control.md)
+
+### Sheet (`@rata/react`)
+
+Extends: `Omit<`
+
+- `title: ReactNode`
+- `children: ReactNode`
+  The sheet's content.
+- `open: boolean`
+  Whether the sheet is showing. Always controlled — `showModal()` has no prop.
+- `onClose: (reason: SheetCloseReason) => void`
+  Called when the sheet asks to close. Set `open` to false in it.
+- `edge?: SheetEdge` — default: `"block-end"`
+  Which edge it is held against. `block-end` is the bottom sheet.
+- `size?: SheetSize` — default: `"md"`
+  How far it comes in, measured on the axis it slides along.
+- `description?: ReactNode`
+  A line under the title, wired as the sheet's description.
+- `footer?: ReactNode`
+  The actions. Reads after the body they act on.
+- `dismissible?: boolean` — default: `true`
+- `dismissLabel?: string` — default: `"Close"`
+  Accessible name for the close button.
+- `initialFocus?: RefObject<HTMLElement | null>`
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Sheet
+        open={open}
+        onClose={() => setOpen(false)}
+        edge={edge}
+        size={size}
+        dismissible={dismissible}
+        title={title}
+        description={description}
+        initialFocus={applyRef}
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button ref={applyRef} onClick={() => setOpen(false)}>
+              Apply
+            </Button>
+          </>
+        }
+      >
+        The body scrolls on its own, so the title and the way out stay put
+        however much goes in here.
+      </Sheet>
+```
+
+Contract: [docs/components/sheet.md](../docs/components/sheet.md)
 
 ### SideNav (`@rata/react`)
 

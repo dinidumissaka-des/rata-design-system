@@ -1,0 +1,205 @@
+{
+  "name": "panel",
+  "title": "Panel",
+  "description": "A titled region beside the content it describes, with its own scroll and an optional close.",
+  "family": "content",
+  "alsoKnownAs": [
+    "inspector",
+    "side-panel",
+    "details-panel",
+    "rail"
+  ],
+  "status": {
+    "css": {
+      "state": "latest"
+    },
+    "react": {
+      "state": "latest"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "state-layer",
+    "icon"
+  ],
+  "files": [
+    {
+      "source": "packages/css/src/panel.css",
+      "target": "styles/panel.css"
+    },
+    {
+      "source": "packages/react/src/panel.tsx",
+      "target": "components/panel.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "A bordered surface inside the layout. No elevation and no scrim: it is not floating above anything, and a shadow would claim it is.",
+      "tokens": {
+        "background": "theme.bg.surface",
+        "color": "theme.fg.primary",
+        "border-radius": "radius.none — it is flush against the content on one side and the viewport on the other three, and a radius on a flush edge shows as a gap rather than a corner",
+        "padding": "space.padding.md",
+        "gap between head and body": "space.stack.sm",
+        "border on the edge it meets the content": "theme.border.default at border.default, on the inline-start edge for edge=\"inline-end\" and the inline-end edge for edge=\"inline-start\""
+      }
+    },
+    "head": {
+      "summary": "The title and the close control, which stay put while the body scrolls.",
+      "tokens": {
+        "title font-size": "type.heading.size",
+        "title font-weight": "type.heading.weight",
+        "title line-height": "type.heading.line-height",
+        "gap between title and close": "space.gap.sm",
+        "margin below": "space.stack.sm"
+      }
+    },
+    "dismiss": {
+      "summary": "The close control. Same construction as Dialog's and Notice's, so a close button is the same control everywhere.",
+      "tokens": {
+        "color": "currentColor — inherited from the panel's own foreground",
+        "glyph size": "size.icon.text",
+        "target inline-size / block-size": "size.control.sm",
+        "border-radius": "radius.inner",
+        "hover / press": "compose the .rata-state-layer class",
+        "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "A `<aside>` complementary landmark named by its own heading, in normal flow. Not a dialog, not in the top layer, and not dismissed by Escape. The page reflows around it and everything beside it stays usable — which is the only reason to choose it over a Sheet.",
+    "decisions": [
+      {
+        "decision": "It is in the layout, and that is the whole distinction from Sheet",
+        "why": "Reading a token's contract while still seeing the swatch grid is the point of this pattern: the comparison IS the task. A Sheet covers the page and makes everything behind it inert, so the same content in a sheet would answer a different question. Two components rather than one with a `modal` boolean, because the two render through completely different mechanisms — normal flow against the top layer — and a boolean that swaps the rendering model is two components wearing one name."
+      },
+      {
+        "decision": "Escape does not close it",
+        "why": "Escape dismisses the top layer, and a reader who presses it expects whatever is covering the page to go away. This is not covering anything, nothing has trapped focus, and the reader may well be typing in the page beside it. A panel that vanished on Escape would also take the reader's place in the page with it, since there is nowhere for focus to return to."
+      },
+      {
+        "decision": "Focus is not moved, trapped, or restored",
+        "why": "All three are modal behaviours. Opening a panel adds a region to the page; it does not take the reader anywhere, so moving their focus would be a surprise, and trapping it would strand them in a region they can see past. Tab reaches it in document order like anything else."
+      },
+      {
+        "decision": "The page owns the measure, not the component",
+        "why": "The same bargain SideNav makes. Where a panel stops fitting depends on the panel's content and the page around it, which is the page's knowledge — and this system has no breakpoint tokens for exactly that reason. Found the hard way: the playground's own inspector hardcoded `width: 340px`, a bare pixel value in a repo whose first rule is that there are none."
+      },
+      {
+        "decision": "The heading level is the caller's, because only they know it",
+        "why": "A complementary landmark should be headed, and the heading names the landmark through `aria-labelledby`. But a panel sits inside the page's existing outline and cannot know its depth — the same problem Notice has, which Notice solves by not being a heading at all. A panel cannot take that way out because it needs the name, so the level is stated instead of guessed. Dialog can hardcode `<h2>` only because everything behind a modal is inert and its outline genuinely starts fresh."
+      },
+      {
+        "decision": "Closing is optional, and its absence means persistent",
+        "why": "A panel that is always there — a properties rail, a filter column — has nothing to close, and rendering a close button that the caller has to ignore invites them to wire it to nothing. Omitting `onClose` omits the control."
+      },
+      {
+        "decision": "The body scrolls, the head does not",
+        "why": "Same construction as Dialog's. A panel is tall and narrow by nature, so the title is the first thing to scroll away and the close control goes with it — leaving the reader inside a region with no name in view and no way out of it."
+      },
+      {
+        "decision": "Gate 2 is where `edge` appeared",
+        "why": "The token mapping called for a border on \"the edge it sits against\" and the API approved at gate 1 gave the component no way to know which edge that was. A caller could have set it through `className`, but a border is styling rather than placement and that prop's contract says so. Recording it because the gated order is the reason this was caught on paper instead of in CSS: writing the recipe state by state is what asks the question."
+      }
+    ]
+  },
+  "props": {
+    "title": {
+      "summary": "The panel's name. Required.",
+      "use": [
+        "A noun phrase naming what the panel is about — the token path, the selected row's name."
+      ],
+      "dont": [
+        "A verb phrase. This names a region, it does not describe an action."
+      ],
+      "a11y": "Rendered as a heading at `headingLevel` and wired to the `<aside>` with `aria-labelledby`, so the landmark is announced by name. An unnamed complementary landmark is listed as \"complementary\" and nothing else, which is worse than useless when a page has two."
+    },
+    "children": {
+      "summary": "The panel's content.",
+      "use": [
+        "Whatever the panel is about — the detail, the contract, the form."
+      ],
+      "dont": [
+        "The page's primary content. If it is the main thing on the page it is not complementary, and this is the wrong container."
+      ],
+      "a11y": "Scrolls in its own region so the title and the close control stay reachable."
+    },
+    "headingLevel": {
+      "summary": "Where the title sits in the page's outline.",
+      "use": [
+        "The level below whatever heading the panel's section sits under — a panel inside a section headed `<h2>` takes `3`."
+      ],
+      "dont": [
+        "Picking it for type size. The size comes from the recipe; this is the outline only."
+      ],
+      "a11y": "A skipped level breaks heading navigation, which is how many readers move through a page. Only the caller knows the depth, which is why there is no sensible default beyond the commonest case."
+    },
+    "edge": {
+      "summary": "Which side of the content the panel is attached to.",
+      "use": [
+        "`inline-end` for a detail or inspector panel, which is where a reader expects one — and the same side Sheet's `inline-end` drawer comes from, so the two are interchangeable as the viewport changes.",
+        "`inline-start` for a filter or tree column."
+      ],
+      "dont": [
+        "Using it to move the panel. It states which edge the panel meets so the border and the corners land on the right side; where the panel sits is the page's layout."
+      ],
+      "a11y": "Presentational only — it changes no roles and no announcement. Logical, not physical: `inline-start` is the left in a left-to-right document and the right in a right-to-left one."
+    },
+    "onClose": {
+      "summary": "Called when the reader closes the panel. Omitting it makes the panel persistent.",
+      "use": [
+        "A panel opened by a selection — clicking a swatch, a row, a node — which the reader can put away again."
+      ],
+      "dont": [
+        "Passing a no-op to get the button. No handler means no button, and that is the intended way to say the panel does not close."
+      ],
+      "a11y": "No reason argument, unlike Dialog's: the close button is the only way this closes. Escape does not, and there is no backdrop to click."
+    },
+    "closeLabel": {
+      "summary": "Accessible name for the close button.",
+      "use": [
+        "Naming what closes when several panels can be open at once: \"Close token documentation\"."
+      ],
+      "dont": [
+        "Passing it without `onClose`. There is no button to name."
+      ],
+      "a11y": "Becomes the button's `aria-label`. The control is icon-only, so without a name it announces as \"button\"."
+    },
+    "className": {
+      "summary": "Extra classes on the panel, for placement and measure — not for restyling it.",
+      "use": [
+        "Setting the width and how it sits in the page's grid or flex row, which the component deliberately leaves open."
+      ],
+      "dont": [
+        "Changing its surface or border. Those come from the recipe, and a panel that differs per page reads as two different products."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "An inspector beside the thing it documents",
+      "when": "A selection in a grid or list opens detail that is read AGAINST what is still on screen — the comparison is the task, so a modal would answer a different question.",
+      "example": "<div className=\"pg-with-inspector\">\n  <TokenGrid onSelect={setSelected} />\n\n  {selected !== null && (\n    <Panel\n      title={selected}\n      closeLabel={`Close documentation for ${selected}`}\n      onClose={() => setSelected(null)}\n    >\n      <TokenDoc path={selected} />\n    </Panel>\n  )}\n</div>",
+      "notes": "The measure comes from the page — `.pg-with-inspector` gives the panel its column — because where one stops fitting depends on the content and the page around it. `closeLabel` is spelled out because \"Close\" alone does not say what closes when the page holds more than one thing that can."
+    },
+    {
+      "case": "A persistent properties rail",
+      "when": "The panel is part of the page's furniture rather than something a selection opens, so there is nothing for a close button to do.",
+      "example": "<Panel title=\"Properties\" headingLevel={3}>\n  <PropertyList node={focusedNode} />\n</Panel>",
+      "notes": "No `onClose`, so no close button is rendered at all — that is how a panel says it is persistent, rather than the caller passing a no-op to get a control they then have to ignore. `headingLevel={3}` because this one sits under a section already headed `<h2>`."
+    },
+    {
+      "case": "A filter column on the inline-start side",
+      "when": "Filters that stay put next to the results they narrow, on a viewport wide enough to show both.",
+      "example": "<Panel title=\"Filters\" edge=\"inline-start\" headingLevel={2}>\n  <CheckboxGroupList facets={facets} onChange={setFacets} />\n</Panel>",
+      "notes": "`edge=\"inline-start\"` moves the border to the side facing the results. It does not move the panel — that is the page's layout — it states which edge the panel meets the content across, so the border lands on the right one."
+    }
+  ]
+}

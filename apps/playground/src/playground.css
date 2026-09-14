@@ -445,46 +445,23 @@ code {
 
 /* rata-allow: hardcoded-dimension — the inspector rail is a playground layout
    constant, the same kind as .pg-sidebar's width, not a step on the scale */
+/* Placement only, which is all that is left now Panel draws the rail. The
+   surface, the border, the head, the close control and the body's scrolling
+   all come from the component — this states where it sits and how wide it is,
+   which its contract says is the page's job.
+
+   The measure was `width: 340px`. It is control-lg x 9 = 324px now: close to
+   the number that was there, but derived, so it moves with the scale instead
+   of being a value someone once liked.
+
+   Sticks BELOW the header rather than at 0. It was `top: 0` from before the
+   top nav became fixed, which put the panel's own heading underneath it. */
 .pg-inspector {
-  width: 340px;
   flex-shrink: 0;
+  inline-size: calc(var(--rata-size-control-lg) * 9);
   position: sticky;
-  top: 0;
-  max-height: 100vh;
-  overflow-y: auto;
-  padding: var(--rata-space-4);
-  border-left: var(--rata-border-1) solid var(--rata-theme-border-default);
-  background: var(--rata-theme-bg-surface);
-}
-
-.pg-inspector-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--rata-space-gap-sm);
-  margin-bottom: var(--rata-space-stack-sm);
-}
-
-.pg-inspector-path {
-  font-size: var(--rata-type-label-size);
-  color: var(--rata-theme-fg-primary);
-  word-break: break-all;
-}
-
-.pg-inspector-close {
-  border: none;
-  background: none;
-  color: var(--rata-theme-fg-muted);
-  cursor: pointer;
-  font-size: var(--rata-type-heading-size);
-  line-height: 1;
-  padding: 0;
-  border-radius: var(--rata-radius-inner);
-}
-
-.pg-inspector-close:focus-visible {
-  outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring);
-  outline-offset: var(--rata-focus-ring-offset);
+  inset-block-start: var(--pg-header-block-size);
+  max-block-size: calc(100dvh - var(--pg-header-block-size));
 }
 
 .pg-inspector-meta {
@@ -920,6 +897,23 @@ code {
 
 .pg-section--head {
   margin-bottom: var(--rata-space-stack-lg);
+}
+
+/* The measure a Panel example needs, because Panel deliberately has none of
+   its own — where one stops fitting depends on its content and the page
+   around it, which is the page's knowledge. So the page states it, which is
+   also what the component's contract tells a caller to do. Bounded in block
+   size too, so the body's own scrolling is visible rather than theoretical. */
+.pg-panel-stage {
+  display: flex;
+  inline-size: 100%;
+  max-inline-size: calc(var(--rata-size-control-lg) * 9);
+  block-size: calc(var(--rata-size-control-lg) * 5);
+  justify-content: flex-end;
+}
+
+.pg-panel-stage > .rata-panel {
+  inline-size: 100%;
 }
 
 /* ---- Accent switcher ----------------------------------------------------

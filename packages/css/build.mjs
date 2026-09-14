@@ -40,6 +40,11 @@ const ORDER = [
   // After notice: both are surfaces, and the menu sits above one.
   "menu.css",
   "dialog.css",
+  // After dialog: Sheet is the same native-modal construction with different
+  // geometry, and its rules are written to replace dialog.css's where they
+  // overlap rather than to coexist with them.
+  "sheet.css",
+  "panel.css",
   // Last on purpose: a class whose job is to hide must not lose the cascade
   // to a component rule that happens to set position or padding.
   "visually-hidden.css",

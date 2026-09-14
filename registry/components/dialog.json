@@ -35,6 +35,10 @@
       "target": "lib/cx.ts"
     },
     {
+      "source": "packages/react/src/modal-dialog.ts",
+      "target": "lib/modal-dialog.ts"
+    },
+    {
       "source": "packages/react/src/scroll-lock.ts",
       "target": "lib/scroll-lock.ts"
     }
@@ -135,6 +139,10 @@
       {
         "decision": "A native close is reported rather than ignored",
         "why": "`<form method=\"dialog\">` is the documented HTML way to close a dialog, and the platform can close one for its own reasons too. Neither goes through `onClose`, and the effect that drives the dialog is keyed on `open`, so it never re-runs to notice — `open` went on claiming the dialog was showing, and the scroll lock stayed on the body with nothing open, leaving the page unable to scroll at all. The native `close` event now reports `external`, and only while React still believes the dialog is open, so the component's own `close()` is not mistaken for someone else's."
+      },
+      {
+        "decision": "The modal machinery moved out of this component when Sheet arrived",
+        "why": "showModal, the counted scroll lock, the Escape interception, the backdrop click and the report of a close nobody asked for are now `useModalDialog`, shared with Sheet. Every one of them exists because of a specific bug, several of them silent, and a second hand-written copy would have drifted on exactly those. Nothing about this component's behaviour changed — the same 27 tests pass against it."
       }
     ]
   },
