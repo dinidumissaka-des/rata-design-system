@@ -4244,7 +4244,7 @@
         }
       }
     },
-    "example": "<Sheet\n        open={open}\n        onClose={() => setOpen(false)}\n        edge={edge}\n        size={size}\n        dismissible={dismissible}\n        title={title}\n        description={description}\n        initialFocus={applyRef}\n        footer={\n          <>\n            <Button variant=\"secondary\" onClick={() => setOpen(false)}>\n              Cancel\n            </Button>\n            <Button ref={applyRef} onClick={() => setOpen(false)}>\n              Apply\n            </Button>\n          </>\n        }\n      >\n        The body scrolls on its own, so the title and the way out stay put\n        however much goes in here.\n      </Sheet>"
+    "example": "<Sheet\n        open={path !== null}\n        onClose={() => onClose()}\n        edge=\"block-end\"\n        size=\"lg\"\n        title={<code>{shown ?? \"\"}</code>}\n        dismissLabel={shown === null ? \"Close\" : `Close documentation for ${shown}`}\n      >\n        {shown !== null && <TokenDocBody path={shown} />}\n      </Sheet>"
   },
   {
     "name": "side-nav",
@@ -4492,7 +4492,7 @@
     ],
     "behavior": null,
     "tokens": {},
-    "example": "<Spinner label=\"Loading results\" />"
+    "example": "<Spinner label=\"Loading\" />"
   },
   {
     "name": "state-layer",

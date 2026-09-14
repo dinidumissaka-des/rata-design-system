@@ -360,27 +360,14 @@ Something must be answered before the page behind it means anything — a worksp
 
 ```tsx
 <Sheet
-        open={open}
-        onClose={() => setOpen(false)}
-        edge={edge}
-        size={size}
-        dismissible={dismissible}
-        title={title}
-        description={description}
-        initialFocus={applyRef}
-        footer={
-          <>
-            <Button variant="secondary" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-            <Button ref={applyRef} onClick={() => setOpen(false)}>
-              Apply
-            </Button>
-          </>
-        }
+        open={path !== null}
+        onClose={() => onClose()}
+        edge="block-end"
+        size="lg"
+        title={<code>{shown ?? ""}</code>}
+        dismissLabel={shown === null ? "Close" : `Close documentation for ${shown}`}
       >
-        The body scrolls on its own, so the title and the way out stay put
-        however much goes in here.
+        {shown !== null && <TokenDocBody path={shown} />}
       </Sheet>
 ```
 

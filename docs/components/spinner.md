@@ -66,5 +66,5 @@ No label: Button's `aria-busy` already reports the state.
 ## Real usage in this repo
 
 ```tsx
-<Spinner label="Loading results" />
+<Spinner label="Loading" />
 ```

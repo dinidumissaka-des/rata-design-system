@@ -2562,6 +2562,46 @@ export function ComponentPage({
   );
 }
 
+/**
+ * A component page addressed by NAME rather than by contract.
+ *
+ * The indirection is the whole point of it. This module imports
+ * `contracts.json` — 340kB of every decision, prop and worked example in the
+ * system — and that is fine as long as it loads only when someone opens a
+ * component page. But the app shell cannot resolve a name to a contract
+ * without importing the contracts itself, which would drag all of it back
+ * into the first chunk. So the shell hands over the name it parsed from the
+ * URL and the lookup happens on this side of the lazy boundary.
+ *
+ * The unknown-name state lives here for the same reason: knowing a name is
+ * unknown requires knowing every known name.
+ */
+export function ComponentPageByName({
+  name,
+  tab,
+  onNavigate,
+}: {
+  name: string;
+  tab: ComponentTab;
+  onNavigate: (page: Page, tab: ComponentTab) => void;
+}) {
+  const contract = contractsByName.get(name) ?? null;
+
+  if (contract === null) {
+    return (
+      <section className="pg-section">
+        <h2>Unknown component</h2>
+        <p className="pg-note">
+          Nothing in the registry is called <code>{name}</code>. Run{" "}
+          <code>npm run ui -- list</code> for the real names.
+        </p>
+      </section>
+    );
+  }
+
+  return <ComponentPage contract={contract} tab={tab} onNavigate={onNavigate} />;
+}
+
 /** The index page: every component, its family, and where each artifact stands. */
 export function ComponentIndex({ onOpen }: { onOpen: (name: string) => void }) {
   return (

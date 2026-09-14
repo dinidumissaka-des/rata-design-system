@@ -569,27 +569,14 @@ Extends: `Omit<`
 Real usage (from `apps/`):
 ```tsx
 <Sheet
-        open={open}
-        onClose={() => setOpen(false)}
-        edge={edge}
-        size={size}
-        dismissible={dismissible}
-        title={title}
-        description={description}
-        initialFocus={applyRef}
-        footer={
-          <>
-            <Button variant="secondary" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-            <Button ref={applyRef} onClick={() => setOpen(false)}>
-              Apply
-            </Button>
-          </>
-        }
+        open={path !== null}
+        onClose={() => onClose()}
+        edge="block-end"
+        size="lg"
+        title={<code>{shown ?? ""}</code>}
+        dismissLabel={shown === null ? "Close" : `Close documentation for ${shown}`}
       >
-        The body scrolls on its own, so the title and the way out stay put
-        however much goes in here.
+        {shown !== null && <TokenDocBody path={shown} />}
       </Sheet>
 ```
 
@@ -619,7 +606,7 @@ Contract: [docs/components/side-nav.md](../docs/components/side-nav.md)
 
 Real usage (from `apps/`):
 ```tsx
-<Spinner label="Loading results" />
+<Spinner label="Loading" />
 ```
 
 Contract: [docs/components/spinner.md](../docs/components/spinner.md)
@@ -1162,4 +1149,4 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 
 ## Pages
 
-- `apps/playground/src/app.tsx` — shell: main → section×13
+- `apps/playground/src/app.tsx` — shell: main → section×12
