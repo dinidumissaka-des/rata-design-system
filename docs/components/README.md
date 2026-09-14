@@ -28,6 +28,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Radio](radio.md) | `radio` | inputs | latest / latest | documented | free |
 | [Radio Group](radio-group.md) | `radio-group` | inputs | latest / latest | documented | free |
 | [Search](search.md) | `search` | inputs | latest / latest | documented | free |
+| [SegmentedControl](segmented-control.md) | `segmented-control` | inputs | latest / latest | documented | free |
 | [SideNav](side-nav.md) | `side-nav` | navigation | latest / latest | documented | free |
 | [Loading: Spinner](spinner.md) | `spinner` | loading | latest / latest | documented | free |
 | [State layer](state-layer.md) | `state-layer` | foundations | latest / na | css-only | free |

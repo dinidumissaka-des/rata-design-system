@@ -27,6 +27,7 @@ import {
   RadioGroup,
   MobileNav,
   Search,
+  SegmentedControl,
   SideNav,
   Tabs,
   TopNav,
@@ -53,7 +54,7 @@ import type {
   ToggleButtonVariant,
 } from "@rata/react";
 import type { TabsActivation, TabsOrientation } from "@rata/primitives";
-import type { TabsVariant } from "@rata/react";
+import type { SegmentedControlSize } from "@rata/react";
 import type { IconSize, LucideIcon } from "@rata/icons";
 import {
   Icon,
@@ -74,7 +75,7 @@ import {
   AlignCenter,
   AlignRight,
 } from "@rata/icons";
-import { COMPONENT_TABS, componentPage, hrefFor } from "./routing.js";
+import { COMPONENT_TABS, componentPage } from "./routing.js";
 import type { ComponentTab, Page } from "./routing.js";
 import contractsJson from "../../../docs/components/contracts.json";
 
@@ -468,6 +469,23 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     ),
   },
 
+  "segmented-control": {
+    "A view mode, chosen from three": () => <SegmentedRangeStage />,
+    "Filling a narrow column": () => (
+      <div className="pg-rail-width">
+        <SegmentedControl
+          label="Sort"
+          fullWidth
+          size="sm"
+          options={[
+            { value: "newest", label: "Newest" },
+            { value: "oldest", label: "Oldest" },
+          ]}
+        />
+      </div>
+    ),
+  },
+
   tabs: {
     "One thing seen several ways": () => (
       <Tabs
@@ -480,25 +498,6 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
       />
     ),
     "Panels that cost something to open": () => <TabsManualStage />,
-    "Drawn as a segmented control": () => (
-      <div className="pg-block-stack">
-        <Tabs
-          label="Range"
-          variant="segmented"
-          items={[
-            { value: "week", label: "Week", content: "Seven days of activity." },
-            { value: "month", label: "Month", content: "A calendar month." },
-            { value: "quarter", label: "Quarter", content: "Three months." },
-          ]}
-        />
-        {/* The real segmented control, directly below, so the resemblance is
-            visible — and so is the fact that only one of them is a tablist. */}
-        <ToggleButtonGroup label="Billing period" defaultValue="monthly">
-          <ToggleButton value="monthly">Monthly</ToggleButton>
-          <ToggleButton value="annual">Annual</ToggleButton>
-        </ToggleButtonGroup>
-      </div>
-    ),
   },
 
   "top-nav": {
@@ -658,7 +657,7 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
   },
 
   "toggle-button-group": {
-    "Single choice — a segmented control": () => <AlignGroupExample />,
+    "Single choice — one question, several answers": () => <AlignGroupExample />,
     "Independent states that sit together": () => <StyleGroupExample />,
     "A filter that can be cleared": () => <FilterGroupExample />,
   },
@@ -915,6 +914,26 @@ function DialogStage({
  * passed through fires a load — which over a real request is three the reader
  * never asked for.
  */
+/** Controlled, so the answer is visibly state the rest of the page reads. */
+function SegmentedRangeStage() {
+  const [range, setRange] = useState("month");
+  return (
+    <div className="pg-block-stack">
+      <SegmentedControl
+        label="Range"
+        value={range}
+        onValueChange={setRange}
+        options={[
+          { value: "week", label: "Week" },
+          { value: "month", label: "Month" },
+          { value: "quarter", label: "Quarter" },
+        ]}
+      />
+      <p className="pg-search-status">Showing the {range}.</p>
+    </div>
+  );
+}
+
 function TabsManualStage() {
   const [loads, setLoads] = useState<string[]>([]);
   return (
@@ -1228,6 +1247,19 @@ interface Interactive {
   /** Editable children, for components that take them. Not a prop, so not in the contract. */
   slot?: { label: string; initial: string };
   /**
+   * Starting values for props the contract gives no default.
+   *
+   * Those otherwise seed to an empty string, which is right for most things
+   * and wrong for anything whose content IS the demonstration: three Search
+   * fields with no placeholder and a hidden label — which is that component's
+   * documented default — rendered as three identical empty pills that said
+   * nothing about what they were.
+   *
+   * Seeded here rather than defaulted inside `render`, so the control box and
+   * the component agree about what is on screen.
+   */
+  seed?: DemoState;
+  /**
    * How the component renders for a bag of props. `set` is handed in for
    * components that own state the user is supposed to change by using them —
    * a toggle whose demo cannot be toggled is the mocked-up control this file
@@ -1249,9 +1281,10 @@ const INTERACTIVE: Record<string, Interactive> = {
     // `value` is not a control: it is the option's identity, not a setting to
     // try. Everything a Radio itself decides is here.
     controls: ["label", "description", "disabled"],
+    seed: { label: "Annual" },
     render: (state) => (
       <RadioStage
-        label={String(state.label || "Annual")}
+        label={String(state.label)}
         description={state.description ? String(state.description) : undefined}
         disabled={Boolean(state.disabled)}
       />
@@ -1259,9 +1292,10 @@ const INTERACTIVE: Record<string, Interactive> = {
   },
   switch: {
     controls: ["label", "labelHidden", "description", "checked", "disabled"],
+    seed: { label: "Notifications" },
     render: (state, set) => (
       <Switch
-        label={String(state.label || "Notifications")}
+        label={String(state.label)}
         labelHidden={Boolean(state.labelHidden)}
         description={state.description ? String(state.description) : undefined}
         checked={Boolean(state.checked)}
@@ -1272,9 +1306,10 @@ const INTERACTIVE: Record<string, Interactive> = {
   },
   checkbox: {
     controls: ["label", "description", "checked", "indeterminate", "disabled", "required"],
+    seed: { label: "Email me product updates" },
     render: (state, set) => (
       <Checkbox
-        label={String(state.label || "Email me product updates")}
+        label={String(state.label)}
         description={state.description ? String(state.description) : undefined}
         checked={Boolean(state.checked)}
         indeterminate={Boolean(state.indeterminate)}
@@ -1287,9 +1322,10 @@ const INTERACTIVE: Record<string, Interactive> = {
 
   "radio-group": {
     controls: ["label", "orientation", "disabled", "required"],
+    seed: { label: "Billing period" },
     render: (state) => (
       <RadioGroup
-        label={String(state.label || "Billing period")}
+        label={String(state.label)}
         orientation={state.orientation as ButtonGroupOrientation}
         disabled={Boolean(state.disabled)}
         required={Boolean(state.required)}
@@ -1313,9 +1349,10 @@ const INTERACTIVE: Record<string, Interactive> = {
 
   avatar: {
     controls: ["name", "size", "decorative"],
+    seed: { name: "Ada Hartley" },
     render: (state) => (
       <Avatar
-        name={String(state.name || "Ada Hartley")}
+        name={String(state.name)}
         size={state.size as AvatarSize}
         decorative={Boolean(state.decorative)}
       />
@@ -1324,11 +1361,12 @@ const INTERACTIVE: Record<string, Interactive> = {
 
   "mobile-nav": {
     controls: ["title", "label", "triggerLabel"],
+    seed: { title: "Menu", label: "Main", triggerLabel: "Menu" },
     render: (state) => (
       <MobileNav
-        title={String(state.title || "Menu")}
-        label={String(state.label || "Main")}
-        triggerLabel={String(state.triggerLabel || "Menu")}
+        title={String(state.title)}
+        label={String(state.label)}
+        triggerLabel={String(state.triggerLabel)}
         sections={[
           {
             items: [
@@ -1343,10 +1381,11 @@ const INTERACTIVE: Record<string, Interactive> = {
 
   "side-nav": {
     controls: ["label"],
+    seed: { label: "Sections" },
     render: (state) => (
       <SideNav
         className="pg-rail"
-        label={String(state.label || "Sections")}
+        label={String(state.label)}
         sections={[
           {
             label: "Billing",
@@ -1361,12 +1400,29 @@ const INTERACTIVE: Record<string, Interactive> = {
     ),
   },
 
+  "segmented-control": {
+    controls: ["label", "size", "fullWidth"],
+    seed: { label: "Range" },
+    render: (state) => (
+      <SegmentedControl
+        label={String(state.label)}
+        size={state.size as SegmentedControlSize}
+        fullWidth={Boolean(state.fullWidth)}
+        options={[
+          { value: "week", label: "Week" },
+          { value: "month", label: "Month" },
+          { value: "quarter", label: "Quarter" },
+        ]}
+      />
+    ),
+  },
+
   tabs: {
-    controls: ["label", "variant", "orientation", "activation"],
+    controls: ["label", "orientation", "activation"],
+    seed: { label: "Invoice" },
     render: (state) => (
       <Tabs
-        label={String(state.label || "Invoice")}
-        variant={state.variant as TabsVariant}
+        label={String(state.label)}
         orientation={state.orientation as TabsOrientation}
         activation={state.activation as TabsActivation}
         items={[
@@ -1380,9 +1436,10 @@ const INTERACTIVE: Record<string, Interactive> = {
 
   "top-nav": {
     controls: ["label"],
+    seed: { label: "Main" },
     render: (state) => (
       <TopNav
-        label={String(state.label || "Main")}
+        label={String(state.label)}
         brand={<strong className="pg-brand">Ratā</strong>}
         items={[
           { label: "Invoices", href: "#", current: true },
@@ -1396,9 +1453,13 @@ const INTERACTIVE: Record<string, Interactive> = {
 
   search: {
     controls: ["label", "labelHidden", "placeholder", "size", "loading", "landmark", "disabled"],
+    // The placeholder is what makes this specimen legible: `labelHidden`
+    // defaults to true, which is correct for the component and leaves a
+    // showcase of three empty pills with nothing to say what they are.
+    seed: { label: "Search", placeholder: "Search invoices" },
     render: (state) => (
       <Search
-        label={String(state.label || "Search")}
+        label={String(state.label)}
         labelHidden={state.labelHidden === undefined ? true : Boolean(state.labelHidden)}
         placeholder={state.placeholder ? String(state.placeholder) : undefined}
         size={state.size as SearchSize}
@@ -1411,9 +1472,10 @@ const INTERACTIVE: Record<string, Interactive> = {
 
   dialog: {
     controls: ["title", "description", "size", "dismissible"],
+    seed: { title: "Delete project" },
     render: (state) => (
       <DialogStage
-        title={String(state.title || "Delete project")}
+        title={String(state.title)}
         description={state.description ? String(state.description) : undefined}
         size={state.size as DialogSize}
         dismissible={state.dismissible === undefined ? true : Boolean(state.dismissible)}
@@ -1466,9 +1528,10 @@ const INTERACTIVE: Record<string, Interactive> = {
 
   breadcrumbs: {
     controls: ["label", "separator"],
+    seed: { label: "Breadcrumb" },
     render: (state) => (
       <Breadcrumbs
-        label={String(state.label || "Breadcrumb")}
+        label={String(state.label)}
         separator={state.separator ? String(state.separator) : undefined}
         items={[
           { label: "Home", href: "#" },
@@ -1480,9 +1543,10 @@ const INTERACTIVE: Record<string, Interactive> = {
   },
   "text-field": {
     controls: ["label", "labelHidden", "size", "status", "description", "message", "disabled", "required"],
+    seed: { label: "Email" },
     render: (state) => (
       <TextField className="pg-field"
-        label={String(state.label || "Email")}
+        label={String(state.label)}
         labelHidden={Boolean(state.labelHidden)}
         size={state.size as TextFieldSize}
         status={state.status as TextFieldStatus}
@@ -1496,9 +1560,10 @@ const INTERACTIVE: Record<string, Interactive> = {
   },
   "toggle-button-group": {
     controls: ["label", "selectionMode", "orientation", "size", "attached", "deselectable", "disabled"],
+    seed: { label: "Text alignment" },
     render: (state) => (
       <ToggleButtonGroup
-        label={String(state.label || "Text alignment")}
+        label={String(state.label)}
         selectionMode={state.selectionMode as ToggleButtonGroupSelectionMode}
         orientation={state.orientation as ButtonGroupOrientation}
         size={state.size as ToggleButtonSize}
@@ -1533,9 +1598,10 @@ const INTERACTIVE: Record<string, Interactive> = {
   },
   "button-group": {
     controls: ["label", "orientation", "attached"],
+    seed: { label: "Form actions" },
     render: (state) => (
       <ButtonGroup
-        label={String(state.label || "Form actions")}
+        label={String(state.label)}
         orientation={state.orientation as ButtonGroupOrientation}
         attached={Boolean(state.attached)}
       >
@@ -1600,6 +1666,9 @@ function initialState(contract: Contract, spec: Interactive): DemoState {
     const prop = contract.props.find((p) => p.name === name);
     if (prop) state[name] = initialValue(prop);
   }
+  // After the contract's defaults, so a seed can fill a gap the contract
+  // leaves — and before the slot, which is not a prop at all.
+  if (spec.seed) Object.assign(state, spec.seed);
   if (spec.slot) state.children = spec.slot.initial;
   return state;
 }
@@ -1936,28 +2005,32 @@ function ComponentTabs({
   onNavigate: (page: Page, tab: ComponentTab) => void;
 }) {
   return (
-    <nav className="pg-tabs" aria-label={`${contract.title} sections`}>
-      {COMPONENT_TABS.map((item) => (
-        <a
-          key={item.id}
-          className={`pg-tab${item.id === tab ? " is-active" : ""}`}
-          href={hrefFor(componentPage(contract.name), item.id)}
-          aria-current={item.id === tab ? "page" : undefined}
-          onClick={(event) => {
-            // Let the browser handle the modified clicks it handles better:
-            // new tab, new window, download, and any non-primary button.
-            if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
-              return;
-            }
-            event.preventDefault();
-            onNavigate(componentPage(contract.name), item.id);
-          }}
-        >
-          {item.label}
-        </a>
-      ))}
-    </nav>
+    <Tabs
+      label={`${contract.title} sections`}
+      value={tab}
+      onValueChange={(value) => onNavigate(componentPage(contract.name), value as ComponentTab)}
+      items={COMPONENT_TABS.map((item) => ({
+        value: item.id,
+        label: item.label,
+        content: <ComponentTabPanel contract={contract} tab={item.id} onNavigate={onNavigate} />,
+      }))}
+    />
   );
+}
+
+/** The body behind one tab. Tabs owns the panels, so the page hands it these. */
+function ComponentTabPanel({
+  contract,
+  tab,
+  onNavigate,
+}: {
+  contract: Contract;
+  tab: ComponentTab;
+  onNavigate: (page: Page, tab: ComponentTab) => void;
+}) {
+  if (tab === "properties") return <PropertiesTab contract={contract} />;
+  if (tab === "accessibility") return <AccessibilityTab contract={contract} />;
+  return <OverviewTab contract={contract} onNavigate={onNavigate} />;
 }
 
 /**
@@ -2339,12 +2412,9 @@ export function ComponentPage({
           <code>{contract.name}</code> · {contract.family} · {contract.tier} tier
           {contract.dependencies.length > 0 && <> · depends on {contract.dependencies.join(", ")}</>}
         </p>
-        <ComponentTabs contract={contract} tab={tab} onNavigate={onNavigate} />
       </section>
 
-      {tab === "overview" && <OverviewTab contract={contract} onNavigate={onNavigate} />}
-      {tab === "properties" && <PropertiesTab contract={contract} />}
-      {tab === "accessibility" && <AccessibilityTab contract={contract} />}
+      <ComponentTabs contract={contract} tab={tab} onNavigate={onNavigate} />
     </>
   );
 }

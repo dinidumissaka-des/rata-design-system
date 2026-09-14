@@ -10,7 +10,15 @@
   flex-direction: column;
   gap: var(--rata-space-stack-md);
   padding-block: var(--rata-space-padding-sm);
-  padding-inline: var(--rata-space-padding-sm);
+  /* No inline padding, deliberately. The rows fill the rail's width so the
+     whole row is the target, and so they line up with whatever else the page
+     puts in the rail — a search field, a button — rather than sitting 12px
+     inside it. Inline padding here doubles up with the page's own gutter and
+     is what made that misalignment: the page indents the rail, then the rail
+     indents its rows again.
+
+     Block padding stays: vertical breathing room inside the rail affects
+     nothing outside it, which is the difference. */
   font-family: var(--rata-font-family-sans);
 }
 

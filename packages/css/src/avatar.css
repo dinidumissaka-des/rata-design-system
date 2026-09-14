@@ -10,16 +10,21 @@
   justify-content: center;
   flex-shrink: 0;
   border-radius: var(--rata-radius-pill);
-  /* Its own edge, so the circle is findable on any surface. Without it the
-     fallback sits on theme.bg.muted and vanishes against any container using
-     that same tone — and theme.border.default would not help: composited over
-     a mid surface it measures about 1.2:1, which is no edge at all.
-     theme.border.strong is the token for "a boundary the eye should stop at",
-     and it holds 2.4:1 or better against every background in the ladder. */
-  border: var(--rata-border-default) solid var(--rata-theme-border-strong);
-  /* So the border eats inward instead of adding to the diameter: the sizes
-     borrow the control scale precisely so an avatar lines up with the controls
-     beside it, and 34px would break that. */
+  /* No edge. It had one, because the fallback sits on theme.bg.muted and used
+     to vanish against any container using that same tone — which was
+     unavoidable when the background ladder had four names and three distinct
+     values, and sections had taken theme.bg.muted for want of a usable
+     theme.bg.subtle. With subtle given a tone of its own, a section band and
+     a placeholder circle are different colours and the ring is no longer
+     buying anything. A drawn edge on a small circle reads as a border round a
+     border, which is what it looked like.
+
+     What that costs, stated because it is a real case rather than a
+     hypothetical: an avatar placed directly on a theme.bg.muted surface still
+     has no visible edge. Sections use theme.bg.subtle now, so it is an
+     unusual placement — but it is the one to remember. */
+  /* Kept: the sizes borrow the control scale so an avatar lines up with the
+     controls beside it, and anything added to the box would break that. */
   box-sizing: border-box;
   overflow: hidden;
   background: var(--rata-theme-bg-muted);

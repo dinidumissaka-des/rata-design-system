@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Button, MobileNav, Search, SideNav, TopNav } from "@rata/react";
+import { MobileNav, Search, SegmentedControl, SideNav, TopNav } from "@rata/react";
 import { tokens } from "@rata/tokens";
 import { TokenDoc, FamilyDoc, ContrastPage, RecipeList } from "./token-docs.js";
 import { ComponentIndex, ComponentPage, contracts, contractsByName } from "./component-page.js";
 import { componentName, componentPage, hrefFor, parseLocation } from "./routing.js";
 import { AccentSwitcher, DEFAULT_ACCENT } from "./accent-switcher.js";
+import type { Scheme } from "./accent-switcher.js";
 import type { ComponentTab, Page } from "./routing.js";
 
 // One page per category, primitives and semantics merged into one flowing
@@ -483,7 +484,17 @@ export function App() {
           thing TopNav's own contract warns about. */}
       <TopNav
         className="pg-header"
-        brand={<strong className="pg-brand">Ratā</strong>}
+        brand={
+          <span className="pg-brand">
+            {/* Decorative, because the wordmark beside it already names the
+                product. TopNav's contract warns that an image in this slot
+                needs its own alt text — it does, and for a mark paired with
+                the name the correct alt text is empty. Giving it "Ratā" here
+                would have a screen reader read the product twice. */}
+            <img className="pg-brand-mark" src="/rata-icon.svg" alt="" />
+            <strong className="pg-brand-name">Ratā</strong>
+          </span>
+        }
         actions={
           <>
             <MobileNav
@@ -496,13 +507,22 @@ export function App() {
                 next to the scheme toggle: both re-theme the whole page, and
                 neither belongs to any one page's content. */}
             <AccentSwitcher value={accent} scheme={theme} onChange={setAccent} />
-            <Button
-              variant="secondary"
+            {/* A SegmentedControl rather than a button that toggles. The
+                button was labelled with the scheme you were NOT in — "Dark
+                theme" while the page was light — which is the classic
+                ambiguity of a toggle whose label describes its action rather
+                than its state. Two named options with one marked is a
+                question being answered, which is what this is. */}
+            <SegmentedControl
+              label="Colour scheme"
               size="sm"
-              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-            >
-              {theme === "light" ? "Dark theme" : "Light theme"}
-            </Button>
+              value={theme}
+              onValueChange={(next) => setTheme(next as Scheme)}
+              options={[
+                { value: "light", label: "Light" },
+                { value: "dark", label: "Dark" },
+              ]}
+            />
           </>
         }
       />
@@ -735,6 +755,11 @@ export function App() {
               </table>
               <div className="pg-type-sample-row">
                 <span className="pg-bar-label">type.heading</span>
+                {/* The size column the generated-scale rows above also carry.
+                    Without it the sample text on those rows and these started
+                    84px apart on the same page — the label is 140px, the value
+                    72px, and only one kind of row had both. */}
+                <span className="pg-bar-value">{tokens.type.heading.size}</span>
                 <span
                   className="pg-type-sample-text"
                   style={{
@@ -748,6 +773,7 @@ export function App() {
               </div>
               <div className="pg-type-sample-row">
                 <span className="pg-bar-label">type.body</span>
+                <span className="pg-bar-value">{tokens.type.body.size}</span>
                 <span
                   className="pg-type-sample-text"
                   style={{
@@ -761,6 +787,7 @@ export function App() {
               </div>
               <div className="pg-type-sample-row">
                 <span className="pg-bar-label">type.label</span>
+                <span className="pg-bar-value">{tokens.type.label.size}</span>
                 <span
                   className="pg-type-sample-text"
                   style={{

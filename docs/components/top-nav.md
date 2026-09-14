@@ -28,6 +28,7 @@ A `<header>` containing a `<nav>`: the bar is the page's banner landmark, and th
 - **The panel is a popover, for a layout reason rather than a stylistic one** — The destination list scrolls its overflow so a long nav does not wrap the bar onto two rows, and an overflow container clips its absolutely positioned descendants — a panel drawn inside the list would be cut off or scroll away with it. The top layer is the only place it can be and still be seen. It stays a child of its `<li>` in the DOM, which is what matters for assistive technology: the accessibility tree follows the document rather than the paint order, so those links are still inside the nav landmark. `popover="auto"` settles one-open-at-a-time and light dismiss for free.
 - **Rows carry an optional onClick, and still require a real href** — Found by trying to build the playground's own rail out of this component: the rows navigate client-side, and with no way to intercept the click there was no way to use it without a full page load. The href stays required rather than becoming optional, because it is what makes the row a link — middle-click, copy-address and crawlers all depend on it, and a nav built from handlers with no addresses behind them loses all three without appearing to.
 - **No destinations means no navigation landmark** — An empty `<nav>` is worse than none: it appears in a landmark list promising places to go and delivers none, which wastes the one tool that exists for skipping straight to the navigation. Found by using this component for the playground's own banner, whose navigation lives in the rail — the first version passed `items={[]}` and produced exactly that empty landmark, alongside a rail with the same name, which is the collision this contract already warned about two decisions above.
+- **The actions are pushed to the end by their own margin** — The nav takes the slack when there is one, which was doing the job invisibly — and then `items` became optional, a banner with its navigation in a side rail rendered no nav at all, and the actions sat against the brand in the middle of the bar. An auto margin on the actions is correct either way: with a nav it adds nothing, without one it does the whole job.
 
 ## Props
 
@@ -226,6 +227,7 @@ The bar. Its height comes from its padding and the controls inside it rather tha
 | padding-inline | `space.padding.lg` |
 | gap between brand, nav and actions | `space.gap.lg` |
 | minimum height of the row | `size.control.lg` |
+| actions alignment | `pushed to the inline end by an auto margin, so they sit at the end of the bar whether or not there are destinations between them and the brand` |
 
 ### item
 

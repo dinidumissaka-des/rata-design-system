@@ -49,6 +49,14 @@ export type {
   TabsOrientation,
   TabsActivation,
 } from "./tabs.js";
+export { getSegmentedControlProps } from "./segmented-control.js";
+export type {
+  SegmentedControlOptions,
+  SegmentedControlProps,
+  SegmentedOption,
+  SegmentedOptionProps,
+  SegmentedControlKeyEvent,
+} from "./segmented-control.js";
 export { getSwitchProps } from "./switch.js";
 export type { SwitchOptions, SwitchProps } from "./switch.js";
 export { getTextFieldProps } from "./text-field.js";

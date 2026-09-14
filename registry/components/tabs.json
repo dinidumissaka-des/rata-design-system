@@ -43,8 +43,12 @@
     "summary": "A `tablist` of `tab` buttons over a set of `tabpanel` regions, with roving tabindex and arrow-key movement along the declared axis. Every tab points at its panel and every panel back at its tab, which is the pairing that makes a tablist a tablist.",
     "decisions": [
       {
-        "decision": "It is not a segmented control, though it can be drawn as one",
-        "why": "`ToggleButtonGroup` in its default configuration IS a segmented control, and the two are not the same control however they are painted. A segmented control picks a VALUE: it is a radiogroup, every option is announced as a choice, and the answer is submitted with the rest of the form. Tabs reveal a REGION: moving between them changes what is on screen rather than what will be sent. Using one for the other is not a style error — a radiogroup standing in for tabs tells a screen reader a form is being filled in, and tabs standing in for a form control hide the answer inside a region nobody submits.\n\nThat is entirely about the ROLE. `variant=\"segmented\"` draws a tablist to look like the segmented control, which is a legitimate design choice and changes nothing announced. The cost is only that a reader cannot tell the two apart by eye; assistive technology still can."
+        "decision": "Which of three, when they all look like one bar of options",
+        "why": "Three components here can look like one enclosed bar of options, so each one's contract says which is which. SegmentedControl is a question with a short fixed set of answers: single, always filled, cannot be cleared. ToggleButtonGroup is the same ARIA pattern with a wider API — multiple selection, deselection, vertical orientation, the toggle-button variants — so reach for it when you need any of those. Tabs is a different pattern entirely: tabs reveal a region, each naming a panel and each panel naming its tab, and if what is being chosen is which content is shown rather than what gets submitted, it is Tabs — which can be drawn to look exactly like the other two and is still announced as a tablist."
+      },
+      {
+        "decision": "It is not a segmented control, and no longer looks like one either",
+        "why": "`SegmentedControl` is the component for that, and the two are not the same control however they are painted. A segmented control picks a VALUE: it is a radiogroup, every option is announced as a choice, and the answer is submitted with the rest of the form. Tabs reveal a REGION: moving between them changes what is on screen rather than what will be sent. Using one for the other is not a style error — a radiogroup standing in for tabs tells a screen reader a form is being filled in, and tabs standing in for a form control hide the answer inside a region nobody submits.\n\nTabs carried a segmented appearance for a while, added when that look had nothing of its own. Once it did, two components able to draw the same bar made the pair harder to tell apart in precisely the place the difference matters — so the appearance went with it. Tabs look like tabs."
       },
       {
         "decision": "Activation is the caller's choice, because it has a cost",
@@ -149,25 +153,13 @@
       ],
       "a11y": "Both are conforming. `manual` moves focus and waits for Enter or Space; `automatic` selects as focus moves. A disabled tab is reachable either way — this system's disabled controls stay focusable — and selection does not follow focus onto it."
     },
-    "variant": {
-      "summary": "How the tablist is drawn. Appearance only.",
-      "use": [
-        "`underline` — the default — for a wider set, or tabs of uneven length: the marker scales where an enclosed bar starts to crowd.",
-        "`segmented` for two to four short, peer-like tabs, where one enclosed bar reads as a single control."
-      ],
-      "dont": [
-        "Reaching for `segmented` to make a form control. If the thing being chosen gets submitted, it is a `ToggleButtonGroup` — the appearance is available here, but the semantics are not interchangeable.",
-        "Mixing both appearances on one screen. They are the same control drawn two ways, and alternating them reads as two different mechanisms."
-      ],
-      "a11y": "Changes nothing: the roles, the keyboard model, the naming and `aria-selected` are identical either way. Under `segmented` the filled segment is the visual indicator instead of the marker bar, and the state is still announced, so it is not carried by colour alone. What it does cost is that a segmented tablist and a real segmented control are hard to tell apart by eye — they remain correctly distinguishable to a screen reader."
-    },
     "className": {
       "summary": "Extra classes on the wrapper, for placement — not for restyling it.",
       "use": [
         "Constraining the width, or spacing the set from what surrounds it."
       ],
       "dont": [
-        "Making it look like a segmented control. They are different controls, and looking alike is how they get used for each other."
+        "Making it look like a segmented control. They are different patterns, and the appearance is the only cue a sighted reader gets — which is why this component stopped offering that appearance itself."
       ]
     }
   },
@@ -185,21 +177,15 @@
       "notes": "`manual` is the whole point here: under automatic, arrowing from the first tab to the fourth fires three requests for panels nobody wanted to see. Controlled as well, so the tab can come from the URL and survive a reload."
     },
     {
-      "case": "Drawn as a segmented control",
-      "when": "Two to four short tabs, where one enclosed bar reads as a single control.",
-      "example": "<Tabs\n  label=\"Range\"\n  variant=\"segmented\"\n  items={[\n    { value: \"week\", label: \"Week\", content: <Week /> },\n    { value: \"month\", label: \"Month\", content: <Month /> },\n  ]}\n/>",
-      "notes": "Appearance only — this is still a tablist revealing regions, and still announced as one. The reason it is worth stating: the same shape built from `ToggleButtonGroup` would be a radiogroup answering a question, and the two are not interchangeable however alike they look. If the panels were empty, that would be the tell that this is the wrong one."
-    },
-    {
       "case": "Don't: tabs standing in for a segmented control",
       "when": "Never — this is the shape to recognise and avoid.",
       "example": "{/* Don't: this is a choice being made, not a region being revealed. */}\n<Tabs\n  label=\"Billing period\"\n  items={[\n    { value: \"monthly\", label: \"Monthly\", content: null },\n    { value: \"annual\", label: \"Annual\", content: null },\n  ]}\n/>",
-      "notes": "Don't. Empty panels are the tell: nothing is being revealed, so this is a question being answered — a `ToggleButtonGroup`, which is this system's segmented control. Tabs tell a screen reader that regions are being shown and hidden, and the answer here would sit inside a region nobody submits."
+      "notes": "Don't. Empty panels are the tell: nothing is being revealed, so this is a question being answered — `SegmentedControl`, which is what that component is for. Tabs tell a screen reader that regions are being shown and hidden, and the answer here would sit inside a region nobody submits."
     }
   ],
   "tokens": {
     "base": {
-      "summary": "The set, in either appearance. `underline` reads as an edge with a marker on it; `segmented` reads as one enclosed bar. The segmented form borrows the tokens the real segmented control uses rather than picking its own, so the two cannot drift into looking nearly-but-not-quite alike.",
+      "summary": "The set. Tabs read as an edge with a marker on it, and only that — there was a segmented appearance for a while, added when that look had no component of its own. SegmentedControl is that component now, and two things able to draw the same bar made the pair hard to tell apart in exactly the place the difference matters.",
       "tokens": {
         "rule under the tabs": "border.default solid theme.border.default",
         "gap between tabs": "space.gap.xs",
@@ -235,18 +221,6 @@
       "tokens": {
         "padding-block-start": "space.padding.md",
         "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible"
-      }
-    },
-    "variant-segmented": {
-      "summary": "The enclosed bar. No marker: the filled segment is the indicator, which is why the underline's marker is scoped away here. The selection is still announced through aria-selected.",
-      "tokens": {
-        "well background": "theme.bg.muted",
-        "well padding": "space.0-5",
-        "well border-radius": "radius.element",
-        "segment border-radius": "radius.inner",
-        "selected background": "theme.bg.surface",
-        "selected colour": "theme.fg.primary",
-        "selected elevation": "theme.elevation.raised"
       }
     }
   }

@@ -169,7 +169,7 @@ A raised surface sitting on top of the canvas — the default background for any
 
 ### `theme.bg.subtle`
 
-`var(--rata-theme-bg-subtle)` · light `#E8F3EE` · dark `#151D1A`
+`var(--rata-theme-bg-subtle)` · light `#EEF9F4` · dark `#1F2824`
 
 A quiet, faintly recessed or striped background — one step of emphasis below a surface, without reading as an interactive control.
 
@@ -943,7 +943,7 @@ Ratios are measured from the resolved token values every build. A pairing listed
 |---|---|---|---|---|
 | `theme.fg.primary` | `theme.bg.canvas` | AA-text | 15.12:1 | 14.67:1 |
 | `theme.fg.primary` | `theme.bg.surface` | AA-text | 16.75:1 | 13.30:1 |
-| `theme.fg.primary` | `theme.bg.subtle` | AA-text | 15.12:1 | 13.30:1 |
+| `theme.fg.primary` | `theme.bg.subtle` | AA-text | 15.94:1 | 11.72:1 |
 | `theme.fg.primary` | `theme.bg.muted` | AA-text | 13.30:1 | 10.23:1 |
 | `theme.fg.primary` | `theme.accent-role.subtle` | AA-text | 13.28:1 | 9.65:1 |
 | `theme.fg.primary` | `theme.success-role.subtle` | AA-text | 16.41:1 | 11.55:1 |
@@ -951,11 +951,11 @@ Ratios are measured from the resolved token values every build. A pairing listed
 | `theme.fg.primary` | `theme.danger-role.subtle` | AA-text | 15.70:1 | 12.50:1 |
 | `theme.fg.secondary` | `theme.bg.canvas` | AA-text | 8.23:1 | 8.25:1 |
 | `theme.fg.secondary` | `theme.bg.surface` | AA-text | 9.12:1 | 7.48:1 |
-| `theme.fg.secondary` | `theme.bg.subtle` | AA-text | 8.23:1 | 7.48:1 |
+| `theme.fg.secondary` | `theme.bg.subtle` | AA-text | 8.68:1 | 6.59:1 |
 | `theme.fg.secondary` | `theme.bg.muted` | AA-text | 7.24:1 | 5.75:1 |
 | `theme.fg.muted` | `theme.bg.canvas` | AA-text | 5.68:1 | 6.01:1 |
 | `theme.fg.muted` | `theme.bg.surface` | AA-text | 6.29:1 | 5.45:1 |
-| `theme.fg.muted` | `theme.bg.subtle` | AA-text | 5.68:1 | 5.45:1 |
+| `theme.fg.muted` | `theme.bg.subtle` | AA-text | 5.98:1 | 4.80:1 |
 | `theme.fg.muted` | `theme.bg.muted` | AA-large | 4.99:1 | 4.19:1 |
 | `theme.accent-role.fg` | `theme.bg.canvas` | AA-text | 5.55:1 | 11.11:1 |
 | `theme.accent-role.fg` | `theme.bg.surface` | AA-text | 6.15:1 | 10.07:1 |
@@ -1003,12 +1003,12 @@ A circular image, falling back to initials on the most recessed surface.
 |---|---|
 | size | `size.control.md`, with the sm and lg steps at the other sizes — an avatar lines up with the controls beside it, which is the whole reason it borrows the control scale |
 | border-radius | `radius.pill` |
-| edge | `border.default` solid `theme.border.strong` — the circle needs its own boundary or the fallback disappears against any container using `theme.bg.muted`, which is the tone the fallback itself takes. `theme.border.default` is not an option: composited over a mid surface it measures around 1.2:1 |
 | fallback background | `theme.bg.muted` — the most recessed surface, so initials read as a placeholder rather than a filled badge |
 | fallback color | `theme.fg.secondary` — the pairing the muted background documents for text; `theme.fg.muted` falls to AA-large there |
 | fallback font-size | `type.supporting.size` |
 | fallback font-weight | `type.control.weight` |
 | image fit | cover, so a non-square photo is cropped rather than squashed — a layout fact, not a token |
+| background | `theme.bg.muted` — the most recessed step, so initials read as a placeholder rather than a filled badge. No drawn edge: it had one only because a section band and this fill used to be the same colour, which `theme.bg.subtle` having a tone of its own has fixed |
 
 ### badge-neutral
 
@@ -1542,14 +1542,53 @@ The trailing clear control, present only when there is a query. Same constructio
 | hover / press | compose the .rata-state-layer class |
 | focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
 
+### segmented-control
+
+The well: a recessed track the chosen option is raised out of, which is what makes the bar read as one control with a part selected rather than as buttons that happen to touch. That is the difference from toggle-button-group, which draws the same pattern as attached bordered buttons.
+
+| Property | Token |
+|---|---|
+| track background | `theme.bg.muted` — exactly what that step is documented for: the most recessed background, an inset well or a track. No border: a track sitting a real step below what it is on does not need an edge drawn round it. |
+| track padding | `space.0-5` |
+| track border-radius | `radius.element` |
+| sizing | hugs its options; fullWidth fills the container |
+
+### segmented-control-option
+
+One answer. Equal widths, so the bar does not reflow as the answer moves.
+
+| Property | Token |
+|---|---|
+| colour | `theme.fg.secondary` |
+| block-size sm / md | `size.control.sm` / `size.control.md`, each less `space.1` for the track's padding |
+| padding-inline | `space.control.padding-inline.sm` |
+| border-radius | `radius.inner` |
+| font-size | `type.control.size.sm` |
+| font-weight | `type.control.weight` |
+| gap between icon and label | `space.gap.sm` |
+| icon size | `size.icon.text` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+| disabled | `state.disabled-opacity` |
+
+### segmented-control-option-selected
+
+The answer, raised out of the track. Marked twice over: the surface is the visual cue and aria-checked is the announced one.
+
+| Property | Token |
+|---|---|
+| background | `theme.bg.surface` |
+| colour | `theme.fg.primary` |
+| elevation | `theme.elevation.raised` |
+
 ### side-nav
 
-The rail. No background of its own: it sits on whatever surface the page gives it, so the same component works against the canvas and inside a panel. Its width is the page's to set.
+The rail. No background, no width and no inline padding of its own: it sits on whatever surface the page gives it, at whatever width, inset by the page's own gutter — so its rows fill the rail and line up with anything else the page puts there, such as a search field.
 
 | Property | Token |
 |---|---|
 | padding-block | `space.padding.sm` |
-| padding-inline | `space.padding.sm` |
+| padding-inline | none — the rows fill the rail, and the page owns the gutter |
 | gap between sections | `space.stack.md` |
 
 ### side-nav-section
@@ -1622,7 +1661,7 @@ A track the thumb slides along. The track's fill is the state, and the thumb's p
 
 ### tabs
 
-The set, in either appearance. `underline` reads as an edge with a marker on it; `segmented` reads as one enclosed bar. The segmented form borrows the tokens the real segmented control uses rather than picking its own, so the two cannot drift into looking nearly-but-not-quite alike.
+The set. Tabs read as an edge with a marker on it, and only that — there was a segmented appearance for a while, added when that look had no component of its own. SegmentedControl is that component now, and two things able to draw the same bar made the pair hard to tell apart in exactly the place the difference matters.
 
 | Property | Token |
 |---|---|
@@ -1666,20 +1705,6 @@ The region a tab reveals. Focusable even with nothing focusable inside, so Tab f
 |---|---|
 | padding-block-start | `space.padding.md` |
 | focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
-
-### tabs-variant-segmented
-
-The enclosed bar. No marker: the filled segment is the indicator, which is why the underline's marker is scoped away here. The selection is still announced through aria-selected.
-
-| Property | Token |
-|---|---|
-| well background | `theme.bg.muted` |
-| well padding | `space.0-5` |
-| well border-radius | `radius.element` |
-| segment border-radius | `radius.inner` |
-| selected background | `theme.bg.surface` |
-| selected colour | `theme.fg.primary` |
-| selected elevation | `theme.elevation.raised` |
 
 ### text-field
 
@@ -1841,6 +1866,7 @@ The bar. Its height comes from its padding and the controls inside it rather tha
 | padding-inline | `space.padding.lg` |
 | gap between brand, nav and actions | `space.gap.lg` |
 | minimum height of the row | `size.control.lg` |
+| actions alignment | pushed to the inline end by an auto margin, so they sit at the end of the bar whether or not there are destinations between them and the brand |
 
 ### top-nav-item
 
