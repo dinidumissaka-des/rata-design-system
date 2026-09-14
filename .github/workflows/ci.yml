@@ -16,9 +16,33 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+
+      # Whether the two halves of a contract still agree, and whether the
+      # generated documentation is the committed documentation.
       - run: npm run docs:check
+      # Whether every component still installs into a consumer's project with
+      # imports that resolve. This is the one that catches a shared helper
+      # added to packages/react without being added to the manifests that
+      # now depend on it — `rata add` would emit an unresolvable import and
+      # nothing else would notice.
+      - run: npm run registry:check
+
+      # Source scanners. Both self-test before they run: each plants known
+      # bugs and fails if it does not find them, because the first version of
+      # each was written in a shape that could never have fired.
+      - run: npm run aria:check
+      - run: npm run state-layer:check
+
       - run: npm run themes:check
       - run: npm test
+      # Port fidelity for the theme engine, which `npm test` does not cover.
+      - run: npm run test:theme
       - run: npm run vibe:test
       - run: npm run vibe
+
       - run: npm run build -w playground
+      # Whether every playground example key still resolves to a real usage
+      # case. A key that does not fails SILENTLY — the card renders "No live
+      # specimen for this case" and the build is happy, so nothing but this
+      # catches it.
+      - run: npm run playground:check
