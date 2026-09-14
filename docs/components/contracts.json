@@ -1633,7 +1633,8 @@
     },
     "dependencies": [
       "state-layer",
-      "menu-item"
+      "menu-item",
+      "icon"
     ],
     "importPath": "@rata/react",
     "mode": "documented",
@@ -2370,6 +2371,7 @@
       }
     },
     "dependencies": [
+      "state-layer",
       "icon"
     ],
     "importPath": "@rata/react",

@@ -15,7 +15,7 @@ import { Notice } from "@rata/react";
 | Family | feedback |
 | Tier | free |
 | Status (css / react / figma) | latest / latest / future |
-| Depends on | `icon` |
+| Depends on | `state-layer`, `icon` |
 
 ## Behavior
 

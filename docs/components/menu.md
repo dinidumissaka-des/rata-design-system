@@ -15,7 +15,7 @@ import { Menu } from "@rata/react";
 | Family | overlays |
 | Tier | free |
 | Status (css / react / figma) | latest / latest / future |
-| Depends on | `state-layer`, `menu-item` |
+| Depends on | `state-layer`, `menu-item`, `icon` |
 
 ## Behavior
 
