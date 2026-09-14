@@ -2613,10 +2613,7 @@ export function ComponentIndex({ onOpen }: { onOpen: (name: string) => void }) {
       </p>
       <ul className="pg-gallery">
         {contracts.map((contract) => (
-          <li
-              key={contract.name}
-              className="pg-gallery-item rata-state-layer rata-state-layer--flush"
-            >
+          <li key={contract.name} className="pg-gallery-item">
             {/* INERT, which is the part that makes a clickable tile honest.
                 These specimens are live components with real controls in them
                 — buttons, tabs, a switch. Covering the tile with a click
@@ -2628,7 +2625,10 @@ export function ComponentIndex({ onOpen }: { onOpen: (name: string) => void }) {
                 thumbnail becomes a picture of the component, which is all a
                 gallery needs it to be. The working copy is on the component's
                 own page. */}
-            <div className="pg-gallery-stage" inert>
+            <div
+              className="pg-gallery-stage rata-state-layer rata-state-layer--flush"
+              inert
+            >
               <ComponentThumbnail name={contract.name} />
             </div>
             {/* The name and nothing else. Family and the three artifact

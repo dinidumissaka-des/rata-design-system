@@ -959,18 +959,34 @@ code {
   border-radius: var(--rata-radius-container);
 }
 
-/* Hover feedback is the composed .rata-state-layer, on the <li> in the
-   markup. The first version of this swapped a background on the stage and
-   `npm run vibe` failed it as a hand-rolled hover, correctly.
+/* Hover lands on the CARD only, not on the caption under it.
 
-   The <li> is the only element the hover can be read from. The overlay below
-   sits on top of the stage, so `.pg-gallery-stage:hover` never fires — but
-   the overlay belongs to the name, and the <li> is the name's ancestor, so
-   hovering anywhere on the tile is hovering the <li>. It takes
-   --flush as well, having no border of its own for the layer to bleed into.
+   .rata-state-layer is composed on the stage in the markup, so the overlay,
+   its opacity steps and its transition are the system's rather than redrawn
+   here. What these two rules change is only what TRIGGERS it — and they have
+   to, because the layer keys off the hover of the element it sits on and the
+   stage can never be hovered: the click overlay sits above it, and the stage
+   is the name's SIBLING rather than its ancestor, so it is not in the hover
+   chain at all. `:has()` reads the hover from the tile and drives the layer
+   the tile cannot otherwise reach.
 
-   No collision with the overlay: the state layer owns the <li>'s ::after and
-   the overlay is the NAME's ::after — two elements, two pseudo-elements. */
+   Not the hand-rolled hover `npm run vibe` rejects: that rule fires on a
+   :hover block setting a background in place of the layer, and these set the
+   layer's own documented opacity tokens on the layer's own pseudo-element. An
+   earlier version of this DID swap a background, and the check caught it.
+
+   On the stage rather than the <li>, because the <li>'s box includes the
+   caption and a tint reaching the label is what put this on the card
+   instead. --flush too: no border of its own for the layer to bleed into. And
+   no collision with the click overlay — that is the NAME's ::after, this is
+   the STAGE's. */
+.pg-gallery-item:has(.pg-gallery-name:hover) .pg-gallery-stage::after {
+  opacity: var(--rata-state-hover-opacity);
+}
+
+.pg-gallery-item:has(.pg-gallery-name:active) .pg-gallery-stage::after {
+  opacity: var(--rata-state-press-opacity);
+}
 
 /* The same bargain .pg-example-stage makes — bg.subtle is documented as "a
    quiet section band inside a surface", and it has its own tone (97/15) so it
