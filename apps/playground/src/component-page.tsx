@@ -2604,6 +2604,13 @@ export function ComponentPageByName({
 
 /** The index page: every component, its family, and where each artifact stands. */
 export function ComponentIndex({ onOpen }: { onOpen: (name: string) => void }) {
+  // Families come from the contracts rather than a list here, so adding one to
+  // the registry adds its tab without anybody remembering to.
+  const families = [...new Set(contracts.map((c) => c.family))].sort();
+  const [family, setFamily] = useState<string>(ALL);
+
+  const shown = family === ALL ? contracts : contracts.filter((c) => c.family === family);
+
   return (
     <section className="pg-section">
       <h2>Components</h2>
@@ -2611,39 +2618,67 @@ export function ComponentIndex({ onOpen }: { onOpen: (name: string) => void }) {
         Every component in the registry, each shown running rather than described. Open one for its
         contract — what each prop is for, what it conflicts with, and the token recipe behind it.
       </p>
-      <ul className="pg-gallery">
-        {contracts.map((contract) => (
-          <li key={contract.name} className="pg-gallery-item">
-            {/* INERT, which is the part that makes a clickable tile honest.
-                These specimens are live components with real controls in them
-                — buttons, tabs, a switch. Covering the tile with a click
-                target would leave those controls unreachable by pointer but
-                still in the tab order, so a keyboard could focus and press
-                twenty-eight tiles' worth of controls a mouse cannot touch.
-                `inert` removes the subtree from the tab order, from pointer
-                interaction and from the accessibility tree at once: the
-                thumbnail becomes a picture of the component, which is all a
-                gallery needs it to be. The working copy is on the component's
-                own page. */}
-            <div
-              className="pg-gallery-stage rata-state-layer rata-state-layer--flush"
-              inert
-            >
-              <ComponentThumbnail name={contract.name} />
-            </div>
-            {/* The name and nothing else. Family and the three artifact
-                states live on the component's own page, which is where
-                there is room to label them — a tile is for recognising the
-                component, and four pieces of metadata under each one is
-                what a gallery of 28 does not need. No wrapper either: the
-                <li> is already the column that spaces these two apart. */}
-            <button type="button" className="pg-gallery-name" onClick={() => onOpen(contract.name)}>
-              {contract.title}
-            </button>
-          </li>
-        ))}
-      </ul>
+      <Tabs
+        label="Component families"
+        value={family}
+        onValueChange={setFamily}
+        items={[ALL, ...families].map((value) => ({
+          value,
+          label: value === ALL ? "All" : value.charAt(0).toUpperCase() + value.slice(1),
+          // Only the OPEN panel renders its tiles. Tabs keeps every panel
+          // mounted on purpose — its contract says unmounting would throw away
+          // whatever state a panel held, a half-filled form or a scroll
+          // position. A gallery panel holds none: the tiles are inert, which
+          // is the whole premise of that decision absent here. Rendering all
+          // nine would mount sixty specimens to show thirty, since every
+          // component appears under All and again under its family.
+          content: value === family ? <Gallery contracts={shown} onOpen={onOpen} /> : null,
+        }))}
+      />
     </section>
+  );
+}
+
+const ALL = "all";
+
+/** The grid itself, so the panel content is one thing and the tabs another. */
+function Gallery({
+  contracts: shownContracts,
+  onOpen,
+}: {
+  contracts: Contract[];
+  onOpen: (name: string) => void;
+}) {
+  return (
+    <ul className="pg-gallery">
+      {shownContracts.map((contract) => (
+        <li key={contract.name} className="pg-gallery-item">
+          {/* INERT, which is the part that makes a clickable tile honest.
+              These specimens are live components with real controls in them —
+              buttons, tabs, a switch. Covering the tile with a click target
+              would leave those controls unreachable by pointer but still in
+              the tab order, so a keyboard could focus and press a page's worth
+              of controls a mouse cannot touch. `inert` removes the subtree
+              from the tab order, from pointer interaction and from the
+              accessibility tree at once: the thumbnail becomes a picture of
+              the component. The working copy is on the component's own
+              page. */}
+          <div
+            className="pg-gallery-stage rata-state-layer rata-state-layer--flush"
+            inert
+          >
+            <ComponentThumbnail name={contract.name} status={contract.status.react?.state} />
+          </div>
+          {/* The name and nothing else. Family and the three artifact states
+              live on the component's own page, which is where there is room to
+              label them. No wrapper either: the <li> is already the column
+              that spaces these two apart. */}
+          <button type="button" className="pg-gallery-name" onClick={() => onOpen(contract.name)}>
+            {contract.title}
+          </button>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -2685,16 +2720,29 @@ const THUMBNAILS: Record<string, () => ReactNode> = {
  * `visually-hidden` is invisible by definition. Saying so is more use than an
  * empty box.
  */
-function ComponentThumbnail({ name }: { name: string }) {
+function ComponentThumbnail({ name, status }: { name: string; status?: string }) {
   const override = THUMBNAILS[name];
   if (override) return <>{override()}</>;
 
   const cases = EXAMPLES[name];
   const first = cases ? Object.values(cases)[0] : undefined;
   if (!first) {
+    // Two different absences, and saying the wrong one is worse than saying
+    // nothing. `future` means the contract is approved and the code is not
+    // written; the other case is a component with no renderable form at all —
+    // state-layer is a class others compose, visually-hidden is invisible by
+    // definition. Before this told both of them they had no visible form.
     return (
       <p className="pg-gallery-empty">
-        Nothing to show running — <code>{name}</code> has no visible form of its own.
+        {status === "future" ? (
+          <>
+            Not built yet — its page is the approved spec, with no code behind it.
+          </>
+        ) : (
+          <>
+            Nothing to show running — <code>{name}</code> has no visible form of its own.
+          </>
+        )}
       </p>
     );
   }
