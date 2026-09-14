@@ -49,14 +49,26 @@ cwd is *already* the repo root, so `cd ../..` walks out of the checkout
 `Could not read package.json: ENOENT /package.json`. The first failure
 made it look like a cwd problem. It was never a cwd problem.
 
-### `outputDirectory` is the one thing the Root Directory does move
+### `outputDirectory` is relative to the repo root here, not the Root Directory
 
-It is resolved relative to the Root Directory, so `dist` means
-`apps/playground/dist`. This is the field to change if Root Directory is
-ever cleared to the repo root — it would then need to be
-`apps/playground/dist`. The build script itself needs no change either
-way, since it locates the repo root from its own path rather than
-trusting the cwd.
+The same fact again, and it caught one more deployment: because Vercel
+never changed directory, the output path is resolved from the repo root
+too. So it is `apps/playground/dist`, not `dist`.
+
+That build otherwise succeeded — Vite transformed 1,924 modules and
+wrote the files — and failed only at the last step:
+
+```
+Error: No Output Directory named "dist" found after the Build completed.
+```
+
+Vercel was looking at `/vercel/path0/dist`. Vite had written
+`/vercel/path0/apps/playground/dist`.
+
+The consequence worth keeping: with this Root Directory, **nothing in
+`vercel.json` is relative to it.** Not the build command's cwd, not the
+output path. The setting's only observable effect is the
+`npm_config_workspace` it puts in the environment.
 
 ### The other dashboard fields
 
@@ -75,7 +87,7 @@ a failure.
 |---|---|
 | `buildCommand` | `sh scripts/vercel-build.sh`, which clears npm's workspace scoping and runs the root `build:playground` — `npm run build && npm run build -w playground`, the same pair CI runs. See above for why it cannot just be that command. |
 | `installCommand` | `npm ci`, matching CI. `npm install` would be free to resolve a different tree than the lockfile, which is the whole point of having one. |
-| `outputDirectory` | `dist`, resolved relative to the Root Directory, so `apps/playground/dist` — where Vite puts it. |
+| `outputDirectory` | `apps/playground/dist`. Resolved from the repo ROOT, not the Root Directory — see above; this cost a deployment on its own. |
 | `framework: null` | Says "Other", so nothing substitutes its own defaults for the commands above. The project carries a Vite preset and this file wins anyway, but stating it means that stays true if the preset is ever cleared. |
 | `rewrites` | **The one that breaks if you remove it.** See below. |
 | `headers` | See below. |
