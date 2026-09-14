@@ -19,16 +19,23 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Button](button.md) | `button` | buttons | latest / latest | documented | free |
 | [Button Group](button-group.md) | `button-group` | buttons | latest / latest | documented | free |
 | [Checkbox](checkbox.md) | `checkbox` | inputs | latest / latest | documented | free |
-| [Dialog](dialog.md) | `dialog` | overlays | future / future | spec | free |
+| [Dialog](dialog.md) | `dialog` | overlays | latest / latest | documented | free |
 | [Icon](icon.md) | `icon` | content | latest / latest | documented | free |
-| [Menu](menu.md) | `menu` | overlays | future / future | spec | free |
-| [Notice](notice.md) | `notice` | feedback | future / future | spec | free |
+| [Menu](menu.md) | `menu` | overlays | latest / latest | documented | free |
+| [MenuItem](menu-item.md) | `menu-item` | overlays | latest / latest | documented | free |
+| [MobileNav](mobile-nav.md) | `mobile-nav` | navigation | latest / latest | documented | free |
+| [Notice](notice.md) | `notice` | feedback | latest / latest | documented | free |
 | [Radio](radio.md) | `radio` | inputs | latest / latest | documented | free |
 | [Radio Group](radio-group.md) | `radio-group` | inputs | latest / latest | documented | free |
+| [Search](search.md) | `search` | inputs | latest / latest | documented | free |
+| [SegmentedControl](segmented-control.md) | `segmented-control` | inputs | latest / latest | documented | free |
+| [SideNav](side-nav.md) | `side-nav` | navigation | latest / latest | documented | free |
 | [Loading: Spinner](spinner.md) | `spinner` | loading | latest / latest | documented | free |
 | [State layer](state-layer.md) | `state-layer` | foundations | latest / na | css-only | free |
 | [Switch](switch.md) | `switch` | inputs | latest / latest | documented | free |
+| [Tabs](tabs.md) | `tabs` | navigation | latest / latest | documented | free |
 | [Input: Text field](text-field.md) | `text-field` | inputs | latest / latest | documented | free |
 | [Toggle Button](toggle-button.md) | `toggle-button` | buttons | latest / latest | documented | free |
 | [Toggle Button Group](toggle-button-group.md) | `toggle-button-group` | buttons | latest / latest | documented | free |
+| [TopNav](top-nav.md) | `top-nav` | navigation | latest / latest | documented | free |
 | [Visually hidden](visually-hidden.md) | `visually-hidden` | foundations | latest / na | css-only | free |

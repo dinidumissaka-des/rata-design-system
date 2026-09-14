@@ -264,6 +264,13 @@ export function expandColorScale(config) {
   // boundaries stay perceivable for people who opted in.
   const borderAlpha = isHigh ? 0.2 : 0.1;
 
+  // The modal scrim. Stronger in the dark scheme for a reason that is easy to
+  // miss: at the same alpha a dark scrim over an already-dark canvas barely
+  // separates the two, so the modal stops reading as raised. High contrast
+  // takes both up, on the same logic as borderAlpha above — the boundary
+  // between "in the dialog" and "not in the dialog" is structural.
+  const scrimAlpha = isHigh ? [0.7, 0.85] : [0.5, 0.7];
+
   // Emphasized borders outline form controls — a 1.4.11 boundary. High
   // contrast starts mid-scale (guaranteeing a stronger result); standard
   // starts at 70/30 and walks only as far as it must.
@@ -325,7 +332,12 @@ export function expandColorScale(config) {
     "theme.bg.surface": [NL[99], ND[10]],
     "theme.bg.canvas": [NL[95], ND[5]],
     // A quiet band inside a surface takes the canvas tone.
-    "theme.bg.subtle": [NL[95], ND[10]],
+    // 97/15, not 95/10 — those were bg.canvas and bg.surface exactly, so this
+    // step resolved to a duplicate of a neighbour in BOTH schemes and could
+    // not do the job its contract describes. One step below surface in each:
+    // slightly darker in light, slightly lighter in dark, which is the
+    // direction bg.muted already goes.
+    "theme.bg.subtle": [NL[97], ND[15]],
     // The most recessed step — tracks, wells, skeletons.
     "theme.bg.muted": [NL[90], ND[20]],
 
@@ -349,5 +361,13 @@ export function expandColorScale(config) {
       hexWithAlpha(ND[95], borderAlpha),
     ],
     "theme.border.strong": borderStrong,
+
+    // Tone 10 rather than 0: pure black is hue-less, and taking the neutral's
+    // own tone means `ink` and `pine` dim with their own neutrals instead of
+    // every brand sharing one grey. The same tone the light hairline uses.
+    "theme.scrim": [
+      hexWithAlpha(NL[10], scrimAlpha[0]),
+      hexWithAlpha(ND[10], scrimAlpha[1]),
+    ],
   };
 }

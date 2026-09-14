@@ -5,19 +5,371 @@
 
 Modal dialog with focus trapping, scroll locking, and dismiss behavior.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Dialog } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `dialog` |
 | Family | overlays |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
-| Depends on | — |
+| Status (css / react / figma) | latest / latest / future |
+| Depends on | `state-layer`, `icon` |
+
+## Behavior
+
+A native `<dialog>` opened with `showModal()`. The browser supplies a real focus trap, `inert` on everything behind it, the top layer, `::backdrop`, Escape-to-close and focus returned to whatever opened it. A hand-written focus trap is the most bug-prone component in any design system, and the platform's is correct by construction — including for the cases hand-rolled ones miss, such as a screen reader's own navigation and the browser's find-in-page.
+
+- **`showModal()`, never the `open` attribute** — Rendering `<dialog open>` shows the dialog NON-modally: no focus trap, no backdrop, and a live page behind it. There is no attribute for the modal state, only the method, which is why `open` is applied in an effect. Getting this wrong is the easiest way to ship a "modal" that is not one, and it looks correct on screen.
+- **`title` is required rather than optional** — A modal with no accessible name is announced as "dialog" and nothing else. There is no sensible default and no case where omitting it is right, so the type refuses it instead of the contract asking nicely.
+- **The title is a real `<h2>`, unlike Notice's** — A modal is genuinely its own context — everything behind it is inert — so the outline inside it starts fresh and the title is the top of it. A notice sits inside the page's existing outline and cannot know what level it is at, which is why that one is a styled paragraph.
+- **Escape is always prevented, then reported** — The platform would close the dialog itself, leaving `open` still saying it is showing. Preventing the default and reporting through `onClose` keeps React the single source of truth for whether it is open.
+- **Initial focus is a ref, because React's `autoFocus` cannot work here** — React implements `autoFocus` by calling `.focus()` during commit rather than by emitting the HTML attribute, so `showModal()` — which runs afterwards, in an effect — never sees an `[autofocus]` element and applies its own default, undoing it. `initialFocus` is applied after `showModal()` and therefore wins.
+- **The scroll lock counts holders rather than saving and restoring** — Save-and-restore is wrong the moment two dialogs overlap: the second captures `hidden` as the value to put back, so closing it leaves the page locked with nothing open. A counter has no stale state — the property is set while anything holds the lock and removed when the last holder lets go.
+- **The modal motion band was wrong, and the tempo behind it was too slow** — `motion.modal.duration` resolved to `motion.duration.slow`, which this system's own motion contract documents as “Continuous animation” — the spinner band. That was the category error; it is `medium-max` now, the slowest step of the entrance/exit band, which is where the expander's config names “(dialog, drawer)”. Fixing the band alone still left 545ms, because the medium band itself was too slow: Astryx's 175/410/975 tempo meant a menu took 410ms to appear. The seed came down to 130/210/700, so a dialog now enters in 280ms and a menu in 210ms. The bands kept their meanings and no role had to be remapped to one it does not belong to.
+- **The page's scroll is locked with the scrollbar's width held open** — Hiding the overflow takes the scrollbar away and the page reflows into the space it occupied, so everything shifts sideways as the dialog opens and jumps back as it closes — more noticeable than the scrolling being prevented. The width is measured at lock time rather than tokenised, because it is whatever the browser and the reader's settings make it, and it is zero for overlay scrollbars.
+- **A native close is reported rather than ignored** — `<form method="dialog">` is the documented HTML way to close a dialog, and the platform can close one for its own reasons too. Neither goes through `onClose`, and the effect that drives the dialog is keyed on `open`, so it never re-runs to notice — `open` went on claiming the dialog was showing, and the scroll lock stayed on the body with nothing open, leaving the page unable to scroll at all. The native `close` event now reports `external`, and only while React still believes the dialog is open, so the component's own `close()` is not mistaken for someone else's.
 
 ## Props
 
-_None documented yet._
+Extends `Omit<`.
+
+| Prop | Type | Default | Summary |
+|---|---|---|---|
+| `title` | `ReactNode` | — | The dialog's name. Required. |
+| `children` | `ReactNode` | — | The dialog's content. |
+| `open` | `boolean` | — | Whether the dialog is showing. Always controlled. |
+| `onClose` | `(reason: DialogCloseReason) => void` | — | Called when the dialog asks to close, with why. |
+| `description?` | `ReactNode` | — | A line under the title, wired as the dialog's description. |
+| `footer?` | `ReactNode` | — | The actions. |
+| `size?` | `DialogSize` | `"md"` | How wide it is allowed to get. |
+| `dismissible?` | `boolean` | `true` | Whether the reader can close it themselves. |
+| `dismissLabel?` | `string` | `"Close"` | Accessible name for the close button. |
+| `role?` | `DialogRole` | `"dialog"` | ARIA's kind of dialog. |
+| `initialFocus?` | `RefObject<HTMLElement \| null>` | — | What to focus when it opens. Defaults to the platform's choice. |
+| `className?` | `string` | — | Extra classes on the dialog, for placement — not for restyling it. |
+
+### `title`
+
+```ts
+title: ReactNode
+```
+
+The dialog's name. Required.
+
+**Use when**
+
+- A noun phrase naming what this is about: “Delete project”, not “Are you sure?”
+
+**Don't use for**
+
+- A question. The title is the name, and “Are you sure?” names nothing — put the question in the body.
+- Leaving it out. It is required, and the type will not let you.
+
+**Accessibility** Rendered as an `<h2>` and wired with `aria-labelledby`, so the dialog announces with this name when it opens. A real heading, because a modal is its own outline — everything behind it is inert.
+
+### `children`
+
+```ts
+children: ReactNode
+```
+
+The dialog's content.
+
+**Use when**
+
+- What the reader needs in order to answer the title. It scrolls on its own if it is tall.
+
+**Don't use for**
+
+- Another dialog. Two modals deep, the reader has lost track of what the first one asked.
+
+**Accessibility** Scrolls in its own region so the title stays put and the footer actions stay reachable — a dialog taller than the viewport otherwise puts its buttons off-screen.
+
+### `open`
+
+```ts
+open: boolean
+```
+
+Whether the dialog is showing. Always controlled.
+
+Source doc: Whether the dialog is showing. Always controlled — `showModal()` has no prop.
+
+**Use when**
+
+- Always. There is no uncontrolled mode, because `showModal()` is a method rather than an attribute and the component has to drive it.
+
+**Don't use for**
+
+- Expecting the dialog to close itself. Every dismissal arrives through `onClose`; setting this to false is what actually closes it.
+
+**Accessibility** Drives `showModal()` and `close()`. Nothing else makes the dialog modal — see the behaviour note.
+
+### `onClose`
+
+```ts
+onClose: (reason: DialogCloseReason) => void
+```
+
+Called when the dialog asks to close, with why.
+
+Source doc: Called when the dialog asks to close. Set `open` to false in it.
+
+**Use when**
+
+- Setting `open` to false.
+- Branching on the reason: `escape`, `close-button` or `backdrop` — a form might confirm on a backdrop click but not on the close button.
+
+**Don't use for**
+
+- Ignoring it. Nothing closes the dialog on its own, so an empty handler makes a dialog nobody can leave.
+
+**Accessibility** Focus returns to whatever opened the dialog automatically, because the platform restores it — you do not need to do it yourself.
+
+### `description`
+
+```ts
+description?: ReactNode
+```
+
+A line under the title, wired as the dialog's description.
+
+**Use when**
+
+- A consequence worth hearing with the name: “Everything in it goes too.”
+
+**Don't use for**
+
+- The whole body. It is announced along with the title, so a paragraph here is read before the reader has asked for it.
+
+**Accessibility** Becomes `aria-describedby`. Omitted, there is no dangling reference — a describedby pointing at nothing is silently dropped by some screen readers and read as empty by others.
+
+### `footer`
+
+```ts
+footer?: ReactNode
+```
+
+The actions.
+
+Source doc: The actions. Reads after the body it acts on.
+
+**Use when**
+
+- One or two buttons, the primary one last.
+- The only way out when `dismissible` is false.
+
+**Don't use for**
+
+- Putting the close control here. That is what `dismissible` renders, placed and named for you.
+
+**Accessibility** Rendered after the body in DOM order, so the actions are reached after the content they act on.
+
+### `size`
+
+```ts
+size?: DialogSize = "md"
+```
+
+How wide it is allowed to get.
+
+**Use when**
+
+- `sm` for a confirm — one question and two buttons.
+- `md` for a short form. The default.
+- `lg` for content that genuinely needs the room, such as a table.
+
+**Don't use for**
+
+- `lg` for a confirmation. A wide dialog with one sentence in it reads as a mistake, and the buttons end up a long way from the text.
+
+**Accessibility** Width only. Every size shrinks to fit a narrow viewport rather than overflowing it.
+
+### `dismissible`
+
+```ts
+dismissible?: boolean = true
+```
+
+Whether the reader can close it themselves.
+
+**Use when**
+
+- `true` — the default — for everything except the case below.
+- `false` for a blocking error where dismissing would lose work, or a decision that genuinely must be made now.
+
+**Don't use for**
+
+- A dialog with no footer action. Escape and the close button are the reader's escape hatches; removing both without giving them another traps them, which is the one thing this prop can do wrong.
+- `false` to stop people skipping something. A dialog that cannot be dismissed is a dialog people close by leaving the page.
+
+**Accessibility** `false` removes the close button and prevents the `cancel` event, so Escape does nothing. The footer then MUST contain a labelled way out.
+
+### `dismissLabel`
+
+```ts
+dismissLabel?: string = "Close"
+```
+
+Accessible name for the close button.
+
+**Use when**
+
+- Translating it, or naming what is being closed when the context needs it.
+
+**Don't use for**
+
+- An empty string. The button is icon-only, so this is the only name it has.
+
+**Accessibility** Becomes the button's `aria-label`. Without it the control announces as an unnamed button, a 4.1.2 failure.
+
+### `role`
+
+```ts
+role?: DialogRole = "dialog"
+```
+
+ARIA's kind of dialog.
+
+**Use when**
+
+- `alertdialog` when the dialog's whole content is a message needing a response — a destructive confirmation, a blocking error.
+- `dialog`, the default, for anything with work in it: a form, a panel, a picker.
+
+**Don't use for**
+
+- `alertdialog` for a form. It is announced more insistently and its description is read with its name, which is wrong for something the reader has to fill in and right for something they have to answer.
+- Reaching for it to make a dialog feel important. The role describes what the dialog is, not how much it matters.
+
+**Accessibility** A native `<dialog>` is already `role="dialog"`; this only ever narrows it to `alertdialog`, which the element cannot be on its own. Under `alertdialog` a screen reader reads `description` along with `title` rather than waiting to be asked, which is why the destructive confirmation below sets both.
+
+### `initialFocus`
+
+```ts
+initialFocus?: RefObject<HTMLElement | null>
+```
+
+What to focus when it opens. Defaults to the platform's choice.
+
+**Use when**
+
+- A destructive confirm, pointed at Cancel — so the dangerous button is not one Enter away.
+- A form, pointed at the first field.
+
+**Don't use for**
+
+- React's `autoFocus` instead. It does not work here: React calls `.focus()` during commit rather than emitting the attribute, so `showModal()` runs afterwards and applies its own default, undoing it.
+
+**Accessibility** Applied after `showModal()`, which is the only order that works. Left out, focus lands on the first focusable thing inside — usually the close button.
+
+### `className`
+
+```ts
+className?: string
+```
+
+Extra classes on the dialog, for placement — not for restyling it.
+
+**Use when**
+
+- Rarely. `size` is the intended way to change its shape.
+
+**Don't use for**
+
+- Overriding the backdrop or the position. Both come from `dialog.css`, and a competing rule is how a modal ends up unreachable on one page.
+
+## Use cases
+
+### A destructive confirmation
+
+The commonest modal: one question, two ways out, and the dangerous one must not be the easy one.
+
+```tsx
+const cancelRef = useRef<HTMLButtonElement>(null);
+
+<Dialog
+  open={confirming}
+  onClose={() => setConfirming(false)}
+  role="alertdialog"
+  title="Delete project"
+  description="Everything in it goes too."
+  size="sm"
+  initialFocus={cancelRef}
+  footer={
+    <>
+      <Button ref={cancelRef} variant="secondary" onClick={() => setConfirming(false)}>Cancel</Button>
+      <Button variant="destructive" onClick={remove}>Delete</Button>
+    </>
+  }
+>
+  This cannot be undone.
+</Dialog>
+```
+
+`initialFocus` on Cancel is the point: without it focus lands on the first focusable thing, and a reader who opens this and presses Enter should not have deleted anything. `sm` keeps the buttons near the sentence. `alertdialog` is the role for this: the dialog's whole content is a question the reader has to answer, so the description is read along with the name instead of waiting to be asked.
+
+### A blocking error, where dismissing would lose work
+
+Rare, and the only kind of dialog that should refuse to close.
+
+```tsx
+<Dialog
+  open={disconnected}
+  onClose={() => {}}
+  dismissible={false}
+  title="Connection lost"
+  footer={<Button onClick={reconnect}>Reconnect</Button>}
+>
+  Your changes are saved locally and will sync when you reconnect.
+</Dialog>
+```
+
+The footer action is not optional here — with no close button and Escape blocked, it is the only way out, and a dialog like this without one traps the reader.
+
+### Don't: a dialog opened from inside a dialog
+
+Never — this is the shape to recognise and avoid.
+
+```tsx
+{/* Don't: by the time the second one is open, the reader has lost
+    track of what the first one asked. */}
+<Dialog open={editing} onClose={close} title="Edit project">
+  <Button onClick={() => setConfirming(true)}>Delete project</Button>
+  <Dialog open={confirming} onClose={closeConfirm} title="Delete project">
+    This cannot be undone.
+  </Dialog>
+</Dialog>
+```
+
+Don't. Close the first, then ask — or ask inline in the dialog already open. The scroll lock and the focus trap both cope with stacking, so nothing breaks; it is the reader who loses the thread.
+
+## Real usage in this repo
+
+```tsx
+<Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        title={title}
+        description={description}
+        size={size}
+        dismissible={dismissible}
+        initialFocus={cancelRef}
+        footer={
+          <>
+            <Button ref={cancelRef} variant="secondary" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant={destructive ? "destructive" : "primary"} onClick={() => setOpen(false)}>
+              {destructive ? "Delete" : "Save"}
+            </Button>
+          </>
+        }
+      >
+        This cannot be undone.
+      </Dialog>
+```
 
 ## Token recipe
 
@@ -34,6 +386,54 @@ A modal surface that takes over the screen.
 | box-shadow | `theme.elevation.modal` |
 | title font-size | `type.heading.size` |
 | title font-weight | `type.heading.weight` |
+| title line-height | `type.heading.line-height` |
+| description color | `theme.fg.secondary` |
 | gap between title, body, and footer | `space.stack.md` |
-| enter transition | `motion.modal.duration with motion.easing.enter` |
+| gap between title and description | `space.stack.2xs` |
+| enter transition | `motion.modal.duration with motion.easing.enter, fading and rising` |
 | exit transition | `motion.modal.duration with motion.easing.exit` |
+| enter/exit rise distance | `space.2` |
+| exit pointer-events | `none while closing — the top layer is held for the exit, so the backdrop would go on catching clicks after the reader closed it` |
+
+### backdrop
+
+The wash over the inert page behind it. Its own token, added for this component: nothing else in the system dims the page, and a non-modal overlay must not. It transitions `overlay` alongside the dialog, which is what keeps the scrim on screen for the length of the exit rather than dropping it the instant the dialog starts closing.
+
+| Property | Token |
+|---|---|
+| background | `theme.scrim` |
+| fade | `motion.modal.duration with motion.easing.enter` |
+
+### size
+
+Three widths, derived from the control scale rather than stated: a dialog is measured in controls, and inventing a size.dialog.* family for three numbers would be a scale with one consumer. Flagged as a known gap if a fourth width ever appears.
+
+| Property | Token |
+|---|---|
+| sm max-inline-size | `size.control.lg multiplied by 10, or the viewport less its inset — whichever is smaller` |
+| md max-inline-size | `size.control.lg multiplied by 14, or the viewport less its inset — whichever is smaller` |
+| lg max-inline-size | `size.control.lg multiplied by 20, or the viewport less its inset — whichever is smaller` |
+| inline and block inset from the viewport | `space.padding.lg` |
+
+### footer
+
+The actions, reading after the body they act on.
+
+| Property | Token |
+|---|---|
+| gap between actions | `space.gap.sm` |
+| margin above | `space.stack.md` |
+
+### dismiss
+
+The close control. Same construction as Notice's: currentColor on a transparent background, so it cannot clash with the surface it sits on.
+
+| Property | Token |
+|---|---|
+| color | `currentColor — inherited from the dialog's own foreground` |
+| glyph size | `size.icon.text` |
+| target inline-size / block-size | `size.control.sm` |
+| border-radius | `radius.inner` |
+| hover / press | `compose the .rata-state-layer class` |
+| focus ring | `theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible` |
+| block alignment | `centred on the title's first line, from type.heading.size and type.heading.line-height` |

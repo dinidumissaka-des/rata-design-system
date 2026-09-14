@@ -233,6 +233,46 @@ export function evaluateSource(source, model, { filename = "input" } = {}) {
   }
 
   // A focusable control must draw a focus ring. Hover rules alone are not enough:
+  // An overlay whose open/shown state carries layout as well as `display`.
+  //
+  // `display` is the one property a top-layer overlay transitions with
+  // `allow-discrete`, so on close it is HELD at its open value for the length
+  // of the exit. Everything else scoped to the same state selector reverts the
+  // instant the attribute or pseudo-class goes — and a property that is not
+  // animatable cannot ease, it snaps. So a `flex-direction: column` sitting
+  // beside `display: flex` on `[open]` lays the children out in a row for the
+  // whole closing animation, which reads as the layout breaking rather than as
+  // the overlay leaving.
+  //
+  // This is a real bug that shipped in this repo's Dialog. The rule is narrow
+  // on purpose: only properties that restructure layout, and only on a state
+  // selector that an overlay actually toggles.
+  const DISCRETE_STATE = /\[open\]|:popover-open/;
+  const SNAPS_BACK = new Set([
+    "flex-direction",
+    "flex-flow",
+    "flex-wrap",
+    "grid-auto-flow",
+    "grid-template-columns",
+    "grid-template-rows",
+    "position",
+    "float",
+  ]);
+  for (const block of blocks) {
+    if (!DISCRETE_STATE.test(block.selector)) continue;
+    for (const { prop: property } of block.declarations) {
+      if (!SNAPS_BACK.has(property)) continue;
+      add(
+        "state-scoped-layout",
+        "warn",
+        `\`${property}\` on \`${block.selector}\` reverts the moment the state does, while ` +
+          `\`display\` is held by allow-discrete — so it snaps and the layout breaks for the ` +
+          `length of the exit. Put it on the base rule; leave only \`display\` on the state.`,
+        block.index
+      );
+    }
+  }
+
   // a composable overlay primitive (.rata-state-layer) has them and is never focused.
   // `user-select` is a CSS property, not a <select> element, and \bselect\b
   // matches inside it because the hyphen is a word boundary — which demanded a

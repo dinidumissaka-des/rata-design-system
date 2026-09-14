@@ -1,0 +1,130 @@
+/* Tabs — several panels, one shown at a time.
+
+   An edge with a marker on it, and only that. There was a segmented
+   appearance for a while, added when that look had no component of its own;
+   .rata-segmented-control is that component now, and two things able to draw
+   the same bar made the pair hard to tell apart in exactly the place the
+   difference matters. A tablist reveals a region, a radiogroup answers a
+   question, and looking alike is how one ends up standing in for the other. */
+.rata-tabs {
+  display: flex;
+  font-family: var(--rata-font-family-sans);
+}
+
+.rata-tabs--horizontal {
+  flex-direction: column;
+}
+
+.rata-tabs--vertical {
+  flex-direction: row;
+  gap: var(--rata-space-gap-lg);
+}
+
+.rata-tabs-list {
+  display: flex;
+  gap: var(--rata-space-gap-xs);
+}
+
+/* The rule the markers sit on, which is what makes a row of tabs read as an
+   edge rather than a row of buttons. */
+.rata-tabs--horizontal > .rata-tabs-list {
+  border-block-end: var(--rata-border-default) solid var(--rata-theme-border-default);
+}
+
+.rata-tabs--vertical > .rata-tabs-list {
+  flex-direction: column;
+  flex-shrink: 0;
+  border-inline-end: var(--rata-border-default) solid var(--rata-theme-border-default);
+}
+
+/* The resting tone is the secondary text colour, so the selected tab reads as
+   the emphasised one rather than the others reading as dimmed. */
+.rata-tabs-tab {
+  box-sizing: border-box;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rata-space-gap-sm);
+  block-size: var(--rata-size-control-md);
+  padding-inline: var(--rata-space-control-padding-inline-sm);
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-element);
+  background: transparent;
+  color: var(--rata-theme-fg-secondary);
+  font-family: inherit;
+  font-size: var(--rata-type-control-size-sm);
+  font-weight: var(--rata-type-control-weight);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.rata-tabs--vertical .rata-tabs-tab {
+  justify-content: flex-start;
+}
+
+.rata-tabs-tab:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style)
+    var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+.rata-tabs-tab[aria-disabled="true"] {
+  opacity: var(--rata-state-disabled-opacity);
+  cursor: default;
+}
+
+/* The selected tab, marked twice over: this bar is the visual cue and
+   aria-selected in the markup is the announced one, so the state is never
+   carried by colour alone. It straddles the list's rule so the tab reads as
+   joined to its panel. */
+.rata-tabs-tab[aria-selected="true"] {
+  color: var(--rata-theme-fg-primary);
+}
+
+/* ::before, NOT ::after — and this is load-bearing. The tab composes
+   .rata-state-layer, which owns ::after and parks it at `opacity: 0` until
+   hover. An element has only one ::after, so a marker drawn there inherits
+   that zero and is invisible: the selected tab had no visible indicator at
+   all. Any component composing the state layer has to leave ::after alone.
+   top-nav and side-nav already do. */
+.rata-tabs-tab[aria-selected="true"]::before {
+  content: "";
+  position: absolute;
+  background: var(--rata-theme-accent-role-bg);
+}
+
+.rata-tabs--horizontal .rata-tabs-tab[aria-selected="true"]::before {
+  inset-inline: var(--rata-space-control-padding-inline-sm);
+  /* On the list's rule, not the tab's own edge — the offset is the rule's own
+     width, so the marker covers it rather than sitting above it. */
+  inset-block-end: calc(-1 * var(--rata-border-default));
+  block-size: var(--rata-border-2);
+  border-start-start-radius: var(--rata-radius-inner);
+  border-start-end-radius: var(--rata-radius-inner);
+}
+
+.rata-tabs--vertical .rata-tabs-tab[aria-selected="true"]::before {
+  inset-block: var(--rata-space-1);
+  inset-inline-end: calc(-1 * var(--rata-border-default));
+  inline-size: var(--rata-border-2);
+  border-radius: var(--rata-radius-pill);
+}
+
+/* The panel is in the tab order even with nothing focusable inside it, so it
+   gets a focus ring like anything else that can be focused. Without the
+   tabindex, Tab from the tablist would skip a panel of plain text entirely. */
+.rata-tabs-panel {
+  padding-block-start: var(--rata-space-padding-md);
+}
+
+.rata-tabs--vertical > .rata-tabs-panel {
+  flex: 1;
+  min-inline-size: 0;
+  padding-block-start: var(--rata-space-0);
+}
+
+.rata-tabs-panel:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style)
+    var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}

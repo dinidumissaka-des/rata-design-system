@@ -27,8 +27,8 @@ describe("RadioGroup", () => {
 
   test("only the chosen option is the tab stop", () => {
     group({ defaultValue: "annual" });
-    const [m, a, l] = screen.getAllByRole("radio");
-    expect([m.tabIndex, a.tabIndex, l.tabIndex]).toEqual([-1, 0, -1]);
+    const [m, a, l] = screen.getAllByRole("radio") as HTMLElement[];
+    expect([m!.tabIndex, a!.tabIndex, l!.tabIndex]).toEqual([-1, 0, -1]);
   });
 
   test("an unanswered group is entered at its first enabled option", () => {
@@ -38,16 +38,16 @@ describe("RadioGroup", () => {
         <Radio value="b" label="B" />
       </RadioGroup>
     );
-    const [a, b] = screen.getAllByRole("radio");
-    expect(a.tabIndex).toBe(-1);
-    expect(b.tabIndex).toBe(0);
+    const [a, b] = screen.getAllByRole("radio") as HTMLElement[];
+    expect(a!.tabIndex).toBe(-1);
+    expect(b!.tabIndex).toBe(0);
   });
 
   test("arrow keys move real focus and select as they move", async () => {
     const onValueChange = vi.fn();
     group({ defaultValue: "monthly", onValueChange });
-    const [m, a] = screen.getAllByRole("radio");
-    m.focus();
+    const [m, a] = screen.getAllByRole("radio") as HTMLElement[];
+    m!.focus();
     await userEvent.keyboard("{ArrowDown}");
     // The primitive reports which value should be focused; the wrapper does the
     // focusing. Only a real DOM can show that it actually happened.

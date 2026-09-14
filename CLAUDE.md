@@ -39,8 +39,10 @@ before writing a prop you haven't used in this repo before.
 
 **Component names are `kebab-case` and match the registry exactly**
 (`button`, `state-layer`, `text-field`) — check `npm run ui -- list` before
-typing one from memory, including the ones that don't exist yet
-(`card`, `table`, `dialog` is real but unbuilt — see below).
+typing one from memory. `card` and `table` are the names most often reached
+for that are not in the registry at all — see the Card note below. As of
+`dialog` shipping, no registry entry is in the `future` state; the next one
+added will be, and the contract will say so before any code exists.
 
 ## Pre-write ritual
 
@@ -65,8 +67,11 @@ Before writing any UI code in `apps/*` or adding a component under `packages/`:
    None of that is recoverable from a type signature.
 
 If the command says *"There is nothing to look up — don't invent props for
-this one"* (`dialog`, `text-field` today), that component doesn't exist yet.
-Say so and stop — don't write a plausible-looking `<Dialog>` API.
+this one"*, that component doesn't exist yet. Say so and stop — don't write a
+plausible-looking API for it. **Don't hardcode which components those are,
+here or in your head** — this paragraph named `dialog` and `text-field` long
+after both shipped, which is the same staleness the lookup commands exist to
+prevent. Ask the command.
 
 ## Adding a new component — gated build order
 
@@ -250,8 +255,9 @@ these without looking — if you can't, run the lookup commands above first:
    using React?
 2. What prop makes `Button` show a spinner and refuse clicks while staying
    focusable?
-3. Is `Dialog` implemented? What does `npm run ui -- props dialog` tell you
-   to do about it?
+3. `Dialog` is a native `<dialog>` opened with `showModal()`. Why does
+   rendering `<dialog open>` instead not give you a modal, and why doesn't
+   React's `autoFocus` work inside one?
 4. What does `Button`'s contract say you MUST pass alongside `iconOnly`, and
    which prop does `loading` conflict with?
 

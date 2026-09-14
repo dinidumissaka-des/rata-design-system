@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Button } from "@rata/react";
+import { MobileNav, Search, SegmentedControl, SideNav, TopNav } from "@rata/react";
 import { tokens } from "@rata/tokens";
 import { TokenDoc, FamilyDoc, ContrastPage, RecipeList } from "./token-docs.js";
 import { ComponentIndex, ComponentPage, contracts, contractsByName } from "./component-page.js";
 import { componentName, componentPage, hrefFor, parseLocation } from "./routing.js";
 import { AccentSwitcher, DEFAULT_ACCENT } from "./accent-switcher.js";
+import type { Scheme } from "./accent-switcher.js";
 import type { ComponentTab, Page } from "./routing.js";
 
 // One page per category, primitives and semantics merged into one flowing
@@ -357,7 +358,6 @@ export function App() {
   const [route, setRoute] = useState(() =>
     parseLocation(window.location.pathname, window.location.search)
   );
-  const [expanded, setExpanded] = useState<Set<string>>(new Set(["foundation", "components"]));
   const [search, setSearch] = useState("");
   const [inspecting, setInspecting] = useState<string | null>(null);
 
@@ -385,7 +385,14 @@ export function App() {
   }, [theme]);
 
   useEffect(() => {
-    document.documentElement.dataset.dsTheme = accent;
+    // `rataTheme`, which writes data-rata-theme — the attribute every brand
+    // stylesheet is scoped to. It read `dsTheme` until now, a survivor of the
+    // rename: that pass searched for the literal string "data-ds-theme", and
+    // the camelCase dataset key does not contain it. So the attribute being
+    // set and the attribute being matched had different names, and no brand
+    // theme applied at all — the switcher moved its own swatches (each carries
+    // the attribute itself) while the page behind them never changed.
+    document.documentElement.dataset.rataTheme = accent;
   }, [accent]);
 
   // Both the accent and the scheme are applied as attributes on <html>, which
@@ -403,19 +410,11 @@ export function App() {
     }
   }, [page, tab]);
 
-  function toggleGroup(id: string) {
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }
-
   const activeName = componentName(page);
   const activeComponent = activeName ? contractsByName.get(activeName) ?? null : null;
 
   const query = search.trim().toLowerCase();
+
   const filteredNav = query
     ? NAV.flatMap((item) => {
         if (item.children) {
@@ -428,76 +427,122 @@ export function App() {
       })
     : NAV;
 
+  /**
+   * The nav, in SideNav's shape.
+   *
+   * Each top-level group becomes a labelled section, which is what they
+   * already were — the hand-rolled version expanded and collapsed them, but a
+   * labelled section says the same thing to a screen reader without a button
+   * to press. A leaf with no children becomes a one-item unlabelled section.
+   *
+   * `onClick` is where this stopped being possible before: the rows navigate
+   * client-side, and until nav items could intercept their own click there
+   * was no way to use SideNav here without a full page load. The `href` is
+   * still real, so middle-click and copy-address still work.
+   */
+  const go = (target: Page) => (event: { preventDefault(): void }) => {
+    event.preventDefault();
+    navigate(target);
+  };
+
+  const navSections = filteredNav.map((item) =>
+    item.children
+      ? {
+          label: item.label,
+          items: item.children.map((leaf) => ({
+            label: leaf.label,
+            href: hrefFor(leaf.id),
+            current: page === leaf.id,
+            onClick: go(leaf.id),
+          })),
+        }
+      : {
+          items: [
+            {
+              label: item.label,
+              href: hrefFor(item.page!),
+              current: page === item.page,
+              onClick: go(item.page!),
+            },
+          ],
+        }
+  );
+
   return (
     <div className="pg-app">
-      <header className="pg-header">
-        <h1>Ratā</h1>
-        <div className="pg-header-tools">
-          {/* The accent seed drives every generated colour token, so it sits
-              next to the scheme toggle: both re-theme the whole page, and
-              neither belongs to any one page's content. */}
-          <AccentSwitcher value={accent} scheme={theme} onChange={setAccent} />
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-          >
-            {theme === "light" ? "Dark theme" : "Light theme"}
-          </Button>
-        </div>
-      </header>
+      {/* The playground's own chrome, built from the system it documents.
+          Every hand-rolled equivalent that used to live here — a bare input
+          with a ⌕ character for the search, buttons with a ⌄ span for the
+          nav, an h1 and a div for the header — is now the real component, so
+          a regression in any of them shows up on every page rather than
+          waiting for someone to open that component's page. */}
+      {/* No `items` and so no nav landmark: this product's navigation lives in
+          the rail, and a second, empty one in the bar would appear in a
+          landmark list promising destinations it does not have. No `label`
+          either, for the same reason — and because the rail is already called
+          "Sections", and two navigation landmarks sharing a name is the exact
+          thing TopNav's own contract warns about. */}
+      <TopNav
+        className="pg-header"
+        brand={
+          <span className="pg-brand">
+            {/* Decorative, because the wordmark beside it already names the
+                product. TopNav's contract warns that an image in this slot
+                needs its own alt text — it does, and for a mark paired with
+                the name the correct alt text is empty. Giving it "Ratā" here
+                would have a screen reader read the product twice. */}
+            <img className="pg-brand-mark" src="/rata-icon.svg" alt="" />
+            <strong className="pg-brand-name">Ratā</strong>
+          </span>
+        }
+        actions={
+          <>
+            <MobileNav
+              className="pg-drawer-trigger"
+              title="Ratā"
+              label="Sections"
+              sections={navSections}
+            />
+            {/* The accent seed drives every generated colour token, so it sits
+                next to the scheme toggle: both re-theme the whole page, and
+                neither belongs to any one page's content. */}
+            <AccentSwitcher value={accent} scheme={theme} onChange={setAccent} />
+            {/* A SegmentedControl rather than a button that toggles. The
+                button was labelled with the scheme you were NOT in — "Dark
+                theme" while the page was light — which is the classic
+                ambiguity of a toggle whose label describes its action rather
+                than its state. Two named options with one marked is a
+                question being answered, which is what this is. */}
+            <SegmentedControl
+              label="Colour scheme"
+              size="sm"
+              value={theme}
+              onValueChange={(next) => setTheme(next as Scheme)}
+              options={[
+                { value: "light", label: "Light" },
+                { value: "dark", label: "Dark" },
+              ]}
+            />
+          </>
+        }
+      />
 
       <div className="pg-layout">
-        <nav className="pg-sidebar">
-          <div className="pg-search">
-            <span className="pg-search-icon" aria-hidden="true">
-              ⌕
-            </span>
-            <input
-              type="text"
-              placeholder="Search…"
-              className="pg-search-input"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
+        <div className="pg-sidebar">
+          <Search
+            label="Search the system"
+            placeholder="Search…"
+            size="sm"
+            value={search}
+            onValueChange={setSearch}
+          />
 
-          <div className="pg-nav-list">
-            {filteredNav.map((item) => {
-              const hasChildren = !!item.children?.length;
-              const isOpen = query.length > 0 || expanded.has(item.id);
-              return (
-                <div key={item.id}>
-                  <button
-                    className={`pg-nav-item${!hasChildren && page === item.page ? " is-active" : ""}`}
-                    onClick={() => (hasChildren ? toggleGroup(item.id) : navigate(item.page!))}
-                  >
-                    <span>{item.label}</span>
-                    {hasChildren && (
-                      <span className={`pg-nav-chevron${isOpen ? " is-open" : ""}`} aria-hidden="true">
-                        ⌄
-                      </span>
-                    )}
-                  </button>
-                  {hasChildren && isOpen && (
-                    <div className="pg-nav-children">
-                      {item.children!.map((leaf) => (
-                        <button
-                          key={leaf.id}
-                          className={`pg-nav-item pg-nav-item--child${page === leaf.id ? " is-active" : ""}`}
-                          onClick={() => navigate(leaf.id)}
-                        >
-                          {leaf.label}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-            {filteredNav.length === 0 && <p className="pg-note">No matches.</p>}
-          </div>
-        </nav>
+          {navSections.length > 0 ? (
+            <SideNav label="Sections" sections={navSections} />
+          ) : (
+            <p className="pg-note">No matches.</p>
+          )}
+        </div>
 
         <main className="pg-main">
           {page === "color" && (
@@ -710,6 +755,11 @@ export function App() {
               </table>
               <div className="pg-type-sample-row">
                 <span className="pg-bar-label">type.heading</span>
+                {/* The size column the generated-scale rows above also carry.
+                    Without it the sample text on those rows and these started
+                    84px apart on the same page — the label is 140px, the value
+                    72px, and only one kind of row had both. */}
+                <span className="pg-bar-value">{tokens.type.heading.size}</span>
                 <span
                   className="pg-type-sample-text"
                   style={{
@@ -723,6 +773,7 @@ export function App() {
               </div>
               <div className="pg-type-sample-row">
                 <span className="pg-bar-label">type.body</span>
+                <span className="pg-bar-value">{tokens.type.body.size}</span>
                 <span
                   className="pg-type-sample-text"
                   style={{
@@ -736,6 +787,7 @@ export function App() {
               </div>
               <div className="pg-type-sample-row">
                 <span className="pg-bar-label">type.label</span>
+                <span className="pg-bar-value">{tokens.type.label.size}</span>
                 <span
                   className="pg-type-sample-text"
                   style={{

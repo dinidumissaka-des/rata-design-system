@@ -1,0 +1,197 @@
+{
+  "name": "top-nav",
+  "title": "TopNav",
+  "family": "navigation",
+  "description": "The page's banner: a brand, the primary navigation, and room for actions.",
+  "alsoKnownAs": [
+    "navbar",
+    "header",
+    "app-bar"
+  ],
+  "status": {
+    "css": {
+      "state": "latest"
+    },
+    "react": {
+      "state": "latest"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "state-layer",
+    "icon"
+  ],
+  "files": [
+    {
+      "source": "packages/css/src/top-nav.css",
+      "target": "styles/top-nav.css"
+    },
+    {
+      "source": "packages/react/src/top-nav.tsx",
+      "target": "components/top-nav.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
+  "tier": "free",
+  "behavior": {
+    "summary": "A `<header>` containing a `<nav>`: the bar is the page's banner landmark, and the links inside it are a navigation landmark of their own. No primitive — there is no keyboard interaction to own. Nav links are each a tab stop, which is correct for navigation; roving tabindex belongs to a menubar, and calling this one would promise arrow-key behaviour that navigation does not have.",
+    "decisions": [
+      {
+        "decision": "It renders the `<header>`, so it is the page's banner",
+        "why": "A top nav IS the banner — brand, navigation and actions in one bar — and pretending otherwise would mean emitting a bare `<nav>` with a logo and an avatar menu inside it, neither of which is navigation. The consequence is a real constraint rather than a detail: one per page, and not nested inside a `<header>` you already have."
+      },
+      {
+        "decision": "Links are data; everything else is a slot",
+        "why": "The component has to own what the list says — the ordered set of destinations, and which one you are on — so those come in as an array, the same bargain Breadcrumbs makes. A logo, a search box and an account menu are not destinations and do not belong in the nav landmark at all, so they are `brand` and `actions` slots outside it."
+      },
+      {
+        "decision": "The current page is stated per item, not matched from a path",
+        "why": "Only the caller knows whether /invoices/123 counts as being on /invoices — that is their routing, not this component's. A `currentHref` prop would have to guess between exact and prefix matching and would be wrong for someone either way, silently. `current` on the item is one boolean the caller already has the answer to."
+      },
+      {
+        "decision": "A dropdown is a disclosure, never a menu",
+        "why": "An item with `items` becomes a button that shows and hides a list of links. It is not given `role=\"menu\"`, and that is the single most common mistake in a navigation bar: the menu role is for application commands and announces a keyboard model — one tab stop, arrow keys to move, typeahead — that a list of links does not have, so assistive technology describes the widget as something it is not. The W3C's own menubar-navigation examples are being withdrawn over exactly this. A disclosure promises only \"this button reveals that\", and everything inside stays in the tab order where it was."
+      },
+      {
+        "decision": "The panel is a popover, for a layout reason rather than a stylistic one",
+        "why": "The destination list scrolls its overflow so a long nav does not wrap the bar onto two rows, and an overflow container clips its absolutely positioned descendants — a panel drawn inside the list would be cut off or scroll away with it. The top layer is the only place it can be and still be seen. It stays a child of its `<li>` in the DOM, which is what matters for assistive technology: the accessibility tree follows the document rather than the paint order, so those links are still inside the nav landmark. `popover=\"auto\"` settles one-open-at-a-time and light dismiss for free."
+      },
+      {
+        "decision": "Rows carry an optional onClick, and still require a real href",
+        "why": "Found by trying to build the playground's own rail out of this component: the rows navigate client-side, and with no way to intercept the click there was no way to use it without a full page load. The href stays required rather than becoming optional, because it is what makes the row a link — middle-click, copy-address and crawlers all depend on it, and a nav built from handlers with no addresses behind them loses all three without appearing to."
+      },
+      {
+        "decision": "No destinations means no navigation landmark",
+        "why": "An empty `<nav>` is worse than none: it appears in a landmark list promising places to go and delivers none, which wastes the one tool that exists for skipping straight to the navigation. Found by using this component for the playground's own banner, whose navigation lives in the rail — the first version passed `items={[]}` and produced exactly that empty landmark, alongside a rail with the same name, which is the collision this contract already warned about two decisions above."
+      },
+      {
+        "decision": "The actions are pushed to the end by their own margin",
+        "why": "The nav takes the slack when there is one, which was doing the job invisibly — and then `items` became optional, a banner with its navigation in a side rail rendered no nav at all, and the actions sat against the brand in the middle of the bar. An auto margin on the actions is correct either way: with a nav it adds nothing, without one it does the whole job."
+      }
+    ]
+  },
+  "props": {
+    "items": {
+      "summary": "The primary destinations, in the order they are read. Omitting them means no navigation landmark at all, not an empty one.",
+      "use": [
+        "Between two and about seven top-level destinations. More than that is a side nav, or a nav plus an overflow menu.",
+        "Omitting it entirely for a banner whose navigation lives in a side rail — an ordinary layout, and the playground's own.",
+        "`items` on an entry for a group of sub-destinations — it becomes a disclosure button rather than a link, and its own `href` is then unnecessary.",
+        "`onClick` on an entry to intercept the navigation for a client-side router — the `href` stays real, so the row is still a link."
+      ],
+      "dont": [
+        "Actions. A button that does something is not a destination — put it in `actions`, where it is outside the nav landmark.",
+        "Every page in the product. This is the top level; the rest belongs to a side nav within a section."
+      ],
+      "a11y": "Rendered as a list inside the `<nav>`, so the count and the order are announced. The item marked `current` gets `aria-current=\"page\"`. With no items there is no `<nav>` at all: an empty navigation landmark is worse than none, because it appears in a landmark list promising destinations and has none. An entry with `items` becomes a disclosure button with `aria-expanded` and `aria-controls` — deliberately not a menu, which would promise a keyboard model a list of links does not have; its panel is named by the trigger and its links stay ordinary tab stops. A parent of the current page is marked `aria-current=\"true\"` rather than `\"page\"`, because you are not on it."
+    },
+    "label": {
+      "summary": "Accessible name for the navigation landmark.",
+      "use": [
+        "Changing it only when a page has more than one navigation landmark and they need telling apart — a top nav and a side nav on the same page do."
+      ],
+      "dont": [
+        "The word \"navigation\". A screen reader already says the role; \"Main navigation navigation\" is what that produces.",
+        "Passing it when there are no `items`. There is no landmark to name, and a name for something that is not rendered is a claim the markup does not make."
+      ],
+      "a11y": "Becomes the `<nav>`'s `aria-label`. It names the nav, not the banner — the banner is unnamed, because a page has one."
+    },
+    "brand": {
+      "summary": "The product's mark, at the start of the bar.",
+      "use": [
+        "A logo, a wordmark, or both — wrapped in a link to the root if it should be clickable."
+      ],
+      "dont": [
+        "Relying on it for the accessible name of anything. If it is an image it needs its own alt text, and if it is a link it needs link text.",
+        "Putting navigation in it. It sits outside the nav landmark, so a destination here is not findable as one."
+      ],
+      "a11y": "Outside the `<nav>` on purpose: a logo is not a destination in the list, even when it links home."
+    },
+    "actions": {
+      "summary": "Controls at the end of the bar — search, account, notifications.",
+      "use": [
+        "`Search`, a `Menu` for the account, a `Button` for the primary action."
+      ],
+      "dont": [
+        "Destinations. Anything that navigates belongs in `items`, inside the landmark where it can be found."
+      ],
+      "a11y": "Outside the `<nav>`, because none of it is navigation. Each control names itself as it would anywhere else — an icon-only button here still needs its `aria-label`."
+    },
+    "className": {
+      "summary": "Extra classes on the banner, for placement — not for restyling it.",
+      "use": [
+        "Making it sticky, which is a layout decision the component deliberately leaves open."
+      ],
+      "dont": [
+        "Changing its height or colours. Those come from the recipe, and a bar that differs per page reads as two different products."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "An application banner",
+      "when": "The commonest case: a mark, a few destinations, and an account menu.",
+      "example": "<TopNav\n  brand={<a href=\"/\" className=\"brand\">Ratā</a>}\n  items={[\n    { label: \"Invoices\", href: \"/invoices\", current: true },\n    { label: \"Clients\", href: \"/clients\" },\n    { label: \"Reports\", href: \"/reports\" },\n  ]}\n  actions={\n    <Menu\n      label=\"Account\"\n      trigger={<Button iconOnly aria-label=\"Account\" variant=\"tertiary\"><Icon icon={User} /></Button>}\n    >\n      <MenuItem onSelect={settings}>Settings</MenuItem>\n      <MenuItem onSelect={signOut}>Sign out</MenuItem>\n    </Menu>\n  }\n/>",
+      "notes": "`current` is stated rather than derived: only the caller knows whether the invoice they are looking at counts as being on Invoices. The account menu is an action, not a destination, so it sits outside the nav landmark where it cannot be mistaken for one."
+    },
+    {
+      "case": "A banner beside a side nav, where both landmarks need names",
+      "when": "Any page with two navigation landmarks.",
+      "example": "<TopNav label=\"Main\" items={sections} brand={<Wordmark />} />\n<SideNav label=\"Invoices\" items={pages} />",
+      "notes": "Two navigation landmarks with the same name are indistinguishable in a landmark list, which is the one place they are most useful. Naming them for what they contain — not \"top\" and \"side\", which describe where they happen to sit — survives a redesign that moves them."
+    },
+    {
+      "case": "A destination with sub-destinations",
+      "when": "An area of the product with several pages under one name.",
+      "example": "<TopNav\n  items={[\n    { label: \"Invoices\", href: \"/invoices\" },\n    {\n      label: \"Reports\",\n      current: true,\n      items: [\n        { label: \"Revenue\", href: \"/reports/revenue\", current: true },\n        { label: \"Ageing\", href: \"/reports/ageing\" },\n      ],\n    },\n  ]}\n/>",
+      "notes": "The entry with `items` needs no `href` — it reveals rather than navigates, so it renders as a button. Note the two kinds of current: the child is `aria-current=\"page\"` because you are on it, and the parent is `aria-current=\"true\"` because you are merely inside the area it leads to. If the parent is itself a page worth reaching, put it in its own panel as the first child."
+    },
+    {
+      "case": "Don't: an action in the items array",
+      "when": "Never — this is the shape to recognise and avoid.",
+      "example": "{/* Don't: \"New invoice\" is not a place. */}\n<TopNav\n  items={[\n    { label: \"Invoices\", href: \"/invoices\" },\n    { label: \"New invoice\", href: \"#\", current: false },\n  ]}\n/>",
+      "notes": "Don't. Everything in `items` is announced as part of a list of destinations and rendered as a link, so an action here is announced as a place and navigates nowhere. It belongs in `actions` as a `Button`."
+    }
+  ],
+  "tokens": {
+    "base": {
+      "summary": "The bar. Its height comes from its padding and the controls inside it rather than a stated number, so a nav with a taller control in its actions slot grows instead of clipping.",
+      "tokens": {
+        "background": "theme.bg.surface",
+        "border-block-end": "border.default solid theme.border.default",
+        "padding-block": "space.padding.sm",
+        "padding-inline": "space.padding.lg",
+        "gap between brand, nav and actions": "space.gap.lg",
+        "minimum height of the row": "size.control.lg",
+        "actions alignment": "pushed to the inline end by an auto margin, so they sit at the end of the bar whether or not there are destinations between them and the brand"
+      }
+    },
+    "item": {
+      "summary": "One destination. The resting colour is the secondary text tone, so the current page reads as the emphasised one rather than the others reading as dimmed.",
+      "tokens": {
+        "colour": "theme.fg.secondary",
+        "font-size": "type.control.size.sm",
+        "font-weight": "type.control.weight",
+        "padding-inline": "space.control.padding-inline.sm",
+        "block-size": "size.control.md",
+        "border-radius": "radius.element",
+        "gap between icon and label": "space.gap.sm",
+        "icon size": "size.icon.text",
+        "hover / press": "compose the .rata-state-layer class",
+        "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible"
+      }
+    },
+    "item-current": {
+      "summary": "The page you are on. Marked twice over: the accent bar is the visual cue and aria-current is the announced one, so the state is never carried by colour alone.",
+      "tokens": {
+        "colour": "theme.fg.primary",
+        "indicator": "theme.accent-role.bg at border.2, along the block-end edge"
+      }
+    }
+  }
+}

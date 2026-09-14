@@ -172,8 +172,7 @@
     {
       "fg": "theme.danger-role.fg",
       "bg": "theme.danger-role.subtle",
-      "requires": "AA-large",
-      "note": "Large text and icons only on this background in the light theme. Use theme.fg.primary for body-size text on theme.danger-role.subtle."
+      "requires": "AA-text"
     },
     {
       "fg": "theme.fg.on-accent",

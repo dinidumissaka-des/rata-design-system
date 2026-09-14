@@ -1,0 +1,16 @@
+{
+  // Typechecks the test files, which tsconfig.json excludes so they never
+  // reach dist. Without this they are compiled by esbuild at run time, which
+  // strips types without checking them — an import of a name the package does
+  // not export becomes `undefined` at run time instead of an error, and a test
+  // written against it can pass for the wrong reason. That happened while
+  // writing Notice's suite.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": ".",
+    "types": ["vitest/globals"]
+  },
+  "include": ["src", "vitest.config.ts"],
+  "exclude": []
+}

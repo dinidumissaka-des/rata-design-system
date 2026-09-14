@@ -19,6 +19,8 @@ const ORDER = [
   "toggle-button-group.css",
   "icon.css",
   "text-field.css",
+  // After text-field: search borrows its look and its focus treatment.
+  "search.css",
   "checkbox.css",
   // After checkbox: radio shares its construction and overrides the shape.
   "radio.css",
@@ -28,6 +30,16 @@ const ORDER = [
   "badge.css",
   "avatar.css",
   "breadcrumbs.css",
+  "top-nav.css",
+  "side-nav.css",
+  // After side-nav: the drawer renders one and overrides its scrolling.
+  "mobile-nav.css",
+  "tabs.css",
+  "segmented-control.css",
+  "notice.css",
+  // After notice: both are surfaces, and the menu sits above one.
+  "menu.css",
+  "dialog.css",
   // Last on purpose: a class whose job is to hide must not lose the cascade
   // to a component rule that happens to set position or padding.
   "visually-hidden.css",

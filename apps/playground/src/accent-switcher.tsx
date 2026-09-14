@@ -1,3 +1,5 @@
+import { SegmentedControl } from "@rata/react";
+
 /**
  * The accent switcher — this system's five accent options.
  *
@@ -66,34 +68,38 @@ export function AccentSwitcher({
   onChange: (slug: string) => void;
 }) {
   return (
-    <fieldset className="pg-accent">
-      {/* A fieldset of radios rather than a row of buttons: picking one of five
-          mutually exclusive options is what a radiogroup *is*, and native
-          radios bring arrow-key navigation with them. */}
-      <legend className="pg-visually-hidden">Accent colour</legend>
-
-      {ACCENTS.map((accent) => (
-        <label key={accent.slug} className="pg-accent-option" title={accent.note}>
-          <input
-            type="radio"
-            name="pg-accent"
-            className="pg-visually-hidden"
-            value={accent.slug}
-            checked={value === accent.slug}
-            onChange={() => onChange(accent.slug)}
-          />
-          {/* Both attributes, because a theme's dark half is scoped
-              [data-rata-theme="x"][data-theme="dark"] — one compound selector, so
-              the swatch needs both to show the right value in dark mode. */}
-          <span
-            className="pg-accent-swatch"
-            data-rata-theme={accent.slug}
-            data-theme={scheme}
-            aria-hidden="true"
-          />
-          <span className="pg-accent-name">{accent.title}</span>
-        </label>
-      ))}
-    </fieldset>
+    /* A SegmentedControl, which is what this always was: one choice out of
+       five, every answer shown. It was a hand-rolled fieldset of radios,
+       written before this system had the component — and a design system's own
+       chrome using a hand-rolled version of a component it ships is the kind
+       of thing nobody notices until the component changes and the copy does
+       not.
+       The swatch goes in the option's label, which is a ReactNode, so each one
+       still resolves its own theme's accent rather than a hex re-typed here. */
+    <SegmentedControl
+      className="pg-accent"
+      label="Accent colour"
+      size="sm"
+      value={value}
+      onValueChange={onChange}
+      options={ACCENTS.map((accent) => ({
+        value: accent.slug,
+        label: (
+          <span className="pg-accent-option" title={accent.note}>
+            {/* Both attributes, because a theme's dark half is scoped
+                [data-rata-theme="x"][data-theme="dark"] — one compound
+                selector, so the swatch needs both to show the right value in
+                dark mode. */}
+            <span
+              className="pg-accent-swatch"
+              data-rata-theme={accent.slug}
+              data-theme={scheme}
+              aria-hidden="true"
+            />
+            <span className="pg-accent-name">{accent.title}</span>
+          </span>
+        ),
+      }))}
+    />
   );
 }

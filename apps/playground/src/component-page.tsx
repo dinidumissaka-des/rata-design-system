@@ -9,7 +9,7 @@
 // The live demos are the one thing this file adds, and they are deliberately
 // the only hand-written part: a contract can say `loading` shows a spinner and
 // refuses clicks, but only a real button can be clicked.
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import {
   Avatar,
@@ -18,8 +18,19 @@ import {
   Button,
   ButtonGroup,
   Checkbox,
+  Dialog,
+  Menu,
+  MenuItem,
+  MenuSeparator,
+  Notice,
   Radio,
   RadioGroup,
+  MobileNav,
+  Search,
+  SegmentedControl,
+  SideNav,
+  Tabs,
+  TopNav,
   Spinner,
   Switch,
   TextField,
@@ -30,6 +41,10 @@ import type {
   AvatarSize,
   BadgeVariant,
   ButtonGroupOrientation,
+  DialogSize,
+  SearchSize,
+  NoticeLive,
+  NoticeVariant,
   TextFieldSize,
   TextFieldStatus,
   ToggleButtonGroupSelectionMode,
@@ -38,12 +53,19 @@ import type {
   ToggleButtonSize,
   ToggleButtonVariant,
 } from "@rata/react";
-import type { IconSize } from "@rata/icons";
+import type { TabsActivation, TabsOrientation } from "@rata/primitives";
+import type { SegmentedControlSize } from "@rata/react";
+import type { IconSize, LucideIcon } from "@rata/icons";
 import {
   Icon,
   Settings,
+  User,
   X,
   Trash2,
+  Ellipsis,
+  Pencil,
+  Copy,
+  Upload,
   Download,
   CircleAlert,
   ChevronLeft,
@@ -53,7 +75,7 @@ import {
   AlignCenter,
   AlignRight,
 } from "@rata/icons";
-import { COMPONENT_TABS, componentPage, hrefFor } from "./routing.js";
+import { COMPONENT_TABS, componentPage } from "./routing.js";
 import type { ComponentTab, Page } from "./routing.js";
 import contractsJson from "../../../docs/components/contracts.json";
 
@@ -342,6 +364,255 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     ),
   },
 
+  "mobile-nav": {
+    "A drawer beside a rail, sharing one set of destinations": () => (
+      <MobileNav
+        title="Ratā"
+        label="Main"
+        sections={[
+          {
+            items: [
+              { label: "Invoices", href: "#", current: true },
+              { label: "Clients", href: "#" },
+              {
+                label: "Reports",
+                items: [
+                  { label: "Revenue", href: "#" },
+                  { label: "Ageing", href: "#" },
+                ],
+              },
+            ],
+          },
+        ]}
+      />
+    ),
+    "A drawer with account actions under the destinations": () => (
+      <MobileNav
+        title="Ratā"
+        sections={[
+          {
+            items: [
+              { label: "Invoices", href: "#", current: true },
+              { label: "Clients", href: "#" },
+            ],
+          },
+        ]}
+        footer={
+          <>
+            <Button variant="secondary">Settings</Button>
+            <Button variant="tertiary">Sign out</Button>
+          </>
+        }
+      />
+    ),
+  },
+
+  "side-nav": {
+    "A grouped rail inside one area of the product": () => (
+      <SideNav
+        className="pg-rail"
+        label="Invoices"
+        sections={[
+          {
+            label: "Billing",
+            items: [
+              { label: "Invoices", href: "#", current: true },
+              { label: "Credit notes", href: "#" },
+            ],
+          },
+          {
+            label: "Setup",
+            items: [
+              { label: "Tax rates", href: "#" },
+              { label: "Templates", href: "#" },
+            ],
+          },
+        ]}
+      />
+    ),
+    "A group with pages nested under it": () => (
+      <SideNav
+        className="pg-rail"
+        label="Invoices"
+        sections={[
+          {
+            items: [
+              { label: "All invoices", href: "#" },
+              {
+                label: "Reports",
+                items: [
+                  { label: "Revenue", href: "#", current: true },
+                  { label: "Ageing", href: "#" },
+                  { label: "Tax summary", href: "#" },
+                ],
+              },
+              { label: "Credit notes", href: "#" },
+            ],
+          },
+        ]}
+      />
+    ),
+    "A flat rail, with nothing to group": () => (
+      <SideNav
+        className="pg-rail"
+        label="Settings"
+        sections={[
+          {
+            items: [
+              { label: "Profile", href: "#", current: true },
+              { label: "Notifications", href: "#" },
+              { label: "Security", href: "#" },
+            ],
+          },
+        ]}
+      />
+    ),
+  },
+
+  "segmented-control": {
+    "A view mode, chosen from three": () => <SegmentedRangeStage />,
+    "Filling a narrow column": () => (
+      <div className="pg-rail-width">
+        <SegmentedControl
+          label="Sort"
+          fullWidth
+          size="sm"
+          options={[
+            { value: "newest", label: "Newest" },
+            { value: "oldest", label: "Oldest" },
+          ]}
+        />
+      </div>
+    ),
+  },
+
+  tabs: {
+    "One thing seen several ways": () => (
+      <Tabs
+        label="Invoice"
+        items={[
+          { value: "details", label: "Details", content: "Amount, dates, and the client." },
+          { value: "history", label: "History", content: "Every change, most recent first." },
+          { value: "notes", label: "Notes", content: "Anything the team wrote down." },
+        ]}
+      />
+    ),
+    "Panels that cost something to open": () => <TabsManualStage />,
+  },
+
+  "top-nav": {
+    "An application banner": () => (
+      <TopNav
+        brand={<strong className="pg-brand">Ratā</strong>}
+        items={[
+          { label: "Invoices", href: "#", current: true },
+          { label: "Clients", href: "#" },
+          { label: "Reports", href: "#" },
+        ]}
+        actions={
+          <Menu
+            label="Account"
+            trigger={
+              <Button iconOnly aria-label="Account" variant="tertiary">
+                <Icon icon={User} />
+              </Button>
+            }
+          >
+            <MenuItem icon={Settings} onSelect={() => {}}>Settings</MenuItem>
+            <MenuItem onSelect={() => {}}>Sign out</MenuItem>
+          </Menu>
+        }
+      />
+    ),
+    "A destination with sub-destinations": () => (
+      <TopNav
+        brand={<strong className="pg-brand">Ratā</strong>}
+        items={[
+          { label: "Invoices", href: "#" },
+          {
+            label: "Reports",
+            current: true,
+            items: [
+              { label: "Revenue", href: "#", current: true },
+              { label: "Ageing", href: "#" },
+              { label: "Tax summary", href: "#" },
+            ],
+          },
+          { label: "Clients", href: "#" },
+        ]}
+      />
+    ),
+    "A banner beside a side nav, where both landmarks need names": () => (
+      <TopNav
+        label="Main"
+        brand={<strong className="pg-brand">Ratā</strong>}
+        items={[
+          { label: "Invoices", href: "#", current: true },
+          { label: "Clients", href: "#" },
+        ]}
+      />
+    ),
+  },
+
+  search: {
+    "The site's search, in a header": () => (
+      <Search landmark label="Search" placeholder="Search invoices" onSearch={() => {}} />
+    ),
+    "Filtering a list as you type": () => <SearchFilterStage size="sm" />,
+    "A committed query that went to the network": () => <SearchPendingStage />,
+  },
+
+  dialog: {
+    "A destructive confirmation": () => (
+      <DialogStage description="Everything in it goes too." size="sm" />
+    ),
+    "A blocking error, where dismissing would lose work": () => (
+      <DialogStage title="Connection lost" dismissible={false} destructive={false} />
+    ),
+  },
+
+  "menu-item": {
+    "A row with an icon": () => <MenuItemStage />,
+    "A destructive row, kept away from the safe ones": () => (
+      <MenuItemStage destructive icon={Trash2}>Delete</MenuItemStage>
+    ),
+    "A row that exists but cannot run yet": () => (
+      <MenuItemStage disabled icon={Upload}>Publish</MenuItemStage>
+    ),
+  },
+
+  menu: {
+    "Actions on a row": () => (
+      <Menu trigger={<Button variant="secondary">Actions</Button>}>
+        <MenuItem icon={Copy} onSelect={() => {}}>Duplicate</MenuItem>
+        <MenuItem icon={Download} onSelect={() => {}}>Download</MenuItem>
+        <MenuSeparator />
+        <MenuItem destructive icon={Trash2} onSelect={() => {}}>Delete</MenuItem>
+      </Menu>
+    ),
+    "An icon-only trigger, which needs the list named separately": () => (
+      <Menu
+        label="Row actions"
+        trigger={
+          <Button iconOnly aria-label="Row actions" variant="tertiary">
+            <Icon icon={Ellipsis} />
+          </Button>
+        }
+      >
+        <MenuItem icon={Pencil} onSelect={() => {}}>Edit</MenuItem>
+        <MenuItem destructive icon={Trash2} onSelect={() => {}}>Delete</MenuItem>
+      </Menu>
+    ),
+  },
+
+  notice: {
+    "A page-level message that is there when the page loads": () => (
+      <Notice variant="warning">This project is read-only while the migration runs.</Notice>
+    ),
+    "An error that appears after an action, announced correctly": () => <SaveFailureExample />,
+    "A dismissible confirmation, with focus handled": () => <InvitesExample />,
+  },
+
   breadcrumbs: {
     "A page three levels deep": () => (
       <Breadcrumbs
@@ -386,7 +657,7 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
   },
 
   "toggle-button-group": {
-    "Single choice — a segmented control": () => <AlignGroupExample />,
+    "Single choice — one question, several answers": () => <AlignGroupExample />,
     "Independent states that sit together": () => <StyleGroupExample />,
     "A filter that can be cleared": () => <FilterGroupExample />,
   },
@@ -570,6 +841,204 @@ function BillingExample() {
  * — a hook written straight into an EXAMPLES or INTERACTIVE entry would join
  * the hook list of whatever is rendering it and change its length on navigation.
  */
+/**
+ * A single row, shown the only way a row can be shown: inside a menu.
+ *
+ * `MenuItem` throws outside a `Menu` on purpose — alone it has no list to
+ * navigate and no trigger to return focus to — so the page for it stages one
+ * rather than leaving the preview empty. Same reason `RadioStage` exists below.
+ *
+ * It starts CLOSED, which is not a stylistic choice: the menu is a
+ * `popover="auto"`, and the platform allows exactly one of those open at a
+ * time. Three stages on one page each opening on mount meant each evicted the
+ * one before it, so two cards showed a bare trigger and only the last showed
+ * a menu. Clicking is the honest way to see it, and it matches `DialogStage`.
+ */
+/**
+ * A modal is only itself when it is open, so the page stages one behind a
+ * trigger rather than rendering it flat — `showModal()` is what supplies the
+ * focus trap and the inert page, and neither is observable from a screenshot
+ * of a dialog that was never opened.
+ */
+function DialogStage({
+  title = "Delete project",
+  description,
+  size,
+  dismissible,
+  destructive = true,
+}: {
+  title?: ReactNode;
+  description?: ReactNode;
+  size?: DialogSize;
+  dismissible?: boolean;
+  destructive?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const cancelRef = useRef<HTMLButtonElement | null>(null);
+  return (
+    <>
+      <Button variant="secondary" onClick={() => setOpen(true)}>
+        Open the dialog
+      </Button>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        title={title}
+        description={description}
+        size={size}
+        dismissible={dismissible}
+        initialFocus={cancelRef}
+        footer={
+          <>
+            <Button ref={cancelRef} variant="secondary" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant={destructive ? "destructive" : "primary"} onClick={() => setOpen(false)}>
+              {destructive ? "Delete" : "Save"}
+            </Button>
+          </>
+        }
+      >
+        This cannot be undone.
+      </Dialog>
+    </>
+  );
+}
+
+/** Filtering over data already on the client, so every keystroke is free. */
+/**
+ * Manual activation, which is the whole reason that prop exists.
+ *
+ * The counter makes the difference visible: arrow across the tabs and nothing
+ * loads until Enter. Switch the same example to automatic and every tab
+ * passed through fires a load — which over a real request is three the reader
+ * never asked for.
+ */
+/** Controlled, so the answer is visibly state the rest of the page reads. */
+function SegmentedRangeStage() {
+  const [range, setRange] = useState("month");
+  return (
+    <div className="pg-block-stack">
+      <SegmentedControl
+        label="Range"
+        value={range}
+        onValueChange={setRange}
+        options={[
+          { value: "week", label: "Week" },
+          { value: "month", label: "Month" },
+          { value: "quarter", label: "Quarter" },
+        ]}
+      />
+      <p className="pg-search-status">Showing the {range}.</p>
+    </div>
+  );
+}
+
+function TabsManualStage() {
+  const [loads, setLoads] = useState<string[]>([]);
+  return (
+    <div className="pg-block-stack">
+      <Tabs
+        label="Invoice"
+        activation="manual"
+        onValueChange={(next) => setLoads((seen) => [...seen, next])}
+        items={[
+          { value: "details", label: "Details", content: "Loaded on open." },
+          { value: "history", label: "History", content: "Loaded on open." },
+          { value: "notes", label: "Notes", content: "Loaded on open." },
+        ]}
+      />
+      <p className="pg-search-status">
+        {loads.length === 0
+          ? "Arrow across the tabs — nothing loads until you press Enter."
+          : `Loaded: ${loads.join(", ")}`}
+      </p>
+    </div>
+  );
+}
+
+function SearchFilterStage({ size }: { size?: SearchSize }) {
+  const rows = ["Acme Ltd", "Borealis", "Cygnus Freight", "Delta Rail"];
+  const [query, setQuery] = useState("");
+  const shown = rows.filter((r) => r.toLowerCase().includes(query.toLowerCase()));
+  return (
+    <div className="pg-block-stack">
+      <Search label="Filter rows" size={size} value={query} onValueChange={setQuery} />
+      <ul className="pg-search-results">
+        {shown.map((row) => (
+          <li key={row}>{row}</li>
+        ))}
+        {shown.length === 0 && <li className="pg-search-empty">No rows match.</li>}
+      </ul>
+    </div>
+  );
+}
+
+/**
+ * A committed query that cost something.
+ *
+ * The live region is the point of the example: `loading` covers the sighted
+ * case, and the count — which Search cannot know — covers the other one.
+ */
+function SearchPendingStage() {
+  const [pending, setPending] = useState(false);
+  const [found, setFound] = useState<number | null>(null);
+  return (
+    <div className="pg-block-stack">
+      <Search
+        label="Search invoices"
+        placeholder="Search invoices"
+        loading={pending}
+        onSearch={(query) => {
+          setPending(true);
+          setFound(null);
+          window.setTimeout(() => {
+            setPending(false);
+            setFound(query.length * 3);
+          }, 1200);
+        }}
+      />
+      <p aria-live="polite" className="pg-search-status">
+        {pending ? "" : found === null ? "Press Enter to search." : `${found} found`}
+      </p>
+    </div>
+  );
+}
+
+function MenuItemStage({
+  children = "Duplicate",
+  destructive,
+  selected,
+  disabled,
+  icon = Copy,
+}: {
+  children?: ReactNode;
+  destructive?: boolean;
+  selected?: boolean;
+  disabled?: boolean;
+  icon?: LucideIcon;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <Menu
+      open={open}
+      onOpenChange={setOpen}
+      trigger={<Button variant="secondary">Open the menu</Button>}
+    >
+      <MenuItem
+        value="row"
+        icon={icon}
+        destructive={destructive}
+        selected={selected}
+        disabled={disabled}
+        onSelect={() => {}}
+      >
+        {children}
+      </MenuItem>
+    </Menu>
+  );
+}
+
 function RadioStage({
   label = "Annual",
   description = "Two months free",
@@ -597,6 +1066,74 @@ function RadioStage({
 function NotificationsExample() {
   const [on, setOn] = useState(true);
   return <Switch label="Notifications" checked={on} onCheckedChange={setOn} />;
+}
+
+/**
+ * The live-region pattern the contract insists on.
+ *
+ * The wrapper is always rendered, so the region exists before the notice's text
+ * arrives — mounting the region and its content in the same commit is what
+ * makes announcements unreliable, and it is invisible in testing unless you are
+ * listening. `live` stays off on the Notice for exactly that reason.
+ */
+function SaveFailureExample() {
+  const [failed, setFailed] = useState(true);
+  return (
+    <div className="pg-block-stack">
+      <div aria-live="polite">
+        {failed ? (
+          <Notice
+            variant="danger"
+            title="Could not save"
+            actions={
+              <Button variant="secondary" onClick={() => setFailed(false)}>
+                Retry
+              </Button>
+            }
+          >
+            The server refused the change.
+          </Notice>
+        ) : null}
+      </div>
+      {!failed && (
+        <Button variant="secondary" onClick={() => setFailed(true)}>
+          Make it fail again
+        </Button>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Dismissal, with the two things Notice deliberately does not do.
+ *
+ * It does not hide itself — this component owns that — and it does not move
+ * focus, so the handler puts focus somewhere deliberate instead of letting it
+ * fall to <body> when the close button it was on disappears.
+ */
+function InvitesExample() {
+  const [sent, setSent] = useState(true);
+  const afterRef = useRef<HTMLButtonElement | null>(null);
+  return (
+    <div className="pg-block-stack">
+      <div aria-live="polite">
+        {sent ? (
+          <Notice
+            variant="success"
+            onDismiss={() => {
+              setSent(false);
+              afterRef.current?.focus();
+            }}
+          >
+            Invitations sent to 12 people.
+          </Notice>
+        ) : null}
+      </div>
+      <Button ref={afterRef} variant="secondary" onClick={() => setSent(true)}>
+        {sent ? "Send more" : "Send again"}
+      </Button>
+    </div>
+  );
 }
 
 /** A case the contract includes to say "don't" — its notes open with exactly that. */
@@ -710,6 +1247,19 @@ interface Interactive {
   /** Editable children, for components that take them. Not a prop, so not in the contract. */
   slot?: { label: string; initial: string };
   /**
+   * Starting values for props the contract gives no default.
+   *
+   * Those otherwise seed to an empty string, which is right for most things
+   * and wrong for anything whose content IS the demonstration: three Search
+   * fields with no placeholder and a hidden label — which is that component's
+   * documented default — rendered as three identical empty pills that said
+   * nothing about what they were.
+   *
+   * Seeded here rather than defaulted inside `render`, so the control box and
+   * the component agree about what is on screen.
+   */
+  seed?: DemoState;
+  /**
    * How the component renders for a bag of props. `set` is handed in for
    * components that own state the user is supposed to change by using them —
    * a toggle whose demo cannot be toggled is the mocked-up control this file
@@ -731,9 +1281,10 @@ const INTERACTIVE: Record<string, Interactive> = {
     // `value` is not a control: it is the option's identity, not a setting to
     // try. Everything a Radio itself decides is here.
     controls: ["label", "description", "disabled"],
+    seed: { label: "Annual" },
     render: (state) => (
       <RadioStage
-        label={String(state.label || "Annual")}
+        label={String(state.label)}
         description={state.description ? String(state.description) : undefined}
         disabled={Boolean(state.disabled)}
       />
@@ -741,9 +1292,10 @@ const INTERACTIVE: Record<string, Interactive> = {
   },
   switch: {
     controls: ["label", "labelHidden", "description", "checked", "disabled"],
+    seed: { label: "Notifications" },
     render: (state, set) => (
       <Switch
-        label={String(state.label || "Notifications")}
+        label={String(state.label)}
         labelHidden={Boolean(state.labelHidden)}
         description={state.description ? String(state.description) : undefined}
         checked={Boolean(state.checked)}
@@ -754,9 +1306,10 @@ const INTERACTIVE: Record<string, Interactive> = {
   },
   checkbox: {
     controls: ["label", "description", "checked", "indeterminate", "disabled", "required"],
+    seed: { label: "Email me product updates" },
     render: (state, set) => (
       <Checkbox
-        label={String(state.label || "Email me product updates")}
+        label={String(state.label)}
         description={state.description ? String(state.description) : undefined}
         checked={Boolean(state.checked)}
         indeterminate={Boolean(state.indeterminate)}
@@ -769,9 +1322,10 @@ const INTERACTIVE: Record<string, Interactive> = {
 
   "radio-group": {
     controls: ["label", "orientation", "disabled", "required"],
+    seed: { label: "Billing period" },
     render: (state) => (
       <RadioGroup
-        label={String(state.label || "Billing period")}
+        label={String(state.label)}
         orientation={state.orientation as ButtonGroupOrientation}
         disabled={Boolean(state.disabled)}
         required={Boolean(state.required)}
@@ -795,20 +1349,189 @@ const INTERACTIVE: Record<string, Interactive> = {
 
   avatar: {
     controls: ["name", "size", "decorative"],
+    seed: { name: "Ada Hartley" },
     render: (state) => (
       <Avatar
-        name={String(state.name || "Ada Hartley")}
+        name={String(state.name)}
         size={state.size as AvatarSize}
         decorative={Boolean(state.decorative)}
       />
     ),
   },
 
+  "mobile-nav": {
+    controls: ["title", "label", "triggerLabel"],
+    seed: { title: "Menu", label: "Main", triggerLabel: "Menu" },
+    render: (state) => (
+      <MobileNav
+        title={String(state.title)}
+        label={String(state.label)}
+        triggerLabel={String(state.triggerLabel)}
+        sections={[
+          {
+            items: [
+              { label: "Invoices", href: "#", current: true },
+              { label: "Clients", href: "#" },
+            ],
+          },
+        ]}
+      />
+    ),
+  },
+
+  "side-nav": {
+    controls: ["label"],
+    seed: { label: "Sections" },
+    render: (state) => (
+      <SideNav
+        className="pg-rail"
+        label={String(state.label)}
+        sections={[
+          {
+            label: "Billing",
+            items: [
+              { label: "Invoices", href: "#", current: true },
+              { label: "Credit notes", href: "#" },
+            ],
+          },
+          { label: "Setup", items: [{ label: "Tax rates", href: "#" }] },
+        ]}
+      />
+    ),
+  },
+
+  "segmented-control": {
+    controls: ["label", "size", "fullWidth"],
+    seed: { label: "Range" },
+    render: (state) => (
+      <SegmentedControl
+        label={String(state.label)}
+        size={state.size as SegmentedControlSize}
+        fullWidth={Boolean(state.fullWidth)}
+        options={[
+          { value: "week", label: "Week" },
+          { value: "month", label: "Month" },
+          { value: "quarter", label: "Quarter" },
+        ]}
+      />
+    ),
+  },
+
+  tabs: {
+    controls: ["label", "orientation", "activation"],
+    seed: { label: "Invoice" },
+    render: (state) => (
+      <Tabs
+        label={String(state.label)}
+        orientation={state.orientation as TabsOrientation}
+        activation={state.activation as TabsActivation}
+        items={[
+          { value: "details", label: "Details", content: "Amount, dates, and the client." },
+          { value: "history", label: "History", content: "Every change, most recent first." },
+          { value: "notes", label: "Notes", content: "Anything the team wrote down." },
+        ]}
+      />
+    ),
+  },
+
+  "top-nav": {
+    controls: ["label"],
+    seed: { label: "Main" },
+    render: (state) => (
+      <TopNav
+        label={String(state.label)}
+        brand={<strong className="pg-brand">Ratā</strong>}
+        items={[
+          { label: "Invoices", href: "#", current: true },
+          { label: "Clients", href: "#" },
+          { label: "Reports", href: "#" },
+        ]}
+        actions={<Button variant="secondary">New invoice</Button>}
+      />
+    ),
+  },
+
+  search: {
+    controls: ["label", "labelHidden", "placeholder", "size", "loading", "landmark", "disabled"],
+    // The placeholder is what makes this specimen legible: `labelHidden`
+    // defaults to true, which is correct for the component and leaves a
+    // showcase of three empty pills with nothing to say what they are.
+    seed: { label: "Search", placeholder: "Search invoices" },
+    render: (state) => (
+      <Search
+        label={String(state.label)}
+        labelHidden={state.labelHidden === undefined ? true : Boolean(state.labelHidden)}
+        placeholder={state.placeholder ? String(state.placeholder) : undefined}
+        size={state.size as SearchSize}
+        loading={Boolean(state.loading)}
+        landmark={Boolean(state.landmark)}
+        disabled={Boolean(state.disabled)}
+      />
+    ),
+  },
+
+  dialog: {
+    controls: ["title", "description", "size", "dismissible"],
+    seed: { title: "Delete project" },
+    render: (state) => (
+      <DialogStage
+        title={String(state.title)}
+        description={state.description ? String(state.description) : undefined}
+        size={state.size as DialogSize}
+        dismissible={state.dismissible === undefined ? true : Boolean(state.dismissible)}
+      />
+    ),
+  },
+
+  "menu-item": {
+    controls: ["destructive", "selected", "disabled"],
+    slot: { label: "Children", initial: "Duplicate" },
+    render: (state) => (
+      <MenuItemStage
+        destructive={Boolean(state.destructive)}
+        selected={Boolean(state.selected)}
+        disabled={Boolean(state.disabled)}
+      >
+        {String(state.children)}
+      </MenuItemStage>
+    ),
+  },
+
+  menu: {
+    controls: ["label"],
+    render: (state) => (
+      <Menu
+        label={state.label ? String(state.label) : undefined}
+        trigger={<Button variant="secondary">Actions</Button>}
+      >
+        <MenuItem icon={Copy} onSelect={() => {}}>Duplicate</MenuItem>
+        <MenuItem icon={Download} onSelect={() => {}}>Download</MenuItem>
+        <MenuSeparator />
+        <MenuItem destructive icon={Trash2} onSelect={() => {}}>Delete</MenuItem>
+      </Menu>
+    ),
+  },
+
+  notice: {
+    controls: ["variant", "live", "title"],
+    slot: { label: "Children", initial: "This project is read-only while the migration runs." },
+    render: (state) => (
+      <Notice
+        variant={state.variant as NoticeVariant}
+        live={state.live as NoticeLive}
+        title={state.title ? String(state.title) : undefined}
+      >
+        {String(state.children)}
+      </Notice>
+    ),
+  },
+
   breadcrumbs: {
     controls: ["label", "separator"],
+    seed: { label: "Breadcrumb" },
     render: (state) => (
       <Breadcrumbs
-        label={String(state.label || "Breadcrumb")}
+        label={String(state.label)}
         separator={state.separator ? String(state.separator) : undefined}
         items={[
           { label: "Home", href: "#" },
@@ -820,9 +1543,10 @@ const INTERACTIVE: Record<string, Interactive> = {
   },
   "text-field": {
     controls: ["label", "labelHidden", "size", "status", "description", "message", "disabled", "required"],
+    seed: { label: "Email" },
     render: (state) => (
       <TextField className="pg-field"
-        label={String(state.label || "Email")}
+        label={String(state.label)}
         labelHidden={Boolean(state.labelHidden)}
         size={state.size as TextFieldSize}
         status={state.status as TextFieldStatus}
@@ -836,9 +1560,10 @@ const INTERACTIVE: Record<string, Interactive> = {
   },
   "toggle-button-group": {
     controls: ["label", "selectionMode", "orientation", "size", "attached", "deselectable", "disabled"],
+    seed: { label: "Text alignment" },
     render: (state) => (
       <ToggleButtonGroup
-        label={String(state.label || "Text alignment")}
+        label={String(state.label)}
         selectionMode={state.selectionMode as ToggleButtonGroupSelectionMode}
         orientation={state.orientation as ButtonGroupOrientation}
         size={state.size as ToggleButtonSize}
@@ -873,9 +1598,10 @@ const INTERACTIVE: Record<string, Interactive> = {
   },
   "button-group": {
     controls: ["label", "orientation", "attached"],
+    seed: { label: "Form actions" },
     render: (state) => (
       <ButtonGroup
-        label={String(state.label || "Form actions")}
+        label={String(state.label)}
         orientation={state.orientation as ButtonGroupOrientation}
         attached={Boolean(state.attached)}
       >
@@ -940,6 +1666,9 @@ function initialState(contract: Contract, spec: Interactive): DemoState {
     const prop = contract.props.find((p) => p.name === name);
     if (prop) state[name] = initialValue(prop);
   }
+  // After the contract's defaults, so a seed can fill a gap the contract
+  // leaves — and before the slot, which is not a prop at all.
+  if (spec.seed) Object.assign(state, spec.seed);
   if (spec.slot) state.children = spec.slot.initial;
   return state;
 }
@@ -1276,28 +2005,32 @@ function ComponentTabs({
   onNavigate: (page: Page, tab: ComponentTab) => void;
 }) {
   return (
-    <nav className="pg-tabs" aria-label={`${contract.title} sections`}>
-      {COMPONENT_TABS.map((item) => (
-        <a
-          key={item.id}
-          className={`pg-tab${item.id === tab ? " is-active" : ""}`}
-          href={hrefFor(componentPage(contract.name), item.id)}
-          aria-current={item.id === tab ? "page" : undefined}
-          onClick={(event) => {
-            // Let the browser handle the modified clicks it handles better:
-            // new tab, new window, download, and any non-primary button.
-            if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
-              return;
-            }
-            event.preventDefault();
-            onNavigate(componentPage(contract.name), item.id);
-          }}
-        >
-          {item.label}
-        </a>
-      ))}
-    </nav>
+    <Tabs
+      label={`${contract.title} sections`}
+      value={tab}
+      onValueChange={(value) => onNavigate(componentPage(contract.name), value as ComponentTab)}
+      items={COMPONENT_TABS.map((item) => ({
+        value: item.id,
+        label: item.label,
+        content: <ComponentTabPanel contract={contract} tab={item.id} onNavigate={onNavigate} />,
+      }))}
+    />
   );
+}
+
+/** The body behind one tab. Tabs owns the panels, so the page hands it these. */
+function ComponentTabPanel({
+  contract,
+  tab,
+  onNavigate,
+}: {
+  contract: Contract;
+  tab: ComponentTab;
+  onNavigate: (page: Page, tab: ComponentTab) => void;
+}) {
+  if (tab === "properties") return <PropertiesTab contract={contract} />;
+  if (tab === "accessibility") return <AccessibilityTab contract={contract} />;
+  return <OverviewTab contract={contract} onNavigate={onNavigate} />;
 }
 
 /**
@@ -1679,12 +2412,9 @@ export function ComponentPage({
           <code>{contract.name}</code> · {contract.family} · {contract.tier} tier
           {contract.dependencies.length > 0 && <> · depends on {contract.dependencies.join(", ")}</>}
         </p>
-        <ComponentTabs contract={contract} tab={tab} onNavigate={onNavigate} />
       </section>
 
-      {tab === "overview" && <OverviewTab contract={contract} onNavigate={onNavigate} />}
-      {tab === "properties" && <PropertiesTab contract={contract} />}
-      {tab === "accessibility" && <AccessibilityTab contract={contract} />}
+      <ComponentTabs contract={contract} tab={tab} onNavigate={onNavigate} />
     </>
   );
 }

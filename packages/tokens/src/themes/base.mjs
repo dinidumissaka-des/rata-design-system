@@ -65,8 +65,16 @@ export const baseTheme = defineTheme({
     steps: { inner: 2, element: 3, container: 4, chat: 7, page: 8 },
   },
 
-  /** Astryx's default tempo. */
-  motion: { fast: 175, medium: 410, slow: 975, ratio: 0.75 },
+  /**
+   * Tempo. Astryx's own numbers were 175/410/975, and the medium band was too
+   * slow for what this system uses it for: a menu took 410ms to appear and a
+   * dialog 545ms, both of which read as the interface lagging rather than as
+   * anything deliberate. The bands keep their meanings — fast for hover,
+   * medium for entrance/exit, slow for continuous animation — and only the
+   * tempo moved, so no role had to be remapped to a band it does not belong
+   * to. `ratio` is the spread within a band, not the speed, so it stays.
+   */
+  motion: { fast: 130, medium: 210, slow: 700, ratio: 0.75 },
 
   // ── Stated outright ───────────────────────────────────────────────────────
 

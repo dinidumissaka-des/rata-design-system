@@ -1,0 +1,14 @@
+{
+  // Same reason as @rata/react's: tsconfig.json keeps tests out of dist, which
+  // also keeps them out of typechecking, and esbuild strips types at run time
+  // without checking them. An import of a name this package does not export
+  // would become `undefined` rather than an error.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": ".",
+    "types": ["vitest/globals"]
+  },
+  "include": ["src", "vitest.config.ts"],
+  "exclude": []
+}

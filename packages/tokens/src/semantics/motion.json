@@ -8,7 +8,7 @@
     "easing": "{motion.easing.standard}"
   },
   "modal": {
-    "duration": "{motion.duration.slow}",
+    "duration": "{motion.duration.medium-max}",
     "easing": "{motion.easing.standard}"
   }
 }

@@ -24,18 +24,25 @@ this path is the honest answer to when it last actually moved.
 | [button](../docs/components/button.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [button-group](../docs/components/button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [checkbox](../docs/components/checkbox.md) | `@rata/react` | inputs | latest / latest / future | free |
-| [dialog](../docs/components/dialog.md) | `@rata/react` | overlays | future / future / future | free |
+| [dialog](../docs/components/dialog.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [icon](../docs/components/icon.md) | `@rata/react` | content | latest / latest / future | free |
-| [menu](../docs/components/menu.md) | `@rata/react` | overlays | future / future / future | free |
-| [notice](../docs/components/notice.md) | `@rata/react` | feedback | future / future / future | free |
+| [menu](../docs/components/menu.md) | `@rata/react` | overlays | latest / latest / future | free |
+| [menu-item](../docs/components/menu-item.md) | `@rata/react` | overlays | latest / latest / future | free |
+| [mobile-nav](../docs/components/mobile-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
+| [notice](../docs/components/notice.md) | `@rata/react` | feedback | latest / latest / future | free |
 | [radio](../docs/components/radio.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [radio-group](../docs/components/radio-group.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [search](../docs/components/search.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [segmented-control](../docs/components/segmented-control.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [side-nav](../docs/components/side-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [spinner](../docs/components/spinner.md) | `@rata/react` | loading | latest / latest / future | free |
 | [state-layer](../docs/components/state-layer.md) | `@rata/react` | foundations | latest / na / future | free |
 | [switch](../docs/components/switch.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [tabs](../docs/components/tabs.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [text-field](../docs/components/text-field.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [toggle-button](../docs/components/toggle-button.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [toggle-button-group](../docs/components/toggle-button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
+| [top-nav](../docs/components/top-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [visually-hidden](../docs/components/visually-hidden.md) | `@rata/react` | foundations | latest / na / na | free |
 
 ## Props
@@ -177,9 +184,53 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/checkbox.md](../docs/components/checkbox.md)
 
-### Dialog
+### Dialog (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<`
+
+- `title: ReactNode`
+- `children: ReactNode`
+  The dialog's content.
+- `open: boolean`
+  Whether the dialog is showing. Always controlled — `showModal()` has no prop.
+- `onClose: (reason: DialogCloseReason) => void`
+  Called when the dialog asks to close. Set `open` to false in it.
+- `description?: ReactNode`
+  A line under the title, wired as the dialog's description.
+- `footer?: ReactNode`
+  The actions. Reads after the body it acts on.
+- `size?: DialogSize` — default: `"md"`
+- `dismissible?: boolean` — default: `true`
+- `dismissLabel?: string` — default: `"Close"`
+  Accessible name for the close button.
+- `role?: DialogRole` — default: `"dialog"`
+- `initialFocus?: RefObject<HTMLElement | null>`
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        title={title}
+        description={description}
+        size={size}
+        dismissible={dismissible}
+        initialFocus={cancelRef}
+        footer={
+          <>
+            <Button ref={cancelRef} variant="secondary" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant={destructive ? "destructive" : "primary"} onClick={() => setOpen(false)}>
+              {destructive ? "Delete" : "Save"}
+            </Button>
+          </>
+        }
+      >
+        This cannot be undone.
+      </Dialog>
+```
 
 Contract: [docs/components/dialog.md](../docs/components/dialog.md)
 
@@ -195,20 +246,127 @@ Contract: [docs/components/dialog.md](../docs/components/dialog.md)
 
 Real usage (from `apps/`):
 ```tsx
-<Icon icon={Bold} />
+<Icon icon={X} />
 ```
 
 Contract: [docs/components/icon.md](../docs/components/icon.md)
 
-### Menu
+### Menu (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<`
+
+- `trigger: ReactElement`
+- `children: ReactNode`
+  `MenuItem` and `MenuSeparator` children, in the order they are read.
+- `open?: boolean`
+  Whether the menu is showing. Makes the component controlled.
+- `defaultOpen?: boolean`
+  Starting state for an uncontrolled menu. Conflicts with `open`.
+- `onOpenChange?: (open: boolean) => void`
+- `label?: string`
+  Names the list itself, for a trigger whose own name describes the button.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Menu
+            label="Account"
+            trigger={
+              <Button iconOnly aria-label="Account" variant="tertiary">
+                <Icon icon={User} />
+              </Button>
+            }
+          >
+            <MenuItem icon={Settings} onSelect={() => {}}>Settings</MenuItem>
+            <MenuItem onSelect={() => {}}>Sign out</MenuItem>
+          </Menu>
+```
 
 Contract: [docs/components/menu.md](../docs/components/menu.md)
 
-### Notice
+### MenuItem (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<ButtonHTMLAttributes<HTMLButtonElement>, "disabled" | "role" | "onSelect">`
+
+- `children: ReactNode`
+  The action's label.
+- `value?: string`
+- `onSelect?: () => void`
+- `disabled?: boolean` — default: `false`
+  Unavailable, but still focusable and announced — activation is guarded.
+- `destructive?: boolean`
+  Marks an action that removes something.
+- `selected?: boolean`
+- `icon?: LucideIcon`
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<MenuItem onSelect={() => {}}>Sign out</MenuItem>
+```
+
+Contract: [docs/components/menu-item.md](../docs/components/menu-item.md)
+
+### MobileNav (`@rata/react`)
+
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children" | "title">`
+
+- `sections: SideNavSection[]`
+  The destinations, grouped — the same shape SideNav takes.
+- `label?: string` — default: `"Main"`
+  Accessible name for the navigation landmark inside the drawer.
+- `title?: ReactNode` — default: `"Menu"`
+  The drawer's own name, shown at its top.
+- `triggerLabel?: string` — default: `"Menu"`
+  Accessible name for the control that opens the drawer.
+- `open?: boolean`
+  Whether the drawer is showing. Makes the component controlled.
+- `defaultOpen?: boolean`
+  Starting state for an uncontrolled drawer. Conflicts with `open`.
+- `onOpenChange?: (open: boolean) => void`
+- `closeLabel?: string` — default: `"Close"`
+  Accessible name for the drawer's close control.
+- `footer?: ReactNode`
+  Content pinned below the destinations — an account link, a sign-out.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<MobileNav
+              className="pg-drawer-trigger"
+              title="Ratā"
+              label="Sections"
+              sections={navSections}
+            />
+```
+
+Contract: [docs/components/mobile-nav.md](../docs/components/mobile-nav.md)
+
+### Notice (`@rata/react`)
+
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, "title" | "role">`
+
+- `children: ReactNode`
+  The message.
+- `variant?: NoticeVariant` — default: `"info"`
+  Which kind of message this is.
+- `live?: NoticeLive` — default: `"off"`
+  Whether assistive technology is told about this notice when it appears.
+- `title?: ReactNode`
+  A short first line above the message.
+- `icon?: LucideIcon | false`
+  Overrides the icon the variant chooses, or removes it.
+- `actions?: ReactNode`
+  Buttons or links for what to do about the message.
+- `onDismiss?: () => void`
+  Called when the reader closes the notice. Its presence is what renders the close button.
+- `dismissLabel?: string` — default: `"Dismiss"`
+  Accessible name for the close button.
+
+Real usage (from `apps/`):
+```tsx
+<Notice variant="warning">This project is read-only while the migration runs.</Notice>
+```
 
 Contract: [docs/components/notice.md](../docs/components/notice.md)
 
@@ -270,6 +428,100 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/radio-group.md](../docs/components/radio-group.md)
 
+### Search (`@rata/react`)
+
+Extends: `Omit<`
+
+- `label: ReactNode`
+  The field's accessible name. Required.
+- `labelHidden?: boolean` — default: `true`
+  Whether the label is off screen. Defaults to true, unlike every other field here.
+- `value?: string`
+  The query. Makes the component controlled.
+- `defaultValue?: string`
+  Starting query for an uncontrolled field. Conflicts with `value`.
+- `onValueChange?: (value: string) => void`
+  Called on every keystroke, and when the field is cleared.
+- `onSearch?: (value: string) => void`
+  Called when the reader commits the query, by pressing Enter.
+- `loading?: boolean`
+  A query is in flight. The leading glyph becomes a spinner.
+- `landmark?: boolean`
+  Wraps the field in a search landmark.
+- `placeholder?: string`
+- `size?: SearchSize` — default: `"md"`
+- `clearLabel?: string`
+  Accessible name for the clear control.
+- `disabled?: boolean`
+  Blocks the field while keeping it focusable and readable.
+- `id?: string`
+  Stable id for the input. Defaults to a generated one.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Search
+            label="Search the system"
+            placeholder="Search…"
+            size="sm"
+            value={search}
+            onValueChange={setSearch}
+          />
+```
+
+Contract: [docs/components/search.md](../docs/components/search.md)
+
+### SegmentedControl (`@rata/react`)
+
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children" | "role" | "onChange">`
+
+- `options: SegmentedControlOption[]`
+  The options, in the order they are read.
+- `value?: string`
+  The current answer. Makes the component controlled.
+- `defaultValue?: string`
+  Starting answer for an uncontrolled control. Defaults to the first option.
+- `onValueChange?: (value: string) => void`
+- `label?: string`
+  Accessible name. Required unless `labelledBy` names an element.
+- `labelledBy?: string`
+- `size?: SegmentedControlSize` — default: `"md"`
+- `fullWidth?: boolean`
+  Fills its container instead of hugging its options.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<SegmentedControl
+          label="Sort"
+          fullWidth
+          size="sm"
+          options={[
+            { value: "newest", label: "Newest" },
+            { value: "oldest", label: "Oldest" },
+          ]}
+        />
+```
+
+Contract: [docs/components/segmented-control.md](../docs/components/segmented-control.md)
+
+### SideNav (`@rata/react`)
+
+Extends: `Omit<HTMLAttributes<HTMLElement>, "children">`
+
+- `sections: SideNavSection[]`
+  The destinations, grouped. One unlabelled section is a flat nav.
+- `label?: string` — default: `"Sections"`
+  Accessible name for the navigation landmark.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<SideNav label="Sections" sections={navSections} />
+```
+
+Contract: [docs/components/side-nav.md](../docs/components/side-nav.md)
+
 ### Loading: Spinner (`@rata/react`)
 
 - `label?: string`
@@ -316,6 +568,39 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/switch.md](../docs/components/switch.md)
+
+### Tabs (`@rata/react`)
+
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children">`
+
+- `items: TabItem[]`
+  The tabs and their panels, in the order they are read.
+- `value?: string`
+  Which panel is showing. Makes the component controlled.
+- `defaultValue?: string`
+  Starting panel for uncontrolled tabs. Defaults to the first.
+- `onValueChange?: (value: string) => void`
+- `label?: string`
+  Accessible name for the tablist. Required unless `labelledBy` names an element.
+- `labelledBy?: string`
+- `orientation?: TabsOrientation` — default: `"horizontal"`
+- `activation?: TabsActivation` — default: `"automatic"`
+  Whether the arrow keys select as they move.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Tabs
+        label="Invoice"
+        items={[
+          { value: "details", label: "Details", content: "Amount, dates, and the client." },
+          { value: "history", label: "History", content: "Every change, most recent first." },
+          { value: "notes", label: "Notes", content: "Anything the team wrote down." },
+        ]}
+      />
+```
+
+Contract: [docs/components/tabs.md](../docs/components/tabs.md)
 
 ### Input: Text field (`@rata/react`)
 
@@ -415,6 +700,21 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/toggle-button-group.md](../docs/components/toggle-button-group.md)
+
+### TopNav (`@rata/react`)
+
+Extends: `Omit<HTMLAttributes<HTMLElement>, "children">`
+
+- `items?: TopNavItem[]` — default: `[]`
+- `label?: string` — default: `"Main"`
+  Accessible name for the navigation landmark.
+- `brand?: ReactNode`
+  The product's mark, at the start of the bar.
+- `actions?: ReactNode`
+  Controls at the end of the bar — search, account, notifications.
+- `className?: string`
+
+Contract: [docs/components/top-nav.md](../docs/components/top-nav.md)
 
 ### Visually hidden
 
@@ -575,25 +875,25 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-font-weight-medium`: `500`
 - `--rata-font-weight-regular`: `400`
 - `--rata-font-weight-semibold`: `600`
-- `--rata-motion-duration-fast`: `175ms`
-- `--rata-motion-duration-fast-max`: `235ms`
-- `--rata-motion-duration-fast-min`: `130ms`
-- `--rata-motion-duration-medium`: `410ms`
-- `--rata-motion-duration-medium-max`: `545ms`
-- `--rata-motion-duration-medium-min`: `310ms`
-- `--rata-motion-duration-slow`: `975ms`
-- `--rata-motion-duration-slow-max`: `1300ms`
-- `--rata-motion-duration-slow-min`: `730ms`
+- `--rata-motion-duration-fast`: `130ms`
+- `--rata-motion-duration-fast-max`: `175ms`
+- `--rata-motion-duration-fast-min`: `100ms`
+- `--rata-motion-duration-medium`: `210ms`
+- `--rata-motion-duration-medium-max`: `280ms`
+- `--rata-motion-duration-medium-min`: `160ms`
+- `--rata-motion-duration-slow`: `700ms`
+- `--rata-motion-duration-slow-max`: `935ms`
+- `--rata-motion-duration-slow-min`: `525ms`
 - `--rata-motion-duration-spin`: `800ms`
 - `--rata-motion-duration-spin-reduced`: `2000ms`
 - `--rata-motion-easing-enter`: `cubic-bezier(0, 0, 0.38, 0.9)`
 - `--rata-motion-easing-exit`: `cubic-bezier(0.2, 0, 1, 0.9)`
 - `--rata-motion-easing-standard`: `cubic-bezier(0.24, 1, 0.4, 1)`
-- `--rata-motion-interactive-duration`: `175ms`
+- `--rata-motion-interactive-duration`: `130ms`
 - `--rata-motion-interactive-easing`: `cubic-bezier(0.24, 1, 0.4, 1)`
-- `--rata-motion-modal-duration`: `975ms`
+- `--rata-motion-modal-duration`: `280ms`
 - `--rata-motion-modal-easing`: `cubic-bezier(0.24, 1, 0.4, 1)`
-- `--rata-motion-overlay-duration`: `410ms`
+- `--rata-motion-overlay-duration`: `210ms`
 - `--rata-motion-overlay-easing`: `cubic-bezier(0.24, 1, 0.4, 1)`
 - `--rata-opacity-12`: `0.12`
 - `--rata-opacity-50`: `0.5`
@@ -678,7 +978,7 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-theme-accent-role-subtle`: `#7CF9C8`
 - `--rata-theme-bg-canvas`: `#E8F3EE`
 - `--rata-theme-bg-muted`: `#DAE5E0`
-- `--rata-theme-bg-subtle`: `#E8F3EE`
+- `--rata-theme-bg-subtle`: `#EEF9F4`
 - `--rata-theme-bg-surface`: `#F3FFF9`
 - `--rata-theme-border-default`: `#151D1A1A`
 - `--rata-theme-border-strong`: `#84958D`
@@ -695,6 +995,7 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-theme-fg-primary`: `#151D1A`
 - `--rata-theme-fg-secondary`: `#3B4A43`
 - `--rata-theme-focus-ring`: `#008960`
+- `--rata-theme-scrim`: `#151D1A80`
 - `--rata-theme-secondary-role-bg`: `#F3FFF9`
 - `--rata-theme-secondary-role-border`: `#84958D`
 - `--rata-theme-secondary-role-fg`: `#151D1A`
@@ -771,4 +1072,4 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 
 ## Pages
 
-- `apps/playground/src/app.tsx` — shell: header → nav → main → section×13
+- `apps/playground/src/app.tsx` — shell: main → section×13

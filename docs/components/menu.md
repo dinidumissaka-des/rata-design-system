@@ -5,19 +5,242 @@
 
 A transient list of actions anchored to a trigger.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Menu } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `menu` |
 | Family | overlays |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
-| Depends on | `state-layer` |
+| Status (css / react / figma) | latest / latest / future |
+| Depends on | `state-layer`, `menu-item` |
+
+## Behavior
+
+A trigger and a list in the top layer. The list carries the `popover` attribute, so it escapes every overflow and stacking context without a portal and gets light-dismiss from the platform; CSS anchor positioning places it against the trigger and flips it near a viewport edge. No measurement code and no dependency — which matters more here than usual, because this registry is a copy-paste channel and a dependency becomes an install step for every consumer.
+
+Headless contract: `getMenuProps` in `packages/primitives/src/menu.ts` — importable from `@rata/primitives` without the React wrapper or any CSS.
+
+- **Focus always returns to the trigger on Escape and after a selection** — It is what makes the menu usable by keyboard at all: close it and the reader has to be somewhere, and the only place that makes sense is where they were. The primitive reports the close and the wrapper does the focusing, since moving focus is a DOM act. Light-dismiss is the exception — the reader clicked something else, and taking focus back would undo their own action.
+- **Selection closes the menu before `onSelect` runs** — So focus is already back on the trigger by the time the handler does anything. A handler that navigates, or opens a dialog, would otherwise be fighting a menu that is still tearing down, and the dialog would steal focus from a control that is about to vanish.
+- **A disabled row is reachable and announced** — The `aria-disabled` rule this whole system follows: arrow keys reach it, a screen reader reads it, and activation is refused. Most menus skip disabled rows entirely, which makes the list a different length depending on whether you are looking or listening.
+- **Tab closes the menu without trapping focus** — Someone tabbing through a page expects to keep going. Trapping focus is what a dialog does, because a dialog is modal and a menu is not.
+- **Typeahead cycles on a single character rather than buffering a prefix** — A buffer has to be cleared after a pause, which needs a timer, which needs state — and the primitive is a pure function with neither. Repeating a key walks the matching rows, which is what typeahead is actually used for. Typing `de` to reach Delete past Duplicate is the part that is missing, and it is documented rather than faked. It also ignores a keypress with Ctrl, Meta or Alt held: `event.key` for Ctrl+D is just "d", so without that check a browser shortcut was indistinguishable from someone typing, and typeahead both hijacked the key and preventDefault'd it.
+- **The list's open state is driven imperatively, not by popovertarget** — `popovertarget` would let the platform toggle the popover without telling React, and `open` would drift out of step with what is painted. The trigger's click goes through the primitive instead, and the popover's own `toggle` event is what keeps state honest when the platform closes it.
+- **The anchor name is generated per instance, not written in the stylesheet** — `anchor-name` is a global ident, and the spec resolves a duplicated one to the LAST acceptable anchor in tree order. A single name in the CSS therefore made every menu on a page position itself against whichever trigger came last, which is invisible until a second menu exists. CSS cannot mint a unique ident, so the component passes one in as a custom property — on both the trigger and the list, because a sibling inherits nothing. It is sanitised: React 18's `useId` produces `:r0:` and a colon is not valid in an ident.
 
 ## Props
 
-_None documented yet._
+Extends `Omit<`.
+
+| Prop | Type | Default | Summary |
+|---|---|---|---|
+| `trigger` | `ReactElement` | — | The control that opens the menu. |
+| `children` | `ReactNode` | — | `MenuItem` and `MenuSeparator`, in the order they are read. |
+| `open?` | `boolean` | — | Whether the menu is showing. Makes the component controlled. |
+| `defaultOpen?` | `boolean` | — | Starting state for an uncontrolled menu. |
+| `onOpenChange?` | `(open: boolean) => void` | — | Called when the menu should open or close. |
+| `label?` | `string` | — | Names the list itself, for a trigger whose own name describes the button. |
+| `className?` | `string` | — | Extra classes on the list, for placement — not for restyling it. |
+
+### `trigger`
+
+```ts
+trigger: ReactElement
+```
+
+The control that opens the menu.
+
+**Use when**
+
+- A `Button`. It is cloned to receive the trigger ARIA, a ref and the handlers.
+
+**Don't use for**
+
+- A `div` or a span. The trigger must be a real button or it is not reachable by keyboard, and none of the ARIA below means anything on a non-interactive element.
+- Passing `onClick` on it and expecting to be called. The menu owns that handler; put your own work in `onOpenChange`.
+
+**Accessibility** Receives `aria-haspopup="menu"`, `aria-expanded` and `aria-controls`. Its own text names the menu, which is why `label` is only for a trigger that has none.
+
+### `children`
+
+```ts
+children: ReactNode
+```
+
+`MenuItem` and `MenuSeparator`, in the order they are read.
+
+Source doc: `MenuItem` and `MenuSeparator` children, in the order they are read.
+
+**Use when**
+
+- Two to about seven actions. Longer than that and the reader is scanning, not choosing.
+
+**Don't use for**
+
+- Anything focusable that is not a `MenuItem`. The arrow keys walk the rows the menu knows about, and a stray button would be a tab stop the pattern does not account for.
+- A form. A menu is a list of actions; something to fill in belongs in a dialog.
+
+**Accessibility** Each row registers itself, so navigation follows DOM order rather than mount order — which is what the reader sees.
+
+### `open`
+
+```ts
+open?: boolean
+```
+
+Whether the menu is showing. Makes the component controlled.
+
+**Use when**
+
+- Opening the menu from somewhere else, or keeping it open across a re-render you drive.
+
+**Don't use for**
+
+- Passing it alongside `defaultOpen`. One of them owns the state.
+- Opening more than one at a time. The list is a `popover="auto"`, and the platform allows exactly one of those open at once — showing a second closes the first, and the menu reports that through `onOpenChange` rather than silently disagreeing with your state.
+
+**Conflicts with** `defaultOpen`
+
+**Accessibility** Controlled means the menu will not open unless you change this — the trigger still reports the request through `onOpenChange`, and `aria-expanded` follows whatever you set.
+
+### `defaultOpen`
+
+```ts
+defaultOpen?: boolean
+```
+
+Starting state for an uncontrolled menu.
+
+Source doc: Starting state for an uncontrolled menu. Conflicts with `open`.
+
+**Use when**
+
+- Almost never. A menu that is open before the reader asked for it covers the thing they were looking at.
+
+**Don't use for**
+
+- Using it as a way to show the menu on load. That is what a `Notice` or an inline panel is for.
+
+**Conflicts with** `open`
+
+**Accessibility** Focus is NOT moved into the menu, and that is deliberate: focus follows the reader's own action, and taking it on page load would be hostile. The first row is still the tab stop, so Tab reaches it and the arrow keys work from there. The same is true of setting `open` programmatically.
+
+### `onOpenChange`
+
+```ts
+onOpenChange?: (open: boolean) => void
+```
+
+Called when the menu should open or close.
+
+**Use when**
+
+- Controlled mode, to set `open`.
+- Uncontrolled mode, to react — closing a toolbar, or logging.
+
+**Don't use for**
+
+- Doing work that belongs in a row's `onSelect`. This fires for every close, including Escape and clicking away.
+
+### `label`
+
+```ts
+label?: string
+```
+
+Names the list itself, for a trigger whose own name describes the button.
+
+**Use when**
+
+- An icon-only trigger, where the button is named "Row actions" and the list needs naming separately.
+
+**Don't use for**
+
+- A trigger with visible text. The text already names the menu, and a second name would win over the one the reader can see.
+
+**Accessibility** Becomes the menu's `aria-label` and suppresses the `aria-labelledby` pointing at the trigger — never both, because two names on one node is a 4.1.2 problem rather than a fallback.
+
+### `className`
+
+```ts
+className?: string
+```
+
+Extra classes on the list, for placement — not for restyling it.
+
+**Use when**
+
+- Constraining the width when the actions are unusually long.
+
+**Don't use for**
+
+- Positioning it. Placement comes from anchor positioning in `menu.css`; a competing `position` here is how a menu ends up in the wrong place on one page only.
+
+## Use cases
+
+### Actions on a row
+
+The commonest case: a handful of things you can do to one item.
+
+```tsx
+<Menu trigger={<Button variant="secondary">Actions</Button>}>
+  <MenuItem onSelect={duplicate}>Duplicate</MenuItem>
+  <MenuItem onSelect={download}>Download</MenuItem>
+  <MenuSeparator />
+  <MenuItem destructive onSelect={remove}>Delete</MenuItem>
+</Menu>
+```
+
+The separator groups the destructive action away from the safe ones, so it is harder to hit by accident. `destructive` colours it; the separator is what actually puts distance between them.
+
+### An icon-only trigger, which needs the list named separately
+
+A dense table where a labelled button would not fit.
+
+```tsx
+<Menu
+  label="Row actions"
+  trigger={<Button iconOnly aria-label="Row actions" variant="tertiary"><Icon icon={Ellipsis} /></Button>}
+>
+  <MenuItem onSelect={edit}>Edit</MenuItem>
+  <MenuItem destructive onSelect={remove}>Delete</MenuItem>
+</Menu>
+```
+
+Both names are needed and they are not redundant: the button's `aria-label` names the control you press, and `label` names the list that appears. Without the second, the menu is announced with the button's name, which describes the wrong thing.
+
+### Don't: a menu standing in for a choice that should be a form control
+
+Never — this is the shape to recognise and avoid.
+
+```tsx
+{/* Don't: this is a select wearing a menu's clothes. */}
+<Menu trigger={<Button>Sort: {sort}</Button>}>
+  <MenuItem selected={sort === "name"} onSelect={() => setSort("name")}>Name</MenuItem>
+  <MenuItem selected={sort === "date"} onSelect={() => setSort("date")}>Date</MenuItem>
+</Menu>
+```
+
+Don't. A menu is a list of actions; a choice with a current answer is a `RadioGroup`, or a select once this system has one. `selected` exists for the narrow case where a menu genuinely reflects state — a view switcher — not as licence to build a picker out of actions.
+
+## Real usage in this repo
+
+```tsx
+<Menu
+            label="Account"
+            trigger={
+              <Button iconOnly aria-label="Account" variant="tertiary">
+                <Icon icon={User} />
+              </Button>
+            }
+          >
+            <MenuItem icon={Settings} onSelect={() => {}}>Settings</MenuItem>
+            <MenuItem onSelect={() => {}}>Sign out</MenuItem>
+          </Menu>
+```
 
 ## Token recipe
 
@@ -30,12 +253,18 @@ A transient list of actions anchored to a trigger.
 | background | `theme.bg.surface` |
 | border-radius | `radius.container` |
 | box-shadow | `theme.elevation.overlay` |
+| border | `border.default solid theme.border.default` |
 | padding | `space.1` |
-| item height | `size.control.sm` |
-| item padding-inline | `space.control.padding-inline.sm` |
-| item color | `theme.fg.primary` |
-| destructive item color | `theme.danger-role.fg` |
-| selected item background | `theme.accent-role.subtle` |
-| item hover/press | `compose the .rata-state-layer class` |
-| separator | `border.default solid theme.border.default` |
+| min-inline-size | `size.control.lg multiplied — the list should not be narrower than a control` |
+| font-size | `type.control.size.sm` |
 | enter transition | `motion.overlay.duration with motion.easing.enter` |
+| gap from the trigger | `space.gap.xs` |
+
+### separator
+
+A rule between groups of actions.
+
+| Property | Token |
+|---|---|
+| border-block-start | `border.default solid theme.border.default` |
+| margin-block | `space.1` |

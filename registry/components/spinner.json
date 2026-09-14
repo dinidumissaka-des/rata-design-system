@@ -3,6 +3,10 @@
   "title": "Loading: Spinner",
   "family": "loading",
   "description": "Inline loading indicator that scales with font size.",
+  "alsoKnownAs": [
+    "loader",
+    "loading-indicator"
+  ],
   "status": {
     "css": {
       "state": "latest",

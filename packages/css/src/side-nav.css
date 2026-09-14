@@ -1,0 +1,150 @@
+/* SideNav — a vertical navigation rail, grouped into named sections.
+
+   No background of its own, deliberately: the rail sits on whatever surface
+   the page gives it, so the same component works against the canvas and
+   inside a panel. Its width is the page's to set too — a rail that states its
+   own is a rail that fights every layout it is put in. */
+.rata-side-nav {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-stack-md);
+  padding-block: var(--rata-space-padding-sm);
+  /* No inline padding, deliberately. The rows fill the rail's width so the
+     whole row is the target, and so they line up with whatever else the page
+     puts in the rail — a search field, a button — rather than sitting 12px
+     inside it. Inline padding here doubles up with the page's own gutter and
+     is what made that misalignment: the page indents the rail, then the rail
+     indents its rows again.
+
+     Block padding stays: vertical breathing room inside the rail affects
+     nothing outside it, which is the difference. */
+  font-family: var(--rata-font-family-sans);
+}
+
+.rata-side-nav-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-stack-2xs);
+}
+
+/* The group's accessible name, pointed at by its list — not a heading, because
+   a nav cannot know what level it sits under and a wrong one breaks heading
+   navigation for the whole page. Same reasoning as Notice's title. */
+.rata-side-nav-section-label {
+  padding-inline: var(--rata-space-control-padding-inline-sm);
+  color: var(--rata-theme-fg-muted);
+  font-size: var(--rata-type-supporting-size);
+  font-weight: var(--rata-type-label-weight);
+  text-transform: var(--rata-type-label-text-transform);
+}
+
+.rata-side-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-stack-2xs);
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+  /* The list semantics are for assistive technology; the bullets are not. */
+  list-style: none;
+}
+
+/* Fills the rail so the whole row is the target, not just the words. */
+.rata-side-nav-link {
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--rata-space-gap-sm);
+  block-size: var(--rata-size-control-md);
+  padding-inline: var(--rata-space-control-padding-inline-sm);
+  border-radius: var(--rata-radius-element);
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-control-size-sm);
+  font-weight: var(--rata-type-control-weight);
+  text-decoration: none;
+}
+
+.rata-side-nav-link:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style)
+    var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* The page you are on: a tinted row, plus aria-current in the markup.
+
+   The tint is accent-role.subtle with fg.primary on it — a pairing the token
+   contracts verify for text at any size — rather than the saturated fill,
+   which is a non-text indicator tone.
+
+   There was an accent bar on the inline-start edge as well, removed on
+   request. Worth knowing what that costs: the remaining visual distinction is
+   entirely colour — a background tint and a text tone — so a reader who
+   cannot tell those apart has only aria-current, which is announced but not
+   seen. A weight change on the current row would put a non-colour cue back
+   without reintroducing the bar. */
+.rata-side-nav-link[aria-current="page"] {
+  background: var(--rata-theme-accent-role-subtle);
+  color: var(--rata-theme-fg-primary);
+}
+
+/* A destination with pages nested under it. Looks like the links around it
+   because to the reader it is one of them; it is a button because it expands
+   rather than navigates. */
+.rata-side-nav-trigger {
+  inline-size: 100%;
+  border: var(--rata-space-0);
+  background: transparent;
+  font-family: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+/* Takes the slack so the chevron sits against the rail's end, however short
+   the label is. */
+.rata-side-nav-trigger-label {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+/* The parent of the current page. A weight change rather than the tint the
+   page itself gets — you are not on this one, you are inside what it leads
+   to, and the two states should not look identical. */
+.rata-side-nav-trigger[aria-current="true"] {
+  color: var(--rata-theme-fg-primary);
+}
+
+.rata-side-nav-chevron {
+  flex-shrink: 0;
+  transition: rotate var(--rata-motion-interactive-duration)
+    var(--rata-motion-interactive-easing);
+}
+
+.rata-side-nav-trigger[aria-expanded="true"] .rata-side-nav-chevron {
+  rotate: 180deg;
+}
+
+/* The nested list, expanded in place. Indented from its parent so the nesting
+   is visible rather than implied by order alone — the same reasoning the
+   playground's own nested checkbox rows follow. */
+.rata-side-nav-sublist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-stack-2xs);
+  margin: var(--rata-space-0);
+  margin-block-start: var(--rata-space-stack-2xs);
+  margin-inline-start: var(--rata-space-control-padding-inline-md);
+  padding: var(--rata-space-0);
+  list-style: none;
+  /* A rule down the group, so the nested rows read as belonging to the
+     trigger above them even when scrolled away from it. */
+  border-inline-start: var(--rata-border-default) solid
+    var(--rata-theme-border-default);
+  padding-inline-start: var(--rata-space-gap-sm);
+}
+
+/* A step smaller than its parent: the nesting is the hierarchy, and repeating
+   it in the type would say the same thing twice. */
+.rata-side-nav-sublink {
+  block-size: var(--rata-size-control-sm);
+}

@@ -1,0 +1,174 @@
+/* Search — a search field with a clear control and an in-flight state.
+
+   Shares text-field's look deliberately, down to its focus treatment: a
+   search and a field sitting in one toolbar have to read as the same kind of
+   control. That treatment is text-field's documented departure from the
+   system ring — the indicator is the field's own border plus an outline in
+   theme.fg.primary rather than theme.focus-ring, because it measures 16.75:1
+   against the fill where the focus ring gives 4.31:1. See text-field.css for
+   the full reasoning and the cost. */
+.rata-search {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-stack-2xs);
+}
+
+.rata-search-label {
+  color: var(--rata-theme-fg-primary);
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-label-size);
+  font-weight: var(--rata-type-label-weight);
+  line-height: var(--rata-type-label-line-height);
+}
+
+/* The positioning context for the glyph and the clear control, both of which
+   sit over the input rather than beside it — so the input keeps its own
+   border as the visible box and the focus outline stays a single stroke
+   around the whole control. */
+.rata-search-control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.rata-search-input {
+  box-sizing: border-box;
+  inline-size: 100%;
+  /* An input inherits neither family nor size from the page, so both are
+     stated — the same constants text-field uses, so their text measures alike. */
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-control-size-md);
+  line-height: var(--rata-type-control-line-height-md);
+  border: var(--rata-border-default) solid var(--rata-theme-border-strong);
+  border-radius: var(--rata-radius-element);
+  background: var(--rata-theme-bg-surface);
+  color: var(--rata-theme-fg-primary);
+  transition:
+    border-color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing),
+    box-shadow var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing);
+}
+
+/* WebKit and Blink draw their own clear button for type="search". Left alone
+   there would be two, one of them unstyled, unlabelled, and invisible to this
+   component's state. */
+.rata-search-input::-webkit-search-cancel-button,
+.rata-search-input::-webkit-search-decoration {
+  appearance: none;
+}
+
+.rata-search-input::placeholder {
+  color: var(--rata-theme-fg-muted);
+}
+
+/* Sizes — the box, not the text, matching .rata-button and
+   .rata-text-field-input step for step so all three line up in a row.
+
+   The inline padding is asymmetric because two controls sit over the field.
+   The end side reserves room for the clear control WHETHER OR NOT it is
+   showing: reserving only when present would reflow the query text under the
+   reader's cursor the moment they typed their first character. */
+.rata-search-input--sm {
+  block-size: var(--rata-size-control-sm);
+  padding-inline-start: calc(
+    var(--rata-space-control-padding-inline-sm) + var(--rata-size-icon-text) +
+      var(--rata-space-gap-sm)
+  );
+  padding-inline-end: calc(
+    var(--rata-space-control-padding-inline-sm) + var(--rata-size-control-sm)
+  );
+}
+
+.rata-search-input--md {
+  block-size: var(--rata-size-control-md);
+  padding-inline-start: calc(
+    var(--rata-space-control-padding-inline-md) + var(--rata-size-icon-text) +
+      var(--rata-space-gap-sm)
+  );
+  padding-inline-end: calc(
+    var(--rata-space-control-padding-inline-md) + var(--rata-size-control-sm)
+  );
+}
+
+.rata-search-input--lg {
+  block-size: var(--rata-size-control-lg);
+  padding-inline-start: calc(
+    var(--rata-space-control-padding-inline-lg) + var(--rata-size-icon-text) +
+      var(--rata-space-gap-sm)
+  );
+  padding-inline-end: calc(
+    var(--rata-space-control-padding-inline-lg) + var(--rata-size-control-sm)
+  );
+}
+
+/* Same inset band text-field uses, and idle-only for the same reason: it is
+   drawn inside the border so the control's outer edge never moves. */
+.rata-search:not([data-disabled]) .rata-search-input:hover {
+  box-shadow: inset 0 0 0 var(--rata-border-2) var(--rata-theme-bg-muted);
+}
+
+.rata-search-input:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style)
+    var(--rata-theme-fg-primary);
+  outline-offset: var(--rata-space-0);
+  border-color: var(--rata-theme-fg-primary);
+}
+
+/* The leading glyph, and the spinner that replaces it in flight. Both are
+   decorative — the label names the field — and neither takes pointer events,
+   so clicking the magnifier focuses the input underneath it. */
+.rata-search-glyph {
+  position: absolute;
+  inset-inline-start: var(--rata-space-control-padding-inline-md);
+  display: inline-flex;
+  align-items: center;
+  color: var(--rata-theme-fg-muted);
+  pointer-events: none;
+}
+
+/* Keyed off the root's data-size rather than a sibling selector on the input,
+   so the glyph's offset does not depend on which order the two are written in. */
+.rata-search[data-size="sm"] .rata-search-glyph {
+  inset-inline-start: var(--rata-space-control-padding-inline-sm);
+}
+
+.rata-search[data-size="lg"] .rata-search-glyph {
+  inset-inline-start: var(--rata-space-control-padding-inline-lg);
+}
+
+/* The clear control. Same construction as Notice's and Dialog's dismiss:
+   transparent, taking its colour from the text, so it cannot clash with the
+   field it sits on.
+
+   size.control.sm is 28px, under WCAG 2.5.8's 44px, and conforms the same way
+   the checkbox and radio rows do — through the spacing exception, since
+   nothing interactive is adjacent to it inside the field. */
+.rata-search-clear {
+  box-sizing: border-box;
+  position: absolute;
+  inset-inline-end: var(--rata-space-0-5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--rata-size-control-sm);
+  block-size: var(--rata-size-control-sm);
+  padding: var(--rata-space-0);
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-inner);
+  background: transparent;
+  color: var(--rata-theme-fg-secondary);
+  cursor: pointer;
+}
+
+.rata-search-clear:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style)
+    var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+.rata-search[data-disabled] {
+  opacity: var(--rata-state-disabled-opacity);
+}
+
+.rata-search[data-disabled] .rata-search-input {
+  cursor: default;
+}

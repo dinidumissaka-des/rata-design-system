@@ -27,5 +27,10 @@ export const slateTheme = defineTheme({
   // Squarer than base.
   radius: { base: 4, multiplier: 0.5, steps: { inner: 2, element: 3, container: 4, chat: 7, page: 8 } },
 
-  motion: { fast: 100, medium: 250, slow: 600, ratio: 0.75 },
+  // Snappier than base on every band, which is the point of stating it at all.
+  // Base's own tempo came down (its medium band was too slow for entrances),
+  // so this came down with it — at the old 250 the medium band would have been
+  // *slower* than base and the brand would have stopped demonstrating what its
+  // docstring above claims.
+  motion: { fast: 100, medium: 170, slow: 600, ratio: 0.75 },
 });

@@ -13,10 +13,10 @@ A theme states seeds. The engine expands them.
 
 ```js
 // packages/tokens/src/themes/base.mjs
-color:      { accent: "#2563EB", neutralStyle: "cool", contrast: "standard" },
+color:      { accent: "#1F7A5B", neutralStyle: "cool", contrast: "standard" },
 typography: { scale: { base: 14, ratio: 1.2 } },
 radius:     { base: 4, multiplier: 1, steps: {...} },
-motion:     { fast: 175, medium: 410, slow: 975, ratio: 0.75 },
+motion:     { fast: 130, medium: 210, slow: 700, ratio: 0.75 },
 ```
 
 That is the whole colour, type, radius and motion definition. 127 tokens come

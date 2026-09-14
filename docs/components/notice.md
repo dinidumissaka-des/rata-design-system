@@ -5,33 +5,332 @@
 
 An inline banner carrying an informational, success, warning, or error message.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Notice } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `notice` |
 | Family | feedback |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
-| Depends on | — |
+| Status (css / react / figma) | latest / latest / future |
+| Depends on | `icon` |
+
+## Behavior
+
+A plain div. There is no primitive: nothing here owns keyboard interaction, roving focus or an activation to guard, and the one stateful thing — whether the notice is still on screen — belongs to the caller, who is the only one who knows what replaces it.
+
+- **When it announces is a prop, not a consequence of the variant** — A live region announces *changes*. A notice already on the page at load is therefore either read out of context during load or not at all, while one that appears because the user pressed something must be read, since their attention is on the button. That distinction is about when the notice arrived, not what it says: a validation summary rendered at load and an error that appears after a failed save are the same variant with opposite requirements. Deriving it from `variant` would get one of them wrong every time, so `live` is explicit and silent by default.
+- **The icon is on by default** — Colour is the only thing separating the four variants, so the icon is the 1.4.1 redundancy rather than decoration — which is also why it is aria-hidden: it repeats the severity the text already carries, and a glyph that could disagree with its message is worse than no glyph.
+- **`info` is tinted neutral, not with the brand accent** — There is no info role in the token set, and the obvious substitute — accent-role.subtle — moves with the brand. In rust (#C22D05) or ember an informational notice would be tinted red and read as an error, which is a worse failure than looking plain. bg.muted with fg.primary is the same pairing Badge's neutral uses and is safe in all seven brands.
+- **`title` is a styled paragraph, never a heading element** — A notice cannot know what heading level it sits under, and a wrong level breaks the document outline for anyone navigating by headings — a quieter failure than an unstyled title, and a harder one to notice.
 
 ## Props
 
-_None documented yet._
+Extends `Omit<HTMLAttributes<HTMLDivElement>, "title" | "role">`.
+
+| Prop | Type | Default | Summary |
+|---|---|---|---|
+| `children` | `ReactNode` | — | The message. |
+| `variant?` | `NoticeVariant` | `"info"` | Which kind of message this is. |
+| `live?` | `NoticeLive` | `"off"` | Whether assistive technology is told about this notice when it appears. |
+| `title?` | `ReactNode` | — | A short first line above the message. |
+| `icon?` | `LucideIcon \| false` | — | Overrides the icon the variant chooses, or removes it. |
+| `actions?` | `ReactNode` | — | Buttons or links for what to do about the message. |
+| `onDismiss?` | `() => void` | — | Called when the reader closes the notice. Its presence is what renders the close button. |
+| `dismissLabel?` | `string` | `"Dismiss"` | Accessible name for the close button. |
+
+### `children`
+
+```ts
+children: ReactNode
+```
+
+The message.
+
+**Use when**
+
+- One or two sentences saying what happened and, when there is one, what to do about it.
+
+**Don't use for**
+
+- A bare status word. "Error" tells the reader nothing they cannot already see from the colour.
+- A paragraph. A notice is read in passing; anything longer belongs on the page itself.
+
+**Accessibility** The text carries the meaning. The icon beside it is aria-hidden, so this is the only thing announced besides `title`.
+
+### `variant`
+
+```ts
+variant?: NoticeVariant = "info"
+```
+
+Which kind of message this is.
+
+**Use when**
+
+- `info` for context the reader did not ask for but benefits from — the default.
+- `success` to confirm something completed.
+- `warning` for something that will go wrong if it is left alone.
+- `danger` for something that has already gone wrong.
+
+**Don't use for**
+
+- `danger` for "important". It means something is broken, and spending it on emphasis is how readers learn to ignore it.
+- `warning` where the reader has nothing to do. A warning with no action is just noise in a louder colour.
+
+**Accessibility** Colour alone never carries the severity: each variant also gets its own icon, and the text states the problem. `info` is tinted neutral rather than with the brand accent, so it cannot impersonate an error in a red or orange brand.
+
+### `live`
+
+```ts
+live?: NoticeLive = "off"
+```
+
+Whether assistive technology is told about this notice when it appears.
+
+**Use when**
+
+- `off` for a notice that is part of the page when it loads — the default, and correct more often than it looks.
+- `polite` for a notice that appears in response to something the user did and can wait for a pause: a save confirmation.
+- `assertive` only when the user must stop: their work failed to save, or a deadline just passed.
+
+**Don't use for**
+
+- `assertive` as the default for `danger`. It interrupts whatever is being read mid-sentence, and most errors can wait one clause.
+- Any live setting on a notice that is present at page load. There is no change to announce, so it is read out of context or silently dropped.
+- More than one assertive region on a screen. They interrupt each other and the user hears fragments.
+
+**Accessibility** `polite` renders `role="status"`, `assertive` renders `role="alert"`, and `off` renders no role at all. A live region must already be in the document before its content arrives, so `{error && <Notice live="assertive">…}` is unreliable — the persistent wrapper has to be yours. See the usage case below.
+
+### `title`
+
+```ts
+title?: ReactNode
+```
+
+A short first line above the message.
+
+**Use when**
+
+- A notice long enough that the reader needs to know whether it concerns them before reading it.
+
+**Don't use for**
+
+- Repeating the variant. "Error" over an error notice adds a line and no information.
+- A title on a one-line notice. The line is already the title.
+
+**Accessibility** Renders as a styled paragraph, not an `<h2>`. A notice cannot know the heading level it sits under, and announcing a wrong one breaks heading navigation for the whole page.
+
+### `icon`
+
+```ts
+icon?: LucideIcon | false
+```
+
+Overrides the icon the variant chooses, or removes it.
+
+**Use when**
+
+- A glyph more specific than the severity when the notice is about one recognisable thing — a clock for an expiry, a lock for a permission.
+- `false` only where a parent already shows the severity and a second glyph is noise.
+
+**Don't use for**
+
+- `false` to save space. The icon is the non-colour cue for the variant; removing it leaves colour carrying the severity alone.
+- An icon that contradicts the variant. It is aria-hidden, so a screen reader cannot correct the impression it gives a sighted reader.
+
+**Accessibility** Always `aria-hidden`, whichever glyph it is: it repeats the severity the text and the variant already carry.
+
+### `actions`
+
+```ts
+actions?: ReactNode
+```
+
+Buttons or links for what to do about the message.
+
+**Use when**
+
+- One action, occasionally two: "Retry", or "Retry" and "Download the log".
+- `Button` with `variant="secondary"` or a plain link — a notice is not the page's primary call to action.
+
+**Don't use for**
+
+- A third action. At that point the notice is a form and belongs in a dialog.
+- The dismiss control. That is `onDismiss`, which places and names it for you.
+
+**Accessibility** Rendered after the message in DOM order, so it is reached after the text explaining it. Each action needs its own accessible name — "Retry" is fine; an icon-only button here needs `aria-label` like anywhere else.
+
+### `onDismiss`
+
+```ts
+onDismiss?: () => void
+```
+
+Called when the reader closes the notice. Its presence is what renders the close button.
+
+**Use when**
+
+- A notice the reader can finish with: a confirmation, or a tip.
+- Removing the notice from your own state in the handler — `Notice` does not hide itself, because it cannot know what should fill the space.
+
+**Don't use for**
+
+- A notice reporting a condition that is still true. Dismissing an unsaved-changes warning does not save the changes, and offering the button implies it might.
+- Relying on it to unmount anything. The handler is yours; nothing happens to the notice unless you make it happen.
+
+**Accessibility** Dismissing destroys the element that had focus, so focus falls to `<body>` and the reader loses their place. `Notice` cannot know where focus belongs next — move it in your handler, usually to whatever the notice was about.
+
+### `dismissLabel`
+
+```ts
+dismissLabel?: string = "Dismiss"
+```
+
+Accessible name for the close button.
+
+**Use when**
+
+- Translating it, or naming what is being dismissed when several notices are on screen at once: "Dismiss the payment warning".
+
+**Don't use for**
+
+- An empty string. The button is icon-only, so this is the only name it has.
+
+**Accessibility** Becomes the button's `aria-label`. Without it the control announces as an unnamed button, which is a 4.1.2 failure.
+
+## Use cases
+
+### A page-level message that is there when the page loads
+
+The commonest case, and the one where `live` should stay off.
+
+```tsx
+<Notice variant="warning">
+  This project is read-only while the migration runs.
+</Notice>
+```
+
+No `live`: there is no change to announce. A screen reader reaches this in document order like any other content, which is the behaviour you want for something that was always on the page.
+
+### An error that appears after an action, announced correctly
+
+The user pressed Save and it failed. Their attention is on the button, not on the banner.
+
+```tsx
+{/* The wrapper is always rendered, so the live region exists
+    before the notice arrives. Rendering the Notice itself
+    conditionally is what makes announcements unreliable. */}
+<div aria-live="polite">
+  {error ? (
+    <Notice variant="danger" title="Could not save" actions={<Button variant="secondary" onClick={retry}>Retry</Button>}>
+      {error.message}
+    </Notice>
+  ) : null}
+</div>
+```
+
+`polite` on the wrapper rather than `live` on the Notice, because the region has to pre-exist its content. Use `live` on the Notice when the notice itself is always mounted and only its text changes.
+
+### A dismissible confirmation, with focus handled
+
+Something succeeded and the reader can be done with the message.
+
+```tsx
+{/* `live` stays off and the region sits on the wrapper: the notice is
+    mounted at the same moment its text appears, and a live region has
+    to pre-exist its content to be announced reliably. */}
+<div aria-live="polite">
+  {sent ? (
+    <Notice
+      variant="success"
+      onDismiss={() => {
+        setSent(false);
+        // Dismissing destroys the focused button, so focus has to go
+        // somewhere deliberate rather than fall to <body>.
+        tableRef.current?.focus();
+      }}
+    >
+      Invitations sent to 12 people.
+    </Notice>
+  ) : null}
+</div>
+```
+
+The handler does two things, neither of which happens on its own: `Notice` does not own its visibility, and it cannot guess where the reader's place was. Reach for `live` on the notice itself only when the notice stays mounted and only its children change — a status line that updates in place, not a banner that appears.
+
+## Real usage in this repo
+
+```tsx
+<Notice variant="warning">This project is read-only while the migration runs.</Notice>
+```
 
 ## Token recipe
 
 ### base
 
-An inline banner. Only the tinted subtle backgrounds carry text; the saturated role fills do not.
+The shared frame. Only the tinted subtle backgrounds carry text; the saturated role fills are not used here at all — they are non-text indicator tones, and text on them is a recorded contrast gap.
 
 | Property | Token |
 |---|---|
-| info background / text | `theme.accent-role.subtle / theme.accent-role.fg` |
-| success background / text | `theme.success-role.subtle / theme.success-role.fg` |
-| warning background / text | `theme.warning-role.subtle / theme.warning-role.fg` |
-| error background / text | `theme.danger-role.subtle / theme.danger-role.fg` |
 | padding | `space.padding.sm space.padding.md` |
 | border-radius | `radius.element` |
 | gap between icon and text | `space.gap.sm` |
-| leading accent bar (optional) | `the matching role bg — a non-text use` |
+| gap between title and message | `space.stack.2xs` |
+| gap between message and actions | `space.stack.xs` |
+| font-size | `type.body.size` |
+| line-height | `type.body.line-height` |
+| title font-weight | `type.label.weight` |
+| icon size | `size.icon.text` |
+
+### info
+
+Tinted neutral rather than with the brand accent: there is no info role, and accent-role.subtle moves with the brand, so in a red or orange theme an info notice would read as an error.
+
+| Property | Token |
+|---|---|
+| background | `theme.bg.muted` |
+| color | `theme.fg.primary` |
+
+### success
+
+The role's subtle tint with its own foreground.
+
+| Property | Token |
+|---|---|
+| background | `theme.success-role.subtle` |
+| color | `theme.success-role.fg` |
+
+### warning
+
+The role's subtle tint with its own foreground.
+
+| Property | Token |
+|---|---|
+| background | `theme.warning-role.subtle` |
+| color | `theme.warning-role.fg` |
+
+### danger
+
+The role's subtle tint with its own foreground.
+
+| Property | Token |
+|---|---|
+| background | `theme.danger-role.subtle` |
+| color | `theme.danger-role.fg` |
+
+### dismiss
+
+The close button, when `onDismiss` is passed. It takes currentColor so the glyph always matches the variant's foreground and cannot clash with the tint it sits on — which is also why it is not a Button: a tertiary Button would bring its own colour into a tinted surface.
+
+| Property | Token |
+|---|---|
+| color | `currentColor — inherited from the variant's own foreground` |
+| glyph size | `size.icon.text` |
+| target inline-size / block-size | `size.control.sm` |
+| border-radius | `radius.inner` |
+| hover / press | `compose the .rata-state-layer class` |
+| focus ring | `theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible` |
+| background | `transparent — the variant's tint shows through` |

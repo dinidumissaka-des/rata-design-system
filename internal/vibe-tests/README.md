@@ -50,6 +50,15 @@ Each candidate is checked for:
 | `missing-focus-ring` | error | A focusable control that never draws one |
 | `hand-rolled-hover` | warn | A background swap where `.rata-state-layer` belongs |
 | `native-disabled-styling` | warn | `:disabled`, which drops the control from the tab order |
+| `state-scoped-layout` | warn | Layout on `[open]` / `:popover-open`, which snaps while `display` is held |
+
+`state-scoped-layout` comes from a bug that shipped in this repo's Dialog. A top-layer
+overlay transitions `display` with `allow-discrete`, so on close `display` is *held* at its
+open value for the length of the exit — while every other declaration on the same state
+selector reverts the instant the attribute goes. A property that cannot animate therefore
+snaps: `flex-direction: column` beside `display: flex` on `[open]` laid the dialog's header,
+body and footer out in a row for the whole closing animation. The invariant is that a state
+selector carries `display` and nothing else layout depends on.
 
 `forbidden-pairing` is an error when the combination fails in every theme (white on
 `theme.warning-role.bg`), and a warning when it is verified in one theme and a known gap in

@@ -152,6 +152,33 @@ test("warns on hand-rolled hover and native disabled styling", () => {
   );
 });
 
+test("flags layout scoped to an overlay's open state", () => {
+  // The bug this exists for: `display` is the one property a top-layer overlay
+  // transitions with allow-discrete, so it is held at its open value for the
+  // whole exit while everything else on the same selector reverts at once.
+  // flex-direction cannot ease, so it snaps and the children re-lay-out for
+  // the length of the closing animation.
+  assert.ok(
+    rules(".d[open] { display: flex; flex-direction: column; }").includes("state-scoped-layout")
+  );
+  assert.ok(
+    rules(".m:popover-open { display: flex; grid-auto-flow: row; }").includes(
+      "state-scoped-layout"
+    )
+  );
+
+  // `display` alone is the whole point of the state selector.
+  assert.ok(!rules(".d[open] { display: flex; }").includes("state-scoped-layout"));
+  // Animatable, or meant to revert at once — neither snaps visibly.
+  assert.ok(
+    !rules(".d[open] { opacity: 1; translate: 0 0; pointer-events: auto; }").includes(
+      "state-scoped-layout"
+    )
+  );
+  // Nothing to do with an overlay's open state.
+  assert.ok(!rules(".card { flex-direction: column; }").includes("state-scoped-layout"));
+});
+
 test("rata-allow records a deliberate exception", () => {
   const css = `/* rata-allow: hardcoded-motion — the spin cycle has no token */
     .spinner { animation: spin 0.8s linear infinite; }`;
