@@ -10,7 +10,7 @@
 // theme.fg.on-accent, or that a tinted region wants accent-role.subtle
 // instead. That is what the contract knows.
 import { useRef } from "react";
-import { Panel, Sheet } from "@rata/react";
+import { Sheet } from "@rata/react";
 import { NARROW, useMediaQuery } from "./use-media-query.js";
 import usage from "@rata/tokens/usage";
 
@@ -103,16 +103,34 @@ function Ratios({ measured }: { measured: Record<string, number> }) {
 }
 
 /**
- * The full contract for one token, in whichever container fits.
+ * The full contract for one token, in a Sheet from whichever edge fits.
  *
- * THIS IS THE PAIR PANEL AND SHEET WERE SPLIT FOR. On a wide viewport the
- * documentation is a Panel: in the layout, beside the swatch grid, because
- * reading a token's contract against the swatches still on screen is the
- * whole task. Narrow, there is no column to give it — so the same content
- * becomes a bottom Sheet, which covers the grid it can no longer sit beside
- * and is modal about it, as anything covering the page has to be.
+ * This was a Panel on wide viewports — in the layout, beside the swatch grid,
+ * on the argument that reading a token's contract against the swatches still
+ * on screen is the task. The argument holds in general and lost here on
+ * measure: a rail has to leave the grid room, which capped it at 324px, and
+ * this content is long-form prose with code in it. Purpose, use-for,
+ * do-not-use-for, the substitutions and the measured pairings each wrapped
+ * every few words, and a contract nobody can read comfortably is not
+ * serving the comparison either.
  *
- * Nothing but the container changes. `TokenDocBody` is rendered by both.
+ * So it is a Sheet at `size="lg"` — 648px — and the cost is real and
+ * accepted: a sheet is modal, so the grid behind it is inert while it is
+ * open. You no longer compare against the swatches; you read one contract
+ * at a time.
+ *
+ * One component from either edge: `block-end` on a narrow viewport, where the
+ * bottom is where a thumb already is, and `inline-end` on a wide one, which
+ * is where the rail used to sit. `edge` exists so that is one prop rather
+ * than two components.
+ *
+ * Panel is still the right component for a rail whose content fits one, and
+ * its own page in this playground demonstrates it. It is no longer used by
+ * the playground's chrome.
+ *
+ * Kept deliberately free of attribute-level comments: this JSX is scanned
+ * into `docs/components/sheet.md` as the component's real usage in this repo,
+ * and comments between props land there verbatim.
  */
 export function TokenDoc({ path, onClose }: { path: string | null; onClose: () => void }) {
   const narrow = useMediaQuery(NARROW);
@@ -126,45 +144,21 @@ export function TokenDoc({ path, onClose }: { path: string | null; onClose: () =
   if (path !== null) retained.current = path;
   const shown = path ?? retained.current;
 
-  if (narrow) {
-    return (
-      <Sheet
-        open={path !== null}
-        onClose={() => onClose()}
-        edge="block-end"
-        size="lg"
-        title={<code>{shown ?? ""}</code>}
-        dismissLabel={shown === null ? "Close" : `Close documentation for ${shown}`}
-      >
-        {shown !== null && <TokenDocBody path={shown} />}
-      </Sheet>
-    );
-  }
-
-  if (path === null) return null;
-
   return (
-    // This rail was hand-rolled until Panel existed: its own <aside>, its own
-    // head, its own close button with its own focus ring, and `width: 340px`
-    // — a bare pixel value in a repo whose first rule is that there are none.
-    // What is left here is placement, which is what Panel's contract says the
-    // page owns.
-    <Panel
-      className="pg-inspector"
-      title={<code>{path}</code>}
-      headingLevel={3}
-      onClose={onClose}
-      // Not "Close": the page can have this open beside a grid of swatches,
-      // and a control named for the thing it closes is the difference between
-      // a useful announcement and "button".
-      closeLabel={`Close documentation for ${path}`}
+    <Sheet
+      open={path !== null}
+      onClose={() => onClose()}
+      edge={narrow ? "block-end" : "inline-end"}
+      size="lg"
+      title={<code>{shown ?? ""}</code>}
+      dismissLabel={shown === null ? "Close" : `Close documentation for ${shown}`}
     >
-      <TokenDocBody path={path} />
-    </Panel>
+      {shown !== null && <TokenDocBody path={shown} />}
+    </Sheet>
   );
 }
 
-/** The documentation itself, identical in both containers. */
+/** The documentation itself, identical from either edge. */
 function TokenDocBody({ path }: { path: string }) {
   const { entry, matchedPath, exact, step } = lookupTokenDoc(path);
   const { verified, gaps } = contrastFor(path);

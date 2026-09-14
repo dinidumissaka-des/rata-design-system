@@ -445,25 +445,6 @@ code {
 
 /* rata-allow: hardcoded-dimension — the inspector rail is a playground layout
    constant, the same kind as .pg-sidebar's width, not a step on the scale */
-/* Placement only, which is all that is left now Panel draws the rail. The
-   surface, the border, the head, the close control and the body's scrolling
-   all come from the component — this states where it sits and how wide it is,
-   which its contract says is the page's job.
-
-   The measure was `width: 340px`. It is control-lg x 9 = 324px now: close to
-   the number that was there, but derived, so it moves with the scale instead
-   of being a value someone once liked.
-
-   Sticks BELOW the header rather than at 0. It was `top: 0` from before the
-   top nav became fixed, which put the panel's own heading underneath it. */
-.pg-inspector {
-  flex-shrink: 0;
-  inline-size: calc(var(--rata-size-control-lg) * 9);
-  position: sticky;
-  inset-block-start: var(--pg-header-block-size);
-  max-block-size: calc(100dvh - var(--pg-header-block-size));
-}
-
 .pg-inspector-meta {
   display: flex;
   align-items: center;

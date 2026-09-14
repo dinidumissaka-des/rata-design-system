@@ -4244,7 +4244,7 @@
         }
       }
     },
-    "example": "<Sheet\n        open={path !== null}\n        onClose={() => onClose()}\n        edge=\"block-end\"\n        size=\"lg\"\n        title={<code>{shown ?? \"\"}</code>}\n        dismissLabel={shown === null ? \"Close\" : `Close documentation for ${shown}`}\n      >\n        {shown !== null && <TokenDocBody path={shown} />}\n      </Sheet>"
+    "example": "<Sheet\n      open={path !== null}\n      onClose={() => onClose()}\n      edge={narrow ? \"block-end\" : \"inline-end\"}\n      size=\"lg\"\n      title={<code>{shown ?? \"\"}</code>}\n      dismissLabel={shown === null ? \"Close\" : `Close documentation for ${shown}`}\n    >\n      {shown !== null && <TokenDocBody path={shown} />}\n    </Sheet>"
   },
   {
     "name": "side-nav",

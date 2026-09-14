@@ -360,15 +360,15 @@ Something must be answered before the page behind it means anything — a worksp
 
 ```tsx
 <Sheet
-        open={path !== null}
-        onClose={() => onClose()}
-        edge="block-end"
-        size="lg"
-        title={<code>{shown ?? ""}</code>}
-        dismissLabel={shown === null ? "Close" : `Close documentation for ${shown}`}
-      >
-        {shown !== null && <TokenDocBody path={shown} />}
-      </Sheet>
+      open={path !== null}
+      onClose={() => onClose()}
+      edge={narrow ? "block-end" : "inline-end"}
+      size="lg"
+      title={<code>{shown ?? ""}</code>}
+      dismissLabel={shown === null ? "Close" : `Close documentation for ${shown}`}
+    >
+      {shown !== null && <TokenDocBody path={shown} />}
+    </Sheet>
 ```
 
 ## Token recipe
