@@ -459,10 +459,25 @@ export function App() {
   /**
    * The nav, in SideNav's shape.
    *
-   * Each top-level group becomes a labelled section, which is what they
-   * already were — the hand-rolled version expanded and collapsed them, but a
+   * Each top-level group is a DISCLOSURE — an item carrying `items`, which
+   * SideNav renders as a button that expands its list in place. This reverses
+   * an earlier decision here, and the earlier reasoning was not wrong: a
    * labelled section says the same thing to a screen reader without a button
-   * to press. A leaf with no children becomes a one-item unlabelled section.
+   * to press, and that is still true. What it does not do is let a reader
+   * put a group away, and with 28 components under one of them the rail was
+   * long enough that the other group scrolled off.
+   *
+   * Two things the component already handles, which is why this is a change
+   * of shape rather than of behaviour: a group holding the current page
+   * starts open on its own — its contract calls that not a convenience,
+   * since a reader whose page sits inside a collapsed group cannot see where
+   * they are — and the disclosure is a disclosure rather than a menu, because
+   * `role="menu"` would announce a keyboard model a list of links does not
+   * have.
+   *
+   * One section, unlabelled, rather than one per group: the group names are
+   * the disclosure buttons now, and a labelled section wrapping a single
+   * disclosure of the same name would say it twice.
    *
    * `onClick` is where this stopped being possible before: the rows navigate
    * client-side, and until nav items could intercept their own click there
@@ -474,28 +489,35 @@ export function App() {
     navigate(target);
   };
 
-  const navSections = filteredNav.map((item) =>
-    item.children
-      ? {
-          label: item.label,
-          items: item.children.map((leaf) => ({
-            label: leaf.label,
-            href: hrefFor(leaf.id),
-            current: page === leaf.id,
-            onClick: go(leaf.id),
-          })),
-        }
-      : {
-          items: [
-            {
+  const navSections = [
+    {
+      items: filteredNav.map((item) =>
+        item.children
+          ? {
+              label: item.label,
+              // No href: an item with `items` is a disclosure, not a link.
+              items: item.children.map((leaf) => ({
+                label: leaf.label,
+                href: hrefFor(leaf.id),
+                current: page === leaf.id,
+                onClick: go(leaf.id),
+              })),
+              // Forced open while searching. Without this a match inside a
+              // collapsed group is filtered in and still invisible, which
+              // makes the search look broken rather than empty — the
+              // component opens a group for the CURRENT page, which is a
+              // different question from "does it contain a hit".
+              ...(query ? { defaultExpanded: true } : {}),
+            }
+          : {
               label: item.label,
               href: hrefFor(item.page!),
               current: page === item.page,
               onClick: go(item.page!),
-            },
-          ],
-        }
-  );
+            }
+      ),
+    },
+  ];
 
   return (
     <div className="pg-app">
