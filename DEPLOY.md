@@ -10,17 +10,47 @@ in it is a decision, and three of them are not obvious.
 ## Project settings
 
 Connect the repo with **Root Directory left at the repo root**, not
-`apps/playground`. The playground depends on seven workspace packages
-(`@rata/tokens`, `@rata/css`, `@rata/primitives`, `@rata/react`,
-`@rata/icons`, and the theme packages), none of which are published — they
-resolve through npm workspaces from the root `package-lock.json`. Pointing
-Vercel at `apps/playground` would install only that package's own
-dependencies and the build would fail on the first `@rata/*` import.
+`apps/playground`.
 
-Everything else comes from `vercel.json`, so the dashboard's Build
-Command, Output Directory and Install Command fields should stay empty.
-A value typed into the dashboard **overrides** the file, which is the
-usual reason a repo's committed config appears to be ignored.
+The reason is narrower than it first looks, and the first version of this
+file got it wrong, so here is what actually happens. With Root Directory
+set to `apps/playground`, `npm ci` still succeeds — npm reads the root
+workspace config and installs the whole hoisted tree from the root
+lockfile, 189 packages, so the `@rata/*` dependencies do resolve. What
+fails is the build command, because npm runs it scoped to that workspace:
+
+```
+npm error workspace playground@0.1.0
+npm error location /vercel/path0/apps/playground
+npm error Missing script: "build:playground"
+```
+
+`build:playground` is a ROOT script. It has to be, because it builds the
+token pipeline across six packages before the app — the playground
+workspace has only its own `build`, which compiles the app alone against
+a `dist/` that is gitignored and therefore absent.
+
+`outputDirectory` breaks in the same configuration for the same reason:
+it is resolved relative to the Root Directory, so `apps/playground/dist`
+becomes `apps/playground/apps/playground/dist`.
+
+Root Directory cannot be set from this file — Vercel treats it as a
+project-level setting only — which is why it is written down here.
+
+Set **Framework Preset to "Other"** as well. Vite's preset supplies its
+own build command and output directory, and a dashboard value
+**overrides** `vercel.json` — which is the usual reason a repo's
+committed config appears to be ignored. `"framework": null` in the file
+is the same statement, but only for projects that are not already
+carrying a preset.
+
+Leave Build Command, Output Directory and Install Command empty so the
+values in `vercel.json` are the ones that run.
+
+**Node.js Version** should be 22.x, matching `engines.node` and the
+version CI runs. A newer default works — `>=22` permits it — but then the
+deployed build is the one version nothing else in the project tests
+against.
 
 ## The fields
 
