@@ -9,37 +9,14 @@ in it is a decision, and three of them are not obvious.
 
 ## Project settings
 
-**This file is written for `Root Directory = apps/playground`**, which is
-what the project is set to. That coupling is the one thing to know before
-editing `vercel.json`, because two of its fields depend on it:
+The project's Root Directory is `apps/playground`. That is a
+project-level setting `vercel.json` cannot express, so the build is
+written for it — and it behaves nothing like it reads.
 
-| If Root Directory is | `buildCommand` | `outputDirectory` |
-|---|---|---|
-| `apps/playground` (current) | `cd ../.. && npm run build:playground` | `dist` |
-| the repo root | `npm run build:playground` | `apps/playground/dist` |
-
-There is no setting of those two fields that works for both, because
-`outputDirectory` is resolved relative to the Root Directory. Vercel
-treats Root Directory as a project-level setting that `vercel.json`
-cannot express, so the file has to be written for one of them and this
-is the one.
-
-Changing Root Directory without changing these fails loudly rather than
-silently — either `Missing script: "build:playground"` or `No Output
-Directory named "dist" found` — so it is not a trap, just a two-line
-edit.
-
-### Why the build command leaves the directory it starts in
-
-`build:playground` is a ROOT script, and it has to be: it builds the
-token pipeline across six packages (tokens → themes → css → primitives
-→ react → `ui:sync`) before the app. The playground workspace has only
-its own `build`, which compiles the app alone against a `dist/` that is
-gitignored and therefore absent on a fresh clone.
-
-With the Root Directory set to the app, npm runs commands scoped to that
-workspace, so `npm run build:playground` looks for the script *there* and
-does not find it:
+**Vercel does not change directory for the Root Directory. It scopes npm
+to that workspace.** The cwd stays the repo root and
+`npm_config_workspace=playground` is set in the environment, so a root
+script cannot be run by name:
 
 ```
 npm error workspace playground@0.1.0
@@ -47,31 +24,56 @@ npm error location /vercel/path0/apps/playground
 npm error Missing script: "build:playground"
 ```
 
-`cd ../..` is what puts it back at the repo root. This works because the
-whole repository is present in the build container even though the Root
-Directory points inside it — the same reason `npm ci` succeeds there,
-reading the root workspace config and installing 189 hoisted packages.
-If Vercel's "Include source files outside of the Root Directory" option
-were ever turned off, this would stop being true and the `cd` would
-land somewhere that has no `package.json`.
+Reproducible anywhere, which is how it was finally pinned down:
+
+```sh
+npm_config_workspace=playground npm run build:playground   # identical error
+```
+
+`build:playground` has to be a root script, because it builds the token
+pipeline across six packages (tokens → themes → css → primitives → react
+→ `ui:sync`) before the app. The playground workspace has only its own
+`build`, which compiles the app alone against a `dist/` that is
+gitignored and therefore absent on a fresh clone.
+
+So the build command is [`scripts/vercel-build.sh`](scripts/vercel-build.sh),
+which unsets the scoping and runs the root script. It is a script rather
+than a one-liner because the reasoning above cost two failed
+deployments, and a JSON string has nowhere to put it.
+
+### The wrong fix, recorded so nobody tries it again
+
+`cd ../.. && npm run build:playground` looks right and fails worse. The
+cwd is *already* the repo root, so `cd ../..` walks out of the checkout
+— `/vercel/path0` becomes `/` — and the build fails with
+`Could not read package.json: ENOENT /package.json`. The first failure
+made it look like a cwd problem. It was never a cwd problem.
+
+### `outputDirectory` is the one thing the Root Directory does move
+
+It is resolved relative to the Root Directory, so `dist` means
+`apps/playground/dist`. This is the field to change if Root Directory is
+ever cleared to the repo root — it would then need to be
+`apps/playground/dist`. The build script itself needs no change either
+way, since it locates the repo root from its own path rather than
+trusting the cwd.
 
 ### The other dashboard fields
 
-**Framework Preset** shows as Vite, and that turns out not to matter:
-`vercel.json` wins. The failed builds prove it — they ran
-`npm ci` and `npm run build:playground`, this file's commands, rather
-than Vite's `npm install` and `vite build`. Leaving the preset alone is
-fine.
+**Framework Preset** shows as Vite and does not matter: `vercel.json`
+wins. The failed builds prove it — they ran `npm ci` and this file's
+build command rather than Vite's `npm install` and `vite build`.
 
-**Node.js Version** is 24.x. `engines.node` is `>=22` so it is permitted,
-but CI runs 22, which makes the deployed build the one version nothing
-else in the project tests against. Worth aligning; not a failure.
+**Node.js Version** is 24.x. `engines.node` is `>=22` so it is
+permitted, but CI runs 22, which makes the deployed build the one
+version nothing else in the project tests against. Worth aligning; not
+a failure.
 
 ## The fields
 
 | Field | Why |
 |---|---|
-| `buildCommand` | `cd ../.. && npm run build:playground` — the root script, which is `npm run build && npm run build -w playground`, the same pair CI runs. See above for why it has to leave the directory it starts in. |
+| `buildCommand` | `sh scripts/vercel-build.sh`, which clears npm's workspace scoping and runs the root `build:playground` — `npm run build && npm run build -w playground`, the same pair CI runs. See above for why it cannot just be that command. |
 | `installCommand` | `npm ci`, matching CI. `npm install` would be free to resolve a different tree than the lockfile, which is the whole point of having one. |
 | `outputDirectory` | `dist`, resolved relative to the Root Directory, so `apps/playground/dist` — where Vite puts it. |
 | `framework: null` | Says "Other", so nothing substitutes its own defaults for the commands above. The project carries a Vite preset and this file wins anyway, but stating it means that stays true if the preset is ever cleared. |
@@ -123,13 +125,16 @@ that is a second Vercel project, not a second output directory here.
 ## Verifying a change to this config locally
 
 ```sh
-cd apps/playground && npm run build:playground   # fails, as Vercel did
-cd apps/playground && (cd ../.. && npm run build:playground)   # what runs now
-npx serve apps/playground/dist                   # NOT a substitute — see below
+# Vercel's environment, reproduced: cwd is the repo root, npm is scoped
+# to the playground workspace.
+npm_config_workspace=playground npm run build:playground   # fails as it did
+npm_config_workspace=playground sh scripts/vercel-build.sh # what runs now
+
+npx serve apps/playground/dist            # NOT a substitute — see below
 ```
 
-The first line is worth running once: it is the failure in the build log,
-reproduced in one command, and it is the reason the second line exists.
+The first line is worth running once. It is the build-log failure in one
+command, and it is the entire reason the script exists.
 
 A plain static server will 404 on deep links the same way an unrewritten
 Vercel deploy does, so `npx serve` proves the build and *not* the routing.
