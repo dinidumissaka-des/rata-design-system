@@ -1,122 +1,152 @@
 [
   {
     "name": "avatar",
-    "title": "Avatar"
+    "title": "Avatar",
+    "status": "latest"
   },
   {
     "name": "badge",
-    "title": "Badge"
+    "title": "Badge",
+    "status": "latest"
   },
   {
     "name": "breadcrumbs",
-    "title": "Breadcrumbs"
+    "title": "Breadcrumbs",
+    "status": "latest"
   },
   {
     "name": "button",
-    "title": "Button"
+    "title": "Button",
+    "status": "latest"
   },
   {
     "name": "button-group",
-    "title": "Button Group"
+    "title": "Button Group",
+    "status": "latest"
   },
   {
     "name": "checkbox",
-    "title": "Checkbox"
+    "title": "Checkbox",
+    "status": "latest"
   },
   {
     "name": "dialog",
-    "title": "Dialog"
+    "title": "Dialog",
+    "status": "latest"
   },
   {
     "name": "heading",
-    "title": "Heading"
+    "title": "Heading",
+    "status": "future"
   },
   {
     "name": "icon",
-    "title": "Icon"
+    "title": "Icon",
+    "status": "latest"
   },
   {
     "name": "menu",
-    "title": "Menu"
+    "title": "Menu",
+    "status": "latest"
   },
   {
     "name": "menu-item",
-    "title": "MenuItem"
+    "title": "MenuItem",
+    "status": "latest"
   },
   {
     "name": "mobile-nav",
-    "title": "MobileNav"
+    "title": "MobileNav",
+    "status": "latest"
   },
   {
     "name": "notice",
-    "title": "Notice"
+    "title": "Notice",
+    "status": "latest"
   },
   {
     "name": "panel",
-    "title": "Panel"
+    "title": "Panel",
+    "status": "latest"
   },
   {
     "name": "radio",
-    "title": "Radio"
+    "title": "Radio",
+    "status": "latest"
   },
   {
     "name": "radio-group",
-    "title": "Radio Group"
+    "title": "Radio Group",
+    "status": "latest"
   },
   {
     "name": "search",
-    "title": "Search"
+    "title": "Search",
+    "status": "latest"
   },
   {
     "name": "segmented-control",
-    "title": "SegmentedControl"
+    "title": "SegmentedControl",
+    "status": "latest"
   },
   {
     "name": "sheet",
-    "title": "Sheet"
+    "title": "Sheet",
+    "status": "latest"
   },
   {
     "name": "side-nav",
-    "title": "SideNav"
+    "title": "SideNav",
+    "status": "latest"
   },
   {
     "name": "spinner",
-    "title": "Loading: Spinner"
+    "title": "Loading: Spinner",
+    "status": "latest"
   },
   {
     "name": "state-layer",
-    "title": "State layer"
+    "title": "State layer",
+    "status": "na"
   },
   {
     "name": "switch",
-    "title": "Switch"
+    "title": "Switch",
+    "status": "latest"
   },
   {
     "name": "tabs",
-    "title": "Tabs"
+    "title": "Tabs",
+    "status": "latest"
   },
   {
     "name": "text",
-    "title": "Text"
+    "title": "Text",
+    "status": "future"
   },
   {
     "name": "text-field",
-    "title": "Input: Text field"
+    "title": "Input: Text field",
+    "status": "latest"
   },
   {
     "name": "toggle-button",
-    "title": "Toggle Button"
+    "title": "Toggle Button",
+    "status": "latest"
   },
   {
     "name": "toggle-button-group",
-    "title": "Toggle Button Group"
+    "title": "Toggle Button Group",
+    "status": "latest"
   },
   {
     "name": "top-nav",
-    "title": "TopNav"
+    "title": "TopNav",
+    "status": "latest"
   },
   {
     "name": "visually-hidden",
-    "title": "Visually hidden"
+    "title": "Visually hidden",
+    "status": "na"
   }
 ]

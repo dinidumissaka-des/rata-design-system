@@ -85,14 +85,39 @@ test("a pairing verified in one theme is a warning, not an error", () => {
   assert.equal(severityFor("bg2"), "error", "short everywhere → error");
 });
 
-test("the primary and destructive button pairings are clean in both themes", () => {
-  // The dark accent-role.bg and danger-role.bg were retuned to step 600 (from
-  // 500) so white text clears AA in both themes; this guards against them
-  // drifting back.
-  for (const bg of ["accent", "danger"]) {
-    const css = `.button { background: var(--rata-theme-${bg}-role-bg); color: var(--rata-theme-fg-on-accent); }`;
-    assert.equal(find(css, "forbidden-pairing"), undefined, `${bg} fill must clear AA in both themes`);
-  }
+test("the primary button's pairing is clean in both themes", () => {
+  // The dark accent-role.bg was retuned to step 600 (from 500) so the accent's
+  // own label token clears AA in both themes; this guards against it drifting
+  // back. It is a real assertion because theme.fg.on-accent on
+  // theme.accent-role.bg IS a documented pairing — 6.31:1 light, 7.31:1 dark —
+  // so the model can actually judge it.
+  const css = `.button { background: var(--rata-theme-accent-role-bg); color: var(--rata-theme-fg-on-accent); }`;
+  assert.equal(find(css, "forbidden-pairing"), undefined, "accent fill must clear AA in both themes");
+});
+
+test("this checker cannot judge a pairing that is in neither list", () => {
+  // The `danger` half of the test above used to live here, asserting that
+  // theme.fg.on-accent over theme.danger-role.bg produced no violation and
+  // claiming in a comment that "white text clears AA in both themes". Both
+  // were wrong. on-accent INVERTS with the accent — #FFFFFF light, #003D1D
+  // dark — while the status fills do not move, so that combination measured
+  // 2.58:1 in dark, below AA, and .rata-button--destructive shipped it.
+  //
+  // The test passed anyway, and that is the part worth encoding. `forbidden`
+  // is built from usage.contrast.knownGaps and `verified` from
+  // usage.contrast.pairings, so a combination in NEITHER list is not judged
+  // good or bad — it is not judged. Asserting "no violation" about such a
+  // pairing is therefore vacuous, and it read exactly like a guarantee.
+  //
+  // So this asserts the LIMIT rather than a falsehood, and scripts/
+  // check-used-pairings.mjs is what closes it: no component may set a pair
+  // that is not in the documented list, which themes:check then measures.
+  const css = `.b { background: var(--rata-theme-danger-role-bg); color: var(--rata-theme-fg-on-accent); }`;
+  assert.equal(
+    find(css, "forbidden-pairing"),
+    undefined,
+    "unchanged behaviour — but silence here means unknown, never safe",
+  );
 });
 
 test("accepts the documented success and warning notice recipe", () => {

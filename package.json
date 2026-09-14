@@ -19,6 +19,7 @@
     "deps:check": "node scripts/check-dependencies.mjs --self-test && node scripts/check-dependencies.mjs",
     "alias:check": "node scripts/check-aliases.mjs --self-test && node scripts/check-aliases.mjs",
     "examples:check": "node scripts/check-example-props.mjs --self-test && node scripts/check-example-props.mjs",
+    "pairings:check": "node scripts/check-used-pairings.mjs --self-test && node scripts/check-used-pairings.mjs",
     "build": "npm run build -w @rata/tokens && npm run build:themes && npm run build -w @rata/css && npm run build -w @rata/primitives && npm run build -w @rata/icons && npm run build -w @rata/react && npm run registry:check && npm run aria:check && npm run state-layer:check && npm run docs:components && npm run playground:check && npm run ui:sync",
     "docs:check": "npm run docs:check -w @rata/tokens && node scripts/generate-component-docs.mjs --check",
     "docs:components": "node scripts/generate-component-docs.mjs",

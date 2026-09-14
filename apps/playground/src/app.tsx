@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect, useState } from "react";
 import { MobileNav, Search, SegmentedControl, SideNav, Spinner, TopNav } from "@rata/react";
 import { tokens } from "@rata/tokens";
 import { TokenDoc, FamilyDoc, ContrastPage, RecipeList, FoundationIndex } from "./token-docs.js";
+import { HomePage } from "./home.js";
 // The nav needs a name and a title per component. It used to get them from
 // `contracts.json`, which is 340kB of every decision, prop and worked example
 // in the system — all of it in the chunk that loads before anything appears.
@@ -49,6 +50,7 @@ interface NavItem {
 }
 
 const NAV: NavItem[] = [
+  { id: "home", label: "Home", page: "home" },
   {
     id: "foundation",
     label: "Foundation",
@@ -561,7 +563,18 @@ export function App() {
           },
         ]}
         brand={
-          <span className="pg-brand">
+          // A link to the root, which is what TopNav's contract says to do
+          // with this slot if it should be clickable — and it should, now
+          // there is a root to go to. It stays outside the nav landmark: a
+          // logo is not a destination in the list even when it links home.
+          <a
+            className="pg-brand"
+            href={hrefFor("home")}
+            onClick={(event) => {
+              event.preventDefault();
+              navigate("home");
+            }}
+          >
             {/* Decorative, because the wordmark beside it already names the
                 product. TopNav's contract warns that an image in this slot
                 needs its own alt text — it does, and for a mark paired with
@@ -569,7 +582,7 @@ export function App() {
                 would have a screen reader read the product twice. */}
             <img className="pg-brand-mark" src="/rata-icon.svg" alt="" />
             <strong className="pg-brand-name">Ratā</strong>
-          </span>
+          </a>
         }
         actions={
           <>
@@ -1001,6 +1014,8 @@ export function App() {
               <RecipeList />
             </section>
           )}
+
+          {page === "home" && <HomePage onOpen={navigate} />}
 
           {page === "foundation" && <FoundationIndex onOpen={navigate} />}
 

@@ -35,6 +35,7 @@ jobs:
       - run: npm run deps:check
       - run: npm run alias:check
       - run: npm run examples:check
+      - run: npm run pairings:check
 
       - run: npm run themes:check
       - run: npm test

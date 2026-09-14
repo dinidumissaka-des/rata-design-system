@@ -84,6 +84,7 @@ export {
   // glyph is what makes the tile recognisable. Added here rather than imported
   // from lucide-react at the call site because this file says to — "then add
   // it here, so the second person who needs it finds it".
+  Boxes,
   Palette,
   Ruler,
   SquareRoundCorner,

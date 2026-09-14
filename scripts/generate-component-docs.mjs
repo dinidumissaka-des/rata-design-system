@@ -170,7 +170,15 @@ function renderJson(contracts) {
  * covers it exactly as it covers the pages.
  */
 function renderComponentIndex(contracts) {
-  const rows = contracts.map((c) => ({ name: c.name, title: c.title }));
+  // `status` is here so the home page can count what is built without
+  // importing contracts.json — which is the 340kB the components page is
+  // lazily loaded to keep out of the first chunk. One short string per
+  // component; the file stays a couple of kB.
+  const rows = contracts.map((c) => ({
+    name: c.name,
+    title: c.title,
+    status: c.status?.react?.state ?? "unknown",
+  }));
   return JSON.stringify(rows, null, 2) + "\n";
 }
 
