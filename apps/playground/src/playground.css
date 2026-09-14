@@ -158,10 +158,18 @@ code {
   margin-bottom: var(--rata-space-section);
 }
 
+/* Page titles, on every page — the one rule all fourteen of them share.
+   heading-1 rather than the unnumbered `heading` role, which resolves to
+   1.0625rem: the same size as heading-3, and therefore the same size as the
+   section headings BELOW it. The top of the outline was flat.
+   heading-1 is 1.5rem and the largest step the scale generates. Larger would
+   mean reaching into font.size.*, which the type contract forbids outright —
+   "always go through type.*" — because those are primitives generated from
+   the seed and the roles are what survive a change to it. */
 .pg-section h2 {
-  font-size: var(--rata-type-heading-size);
-  font-weight: var(--rata-type-heading-weight);
-  line-height: var(--rata-type-heading-line-height);
+  font-size: var(--rata-type-heading-1-size);
+  font-weight: var(--rata-type-heading-1-weight);
+  line-height: var(--rata-type-heading-1-line-height);
   margin: 0 0 var(--rata-space-4);
 }
 
