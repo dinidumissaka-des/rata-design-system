@@ -60,7 +60,7 @@
   padding-inline: var(--rata-space-control-padding-inline-sm);
   border-radius: var(--rata-radius-element);
   color: var(--rata-theme-fg-secondary);
-  font-size: var(--rata-type-control-size-sm);
+  font-size: var(--rata-type-control-size-md);
   font-weight: var(--rata-type-control-weight);
   text-decoration: none;
 }
