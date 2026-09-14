@@ -2608,41 +2608,57 @@ export function ComponentIndex({ onOpen }: { onOpen: (name: string) => void }) {
     <section className="pg-section">
       <h2>Components</h2>
       <p className="pg-note">
-        Every component in the registry, built or not. Open one for its contract — what each prop is
-        for, what it conflicts with, and the token recipe behind it.
+        Every component in the registry, each shown running rather than described. Open one for its
+        contract — what each prop is for, what it conflicts with, and the token recipe behind it.
       </p>
-      <table className="pg-table">
-        <thead>
-          <tr>
-            <th>Component</th>
-            <th>Family</th>
-            <th>CSS</th>
-            <th>React</th>
-            <th>Figma</th>
-          </tr>
-        </thead>
-        <tbody>
-          {contracts.map((contract) => (
-            <tr key={contract.name}>
-              <td>
-                <button type="button" className="pg-link" onClick={() => onOpen(contract.name)}>
-                  {contract.title}
-                </button>
-              </td>
-              <td>{contract.family}</td>
-              <td>
+      <ul className="pg-gallery">
+        {contracts.map((contract) => (
+          <li key={contract.name} className="pg-gallery-item">
+            <div className="pg-gallery-stage">
+              <ComponentThumbnail name={contract.name} />
+            </div>
+            <div className="pg-gallery-meta">
+              <button type="button" className="pg-gallery-name" onClick={() => onOpen(contract.name)}>
+                {contract.title}
+              </button>
+              <div className="pg-gallery-status">
+                <span className="pg-gallery-family">{contract.family}</span>
                 <StatusPill artifact={contract.status.css} />
-              </td>
-              <td>
                 <StatusPill artifact={contract.status.react} />
-              </td>
-              <td>
                 <StatusPill artifact={contract.status.figma} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
     </section>
   );
+}
+
+/**
+ * The specimen on a gallery tile: a component's FIRST usage case, rendered
+ * live.
+ *
+ * Derived rather than curated a second time. `EXAMPLES` already holds a real
+ * demo per usage case, each one keyed by the case string its contract
+ * declares and checked by `playground:check`, so the first of them is the
+ * component's own idea of its simplest form. A separate list of thumbnails
+ * would be a second place to keep in step, and the one that silently rotted.
+ *
+ * Two components reach the fallback, and both should: `state-layer` is a
+ * class other components compose rather than anything renderable, and
+ * `visually-hidden` is invisible by definition. Saying so is more use than an
+ * empty box.
+ */
+function ComponentThumbnail({ name }: { name: string }) {
+  const cases = EXAMPLES[name];
+  const first = cases ? Object.values(cases)[0] : undefined;
+  if (!first) {
+    return (
+      <p className="pg-gallery-empty">
+        Nothing to show running — <code>{name}</code> has no visible form of its own.
+      </p>
+    );
+  }
+  return <>{first()}</>;
 }

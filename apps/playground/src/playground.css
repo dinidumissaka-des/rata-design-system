@@ -907,6 +907,106 @@ code {
   block-size: calc(var(--rata-size-control-lg) * 6);
 }
 
+/* ---- Component gallery --------------------------------------------------
+   The components overview: every component running, rather than a row of its
+   name and status. A table answered "what exists and how far along is it";
+   this answers "what does it look like", which is the question someone
+   opening a design system actually arrives with.
+
+   auto-fill rather than a fixed three columns, so the count follows the space
+   instead of a breakpoint — this system has no breakpoint tokens, and a grid
+   is one of the places that costs nothing. control-lg x 9 = 324px is the
+   narrowest a tile can be and still hold a specimen with a couple of
+   controls side by side; at the playground's content width that lands on
+   three, and on two when the token inspector is open. */
+.pg-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(calc(var(--rata-size-control-lg) * 9), 1fr));
+  gap: var(--rata-space-gap-lg);
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+  list-style: none;
+}
+
+.pg-gallery-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-stack-sm);
+}
+
+/* The same bargain .pg-example-stage makes — bg.subtle is documented as "a
+   quiet section band inside a surface", and it has its own tone (97/15) so it
+   reads as lifted off the canvas in dark and inset into it in light rather
+   than merging with either.
+
+   The specimen is centred and the tile does not grow with it: a component
+   with a lot in it gets the same frame as a component with one button, which
+   is what makes a page of them scannable. */
+.pg-gallery-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--rata-space-padding-lg);
+  min-block-size: calc(var(--rata-size-control-lg) * 6);
+  border-radius: var(--rata-radius-container);
+  background: var(--rata-theme-bg-subtle);
+  overflow: hidden;
+}
+
+.pg-gallery-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-stack-2xs);
+}
+
+/* A button rather than a link because the playground routes in JS, which is
+   the same compromise .pg-link makes; styled as the tile's title. */
+.pg-gallery-name {
+  align-self: flex-start;
+  padding: var(--rata-space-0);
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-inner);
+  background: none;
+  color: var(--rata-theme-fg-primary);
+  font-family: inherit;
+  font-size: var(--rata-type-heading-size);
+  font-weight: var(--rata-type-heading-weight);
+  line-height: var(--rata-type-heading-line-height);
+  text-align: start;
+  cursor: pointer;
+}
+
+.pg-gallery-name:hover {
+  color: var(--rata-theme-accent-role-fg);
+}
+
+.pg-gallery-name:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* Kept from the table this replaced. Dropping it would have lost the one
+   thing the old view was better at — where each artifact stands — so it moves
+   under the name rather than disappearing. */
+.pg-gallery-status {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--rata-space-gap-xs);
+}
+
+.pg-gallery-family {
+  color: var(--rata-theme-fg-muted);
+  font-size: var(--rata-font-size-xs);
+}
+
+.pg-gallery-empty {
+  margin: var(--rata-space-0);
+  color: var(--rata-theme-fg-muted);
+  font-size: var(--rata-type-body-size);
+  text-align: center;
+}
+
 /* ---- Accent switcher ----------------------------------------------------
    Five accent options, each a brand theme scoped to [data-rata-theme]. The
    swatches take their colour from the theme they stand for rather than from a
