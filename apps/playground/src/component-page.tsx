@@ -2648,8 +2648,31 @@ export function ComponentIndex({ onOpen }: { onOpen: (name: string) => void }) {
 }
 
 /**
+ * Tiles whose derived specimen is the wrong specimen.
+ *
+ * KEEP THIS SMALL, AND ADD TO IT ONLY FOR A REASON THE TILE CAUSES. Deriving
+ * the thumbnail from EXAMPLES is what stops the gallery drifting from the
+ * contracts, and every entry here opts one component out of that. An entry is
+ * warranted when the best PAGE example and the best THUMBNAIL are genuinely
+ * different things — not when a tile could merely be prettier.
+ *
+ * badge: its first usage case shows the same badge against accent, secondary
+ * and tertiary buttons, which is exactly right on the page — that comparison
+ * is the point of the case — and three of everything in a 202px tile, where
+ * the question is only "what is a badge".
+ */
+const THUMBNAILS: Record<string, () => ReactNode> = {
+  badge: () => (
+    <Button>
+      Messages
+      <Badge variant="accent">3</Badge>
+    </Button>
+  ),
+};
+
+/**
  * The specimen on a gallery tile: a component's FIRST usage case, rendered
- * live.
+ * live, unless THUMBNAILS above overrides it.
  *
  * Derived rather than curated a second time. `EXAMPLES` already holds a real
  * demo per usage case, each one keyed by the case string its contract
@@ -2663,6 +2686,9 @@ export function ComponentIndex({ onOpen }: { onOpen: (name: string) => void }) {
  * empty box.
  */
 function ComponentThumbnail({ name }: { name: string }) {
+  const override = THUMBNAILS[name];
+  if (override) return <>{override()}</>;
+
   const cases = EXAMPLES[name];
   const first = cases ? Object.values(cases)[0] : undefined;
   if (!first) {
