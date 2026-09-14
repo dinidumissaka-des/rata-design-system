@@ -1,8 +1,24 @@
-import { useEffect, useState } from "react";
-import { MobileNav, Search, SegmentedControl, SideNav, TopNav } from "@rata/react";
+import { Suspense, lazy, useEffect, useState } from "react";
+import { MobileNav, Search, SegmentedControl, SideNav, Spinner, TopNav } from "@rata/react";
 import { tokens } from "@rata/tokens";
 import { TokenDoc, FamilyDoc, ContrastPage, RecipeList } from "./token-docs.js";
-import { ComponentIndex, ComponentPage, contracts, contractsByName } from "./component-page.js";
+// The nav needs a name and a title per component. It used to get them from
+// `contracts.json`, which is 340kB of every decision, prop and worked example
+// in the system — all of it in the chunk that loads before anything appears.
+// This generated index is 1.6kB and comes out of the same contracts, so the
+// staleness check that covers the doc pages covers it too.
+import componentIndex from "../../../docs/components/index.json";
+
+// Everything that actually reads a contract is behind a lazy boundary, which
+// is what keeps contracts.json out of the first chunk. The boundary is by
+// NAME rather than by contract for exactly that reason — see
+// ComponentPageByName.
+const ComponentIndexPage = lazy(() =>
+  import("./component-page.js").then((m) => ({ default: m.ComponentIndex })),
+);
+const ComponentPageByName = lazy(() =>
+  import("./component-page.js").then((m) => ({ default: m.ComponentPageByName })),
+);
 import { componentName, componentPage, hrefFor, parseLocation } from "./routing.js";
 import { AccentSwitcher, DEFAULT_ACCENT } from "./accent-switcher.js";
 import type { Scheme } from "./accent-switcher.js";
@@ -51,7 +67,7 @@ const NAV: NavItem[] = [
     label: "Components",
     children: [
       { id: "components", label: "All components" },
-      ...contracts.map((contract) => ({
+      ...componentIndex.map((contract) => ({
         id: componentPage(contract.name),
         label: contract.title,
       })),
@@ -350,6 +366,19 @@ const spacePrimitives: Array<[string, string]> = [
 // see packages/tokens/src/themes/base.mjs.
 const radiusNames = ["none", "inner", "element", "container", "chat", "page", "pill"] as const;
 
+/**
+ * What a lazy page shows while its chunk arrives. The system's own Spinner,
+ * named, because an unnamed one announces nothing — and on a fast connection
+ * this is never seen at all, which is the point of the chunk being small.
+ */
+function PageSpinner() {
+  return (
+    <div className="pg-page-spinner">
+      <Spinner label="Loading" />
+    </div>
+  );
+}
+
 export function App() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   // Which of the five accent options is applied. The value is a theme slug,
@@ -411,7 +440,6 @@ export function App() {
   }, [page, tab]);
 
   const activeName = componentName(page);
-  const activeComponent = activeName ? contractsByName.get(activeName) ?? null : null;
 
   const query = search.trim().toLowerCase();
 
@@ -926,23 +954,27 @@ export function App() {
             </section>
           )}
 
-          {page === "components" && <ComponentIndex onOpen={(name) => navigate(componentPage(name))} />}
-
-          {activeComponent && (
-            <ComponentPage contract={activeComponent} tab={tab} onNavigate={navigate} />
+          {page === "components" && (
+            <Suspense fallback={<PageSpinner />}>
+              <ComponentIndexPage onOpen={(name) => navigate(componentPage(name))} />
+            </Suspense>
           )}
 
-          {activeName && !activeComponent && (
-            <section className="pg-section">
-              <h2>Unknown component</h2>
-              <p className="pg-note">
-                Nothing in the registry is called <code>{activeName}</code>. Run{" "}
-                <code>npm run ui -- list</code> for the real names.
-              </p>
-            </section>
+          {/* Resolving the name to a contract is the lazy side's job: knowing
+              a name is unknown requires knowing every known name, and that is
+              the 340kB this boundary exists to defer. */}
+          {activeName !== null && (
+            <Suspense fallback={<PageSpinner />}>
+              <ComponentPageByName name={activeName} tab={tab} onNavigate={navigate} />
+            </Suspense>
           )}
         </main>
-        {inspecting && <TokenDoc path={inspecting} onClose={() => setInspecting(null)} />}
+        {/* Rendered unconditionally, and given the selection rather than
+            gated on it: on a narrow viewport this is a Sheet, and a <dialog>
+            removed from the tree has no exit animation — it would disappear
+            instead of leaving. TokenDoc returns null itself when there is
+            nothing to show and it is not in sheet form. */}
+        <TokenDoc path={inspecting} onClose={() => setInspecting(null)} />
       </div>
     </div>
   );

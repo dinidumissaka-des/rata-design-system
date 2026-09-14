@@ -9,7 +9,9 @@
 // for exactly one action per view, that the only foreground allowed on it is
 // theme.fg.on-accent, or that a tinted region wants accent-role.subtle
 // instead. That is what the contract knows.
-import { Panel } from "@rata/react";
+import { useRef } from "react";
+import { Panel, Sheet } from "@rata/react";
+import { NARROW, useMediaQuery } from "./use-media-query.js";
 import usage from "@rata/tokens/usage";
 
 interface TokenEntry {
@@ -101,13 +103,45 @@ function Ratios({ measured }: { measured: Record<string, number> }) {
 }
 
 /**
- * The full contract for one token. Rendered in the inspector rail when a
- * swatch is clicked.
+ * The full contract for one token, in whichever container fits.
+ *
+ * THIS IS THE PAIR PANEL AND SHEET WERE SPLIT FOR. On a wide viewport the
+ * documentation is a Panel: in the layout, beside the swatch grid, because
+ * reading a token's contract against the swatches still on screen is the
+ * whole task. Narrow, there is no column to give it — so the same content
+ * becomes a bottom Sheet, which covers the grid it can no longer sit beside
+ * and is modal about it, as anything covering the page has to be.
+ *
+ * Nothing but the container changes. `TokenDocBody` is rendered by both.
  */
-export function TokenDoc({ path, onClose }: { path: string; onClose: () => void }) {
-  const { entry, matchedPath, exact, step } = lookupTokenDoc(path);
-  const { verified, gaps } = contrastFor(path);
-  const stepNote = entry?.scale && step ? entry.scale[step] : null;
+export function TokenDoc({ path, onClose }: { path: string | null; onClose: () => void }) {
+  const narrow = useMediaQuery(NARROW);
+
+  // The last path stays available so the sheet can animate OUT with its
+  // content still in it. `path` goes null the instant it closes, and an
+  // unmounted <dialog> has no exit — it would vanish rather than leave.
+  // Written during render, which is safe here because it is derived from the
+  // current props and read by nothing else.
+  const retained = useRef<string | null>(null);
+  if (path !== null) retained.current = path;
+  const shown = path ?? retained.current;
+
+  if (narrow) {
+    return (
+      <Sheet
+        open={path !== null}
+        onClose={() => onClose()}
+        edge="block-end"
+        size="lg"
+        title={<code>{shown ?? ""}</code>}
+        dismissLabel={shown === null ? "Close" : `Close documentation for ${shown}`}
+      >
+        {shown !== null && <TokenDocBody path={shown} />}
+      </Sheet>
+    );
+  }
+
+  if (path === null) return null;
 
   return (
     // This rail was hand-rolled until Panel existed: its own <aside>, its own
@@ -125,6 +159,19 @@ export function TokenDoc({ path, onClose }: { path: string; onClose: () => void 
       // a useful announcement and "button".
       closeLabel={`Close documentation for ${path}`}
     >
+      <TokenDocBody path={path} />
+    </Panel>
+  );
+}
+
+/** The documentation itself, identical in both containers. */
+function TokenDocBody({ path }: { path: string }) {
+  const { entry, matchedPath, exact, step } = lookupTokenDoc(path);
+  const { verified, gaps } = contrastFor(path);
+  const stepNote = entry?.scale && step ? entry.scale[step] : null;
+
+  return (
+    <>
 
       {!entry && (
         <p className="pg-note">
@@ -251,7 +298,7 @@ export function TokenDoc({ path, onClose }: { path: string; onClose: () => void 
           )}
         </>
       )}
-    </Panel>
+    </>
   );
 }
 

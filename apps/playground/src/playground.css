@@ -916,6 +916,16 @@ code {
   inline-size: 100%;
 }
 
+/* Holds the place of a lazily-loaded page while its chunk arrives. Given a
+   block size so the layout does not jump when the page lands — a spinner that
+   collapses to nothing is worse than no spinner. */
+.pg-page-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  block-size: calc(var(--rata-size-control-lg) * 6);
+}
+
 /* ---- Accent switcher ----------------------------------------------------
    Five accent options, each a brand theme scoped to [data-rata-theme]. The
    swatches take their colour from the theme they stand for rather than from a
