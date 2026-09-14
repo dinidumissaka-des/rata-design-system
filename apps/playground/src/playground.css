@@ -988,8 +988,10 @@ code {
 
 /* Two entries rather than the gallery's three-or-fewer, and each carries a
    paragraph — so the floor is wider and the tile shorter than a specimen
-   needs to be. */
+   needs to be. The top margin is this block's own, because the prose above it
+   ends at a .pg-note and nothing else would separate them. */
 .pg-gallery--entries {
+  margin-block-start: var(--rata-space-section);
   grid-template-columns: repeat(
     auto-fill,
     minmax(

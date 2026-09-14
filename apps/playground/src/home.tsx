@@ -47,9 +47,11 @@ export function HomePage({ onOpen }: { onOpen: (page: Page) => void }) {
     <section className="pg-section">
       <h2>Ratā</h2>
       <p className="pg-lede">
-        A token-first design system, and the documentation is generated from the same source the
-        code is. A component&rsquo;s prop names are parsed from its implementation rather than
-        written twice, so a page here cannot describe a component that no longer exists.
+        A token-first, <strong>machine-readable</strong> design system. Every token carries a
+        written contract and every component&rsquo;s props are parsed from its implementation
+        rather than written twice — so the same answers reach a person reading a page, an editor
+        showing a tooltip, and an agent asking the CLI, and none of the three can drift from the
+        code.
       </p>
 
       {/* Counted, not claimed. See the note at the top of this file. */}
@@ -73,6 +75,66 @@ export function HomePage({ onOpen }: { onOpen: (page: Page) => void }) {
           <p className="pg-stat-note">re-measured on every build, for every brand theme</p>
         </div>
       </dl>
+
+      {/* No figures in this table on purpose. The numbers that would fit here
+          — file sizes, the A/B run's error count — are command output rather
+          than anything this page can count, and inventing them in prose is
+          exactly what the stats above avoid. Names and mechanisms are facts;
+          quoting `51 → 0 errors` from the last time someone ran `npm run
+          vibe` would not be. */}
+      <h3>Machine-readable</h3>
+      <table className="pg-table">
+        <thead>
+          <tr>
+            <th>Artifact</th>
+            <th>What it carries</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <code>@rata/tokens/usage</code>
+            </td>
+            <td>
+              Every token&rsquo;s contract as JSON — what it is for, what it is{" "}
+              <em>not</em> for, what to use instead, and the measured contrast of every documented
+              pairing. This page&rsquo;s own numbers are read from it.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>@rata/tokens</code> types
+            </td>
+            <td>
+              The same rules as JSDoc, so they arrive on hover and in completions rather than
+              needing to be looked up.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>contracts.json</code>
+            </td>
+            <td>
+              Every component contract as JSON. The derived half — prop names, types, defaults — is
+              parsed from source, so the build fails if a documented prop stops existing.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <code>rata props</code> · <code>rata contract</code>
+            </td>
+            <td>
+              A CLI that answers both from the implementation, for an agent writing code against
+              this system rather than reading about it.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p className="pg-note">
+        Whether any of that actually changes what a machine writes is itself tested:{" "}
+        <code>internal/vibe-tests</code> scores generated component code with the guidance and
+        without it, and fails the build if the checker stops telling the two apart.
+      </p>
 
       {/* The same tiles the two overviews use, so the front door looks like
           the rooms it opens onto. */}
