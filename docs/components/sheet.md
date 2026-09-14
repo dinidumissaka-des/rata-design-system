@@ -5,15 +5,17 @@
 
 A modal surface anchored to an edge of the viewport — a bottom sheet or a side drawer.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Sheet } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `sheet` |
 | Family | overlays |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
-| Depends on | `button`, `icon`, `state-layer` |
+| Status (css / react / figma) | latest / latest / future |
+| Depends on | `state-layer`, `icon`, `button` |
 
 ## Behavior
 
@@ -30,6 +32,8 @@ A native `<dialog>` opened with `showModal()`, held against one edge of the view
 - **The title is a real `<h2>`, as Dialog's is** — Everything behind a modal is inert, so the outline inside it genuinely starts fresh and the title is the top of it. This is the difference from Panel, which sits inside the page's outline and has to be told its level.
 
 ## Props
+
+Extends `Omit<`.
 
 | Prop | Type | Default | Summary |
 |---|---|---|---|
@@ -90,6 +94,8 @@ open: boolean
 
 Whether the sheet is showing. Always controlled.
 
+Source doc: Whether the sheet is showing. Always controlled — `showModal()` has no prop.
+
 **Use when**
 
 - State the caller owns, so opening and closing are things that happen in their code rather than inside this one.
@@ -107,6 +113,8 @@ onClose: (reason: SheetCloseReason) => void
 ```
 
 Called when the sheet asks to close, with why.
+
+Source doc: Called when the sheet asks to close. Set `open` to false in it.
 
 **Use when**
 
@@ -126,6 +134,8 @@ edge?: SheetEdge = "block-end"
 
 Which edge the sheet is anchored to and slides in from.
 
+Source doc: Which edge it is held against. `block-end` is the bottom sheet.
+
 **Use when**
 
 - `block-end` for a bottom sheet — options and detail on a narrow viewport, where the bottom is where a thumb is.
@@ -144,6 +154,8 @@ size?: SheetSize = "md"
 ```
 
 How far the sheet comes in, measured on the axis it slides along.
+
+Source doc: How far it comes in, measured on the axis it slides along.
 
 **Use when**
 
@@ -180,6 +192,8 @@ footer?: ReactNode
 ```
 
 The actions.
+
+Source doc: The actions. Reads after the body they act on.
 
 **Use when**
 
@@ -260,6 +274,115 @@ Extra classes on the sheet, for placement — not for restyling it.
 **Don't use for**
 
 - Changing its geometry or colours. Those come from `edge`, `size` and the recipe.
+
+## Use cases
+
+### A bottom sheet of filters on a narrow viewport
+
+The commonest use: a set of choices that would not fit beside the results, reachable where a thumb already is.
+
+```tsx
+const [filtering, setFiltering] = useState(false);
+
+<Button onClick={() => setFiltering(true)}>Filters</Button>
+
+<Sheet
+  open={filtering}
+  onClose={() => setFiltering(false)}
+  title="Filters"
+  description="Narrows the 1,204 results below."
+  footer={
+    <>
+      <Button variant="secondary" onClick={() => setFiltering(false)}>
+        Cancel
+      </Button>
+      <Button onClick={() => setFiltering(false)}>Apply</Button>
+    </>
+  }
+>
+  <SegmentedControl
+    label="Period"
+    value={period}
+    onValueChange={setPeriod}
+    items={[
+      { value: "week", label: "Week" },
+      { value: "month", label: "Month" },
+    ]}
+  />
+</Sheet>
+```
+
+`edge` is left at its default, which is `block-end`. The footer holds the two ways out so neither is the close button, whose job is only to abandon the sheet.
+
+### A detail drawer from the inline edge
+
+The same content a Panel would hold, on a viewport too narrow to give the panel a column of its own.
+
+```tsx
+<Sheet
+  open={selected !== null}
+  onClose={() => setSelected(null)}
+  edge="inline-end"
+  size="lg"
+  title={selected?.path ?? ""}
+>
+  <TokenDoc path={selected.path} />
+</Sheet>
+```
+
+`inline-end` rather than `right`: the sheet follows the reading direction, so a right-to-left document gets it on the other side with no change here. This is the pattern's other half — the same content is a Panel when there is room for one, and the two take the same title.
+
+### A required choice with no way to dismiss it
+
+Something must be answered before the page behind it means anything — a workspace to act in, a term to accept.
+
+```tsx
+<Sheet
+  open={needsWorkspace}
+  onClose={() => {}}
+  dismissible={false}
+  size="sm"
+  title="Choose a workspace"
+  initialFocus={firstOptionRef}
+>
+  <RadioGroup
+    label="Workspace"
+    value={workspace}
+    onValueChange={commitWorkspace}
+    items={workspaces}
+  />
+</Sheet>
+```
+
+`dismissible={false}` removes the close button and blocks both Escape and the backdrop, so the content itself has to be the way out — here, picking an option commits it. A sheet with neither is a dead end, and a reader will reload the page to escape it.
+
+## Real usage in this repo
+
+```tsx
+<Sheet
+        open={open}
+        onClose={() => setOpen(false)}
+        edge={edge}
+        size={size}
+        dismissible={dismissible}
+        title={title}
+        description={description}
+        initialFocus={applyRef}
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button ref={applyRef} onClick={() => setOpen(false)}>
+              Apply
+            </Button>
+          </>
+        }
+      >
+        The body scrolls on its own, so the title and the way out stay put
+        however much goes in here.
+      </Sheet>
+```
 
 ## Token recipe
 

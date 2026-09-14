@@ -12,21 +12,42 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest"
     },
     "react": {
-      "state": "future"
+      "state": "latest"
     },
     "figma": {
       "state": "future"
     }
   },
   "dependencies": [
-    "button",
+    "state-layer",
     "icon",
-    "state-layer"
+    "button"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/sheet.css",
+      "target": "styles/sheet.css"
+    },
+    {
+      "source": "packages/react/src/sheet.tsx",
+      "target": "components/sheet.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    },
+    {
+      "source": "packages/react/src/modal-dialog.ts",
+      "target": "lib/modal-dialog.ts"
+    },
+    {
+      "source": "packages/react/src/scroll-lock.ts",
+      "target": "lib/scroll-lock.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -136,8 +157,6 @@
   },
   "props": {
     "title": {
-      "type": "ReactNode",
-      "required": true,
       "summary": "The sheet's name. Required.",
       "use": [
         "A noun phrase naming what this is about: \"Filters\", \"Token documentation\"."
@@ -148,8 +167,6 @@
       "a11y": "Rendered as an `<h2>` and wired with `aria-labelledby`, so the sheet is named the moment it opens."
     },
     "children": {
-      "type": "ReactNode",
-      "required": true,
       "summary": "The sheet's content.",
       "use": [
         "The detail, the form, the list of options."
@@ -160,8 +177,6 @@
       "a11y": "Scrolls in its own region so the title stays put and the close control stays reachable."
     },
     "open": {
-      "type": "boolean",
-      "required": true,
       "summary": "Whether the sheet is showing. Always controlled.",
       "use": [
         "State the caller owns, so opening and closing are things that happen in their code rather than inside this one."
@@ -172,8 +187,6 @@
       "a11y": "Drives `showModal()` and `close()`. Nothing else makes the sheet modal — rendering the `open` attribute instead shows it non-modally, with no focus trap and a live page behind it."
     },
     "onClose": {
-      "type": "(reason: SheetCloseReason) => void",
-      "required": true,
       "summary": "Called when the sheet asks to close, with why.",
       "use": [
         "Setting `open` to false."
@@ -184,8 +197,6 @@
       "a11y": "Focus returns to whatever opened the sheet automatically, because the platform does it."
     },
     "edge": {
-      "type": "SheetEdge",
-      "default": "\"block-end\"",
       "summary": "Which edge the sheet is anchored to and slides in from.",
       "use": [
         "`block-end` for a bottom sheet — options and detail on a narrow viewport, where the bottom is where a thumb is.",
@@ -197,8 +208,6 @@
       "a11y": "Logical edges, not physical: `inline-start` is the left in a left-to-right document and the right in a right-to-left one, so a drawer follows the reading direction without the caller doing anything."
     },
     "size": {
-      "type": "SheetSize",
-      "default": "\"md\"",
       "summary": "How far the sheet comes in, measured on the axis it slides along.",
       "use": [
         "`sm` for a short list of actions; `lg` for a form or a document."
@@ -209,7 +218,6 @@
       "a11y": "Every size gives way to a small viewport rather than overflowing it, and never covers the edge it slid from."
     },
     "description": {
-      "type": "ReactNode",
       "summary": "A line under the title, wired as the sheet's description.",
       "use": [
         "One sentence of consequence or scope that the title cannot carry."
@@ -220,7 +228,6 @@
       "a11y": "Becomes `aria-describedby`. Omitted, there is no dangling reference."
     },
     "footer": {
-      "type": "ReactNode",
       "summary": "The actions.",
       "use": [
         "An Apply and a Cancel for a filter sheet."
@@ -231,8 +238,6 @@
       "a11y": "Rendered after the body in DOM order, so the actions are reached after the content they act on."
     },
     "dismissible": {
-      "type": "boolean",
-      "default": "true",
       "summary": "Whether the reader can close it themselves.",
       "use": [
         "`false` only while something must finish — a migration step, a required choice with no default."
@@ -243,8 +248,6 @@
       "a11y": "`false` removes the close button and prevents the `cancel` event, so Escape and a backdrop click do nothing. Provide another way out in the footer or it is a dead end."
     },
     "dismissLabel": {
-      "type": "string",
-      "default": "\"Close\"",
       "summary": "Accessible name for the close button.",
       "use": [
         "Naming what closes when the word alone is ambiguous: \"Close filters\"."
@@ -255,7 +258,6 @@
       "a11y": "Becomes the button's `aria-label`. The control is icon-only, so without a name it announces as \"button\"."
     },
     "initialFocus": {
-      "type": "RefObject<HTMLElement | null>",
       "summary": "What to focus when it opens. Defaults to the platform's choice.",
       "use": [
         "The safe action in a destructive sheet, so the dangerous one is not one Enter away."
@@ -266,7 +268,6 @@
       "a11y": "Applied after `showModal()`, which is the only order that works — React's `autoFocus` runs during commit and the platform's own default overrides it."
     },
     "className": {
-      "type": "string",
       "summary": "Extra classes on the sheet, for placement — not for restyling it.",
       "use": [
         "Nothing yet. It exists for the same reason Dialog's does, and the same caution applies."
@@ -276,5 +277,24 @@
       ]
     }
   },
-  "usage": []
+  "usage": [
+    {
+      "case": "A bottom sheet of filters on a narrow viewport",
+      "when": "The commonest use: a set of choices that would not fit beside the results, reachable where a thumb already is.",
+      "example": "const [filtering, setFiltering] = useState(false);\n\n<Button onClick={() => setFiltering(true)}>Filters</Button>\n\n<Sheet\n  open={filtering}\n  onClose={() => setFiltering(false)}\n  title=\"Filters\"\n  description=\"Narrows the 1,204 results below.\"\n  footer={\n    <>\n      <Button variant=\"secondary\" onClick={() => setFiltering(false)}>\n        Cancel\n      </Button>\n      <Button onClick={() => setFiltering(false)}>Apply</Button>\n    </>\n  }\n>\n  <SegmentedControl\n    label=\"Period\"\n    value={period}\n    onValueChange={setPeriod}\n    items={[\n      { value: \"week\", label: \"Week\" },\n      { value: \"month\", label: \"Month\" },\n    ]}\n  />\n</Sheet>",
+      "notes": "`edge` is left at its default, which is `block-end`. The footer holds the two ways out so neither is the close button, whose job is only to abandon the sheet."
+    },
+    {
+      "case": "A detail drawer from the inline edge",
+      "when": "The same content a Panel would hold, on a viewport too narrow to give the panel a column of its own.",
+      "example": "<Sheet\n  open={selected !== null}\n  onClose={() => setSelected(null)}\n  edge=\"inline-end\"\n  size=\"lg\"\n  title={selected?.path ?? \"\"}\n>\n  <TokenDoc path={selected.path} />\n</Sheet>",
+      "notes": "`inline-end` rather than `right`: the sheet follows the reading direction, so a right-to-left document gets it on the other side with no change here. This is the pattern's other half — the same content is a Panel when there is room for one, and the two take the same title."
+    },
+    {
+      "case": "A required choice with no way to dismiss it",
+      "when": "Something must be answered before the page behind it means anything — a workspace to act in, a term to accept.",
+      "example": "<Sheet\n  open={needsWorkspace}\n  onClose={() => {}}\n  dismissible={false}\n  size=\"sm\"\n  title=\"Choose a workspace\"\n  initialFocus={firstOptionRef}\n>\n  <RadioGroup\n    label=\"Workspace\"\n    value={workspace}\n    onValueChange={commitWorkspace}\n    items={workspaces}\n  />\n</Sheet>",
+      "notes": "`dismissible={false}` removes the close button and blocks both Escape and the backdrop, so the content itself has to be the way out — here, picking an option commits it. A sheet with neither is a dead end, and a reader will reload the page to escape it."
+    }
+  ]
 }

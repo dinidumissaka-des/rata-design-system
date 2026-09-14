@@ -11,20 +11,33 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest"
     },
     "react": {
-      "state": "future"
+      "state": "latest"
     },
     "figma": {
       "state": "future"
     }
   },
   "dependencies": [
-    "button",
+    "state-layer",
     "icon"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/panel.css",
+      "target": "styles/panel.css"
+    },
+    {
+      "source": "packages/react/src/panel.tsx",
+      "target": "components/panel.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -99,8 +112,6 @@
   },
   "props": {
     "title": {
-      "type": "ReactNode",
-      "required": true,
       "summary": "The panel's name. Required.",
       "use": [
         "A noun phrase naming what the panel is about — the token path, the selected row's name."
@@ -111,8 +122,6 @@
       "a11y": "Rendered as a heading at `headingLevel` and wired to the `<aside>` with `aria-labelledby`, so the landmark is announced by name. An unnamed complementary landmark is listed as \"complementary\" and nothing else, which is worse than useless when a page has two."
     },
     "children": {
-      "type": "ReactNode",
-      "required": true,
       "summary": "The panel's content.",
       "use": [
         "Whatever the panel is about — the detail, the contract, the form."
@@ -123,8 +132,6 @@
       "a11y": "Scrolls in its own region so the title and the close control stay reachable."
     },
     "headingLevel": {
-      "type": "2 | 3 | 4 | 5 | 6",
-      "default": "2",
       "summary": "Where the title sits in the page's outline.",
       "use": [
         "The level below whatever heading the panel's section sits under — a panel inside a section headed `<h2>` takes `3`."
@@ -135,8 +142,6 @@
       "a11y": "A skipped level breaks heading navigation, which is how many readers move through a page. Only the caller knows the depth, which is why there is no sensible default beyond the commonest case."
     },
     "edge": {
-      "type": "PanelEdge",
-      "default": "\"inline-end\"",
       "summary": "Which side of the content the panel is attached to.",
       "use": [
         "`inline-end` for a detail or inspector panel, which is where a reader expects one — and the same side Sheet's `inline-end` drawer comes from, so the two are interchangeable as the viewport changes.",
@@ -148,7 +153,6 @@
       "a11y": "Presentational only — it changes no roles and no announcement. Logical, not physical: `inline-start` is the left in a left-to-right document and the right in a right-to-left one."
     },
     "onClose": {
-      "type": "() => void",
       "summary": "Called when the reader closes the panel. Omitting it makes the panel persistent.",
       "use": [
         "A panel opened by a selection — clicking a swatch, a row, a node — which the reader can put away again."
@@ -159,8 +163,6 @@
       "a11y": "No reason argument, unlike Dialog's: the close button is the only way this closes. Escape does not, and there is no backdrop to click."
     },
     "closeLabel": {
-      "type": "string",
-      "default": "\"Close\"",
       "summary": "Accessible name for the close button.",
       "use": [
         "Naming what closes when several panels can be open at once: \"Close token documentation\"."
@@ -171,7 +173,6 @@
       "a11y": "Becomes the button's `aria-label`. The control is icon-only, so without a name it announces as \"button\"."
     },
     "className": {
-      "type": "string",
       "summary": "Extra classes on the panel, for placement and measure — not for restyling it.",
       "use": [
         "Setting the width and how it sits in the page's grid or flex row, which the component deliberately leaves open."
@@ -181,5 +182,24 @@
       ]
     }
   },
-  "usage": []
+  "usage": [
+    {
+      "case": "An inspector beside the thing it documents",
+      "when": "A selection in a grid or list opens detail that is read AGAINST what is still on screen — the comparison is the task, so a modal would answer a different question.",
+      "example": "<div className=\"pg-with-inspector\">\n  <TokenGrid onSelect={setSelected} />\n\n  {selected !== null && (\n    <Panel\n      title={selected}\n      closeLabel={`Close documentation for ${selected}`}\n      onClose={() => setSelected(null)}\n    >\n      <TokenDoc path={selected} />\n    </Panel>\n  )}\n</div>",
+      "notes": "The measure comes from the page — `.pg-with-inspector` gives the panel its column — because where one stops fitting depends on the content and the page around it. `closeLabel` is spelled out because \"Close\" alone does not say what closes when the page holds more than one thing that can."
+    },
+    {
+      "case": "A persistent properties rail",
+      "when": "The panel is part of the page's furniture rather than something a selection opens, so there is nothing for a close button to do.",
+      "example": "<Panel title=\"Properties\" headingLevel={3}>\n  <PropertyList node={focusedNode} />\n</Panel>",
+      "notes": "No `onClose`, so no close button is rendered at all — that is how a panel says it is persistent, rather than the caller passing a no-op to get a control they then have to ignore. `headingLevel={3}` because this one sits under a section already headed `<h2>`."
+    },
+    {
+      "case": "A filter column on the inline-start side",
+      "when": "Filters that stay put next to the results they narrow, on a viewport wide enough to show both.",
+      "example": "<Panel title=\"Filters\" edge=\"inline-start\" headingLevel={2}>\n  <CheckboxGroupList facets={facets} onChange={setFacets} />\n</Panel>",
+      "notes": "`edge=\"inline-start\"` moves the border to the side facing the results. It does not move the panel — that is the page's layout — it states which edge the panel meets the content across, so the border lands on the right one."
+    }
+  ]
 }

@@ -1,0 +1,331 @@
+/* Sheet — a modal surface held against one edge of the viewport.
+
+   A NATIVE <dialog> OPENED WITH showModal(), for the same reasons Dialog is
+   one: the browser supplies the focus trap, `inert` on everything behind it,
+   the top layer, ::backdrop, Escape-to-close and focus returned to the
+   opener. What differs from Dialog is geometry and nothing else — which is
+   also why `edge` is a prop here instead of BottomSheet and Drawer being two
+   components. The hard parts are identical on all four edges; the slide axis
+   and two corner radii are not.
+
+   Everything about animating in and out of `display: none` is copied from
+   dialog.css deliberately, including the two traps recorded there: `display`
+   and `overlay` both need `allow-discrete`, and anything layout-dependent
+   must live on the BASE rule rather than on [open]. */
+.rata-sheet {
+  box-sizing: border-box;
+  /* The UA stylesheet centres a modal dialog with auto margins and gives it a
+     border and its own padding. All three are replaced — the auto margins by
+     the per-edge rules below, which pin the sheet by letting exactly one
+     margin take the slack. */
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-padding-lg);
+  border: var(--rata-space-0);
+  /* A sheet spans the edge it is anchored to, so it asks for the whole
+     containing block on both axes and each edge rule caps the one it slides
+     along. Stated here rather than per edge because it is the same claim
+     every time: fill, then be capped. */
+  inline-size: 100%;
+  block-size: 100%;
+  border-radius: var(--rata-radius-none);
+  background: var(--rata-theme-bg-surface);
+  color: var(--rata-theme-fg-primary);
+  box-shadow: var(--rata-theme-elevation-modal);
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-body-size);
+  line-height: var(--rata-type-body-line-height);
+  /* Here and NOT on [open] — the trap dialog.css records. `display` is
+     transitioned with `allow-discrete` so it stays `flex` for the whole exit,
+     while anything scoped to [open] reverts the instant the attribute goes.
+     `flex-direction` is not animatable, so on [open] it would snap back to
+     `row` and the header, body and footer would sit side by side for the
+     length of the closing animation.
+
+     The invariant: [open] carries `display` and nothing else layout depends
+     on. What is scoped there must be animatable, or meant to revert at once
+     like pointer-events. */
+  flex-direction: column;
+}
+
+/* A dialog is display:none until opened, so [open] is the switch and there is
+   no separate class to keep in step with the element's real state. */
+.rata-sheet[open] {
+  display: flex;
+}
+
+/* ---- Size -----------------------------------------------------------------
+   One measure, on whichever axis the sheet slides along: a bottom sheet's
+   size is its height and a drawer's is its width, which is the same question
+   asked about different axes. Carried as a custom property so there are three
+   size rules and four edge rules rather than twelve of their combinations —
+   and read on the same element that sets it, not inherited.
+
+   Multiples of the control scale rather than a size.sheet.* family, as
+   Dialog's widths are: a surface is measured in controls, and a scale with
+   one consumer is a list. Smaller multiples than Dialog's 10/14/20 because
+   as a bottom sheet these are block-sizes, where half a viewport is already
+   a lot. */
+.rata-sheet--sm {
+  --rata-sheet-measure: calc(var(--rata-size-control-lg) * 8);
+}
+
+.rata-sheet--md {
+  --rata-sheet-measure: calc(var(--rata-size-control-lg) * 12);
+}
+
+.rata-sheet--lg {
+  --rata-sheet-measure: calc(var(--rata-size-control-lg) * 18);
+}
+
+/* ---- Edges ----------------------------------------------------------------
+   Each edge does three things: lets one margin take the slack so the sheet is
+   pinned, caps the axis it slides along, and rounds only the two corners that
+   face the page.
+
+   The cap is min()'d with a PERCENTAGE of the containing block rather than a
+   viewport unit, and that is not a style preference: `vh` and `vw` are the
+   LARGE viewport, so a bottom sheet measured in `vh` is taller than the
+   screen for as long as the mobile address bar is showing — the one axis and
+   the one component where that bites hardest. Less one `padding.lg` so a
+   sheet never quite covers the edge it slid from, which is what keeps it
+   reading as a sheet rather than as a page.
+
+   These rules come after the base rule on purpose: their `max-*` is meant to
+   replace the base's, which is the same cascade dependency dialog.css relies
+   on for its widths. */
+.rata-sheet--block-end {
+  margin-block-start: auto;
+  max-block-size: min(
+    var(--rata-sheet-measure),
+    calc(100% - var(--rata-space-padding-lg))
+  );
+  border-start-start-radius: var(--rata-radius-page);
+  border-start-end-radius: var(--rata-radius-page);
+}
+
+.rata-sheet--block-start {
+  margin-block-end: auto;
+  max-block-size: min(
+    var(--rata-sheet-measure),
+    calc(100% - var(--rata-space-padding-lg))
+  );
+  border-end-start-radius: var(--rata-radius-page);
+  border-end-end-radius: var(--rata-radius-page);
+}
+
+.rata-sheet--inline-start {
+  margin-inline-end: auto;
+  max-inline-size: min(
+    var(--rata-sheet-measure),
+    calc(100% - var(--rata-space-padding-lg))
+  );
+  border-start-end-radius: var(--rata-radius-page);
+  border-end-end-radius: var(--rata-radius-page);
+}
+
+.rata-sheet--inline-end {
+  margin-inline-start: auto;
+  max-inline-size: min(
+    var(--rata-sheet-measure),
+    calc(100% - var(--rata-space-padding-lg))
+  );
+  border-start-start-radius: var(--rata-radius-page);
+  border-end-start-radius: var(--rata-radius-page);
+}
+
+/* theme.scrim exists for exactly this. It is not theme.bg.muted at an alpha:
+   a scrim implies the page behind it is inert, which is true here and false
+   for a menu, so the two must not share a token. */
+.rata-sheet::backdrop {
+  background: var(--rata-theme-scrim);
+}
+
+/* ---- Motion ---------------------------------------------------------------
+   The fade is here, outside any motion query, because a cross-fade is not
+   movement and a reader who asks for less motion still wants to see that
+   something arrived rather than find it already there. The SLIDE is the part
+   that moves, and that is in the query below.
+
+   `allow-discrete` on both `display` and `overlay` is what makes an exit
+   visible at all: the first lets `display` flip at the end of the transition
+   instead of immediately, the second holds the element in the top layer for
+   the length of it. Leaving `overlay` off the backdrop drops the scrim the
+   instant close() runs, so the sheet spends its whole exit animating over a
+   live, undimmed page. @starting-style supplies the from-state for an element
+   that was not in the rendering tree a moment ago. */
+.rata-sheet,
+.rata-sheet::backdrop {
+  transition:
+    opacity var(--rata-motion-modal-duration) var(--rata-motion-easing-exit),
+    display var(--rata-motion-modal-duration) allow-discrete,
+    overlay var(--rata-motion-modal-duration) allow-discrete;
+  opacity: 0;
+}
+
+/* The flip side of holding the top layer for the length of the exit: for
+   those 280ms the sheet and its backdrop are still there, invisible and still
+   catching clicks, so the page would ignore the reader right after they
+   closed it. Restored on [open]. */
+.rata-sheet {
+  pointer-events: none;
+}
+
+.rata-sheet[open],
+.rata-sheet[open]::backdrop {
+  opacity: 1;
+  transition-timing-function: var(--rata-motion-easing-enter);
+}
+
+.rata-sheet[open] {
+  pointer-events: auto;
+}
+
+@starting-style {
+  .rata-sheet[open],
+  .rata-sheet[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+/* The slide. One custom property per edge rather than a translate on each,
+   so the rest of this block is written once.
+
+   `translate` is a PHYSICAL property — there is no logical form of it — so
+   the two inline edges need :dir() to flip. Without it a drawer in a
+   right-to-left document slides in from the wrong side while its margins,
+   which are logical, correctly place it on the other one: it would fly across
+   the whole viewport to get where it was going. */
+@media (prefers-reduced-motion: no-preference) {
+  .rata-sheet--block-end {
+    --rata-sheet-enter: 0 100%;
+  }
+
+  .rata-sheet--block-start {
+    --rata-sheet-enter: 0 -100%;
+  }
+
+  .rata-sheet--inline-start {
+    --rata-sheet-enter: -100% 0;
+  }
+
+  .rata-sheet--inline-start:dir(rtl) {
+    --rata-sheet-enter: 100% 0;
+  }
+
+  .rata-sheet--inline-end {
+    --rata-sheet-enter: 100% 0;
+  }
+
+  .rata-sheet--inline-end:dir(rtl) {
+    --rata-sheet-enter: -100% 0;
+  }
+
+  .rata-sheet {
+    transition:
+      opacity var(--rata-motion-modal-duration) var(--rata-motion-easing-exit),
+      translate var(--rata-motion-modal-duration) var(--rata-motion-easing-exit),
+      display var(--rata-motion-modal-duration) allow-discrete,
+      overlay var(--rata-motion-modal-duration) allow-discrete;
+    translate: var(--rata-sheet-enter);
+  }
+
+  .rata-sheet[open] {
+    translate: var(--rata-space-0) var(--rata-space-0);
+  }
+
+  /* Last, so it wins over the [open] rule above for the one frame it applies
+     to. */
+  @starting-style {
+    .rata-sheet[open] {
+      translate: var(--rata-sheet-enter);
+    }
+  }
+}
+
+/* ---- Contents -------------------------------------------------------------
+   The same construction as Dialog's, because a titled modal surface with a
+   close control and a scrolling body is the same thing however it is
+   anchored. */
+.rata-sheet-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rata-space-gap-sm);
+}
+
+.rata-sheet-heading {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+/* A real heading, as Dialog's is: everything behind a modal is inert, so the
+   outline inside it genuinely starts fresh and this is the top of it. Panel,
+   which sits inside the page's own outline, has to be told its level
+   instead. */
+.rata-sheet-title {
+  margin: var(--rata-space-0);
+  font-size: var(--rata-type-heading-size);
+  font-weight: var(--rata-type-heading-weight);
+  line-height: var(--rata-type-heading-line-height);
+}
+
+.rata-sheet-description {
+  margin: var(--rata-space-0);
+  margin-block-start: var(--rata-space-stack-2xs);
+  color: var(--rata-theme-fg-secondary);
+}
+
+/* `min-block-size: 0` is what makes the scrolling actually happen. A flex
+   item's default `min-height: auto` refuses to shrink below its content, so
+   `overflow-y` never engages and tall content pushes the footer out of the
+   sheet's own max-block-size instead of scrolling inside it. */
+.rata-sheet-body {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  margin-block-start: var(--rata-space-stack-md);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.rata-sheet-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--rata-space-gap-sm);
+  margin-block-start: var(--rata-space-stack-md);
+}
+
+/* Same construction as Dialog's and Notice's dismiss: currentColor on a
+   transparent background, so the glyph matches the surface's own foreground
+   and a close button is the same control everywhere. */
+.rata-sheet-dismiss {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--rata-size-control-sm);
+  block-size: var(--rata-size-control-sm);
+  padding: var(--rata-space-0);
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-inner);
+  background: transparent;
+  color: currentColor;
+  cursor: pointer;
+  /* Centred on the title's FIRST line rather than on the whole heading block,
+     and pulled back by the difference so a 28px control does not make the
+     header taller than the line beside it. Derived from the heading's own
+     metrics so it stays right if the type scale moves — `1em` would be wrong
+     because the button inherits the body size, not the heading's. */
+  margin-block-start: calc(
+    (
+        var(--rata-type-heading-size) * var(--rata-type-heading-line-height) -
+          var(--rata-size-control-sm)
+      ) / 2
+  );
+}
+
+.rata-sheet-dismiss:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style)
+    var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}

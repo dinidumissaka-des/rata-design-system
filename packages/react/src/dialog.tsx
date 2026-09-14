@@ -1,8 +1,9 @@
-import { useEffect, useId, useRef } from "react";
+import { useId } from "react";
 import type { DialogHTMLAttributes, ReactNode, RefObject } from "react";
 import { Icon, X } from "@rata/icons";
 import { cx } from "./cx.js";
-import { lockScroll, unlockScroll } from "./scroll-lock.js";
+import { useModalDialog } from "./modal-dialog.js";
+import type { ModalCloseReason } from "./modal-dialog.js";
 
 export type DialogSize = "sm" | "md" | "lg";
 
@@ -18,16 +19,11 @@ export type DialogSize = "sm" | "md" | "lg";
 export type DialogRole = "dialog" | "alertdialog";
 
 /**
- * Why the dialog is closing.
- *
- * `external` means something other than this component closed it — a
- * `<form method="dialog">` inside it being submitted, which is the documented
- * HTML way to close a dialog, or the platform doing it for its own reasons.
- * It is reported rather than ignored because `open` would otherwise go on
- * saying the dialog is showing while it is not, and the scroll lock would
- * stay on with nothing open.
+ * Why the dialog is closing. Shared with every other native-modal surface in
+ * this system — see `ModalCloseReason`, which this is an alias of, for what
+ * each reason means and why `external` has to be reported at all.
  */
-export type DialogCloseReason = "escape" | "close-button" | "backdrop" | "external";
+export type DialogCloseReason = ModalCloseReason;
 
 export interface DialogProps
   extends Omit<
@@ -126,38 +122,13 @@ export function Dialog({
   const generated = useId();
   const titleId = `${generated}-title`;
   const descriptionId = `${generated}-description`;
-  const ref = useRef<HTMLDialogElement | null>(null);
 
   const hasDescription = description !== undefined && description !== "";
 
-  // showModal() is what makes it modal — the focus trap, the inert page and
-  // the backdrop all come from it. The `open` attribute alone would render a
-  // non-modal dialog with none of that, which is the single easiest way to
-  // ship a "modal" that is not one.
-  useEffect(() => {
-    const node = ref.current;
-    if (node === null) return;
-    if (open && !node.open) {
-      node.showModal();
-      // After showModal, never before: it moves focus to the first focusable
-      // descendant on its own, so anything focused earlier is overridden.
-      // This is also why React's `autoFocus` cannot work here — see the prop.
-      initialFocus?.current?.focus();
-    } else if (!open && node.open) {
-      node.close();
-    }
-    // `initialFocus` is deliberately not a dependency: it is read when the
-    // dialog opens, and a ref changing identity is not a reason to re-open.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
-
-  // `inert` stops the page behind being interactive but not from scrolling,
-  // and a modal that scrolls the page behind it loses the reader's place.
-  useEffect(() => {
-    if (!open) return;
-    lockScroll();
-    return unlockScroll;
-  }, [open]);
+  // Every hard part of being a native modal — showModal, the scroll lock, the
+  // Escape interception, the backdrop click, and reporting a close nobody
+  // here asked for — is shared with Sheet rather than written twice.
+  const { ref, handlers } = useModalDialog({ open, onClose, dismissible, initialFocus });
 
   return (
     <dialog
@@ -169,38 +140,7 @@ export function Dialog({
       role={role}
       aria-labelledby={titleId}
       aria-describedby={hasDescription ? descriptionId : undefined}
-      onCancel={(event) => {
-        // The platform fires `cancel` for Escape. Prevented, it does not close
-        // — which is the only way to make a non-dismissible dialog, and the
-        // reason its contract insists the footer contain a way out.
-        if (!dismissible) {
-          event.preventDefault();
-          return;
-        }
-        // Prevented regardless, so React stays the single source of `open`:
-        // letting the platform close it directly would leave the prop saying
-        // it is showing while it is not.
-        event.preventDefault();
-        onClose("escape");
-      }}
-      onClose={() => {
-        // The NATIVE close event, not this component's `onClose` prop. It
-        // fires for our own `node.close()` too, which is why this only reports
-        // when React still believes the dialog is open: that is the case where
-        // something else closed it — `<form method="dialog">` being the
-        // documented one — and nothing would otherwise resync. The effect
-        // below is keyed on `open`, so it does not re-run to notice, and the
-        // scroll lock stayed on the body with no dialog open at all.
-        if (open) onClose("external");
-      }}
-      onClick={(event) => {
-        // A click that lands on the <dialog> itself rather than on anything
-        // inside it is a click on the backdrop: the element's box is the
-        // surface, and the backdrop is painted outside it. The platform does
-        // not treat that as dismissal, so this does.
-        if (!dismissible || event.target !== event.currentTarget) return;
-        onClose("backdrop");
-      }}
+      {...handlers}
     >
       <div className="rata-dialog-header">
         <div className="rata-dialog-heading">

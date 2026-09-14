@@ -5,15 +5,17 @@
 
 A titled region beside the content it describes, with its own scroll and an optional close.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Panel } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `panel` |
 | Family | content |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
-| Depends on | `button`, `icon` |
+| Status (css / react / figma) | latest / latest / future |
+| Depends on | `state-layer`, `icon` |
 
 ## Behavior
 
@@ -30,11 +32,13 @@ A `<aside>` complementary landmark named by its own heading, in normal flow. Not
 
 ## Props
 
+Extends `Omit<HTMLAttributes<HTMLElement>, "title" | "children">`.
+
 | Prop | Type | Default | Summary |
 |---|---|---|---|
 | `title` | `ReactNode` | — | The panel's name. Required. |
 | `children` | `ReactNode` | — | The panel's content. |
-| `headingLevel?` | `2 \| 3 \| 4 \| 5 \| 6` | `2` | Where the title sits in the page's outline. |
+| `headingLevel?` | `PanelHeadingLevel` | `2` | Where the title sits in the page's outline. |
 | `edge?` | `PanelEdge` | `"inline-end"` | Which side of the content the panel is attached to. |
 | `onClose?` | `() => void` | — | Called when the reader closes the panel. Omitting it makes the panel persistent. |
 | `closeLabel?` | `string` | `"Close"` | Accessible name for the close button. |
@@ -79,7 +83,7 @@ The panel's content.
 ### `headingLevel`
 
 ```ts
-headingLevel?: 2 | 3 | 4 | 5 | 6 = 2
+headingLevel?: PanelHeadingLevel = 2
 ```
 
 Where the title sits in the page's outline.
@@ -101,6 +105,8 @@ edge?: PanelEdge = "inline-end"
 ```
 
 Which side of the content the panel is attached to.
+
+Source doc: Which side of the content it is attached to.
 
 **Use when**
 
@@ -164,6 +170,71 @@ Extra classes on the panel, for placement and measure — not for restyling it.
 **Don't use for**
 
 - Changing its surface or border. Those come from the recipe, and a panel that differs per page reads as two different products.
+
+## Use cases
+
+### An inspector beside the thing it documents
+
+A selection in a grid or list opens detail that is read AGAINST what is still on screen — the comparison is the task, so a modal would answer a different question.
+
+```tsx
+<div className="pg-with-inspector">
+  <TokenGrid onSelect={setSelected} />
+
+  {selected !== null && (
+    <Panel
+      title={selected}
+      closeLabel={`Close documentation for ${selected}`}
+      onClose={() => setSelected(null)}
+    >
+      <TokenDoc path={selected} />
+    </Panel>
+  )}
+</div>
+```
+
+The measure comes from the page — `.pg-with-inspector` gives the panel its column — because where one stops fitting depends on the content and the page around it. `closeLabel` is spelled out because "Close" alone does not say what closes when the page holds more than one thing that can.
+
+### A persistent properties rail
+
+The panel is part of the page's furniture rather than something a selection opens, so there is nothing for a close button to do.
+
+```tsx
+<Panel title="Properties" headingLevel={3}>
+  <PropertyList node={focusedNode} />
+</Panel>
+```
+
+No `onClose`, so no close button is rendered at all — that is how a panel says it is persistent, rather than the caller passing a no-op to get a control they then have to ignore. `headingLevel={3}` because this one sits under a section already headed `<h2>`.
+
+### A filter column on the inline-start side
+
+Filters that stay put next to the results they narrow, on a viewport wide enough to show both.
+
+```tsx
+<Panel title="Filters" edge="inline-start" headingLevel={2}>
+  <CheckboxGroupList facets={facets} onChange={setFacets} />
+</Panel>
+```
+
+`edge="inline-start"` moves the border to the side facing the results. It does not move the panel — that is the page's layout — it states which edge the panel meets the content across, so the border lands on the right one.
+
+## Real usage in this repo
+
+```tsx
+<Panel
+        title={title}
+        edge={edge}
+        headingLevel={3}
+        onClose={persistent ? undefined : () => setClosed(true)}
+        closeLabel={`Close ${typeof title === "string" ? title : "panel"}`}
+      >
+        <p className="pg-note">
+          Raw hue ramps, 50 &rarr; 950, generated from the theme&rsquo;s seed. The body
+          scrolls on its own so this heading and the close control stay in view.
+        </p>
+      </Panel>
+```
 
 ## Token recipe
 

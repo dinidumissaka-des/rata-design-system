@@ -1409,6 +1409,10 @@
         {
           "decision": "A native close is reported rather than ignored",
           "why": "`<form method=\"dialog\">` is the documented HTML way to close a dialog, and the platform can close one for its own reasons too. Neither goes through `onClose`, and the effect that drives the dialog is keyed on `open`, so it never re-runs to notice — `open` went on claiming the dialog was showing, and the scroll lock stayed on the body with nothing open, leaving the page unable to scroll at all. The native `close` event now reports `external`, and only while React still believes the dialog is open, so the component's own `close()` is not mistaken for someone else's."
+        },
+        {
+          "decision": "The modal machinery moved out of this component when Sheet arrived",
+          "why": "showModal, the counted scroll lock, the Escape interception, the backdrop click and the report of a close nobody asked for are now `useModalDialog`, shared with Sheet. Every one of them exists because of a specific bug, several of them silent, and a second hand-written copy would have drifted on exactly those. Nothing about this component's behaviour changed — the same 27 tests pass against it."
         }
       ]
     },
@@ -1608,7 +1612,7 @@
         }
       }
     },
-    "example": "<Icon icon={X} />"
+    "example": "<Icon icon={User} />"
   },
   {
     "name": "menu",
@@ -2639,30 +2643,30 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest"
       },
       "react": {
-        "state": "future"
+        "state": "latest"
       },
       "figma": {
         "state": "future"
       }
     },
     "dependencies": [
-      "button",
+      "state-layer",
       "icon"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLElement>, \"title\" | \"children\">",
     "props": [
       {
         "name": "title",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "",
+        "declared": true,
         "summary": "The panel's name. Required.",
         "use": [
           "A noun phrase naming what the panel is about — the token path, the selected row's name."
@@ -2675,10 +2679,10 @@
       },
       {
         "name": "children",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The panel's content.",
+        "declared": true,
         "summary": "The panel's content.",
         "use": [
           "Whatever the panel is about — the detail, the contract, the form."
@@ -2691,11 +2695,11 @@
       },
       {
         "name": "headingLevel",
-        "type": "2 | 3 | 4 | 5 | 6",
         "optional": true,
+        "type": "PanelHeadingLevel",
+        "description": "Where the title sits in the page's outline.",
         "default": "2",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Where the title sits in the page's outline.",
         "use": [
           "The level below whatever heading the panel's section sits under — a panel inside a section headed `<h2>` takes `3`."
@@ -2708,11 +2712,15 @@
       },
       {
         "name": "edge",
-        "type": "PanelEdge",
         "optional": true,
+        "type": "PanelEdge",
+        "description": "Which side of the content it is attached to.",
         "default": "\"inline-end\"",
-        "description": null,
-        "declared": false,
+        "values": [
+          "inline-start",
+          "inline-end"
+        ],
+        "declared": true,
         "summary": "Which side of the content the panel is attached to.",
         "use": [
           "`inline-end` for a detail or inspector panel, which is where a reader expects one — and the same side Sheet's `inline-end` drawer comes from, so the two are interchangeable as the viewport changes.",
@@ -2726,10 +2734,10 @@
       },
       {
         "name": "onClose",
-        "type": "() => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "() => void",
+        "description": "",
+        "declared": true,
         "summary": "Called when the reader closes the panel. Omitting it makes the panel persistent.",
         "use": [
           "A panel opened by a selection — clicking a swatch, a row, a node — which the reader can put away again."
@@ -2742,11 +2750,11 @@
       },
       {
         "name": "closeLabel",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "Accessible name for the close button.",
         "default": "\"Close\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accessible name for the close button.",
         "use": [
           "Naming what closes when several panels can be open at once: \"Close token documentation\"."
@@ -2759,10 +2767,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
+        "type": "string",
         "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Extra classes on the panel, for placement and measure — not for restyling it.",
         "use": [
           "Setting the width and how it sits in the page's grid or flex row, which the component deliberately leaves open."
@@ -2774,7 +2782,26 @@
         "a11y": null
       }
     ],
-    "usage": [],
+    "usage": [
+      {
+        "case": "An inspector beside the thing it documents",
+        "when": "A selection in a grid or list opens detail that is read AGAINST what is still on screen — the comparison is the task, so a modal would answer a different question.",
+        "example": "<div className=\"pg-with-inspector\">\n  <TokenGrid onSelect={setSelected} />\n\n  {selected !== null && (\n    <Panel\n      title={selected}\n      closeLabel={`Close documentation for ${selected}`}\n      onClose={() => setSelected(null)}\n    >\n      <TokenDoc path={selected} />\n    </Panel>\n  )}\n</div>",
+        "notes": "The measure comes from the page — `.pg-with-inspector` gives the panel its column — because where one stops fitting depends on the content and the page around it. `closeLabel` is spelled out because \"Close\" alone does not say what closes when the page holds more than one thing that can."
+      },
+      {
+        "case": "A persistent properties rail",
+        "when": "The panel is part of the page's furniture rather than something a selection opens, so there is nothing for a close button to do.",
+        "example": "<Panel title=\"Properties\" headingLevel={3}>\n  <PropertyList node={focusedNode} />\n</Panel>",
+        "notes": "No `onClose`, so no close button is rendered at all — that is how a panel says it is persistent, rather than the caller passing a no-op to get a control they then have to ignore. `headingLevel={3}` because this one sits under a section already headed `<h2>`."
+      },
+      {
+        "case": "A filter column on the inline-start side",
+        "when": "Filters that stay put next to the results they narrow, on a viewport wide enough to show both.",
+        "example": "<Panel title=\"Filters\" edge=\"inline-start\" headingLevel={2}>\n  <CheckboxGroupList facets={facets} onChange={setFacets} />\n</Panel>",
+        "notes": "`edge=\"inline-start\"` moves the border to the side facing the results. It does not move the panel — that is the page's layout — it states which edge the panel meets the content across, so the border lands on the right one."
+      }
+    ],
     "behavior": {
       "summary": "A `<aside>` complementary landmark named by its own heading, in normal flow. Not a dialog, not in the top layer, and not dismissed by Escape. The page reflows around it and everything beside it stays usable — which is the only reason to choose it over a Sheet.",
       "decisions": [
@@ -2846,7 +2873,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Panel\n        title={title}\n        edge={edge}\n        headingLevel={3}\n        onClose={persistent ? undefined : () => setClosed(true)}\n        closeLabel={`Close ${typeof title === \"string\" ? title : \"panel\"}`}\n      >\n        <p className=\"pg-note\">\n          Raw hue ramps, 50 &rarr; 950, generated from the theme&rsquo;s seed. The body\n          scrolls on its own so this heading and the close control stay in view.\n        </p>\n      </Panel>"
   },
   {
     "name": "radio",
@@ -3863,31 +3890,31 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest"
       },
       "react": {
-        "state": "future"
+        "state": "latest"
       },
       "figma": {
         "state": "future"
       }
     },
     "dependencies": [
-      "button",
+      "state-layer",
       "icon",
-      "state-layer"
+      "button"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<",
     "props": [
       {
         "name": "title",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "",
+        "declared": true,
         "summary": "The sheet's name. Required.",
         "use": [
           "A noun phrase naming what this is about: \"Filters\", \"Token documentation\"."
@@ -3900,10 +3927,10 @@
       },
       {
         "name": "children",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The sheet's content.",
+        "declared": true,
         "summary": "The sheet's content.",
         "use": [
           "The detail, the form, the list of options."
@@ -3916,10 +3943,10 @@
       },
       {
         "name": "open",
-        "type": "boolean",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "boolean",
+        "description": "Whether the sheet is showing. Always controlled — `showModal()` has no prop.",
+        "declared": true,
         "summary": "Whether the sheet is showing. Always controlled.",
         "use": [
           "State the caller owns, so opening and closing are things that happen in their code rather than inside this one."
@@ -3932,10 +3959,10 @@
       },
       {
         "name": "onClose",
-        "type": "(reason: SheetCloseReason) => void",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "(reason: SheetCloseReason) => void",
+        "description": "Called when the sheet asks to close. Set `open` to false in it.",
+        "declared": true,
         "summary": "Called when the sheet asks to close, with why.",
         "use": [
           "Setting `open` to false."
@@ -3948,11 +3975,17 @@
       },
       {
         "name": "edge",
-        "type": "SheetEdge",
         "optional": true,
+        "type": "SheetEdge",
+        "description": "Which edge it is held against. `block-end` is the bottom sheet.",
         "default": "\"block-end\"",
-        "description": null,
-        "declared": false,
+        "values": [
+          "block-start",
+          "block-end",
+          "inline-start",
+          "inline-end"
+        ],
+        "declared": true,
         "summary": "Which edge the sheet is anchored to and slides in from.",
         "use": [
           "`block-end` for a bottom sheet — options and detail on a narrow viewport, where the bottom is where a thumb is.",
@@ -3966,11 +3999,16 @@
       },
       {
         "name": "size",
-        "type": "SheetSize",
         "optional": true,
+        "type": "SheetSize",
+        "description": "How far it comes in, measured on the axis it slides along.",
         "default": "\"md\"",
-        "description": null,
-        "declared": false,
+        "values": [
+          "sm",
+          "md",
+          "lg"
+        ],
+        "declared": true,
         "summary": "How far the sheet comes in, measured on the axis it slides along.",
         "use": [
           "`sm` for a short list of actions; `lg` for a form or a document."
@@ -3983,10 +4021,10 @@
       },
       {
         "name": "description",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "A line under the title, wired as the sheet's description.",
+        "declared": true,
         "summary": "A line under the title, wired as the sheet's description.",
         "use": [
           "One sentence of consequence or scope that the title cannot carry."
@@ -3999,10 +4037,10 @@
       },
       {
         "name": "footer",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The actions. Reads after the body they act on.",
+        "declared": true,
         "summary": "The actions.",
         "use": [
           "An Apply and a Cancel for a filter sheet."
@@ -4015,11 +4053,11 @@
       },
       {
         "name": "dismissible",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "",
         "default": "true",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Whether the reader can close it themselves.",
         "use": [
           "`false` only while something must finish — a migration step, a required choice with no default."
@@ -4032,11 +4070,11 @@
       },
       {
         "name": "dismissLabel",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "Accessible name for the close button.",
         "default": "\"Close\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accessible name for the close button.",
         "use": [
           "Naming what closes when the word alone is ambiguous: \"Close filters\"."
@@ -4049,10 +4087,10 @@
       },
       {
         "name": "initialFocus",
-        "type": "RefObject<HTMLElement | null>",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "RefObject<HTMLElement | null>",
+        "description": "",
+        "declared": true,
         "summary": "What to focus when it opens. Defaults to the platform's choice.",
         "use": [
           "The safe action in a destructive sheet, so the dangerous one is not one Enter away."
@@ -4065,10 +4103,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
+        "type": "string",
         "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Extra classes on the sheet, for placement — not for restyling it.",
         "use": [
           "Nothing yet. It exists for the same reason Dialog's does, and the same caution applies."
@@ -4080,7 +4118,26 @@
         "a11y": null
       }
     ],
-    "usage": [],
+    "usage": [
+      {
+        "case": "A bottom sheet of filters on a narrow viewport",
+        "when": "The commonest use: a set of choices that would not fit beside the results, reachable where a thumb already is.",
+        "example": "const [filtering, setFiltering] = useState(false);\n\n<Button onClick={() => setFiltering(true)}>Filters</Button>\n\n<Sheet\n  open={filtering}\n  onClose={() => setFiltering(false)}\n  title=\"Filters\"\n  description=\"Narrows the 1,204 results below.\"\n  footer={\n    <>\n      <Button variant=\"secondary\" onClick={() => setFiltering(false)}>\n        Cancel\n      </Button>\n      <Button onClick={() => setFiltering(false)}>Apply</Button>\n    </>\n  }\n>\n  <SegmentedControl\n    label=\"Period\"\n    value={period}\n    onValueChange={setPeriod}\n    items={[\n      { value: \"week\", label: \"Week\" },\n      { value: \"month\", label: \"Month\" },\n    ]}\n  />\n</Sheet>",
+        "notes": "`edge` is left at its default, which is `block-end`. The footer holds the two ways out so neither is the close button, whose job is only to abandon the sheet."
+      },
+      {
+        "case": "A detail drawer from the inline edge",
+        "when": "The same content a Panel would hold, on a viewport too narrow to give the panel a column of its own.",
+        "example": "<Sheet\n  open={selected !== null}\n  onClose={() => setSelected(null)}\n  edge=\"inline-end\"\n  size=\"lg\"\n  title={selected?.path ?? \"\"}\n>\n  <TokenDoc path={selected.path} />\n</Sheet>",
+        "notes": "`inline-end` rather than `right`: the sheet follows the reading direction, so a right-to-left document gets it on the other side with no change here. This is the pattern's other half — the same content is a Panel when there is room for one, and the two take the same title."
+      },
+      {
+        "case": "A required choice with no way to dismiss it",
+        "when": "Something must be answered before the page behind it means anything — a workspace to act in, a term to accept.",
+        "example": "<Sheet\n  open={needsWorkspace}\n  onClose={() => {}}\n  dismissible={false}\n  size=\"sm\"\n  title=\"Choose a workspace\"\n  initialFocus={firstOptionRef}\n>\n  <RadioGroup\n    label=\"Workspace\"\n    value={workspace}\n    onValueChange={commitWorkspace}\n    items={workspaces}\n  />\n</Sheet>",
+        "notes": "`dismissible={false}` removes the close button and blocks both Escape and the backdrop, so the content itself has to be the way out — here, picking an option commits it. A sheet with neither is a dead end, and a reader will reload the page to escape it."
+      }
+    ],
     "behavior": {
       "summary": "A native `<dialog>` opened with `showModal()`, held against one edge of the viewport. The browser supplies the focus trap, `inert` on the page behind, the top layer, `::backdrop`, Escape, and focus returned to whatever opened it — the same reasoning Dialog and MobileNav follow, and the same reason not to hand-roll any of it.",
       "decisions": [
@@ -4187,7 +4244,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Sheet\n        open={open}\n        onClose={() => setOpen(false)}\n        edge={edge}\n        size={size}\n        dismissible={dismissible}\n        title={title}\n        description={description}\n        initialFocus={applyRef}\n        footer={\n          <>\n            <Button variant=\"secondary\" onClick={() => setOpen(false)}>\n              Cancel\n            </Button>\n            <Button ref={applyRef} onClick={() => setOpen(false)}>\n              Apply\n            </Button>\n          </>\n        }\n      >\n        The body scrolls on its own, so the title and the way out stay put\n        however much goes in here.\n      </Sheet>"
   },
   {
     "name": "side-nav",

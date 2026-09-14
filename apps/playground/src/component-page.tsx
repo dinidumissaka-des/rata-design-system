@@ -19,6 +19,8 @@ import {
   ButtonGroup,
   Checkbox,
   Dialog,
+  Panel,
+  Sheet,
   Menu,
   MenuItem,
   MenuSeparator,
@@ -42,6 +44,9 @@ import type {
   BadgeVariant,
   ButtonGroupOrientation,
   DialogSize,
+  PanelEdge,
+  SheetEdge,
+  SheetSize,
   SearchSize,
   NoticeLive,
   NoticeVariant,
@@ -571,6 +576,26 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     ),
   },
 
+  sheet: {
+    "A bottom sheet of filters on a narrow viewport": () => (
+      <SheetStage description="Narrows the 1,204 results below." />
+    ),
+    "A detail drawer from the inline edge": () => (
+      <SheetStage edge="inline-end" size="lg" title="color.accent.600" />
+    ),
+    "A required choice with no way to dismiss it": () => (
+      <SheetStage size="sm" dismissible={false} title="Choose a workspace" />
+    ),
+  },
+
+  panel: {
+    "An inspector beside the thing it documents": () => <PanelStage />,
+    "A persistent properties rail": () => <PanelStage persistent title="Properties" />,
+    "A filter column on the inline-start side": () => (
+      <PanelStage edge="inline-start" title="Filters" />
+    ),
+  },
+
   "menu-item": {
     "A row with an icon": () => <MenuItemStage />,
     "A destructive row, kept away from the safe ones": () => (
@@ -902,6 +927,103 @@ function DialogStage({
         This cannot be undone.
       </Dialog>
     </>
+  );
+}
+
+/**
+ * A sheet is only itself when it is open, for the same reason DialogStage
+ * exists: `showModal()` is what supplies the focus trap and the inert page,
+ * and a sheet that was never opened shows neither. The trigger also makes the
+ * slide visible, which is the part `edge` actually changes.
+ */
+function SheetStage({
+  edge,
+  size,
+  dismissible,
+  description,
+  title = "Filters",
+}: {
+  edge?: SheetEdge;
+  size?: SheetSize;
+  dismissible?: boolean;
+  description?: ReactNode;
+  title?: ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  const applyRef = useRef<HTMLButtonElement | null>(null);
+  return (
+    <>
+      <Button variant="secondary" onClick={() => setOpen(true)}>
+        Open the sheet
+      </Button>
+      <Sheet
+        open={open}
+        onClose={() => setOpen(false)}
+        edge={edge}
+        size={size}
+        dismissible={dismissible}
+        title={title}
+        description={description}
+        initialFocus={applyRef}
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setOpen(false)}>
+              Cancel
+            </Button>
+            <Button ref={applyRef} onClick={() => setOpen(false)}>
+              Apply
+            </Button>
+          </>
+        }
+      >
+        The body scrolls on its own, so the title and the way out stay put
+        however much goes in here.
+      </Sheet>
+    </>
+  );
+}
+
+/**
+ * A panel, unlike a sheet, is rendered flat — it is in normal flow, and
+ * staging it behind a trigger would hide the one thing that distinguishes it:
+ * that the page beside it is still there.
+ *
+ * The stage supplies the measure, because the component deliberately does
+ * not. That is the bargain in its contract, so the example has to honour it
+ * or it teaches the opposite.
+ */
+function PanelStage({
+  edge,
+  persistent = false,
+  title = "color.accent.600",
+}: {
+  edge?: PanelEdge;
+  persistent?: boolean;
+  title?: ReactNode;
+}) {
+  const [closed, setClosed] = useState(false);
+  if (closed) {
+    return (
+      <Button variant="secondary" onClick={() => setClosed(false)}>
+        Reopen the panel
+      </Button>
+    );
+  }
+  return (
+    <div className="pg-panel-stage">
+      <Panel
+        title={title}
+        edge={edge}
+        headingLevel={3}
+        onClose={persistent ? undefined : () => setClosed(true)}
+        closeLabel={`Close ${typeof title === "string" ? title : "panel"}`}
+      >
+        <p className="pg-note">
+          Raw hue ramps, 50 &rarr; 950, generated from the theme&rsquo;s seed. The body
+          scrolls on its own so this heading and the close control stay in view.
+        </p>
+      </Panel>
+    </div>
   );
 }
 
@@ -1480,6 +1602,27 @@ const INTERACTIVE: Record<string, Interactive> = {
         size={state.size as DialogSize}
         dismissible={state.dismissible === undefined ? true : Boolean(state.dismissible)}
       />
+    ),
+  },
+
+  sheet: {
+    controls: ["title", "edge", "size", "dismissible"],
+    seed: { title: "Filters" },
+    render: (state) => (
+      <SheetStage
+        title={String(state.title)}
+        edge={state.edge as SheetEdge}
+        size={state.size as SheetSize}
+        dismissible={state.dismissible === undefined ? true : Boolean(state.dismissible)}
+      />
+    ),
+  },
+
+  panel: {
+    controls: ["title", "edge"],
+    seed: { title: "color.accent.600" },
+    render: (state) => (
+      <PanelStage title={String(state.title)} edge={state.edge as PanelEdge} />
     ),
   },
 

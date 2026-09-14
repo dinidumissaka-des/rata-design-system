@@ -9,7 +9,7 @@
 // for exactly one action per view, that the only foreground allowed on it is
 // theme.fg.on-accent, or that a tinted region wants accent-role.subtle
 // instead. That is what the contract knows.
-import { Icon, X } from "@rata/icons";
+import { Panel } from "@rata/react";
 import usage from "@rata/tokens/usage";
 
 interface TokenEntry {
@@ -110,16 +110,21 @@ export function TokenDoc({ path, onClose }: { path: string; onClose: () => void 
   const stepNote = entry?.scale && step ? entry.scale[step] : null;
 
   return (
-    <aside className="pg-inspector" aria-label={`Documentation for ${path}`}>
-      <div className="pg-inspector-head">
-        <code className="pg-inspector-path">{path}</code>
-        {/* The system's own glyph rather than a × character: the icon set
-            exists so a close control looks the same everywhere, and a
-            typographic multiplication sign is not that control. */}
-        <button className="pg-inspector-close" onClick={onClose} aria-label="Close documentation">
-          <Icon icon={X} />
-        </button>
-      </div>
+    // This rail was hand-rolled until Panel existed: its own <aside>, its own
+    // head, its own close button with its own focus ring, and `width: 340px`
+    // — a bare pixel value in a repo whose first rule is that there are none.
+    // What is left here is placement, which is what Panel's contract says the
+    // page owns.
+    <Panel
+      className="pg-inspector"
+      title={<code>{path}</code>}
+      headingLevel={3}
+      onClose={onClose}
+      // Not "Close": the page can have this open beside a grid of swatches,
+      // and a control named for the thing it closes is the difference between
+      // a useful announcement and "button".
+      closeLabel={`Close documentation for ${path}`}
+    >
 
       {!entry && (
         <p className="pg-note">
@@ -246,7 +251,7 @@ export function TokenDoc({ path, onClose }: { path: string; onClose: () => void 
           )}
         </>
       )}
-    </aside>
+    </Panel>
   );
 }
 
