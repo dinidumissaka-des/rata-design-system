@@ -1,10 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm run build:playground",
+  "buildCommand": "cd ../.. && npm run build:playground",
   "installCommand": "npm ci",
-  "outputDirectory": "apps/playground/dist",
+  "outputDirectory": "dist",
   "framework": null,
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",
@@ -18,7 +23,10 @@
     {
       "source": "/index.html",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
       ]
     }
   ]
