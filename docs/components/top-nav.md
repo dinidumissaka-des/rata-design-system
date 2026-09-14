@@ -170,7 +170,7 @@ Any page with two navigation landmarks.
 
 ```tsx
 <TopNav label="Main" items={sections} brand={<Wordmark />} />
-<SideNav label="Invoices" items={pages} />
+<SideNav label="Invoices" sections={pages} />
 ```
 
 Two navigation landmarks with the same name are indistinguishable in a landmark list, which is the one place they are most useful. Naming them for what they contain — not "top" and "side", which describe where they happen to sit — survives a redesign that moves them.

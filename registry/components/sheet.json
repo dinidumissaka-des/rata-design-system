@@ -286,7 +286,7 @@
     {
       "case": "A bottom sheet of filters on a narrow viewport",
       "when": "The commonest bottom sheet: a set of choices too big for the bar they belong to, applied and dismissed in one go.",
-      "example": "const [filtering, setFiltering] = useState(false);\n\n<Button onClick={() => setFiltering(true)}>Filters</Button>\n\n<Sheet\n  open={filtering}\n  onClose={() => setFiltering(false)}\n  title=\"Filters\"\n  description=\"Applied to the list behind this sheet.\"\n  size=\"md\"\n  footer={\n    <>\n      <Button variant=\"secondary\" onClick={() => setFiltering(false)}>\n        Cancel\n      </Button>\n      <Button onClick={apply}>Apply</Button>\n    </>\n  }\n>\n  <SegmentedControl\n    label=\"Period\"\n    value={period}\n    onValueChange={setPeriod}\n    items={[\n      { value: \"week\", label: \"Week\" },\n      { value: \"month\", label: \"Month\" },\n    ]}\n  />\n</Sheet>",
+      "example": "const [filtering, setFiltering] = useState(false);\n\n<Button onClick={() => setFiltering(true)}>Filters</Button>\n\n<Sheet\n  open={filtering}\n  onClose={() => setFiltering(false)}\n  title=\"Filters\"\n  description=\"Applied to the list behind this sheet.\"\n  size=\"md\"\n  footer={\n    <>\n      <Button variant=\"secondary\" onClick={() => setFiltering(false)}>\n        Cancel\n      </Button>\n      <Button onClick={apply}>Apply</Button>\n    </>\n  }\n>\n  <SegmentedControl\n    label=\"Period\"\n    value={period}\n    onValueChange={setPeriod}\n    options={[\n      { value: \"week\", label: \"Week\" },\n      { value: \"month\", label: \"Month\" },\n    ]}\n  />\n</Sheet>",
       "notes": "`block-end` is the default, so the edge is not stated. The footer holds both ways out, which is what makes Cancel reachable without hunting for the close button at the top of a sheet the reader's thumb is at the bottom of."
     },
     {
@@ -298,7 +298,7 @@
     {
       "case": "A required choice with no way to dismiss it",
       "when": "Rare, and worth resisting. A required choice with no sensible default is the only case that justifies it.",
-      "example": "const keepRef = useRef<HTMLButtonElement>(null);\n\n<Sheet\n  open={migrating}\n  onClose={() => {}}\n  title=\"Choose a workspace\"\n  description=\"Your account belongs to two, and this decides which one opens.\"\n  size=\"sm\"\n  dismissible={false}\n  initialFocus={keepRef}\n  footer={<Button ref={keepRef} onClick={choose}>Continue</Button>}\n>\n  <RadioGroup label=\"Workspace\" value={workspace} onValueChange={setWorkspace} items={workspaces} />\n</Sheet>",
+      "example": "const keepRef = useRef<HTMLButtonElement>(null);\n\n<Sheet\n  open={migrating}\n  onClose={() => {}}\n  title=\"Choose a workspace\"\n  description=\"Your account belongs to two, and this decides which one opens.\"\n  size=\"sm\"\n  dismissible={false}\n  initialFocus={keepRef}\n  footer={<Button ref={keepRef} onClick={choose}>Continue</Button>}\n>\n  <RadioGroup label=\"Workspace\" value={workspace} onValueChange={setWorkspace}>\n    {workspaces.map((w) => (\n      <Radio key={w.value} value={w.value} label={w.label} />\n    ))}\n  </RadioGroup>\n</Sheet>",
       "notes": "`dismissible={false}` removes the close button and blocks Escape and the backdrop, so the footer MUST contain a way out — here Continue is it. Without one the sheet is a dead end and the reader will reload the page instead."
     }
   ]

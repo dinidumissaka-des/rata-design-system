@@ -1261,6 +1261,19 @@ The close control. Same construction as Notice's: currentColor on a transparent 
 | focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
 | block alignment | centred on the title's first line, from `type.heading.size` and `type.heading.line-height` |
 
+### heading
+
+One type role, taken whole. Nothing else — a heading has no box of its own.
+
+| Property | Token |
+|---|---|
+| font-size | the size of the chosen role — `type.display-1.size` through `type.heading-6.size` |
+| font-weight | that same role's weight, which is 400 for the display roles and 600 for the heading roles |
+| line-height | that same role's line-height |
+| letter-spacing | `type.tracking.display-1` / display-2 / display-3 for the display roles, and normal for the heading roles — large type set at normal tracking reads loose, which is why the scale carries a tracking step per display role |
+| color | currentColor — a heading takes the colour of the text around it, and the surface it sits on decides that |
+| margin | `space.0` — every margin is the page's, since only the page knows what the heading sits between |
+
 ### icon
 
 A glyph sized from the text around it, taking its colour from that text too.
@@ -1850,6 +1863,37 @@ A single-line input with a label, helper text, and validation states.
 | focus border-color | `theme.fg.primary` — the same tone as the outline, so the two read as one stroke instead of a dark ring around a lighter edge. The width is never touched |
 | focus outline | `focus.ring-width` solid `theme.fg.primary`, offset `space.0` — deliberately NOT `theme.focus-ring`, the only such departure in the library. It gives 16.75:1 against the field's fill where `theme.focus-ring` gives 4.31:1, so the indicator is stronger; the cost is that focus here does not match focus on a Button. An outline rather than a thicker border because outlines are out of flow: this control sets height but not width, so a wider border would widen the field |
 | hidden label geometry | compose the .rata-visually-hidden class — the utility, not a rule of this component's own. It clips rather than using display:none, which would take the accessible name off with the pixels |
+
+### text
+
+One type role and one foreground step. No box: text has no padding, no background and no margin of its own.
+
+| Property | Token |
+|---|---|
+| font-size | the chosen role's size — `type.body.size`, `type.large.size`, `type.supporting.size` or `type.label.size` |
+| font-weight | that same role's weight |
+| line-height | that same role's line-height |
+| margin | `space.0` — the page owns the space between blocks, for the reason Heading's contract gives |
+
+### text-label
+
+The label role carries two things the others do not, and they come from the scale rather than from here.
+
+| Property | Token |
+|---|---|
+| text-transform | `type.label.text-transform` |
+| letter-spacing | `type.label.letter-spacing` — uppercase text needs the extra tracking to stay readable, which is why that step exists |
+
+### text-tone
+
+The three documented foreground steps for text, and the reason this prop exists at all: it is the shortest path to the right colour, so nobody reaches for a palette token.
+
+| Property | Token |
+|---|---|
+| primary | `theme.fg.primary` |
+| secondary | `theme.fg.secondary` |
+| muted | `theme.fg.muted` |
+| all three | contrast-verified against `theme.bg.canvas`, `theme.bg.surface` and `theme.bg.subtle` — see the contrast page |
 
 ### toggle-button-group-attached
 

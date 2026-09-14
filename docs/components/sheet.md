@@ -306,7 +306,7 @@ const [filtering, setFiltering] = useState(false);
     label="Period"
     value={period}
     onValueChange={setPeriod}
-    items={[
+    options={[
       { value: "week", label: "Week" },
       { value: "month", label: "Month" },
     ]}
@@ -351,7 +351,11 @@ const keepRef = useRef<HTMLButtonElement>(null);
   initialFocus={keepRef}
   footer={<Button ref={keepRef} onClick={choose}>Continue</Button>}
 >
-  <RadioGroup label="Workspace" value={workspace} onValueChange={setWorkspace} items={workspaces} />
+  <RadioGroup label="Workspace" value={workspace} onValueChange={setWorkspace}>
+    {workspaces.map((w) => (
+      <Radio key={w.value} value={w.value} label={w.label} />
+    ))}
+  </RadioGroup>
 </Sheet>
 ```
 
