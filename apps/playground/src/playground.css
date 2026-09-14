@@ -959,6 +959,20 @@ code {
   gap: var(--rata-space-stack-2xs);
 }
 
+/* The tags sit ahead of the title, and they get there with `order` rather
+   than by being moved in the markup.
+
+   DOM order stays name-first so a screen reader says "Button, buttons, css
+   latest, …" rather than reading four pieces of metadata before you learn
+   which component the tile is. Moving them in the markup would buy the same
+   layout and cost that. The usual objection to a visual/DOM mismatch —
+   that it desynchronises the focus order — does not apply here: the name is
+   the only focusable thing in this block, so there is no order to
+   desynchronise. */
+.pg-gallery-status {
+  order: -1;
+}
+
 /* A button rather than a link because the playground routes in JS, which is
    the same compromise .pg-link makes; styled as the tile's title. */
 .pg-gallery-name {
@@ -987,7 +1001,9 @@ code {
 
 /* Kept from the table this replaced. Dropping it would have lost the one
    thing the old view was better at — where each artifact stands — so it moves
-   under the name rather than disappearing. */
+   above the name rather than disappearing. Each pill is labelled with its
+   artifact, because the table's column headings were what used to say which
+   of the three you were looking at. */
 .pg-gallery-status {
   display: flex;
   align-items: center;

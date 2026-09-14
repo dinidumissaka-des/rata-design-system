@@ -149,12 +149,28 @@ const STATUS_VARIANT: Record<string, BadgeVariant> = {
   tbd: "neutral",
 };
 
-export function StatusPill({ artifact }: { artifact?: { state: string; version?: string } }) {
+export function StatusPill({
+  artifact,
+  label,
+}: {
+  artifact?: { state: string; version?: string };
+  /**
+   * Which artifact this is — "css", "react", "figma".
+   *
+   * Needed wherever the pills are not under a column heading. The components
+   * table used to supply that heading and the gallery does not, so three
+   * pills read "latest · 0.1.0, latest · 0.1.0, future" with nothing saying
+   * what any of them described. Given a label, the version is dropped: it is
+   * on the component's own page, and repeating it three times is what made
+   * the row too wide to sit beside anything.
+   */
+  label?: string;
+}) {
   const state = artifact?.state ?? "tbd";
   return (
     <Badge variant={STATUS_VARIANT[state] ?? "neutral"}>
-      {state}
-      {artifact?.version ? ` · ${artifact.version}` : ""}
+      {label ? `${label} ${state}` : state}
+      {!label && artifact?.version ? ` · ${artifact.version}` : ""}
     </Badge>
   );
 }
@@ -2623,9 +2639,9 @@ export function ComponentIndex({ onOpen }: { onOpen: (name: string) => void }) {
               </button>
               <div className="pg-gallery-status">
                 <span className="pg-gallery-family">{contract.family}</span>
-                <StatusPill artifact={contract.status.css} />
-                <StatusPill artifact={contract.status.react} />
-                <StatusPill artifact={contract.status.figma} />
+                <StatusPill label="css" artifact={contract.status.css} />
+                <StatusPill label="react" artifact={contract.status.react} />
+                <StatusPill label="figma" artifact={contract.status.figma} />
               </div>
             </div>
           </li>
