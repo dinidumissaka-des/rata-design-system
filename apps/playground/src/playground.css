@@ -159,17 +159,34 @@ code {
 }
 
 /* Page titles, on every page — the one rule all fourteen of them share.
-   heading-1 rather than the unnumbered `heading` role, which resolves to
-   1.0625rem: the same size as heading-3, and therefore the same size as the
-   section headings BELOW it. The top of the outline was flat.
-   heading-1 is 1.5rem and the largest step the scale generates. Larger would
-   mean reaching into font.size.*, which the type contract forbids outright —
-   "always go through type.*" — because those are primitives generated from
-   the seed and the roles are what survive a change to it. */
+
+   type.display-3, whose contract says in as many words "above h1". The
+   previous version of this comment claimed heading-1 was the largest step
+   the scale generates and that anything larger meant reaching into
+   font.size.*. Both were wrong: type.display-1/2/3 consume font.size
+   5xl/4xl/3xl as proper roles, so the three largest steps on the typography
+   page were never unreachable — they were simply not being asked for.
+
+   Taken WHOLE, size and weight and line-height and tracking together, which
+   is the deal the type family states: each role's steps are generated from
+   the seed in proportion to each other. Note the weight that comes with it —
+   display roles are 400 where the heading roles are 600, because display
+   type is large enough not to need weight for emphasis. Cherry-picking
+   heading-1's 600 onto display-3's size would break exactly the pairing the
+   roles exist to hold.
+
+   display-3 (1.8125rem) rather than display-2 (2.1875rem) or display-1
+   (2.625rem): this is a page title above a dense reference page, not a
+   marketing hero. The ladder is 29 / 17 / 14.
+
+   tracking.display-3 comes with it. Large type set at normal tracking looks
+   loose, which is why the type family carries a tracking step per display
+   role rather than one value for everything. */
 .pg-section h2 {
-  font-size: var(--rata-type-heading-1-size);
-  font-weight: var(--rata-type-heading-1-weight);
-  line-height: var(--rata-type-heading-1-line-height);
+  font-size: var(--rata-type-display-3-size);
+  font-weight: var(--rata-type-display-3-weight);
+  line-height: var(--rata-type-display-3-line-height);
+  letter-spacing: var(--rata-type-tracking-display-3);
   margin: 0 0 var(--rata-space-4);
 }
 
