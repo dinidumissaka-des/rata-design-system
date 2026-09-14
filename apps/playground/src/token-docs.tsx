@@ -12,6 +12,7 @@
 import { useRef } from "react";
 import { Sheet } from "@rata/react";
 import { NARROW, useMediaQuery } from "./use-media-query.js";
+import type { Page } from "./routing.js";
 import usage from "@rata/tokens/usage";
 
 interface TokenEntry {
@@ -99,6 +100,91 @@ function Ratios({ measured }: { measured: Record<string, number> }) {
         </span>
       ))}
     </>
+  );
+}
+
+/**
+ * The Foundation category's overview — the sibling of ComponentIndex.
+ *
+ * Every row is derived. The count comes from the token index in usage.json
+ * and the description is that family's own documented summary, so this page
+ * cannot drift from the tokens the way a hand-written landing page would.
+ * Two categories have no single family behind them and say so in a line of
+ * the app's own copy, which is the honest way to mark the difference.
+ */
+const FOUNDATION_CATEGORIES: Array<{
+  id: Page;
+  label: string;
+  /** Token prefixes this page covers, for the count. */
+  prefixes: string[];
+  /** The family whose documented summary describes it, when one does. */
+  family?: string;
+  /** Written copy, only where no single family speaks for the page. */
+  note?: string;
+}> = [
+  { id: "color", label: "Color", prefixes: ["color", "theme"], family: "color" },
+  { id: "spacing", label: "Spacing", prefixes: ["space"], family: "space" },
+  { id: "radius", label: "Radius", prefixes: ["radius"], family: "radius" },
+  { id: "typography", label: "Typography", prefixes: ["type", "font"], family: "type" },
+  { id: "motion", label: "Motion", prefixes: ["motion"], family: "motion" },
+  {
+    id: "misc",
+    label: "Misc",
+    prefixes: ["elevation", "border", "opacity", "size", "state", "focus", "ring"],
+    note: "The primitives with no family of their own — elevation, border widths, opacity, control sizes, state and focus. Grouped because each is too small for a page, not because they are related.",
+  },
+  {
+    id: "contrast",
+    label: "Rules & contrast",
+    prefixes: [],
+    note: "Not a token family: the measured contrast of every documented foreground/background pairing, re-checked on each build, plus the rules the other pages are written against.",
+  },
+];
+
+/** How many `--rata-*` custom properties a set of prefixes covers. */
+function countTokens(prefixes: string[]): number {
+  if (prefixes.length === 0) return 0;
+  return Object.keys(model.index ?? {}).filter((name) =>
+    prefixes.some((p) => name.startsWith(`rata-${p}-`)),
+  ).length;
+}
+
+export function FoundationIndex({ onOpen }: { onOpen: (page: Page) => void }) {
+  return (
+    <section className="pg-section">
+      <h2>Foundation</h2>
+      <p className="pg-note">
+        Every token in the system, by category. Each one is generated from four seeds in{" "}
+        <code>packages/tokens/src/themes/base.mjs</code> — change the seed, not the output. Open a
+        category for the values, and click any one of them for its contract: what it is for, what it
+        is not for, and what to use instead.
+      </p>
+      <table className="pg-table">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Tokens</th>
+            <th>What it covers</th>
+          </tr>
+        </thead>
+        <tbody>
+          {FOUNDATION_CATEGORIES.map((category) => {
+            const count = countTokens(category.prefixes);
+            return (
+              <tr key={category.id}>
+                <td>
+                  <button type="button" className="pg-link" onClick={() => onOpen(category.id)}>
+                    {category.label}
+                  </button>
+                </td>
+                <td>{count > 0 ? count : "—"}</td>
+                <td>{category.note ?? model.tokens[category.family!]?.summary ?? "—"}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </section>
   );
 }
 

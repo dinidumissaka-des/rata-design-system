@@ -16,6 +16,11 @@
 // component everywhere, including in a URL.
 
 export type TokenPage =
+  // The two category overviews the top nav points at. They are destinations in
+  // their own right rather than redirects to a first child: a reader arriving
+  // from the top nav wants to see what the category contains, and sending them
+  // straight to Color would answer a question they had not asked.
+  | "foundation"
   | "color"
   | "spacing"
   | "radius"
@@ -62,6 +67,7 @@ export const componentName = (page: Page): string | null =>
 export function hrefFor(page: Page, tab: ComponentTab = "overview"): string {
   const name = componentName(page);
   if (name) return `/components/${name}${tab === "overview" ? "" : `?tab=${tab}`}`;
+  if (page === "foundation") return "/foundation";
   if (page === "components") return "/components";
   if (page === "recipes") return "/recipes";
   return `/foundation/${page}`;
@@ -77,8 +83,12 @@ export function parseLocation(pathname: string, search: string): { page: Page; t
     return { page: segments[1] ? componentPage(segments[1]) : "components", tab };
   }
   if (segments[0] === "recipes") return { page: "recipes", tab };
-  if (segments[0] === "foundation" && segments[1] && TOKEN_PAGES.has(segments[1])) {
-    return { page: segments[1] as Page, tab };
+  if (segments[0] === "foundation") {
+    // A bare /foundation is the category overview. An unrecognised child falls
+    // through to the default page below rather than 404ing, which is the same
+    // bargain the rest of this function makes.
+    if (!segments[1]) return { page: "foundation", tab };
+    if (TOKEN_PAGES.has(segments[1])) return { page: segments[1] as Page, tab };
   }
   return { page: DEFAULT_PAGE, tab };
 }

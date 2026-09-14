@@ -1,7 +1,7 @@
 import { Suspense, lazy, useEffect, useState } from "react";
 import { MobileNav, Search, SegmentedControl, SideNav, Spinner, TopNav } from "@rata/react";
 import { tokens } from "@rata/tokens";
-import { TokenDoc, FamilyDoc, ContrastPage, RecipeList } from "./token-docs.js";
+import { TokenDoc, FamilyDoc, ContrastPage, RecipeList, FoundationIndex } from "./token-docs.js";
 // The nav needs a name and a title per component. It used to get them from
 // `contracts.json`, which is 340kB of every decision, prop and worked example
 // in the system — all of it in the chunk that loads before anything appears.
@@ -53,6 +53,7 @@ const NAV: NavItem[] = [
     id: "foundation",
     label: "Foundation",
     children: [
+      { id: "foundation", label: "Overview" },
       { id: "color", label: "Color" },
       { id: "spacing", label: "Spacing" },
       { id: "radius", label: "Radius" },
@@ -510,8 +511,33 @@ export function App() {
           either, for the same reason — and because the rail is already called
           "Sections", and two navigation landmarks sharing a name is the exact
           thing TopNav's own contract warns about. */}
+      {/* The two categories. `current` is an EXACT match, not a section match:
+          for a plain link this component renders aria-current="page", which
+          would be a false claim on /foundation/color — you are not on the
+          overview. The rail marks where you actually are. A section-level
+          "you are here" is aria-current="true", which TopNav only emits for
+          a disclosure item, so it is not available here. */}
       <TopNav
         className="pg-header"
+        // Named, because there are two navigation landmarks on this page now
+        // and TopNav's contract says that is exactly when to name one. The
+        // default is "Main", which the side rail's "Sections" is already
+        // distinguishable from — but "Main" describes neither of them.
+        label="Categories"
+        items={[
+          {
+            label: "Foundation",
+            href: hrefFor("foundation"),
+            current: page === "foundation",
+            onClick: () => navigate("foundation"),
+          },
+          {
+            label: "Components",
+            href: hrefFor("components"),
+            current: page === "components",
+            onClick: () => navigate("components"),
+          },
+        ]}
         brand={
           <span className="pg-brand">
             {/* Decorative, because the wordmark beside it already names the
@@ -953,6 +979,8 @@ export function App() {
               <RecipeList />
             </section>
           )}
+
+          {page === "foundation" && <FoundationIndex onOpen={navigate} />}
 
           {page === "components" && (
             <Suspense fallback={<PageSpinner />}>
