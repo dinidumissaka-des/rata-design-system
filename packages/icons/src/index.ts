@@ -78,4 +78,17 @@ export {
   User,
   Calendar,
   Star,
+
+  // ── Foundations. One per token category, for the Foundation overview: a
+  // category has no live specimen to show the way a component does, so the
+  // glyph is what makes the tile recognisable. Added here rather than imported
+  // from lucide-react at the call site because this file says to — "then add
+  // it here, so the second person who needs it finds it".
+  Palette,
+  Ruler,
+  SquareRoundCorner,
+  Type,
+  Gauge,
+  Shapes,
+  Contrast,
 } from "lucide-react";

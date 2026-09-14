@@ -1045,6 +1045,25 @@ code {
 
 /* A button rather than a link because the playground routes in JS, which is
    the same compromise .pg-link makes; styled as the tile's title. */
+/* The Foundation overview's stage. Accent-filled, so the two overviews are
+   distinguishable at a glance: a component tile shows the thing running, a
+   token category has nothing to run.
+
+   fg.on-accent is not interchangeable with fg.primary here — it is the label
+   token this fill OWNS, and it INVERTS with the accent in the dark scheme
+   while fg.primary does not. Using fg.primary would put dark content on a
+   dark accent in one of the two schemes and look fine in the other.
+
+   The font-size is what sizes the glyph. Icon's default step is
+   size.icon.text — 1.15em — so it follows whatever text size it lands in
+   rather than needing a step of its own, and display-1 puts it at about 48px
+   in a 202px tile. */
+.pg-gallery-stage--accent {
+  background: var(--rata-theme-accent-role-bg);
+  color: var(--rata-theme-fg-on-accent);
+  font-size: var(--rata-type-display-1-size);
+}
+
 .pg-gallery-name {
   align-self: flex-start;
   padding: var(--rata-space-0);

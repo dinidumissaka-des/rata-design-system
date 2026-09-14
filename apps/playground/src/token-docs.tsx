@@ -11,6 +11,8 @@
 // instead. That is what the contract knows.
 import { useRef } from "react";
 import { Sheet } from "@rata/react";
+import { Contrast, Gauge, Icon, Palette, Ruler, Shapes, SquareRoundCorner, Type } from "@rata/icons";
+import type { LucideIcon } from "@rata/icons";
 import { NARROW, useMediaQuery } from "./use-media-query.js";
 import type { Page } from "./routing.js";
 import usage from "@rata/tokens/usage";
@@ -106,48 +108,31 @@ function Ratios({ measured }: { measured: Record<string, number> }) {
 /**
  * The Foundation category's overview — the sibling of ComponentIndex.
  *
- * Every row is derived. The count comes from the token index in usage.json
- * and the description is that family's own documented summary, so this page
- * cannot drift from the tokens the way a hand-written landing page would.
- * Two categories have no single family behind them and say so in a line of
- * the app's own copy, which is the honest way to mark the difference.
+ * It was a derived table: a row per category with its token count read from
+ * usage.json and its description taken from that family's own documented
+ * summary. The tiles carry a glyph and a name instead, which matches the
+ * components gallery beside it — and drops both of those. The count and the
+ * summary are still on each category's own page; nothing was the overview's
+ * only copy.
+ *
+ * A component tile shows the component running. A token category has nothing
+ * to run, so the glyph is what makes the tile recognisable, and the stage is
+ * accent-filled to say at a glance which of the two overviews you are on.
  */
 const FOUNDATION_CATEGORIES: Array<{
   id: Page;
+  /** The glyph on this category's tile, since a category has no live specimen. */
+  icon: LucideIcon;
   label: string;
-  /** Token prefixes this page covers, for the count. */
-  prefixes: string[];
-  /** The family whose documented summary describes it, when one does. */
-  family?: string;
-  /** Written copy, only where no single family speaks for the page. */
-  note?: string;
 }> = [
-  { id: "color", label: "Color", prefixes: ["color", "theme"], family: "color" },
-  { id: "spacing", label: "Spacing", prefixes: ["space"], family: "space" },
-  { id: "radius", label: "Radius", prefixes: ["radius"], family: "radius" },
-  { id: "typography", label: "Typography", prefixes: ["type", "font"], family: "type" },
-  { id: "motion", label: "Motion", prefixes: ["motion"], family: "motion" },
-  {
-    id: "misc",
-    label: "Misc",
-    prefixes: ["elevation", "border", "opacity", "size", "state", "focus", "ring"],
-    note: "The primitives with no family of their own — elevation, border widths, opacity, control sizes, state and focus. Grouped because each is too small for a page, not because they are related.",
-  },
-  {
-    id: "contrast",
-    label: "Rules & contrast",
-    prefixes: [],
-    note: "Not a token family: the measured contrast of every documented foreground/background pairing, re-checked on each build, plus the rules the other pages are written against.",
-  },
+  { id: "color", icon: Palette, label: "Color" },
+  { id: "spacing", icon: Ruler, label: "Spacing" },
+  { id: "radius", icon: SquareRoundCorner, label: "Radius" },
+  { id: "typography", icon: Type, label: "Typography" },
+  { id: "motion", icon: Gauge, label: "Motion" },
+  { id: "misc", icon: Shapes, label: "Misc" },
+  { id: "contrast", icon: Contrast, label: "Rules & contrast" },
 ];
-
-/** How many `--rata-*` custom properties a set of prefixes covers. */
-function countTokens(prefixes: string[]): number {
-  if (prefixes.length === 0) return 0;
-  return Object.keys(model.index ?? {}).filter((name) =>
-    prefixes.some((p) => name.startsWith(`rata-${p}-`)),
-  ).length;
-}
 
 export function FoundationIndex({ onOpen }: { onOpen: (page: Page) => void }) {
   return (
@@ -159,31 +144,30 @@ export function FoundationIndex({ onOpen }: { onOpen: (page: Page) => void }) {
         category for the values, and click any one of them for its contract: what it is for, what it
         is not for, and what to use instead.
       </p>
-      <table className="pg-table">
-        <thead>
-          <tr>
-            <th>Category</th>
-            <th>Tokens</th>
-            <th>What it covers</th>
-          </tr>
-        </thead>
-        <tbody>
-          {FOUNDATION_CATEGORIES.map((category) => {
-            const count = countTokens(category.prefixes);
-            return (
-              <tr key={category.id}>
-                <td>
-                  <button type="button" className="pg-link" onClick={() => onOpen(category.id)}>
-                    {category.label}
-                  </button>
-                </td>
-                <td>{count > 0 ? count : "—"}</td>
-                <td>{category.note ?? model.tokens[category.family!]?.summary ?? "—"}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      {/* The same gallery the components overview uses, so the two read as
+          siblings. What differs is what goes in the stage: a component has a
+          live specimen and a token category has none, so these carry a glyph
+          instead — and the stage is accent-filled to say at a glance which of
+          the two overviews you are on. */}
+      <ul className="pg-gallery">
+        {FOUNDATION_CATEGORIES.map((category) => (
+          <li key={category.id} className="pg-gallery-item">
+            <div
+              className="pg-gallery-stage pg-gallery-stage--accent rata-state-layer rata-state-layer--flush"
+              inert
+            >
+              {/* Icon's default size is size.icon.text — 1.15em — so it follows
+                  the font-size the stage sets rather than needing a step of its
+                  own. No label: the tile's name is directly underneath, and the
+                  stage is inert, so the glyph is decoration either way. */}
+              <Icon icon={category.icon} />
+            </div>
+            <button type="button" className="pg-gallery-name" onClick={() => onOpen(category.id)}>
+              {category.label}
+            </button>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
