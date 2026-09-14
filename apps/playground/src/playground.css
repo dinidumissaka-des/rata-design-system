@@ -932,6 +932,80 @@ code {
   block-size: calc(var(--rata-size-control-lg) * 6);
 }
 
+/* ---- Home page ----------------------------------------------------------- */
+
+/* The one paragraph under the title. type.large is the role for a standfirst
+   — one size above body, which is what the scale documents it for. */
+.pg-lede {
+  margin: 0 0 var(--rata-space-stack-lg);
+  font-size: var(--rata-type-large-size);
+  line-height: var(--rata-type-large-line-height);
+  color: var(--rata-theme-fg-secondary);
+}
+
+.pg-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(var(--rata-size-control-lg) * 6), 1fr));
+  gap: var(--rata-space-gap-lg);
+  margin: 0 0 var(--rata-space-section);
+}
+
+/* The label reads before the number in the DOM, which is the order a
+   <dl> means, and `order` puts the number first visually — a figure is what
+   the eye goes to and the label is what tells you what it was. Safe here for
+   the reason it was safe on the gallery tiles: nothing in this block is
+   focusable, so there is no focus order to desynchronise. */
+.pg-stat {
+  display: flex;
+  flex-direction: column;
+  padding-block-start: var(--rata-space-padding-sm);
+  border-block-start: var(--rata-border-2) solid var(--rata-theme-border-default);
+}
+
+.pg-stat dt {
+  order: 2;
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-control-size-md);
+}
+
+.pg-stat dd {
+  order: 1;
+  margin: 0;
+  font-size: var(--rata-type-display-2-size);
+  font-weight: var(--rata-type-display-2-weight);
+  line-height: var(--rata-type-display-2-line-height);
+  letter-spacing: var(--rata-type-tracking-display-2);
+  color: var(--rata-theme-fg-primary);
+}
+
+.pg-stat-note {
+  order: 3;
+  margin: var(--rata-space-stack-2xs) 0 0;
+  color: var(--rata-theme-fg-muted);
+  font-size: var(--rata-type-supporting-size);
+  line-height: var(--rata-type-supporting-line-height);
+}
+
+/* Two entries rather than the gallery's three-or-fewer, and each carries a
+   paragraph — so the floor is wider and the tile shorter than a specimen
+   needs to be. */
+.pg-gallery--entries {
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(
+      max(
+        calc(var(--rata-size-control-lg) * 8),
+        calc((100% - var(--rata-space-gap-lg)) / 2)
+      ),
+      1fr
+    )
+  );
+}
+
+.pg-gallery--entries .pg-gallery-stage {
+  aspect-ratio: 16 / 7;
+}
+
 /* ---- Component gallery --------------------------------------------------
    The components overview: every component running, rather than a row of its
    name and status. A table answered "what exists and how far along is it";
