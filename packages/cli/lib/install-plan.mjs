@@ -14,7 +14,7 @@
 // source of truth for the layout.
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { repoRoot } from "./index.mjs";
+import { repoRoot, resolveComponent, ambiguousAliasError } from "./index.mjs";
 
 const CODE = /\.tsx?$/;
 
@@ -58,9 +58,17 @@ export function resolveClosure(names, registry) {
   while (queue.length) {
     const name = queue.shift();
     if (resolved.has(name)) continue;
-    const entry = registry[name];
+    // Aliases resolve here too. They did not, and the lookup commands did, so
+    // `rata props bottom-sheet` answered and `rata add bottom-sheet` said
+    // "Unknown component" about the same name in the same session. Only
+    // top-level names can be aliases in practice — `dependencies` are written
+    // canonically — but routing everything through one resolver is what stops
+    // the two surfaces disagreeing again.
+    const { name: canonical, entry, via, ambiguous } = resolveComponent(name, registry);
+    if (ambiguous) return { error: ambiguousAliasError(via, ambiguous) };
     if (!entry) return { error: `Unknown component: ${name}` };
-    resolved.add(name);
+    if (resolved.has(canonical)) continue;
+    resolved.add(canonical);
     queue.push(...(entry.dependencies ?? []));
   }
   return { resolved };

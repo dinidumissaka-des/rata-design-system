@@ -36,17 +36,17 @@
 
 /* Sizes */
 .rata-button--sm {
-  height: var(--rata-size-control-sm);
+  block-size: var(--rata-size-control-sm);
   padding-inline: var(--rata-space-3);
 }
 
 .rata-button--md {
-  height: var(--rata-size-control-md);
+  block-size: var(--rata-size-control-md);
   padding-inline: var(--rata-space-4);
 }
 
 .rata-button--lg {
-  height: var(--rata-size-control-lg);
+  block-size: var(--rata-size-control-lg);
   padding-inline: var(--rata-space-5);
 }
 
@@ -91,14 +91,14 @@
 }
 
 .rata-icon-button.rata-button--sm {
-  width: var(--rata-size-control-sm);
+  inline-size: var(--rata-size-control-sm);
 }
 
 .rata-icon-button.rata-button--md {
-  width: var(--rata-size-control-md);
+  inline-size: var(--rata-size-control-md);
 }
 
 .rata-icon-button.rata-button--lg {
-  width: var(--rata-size-control-lg);
+  inline-size: var(--rata-size-control-lg);
 }
 
