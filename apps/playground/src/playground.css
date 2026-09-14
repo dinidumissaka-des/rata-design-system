@@ -985,7 +985,18 @@ code {
   align-items: center;
   justify-content: center;
   padding: var(--rata-space-padding-lg);
-  min-block-size: calc(var(--rata-size-control-lg) * 6);
+  /* A RATIO, not a minimum. `min-block-size` let a tall specimen grow its own
+     tile — SideNav's rail is about half again the height of a lone hamburger
+     — so a row held two cards of different sizes and the grid stopped reading
+     as a grid.
+     16/10 is the proportion of the reference this gallery was built from
+     (375x231 measures 1.62), and being a ratio rather than a height it holds
+     at any column width the auto-fill grid lands on. Every stage in the
+     gallery is therefore identical, because every column is.
+     The cost is real: a specimen taller than its tile is clipped top and
+     bottom by the overflow rule below, and SideNav's is. It shows its middle,
+     which is enough to recognise — and the working copy is a click away. */
+  aspect-ratio: 16 / 10;
   border-radius: var(--rata-radius-container);
   background: var(--rata-theme-bg-subtle);
   overflow: hidden;
