@@ -1669,7 +1669,8 @@ One measure across the sheet's own axis: block-size for a sheet on a horizontal 
 | md | `size.control.lg` multiplied by 12 |
 | lg | `size.control.lg` multiplied by 18 |
 | cap across its own axis | 100% of the dialog's containing block less `space.padding.lg` — stated as a percentage rather than in viewport units on purpose: vh and vw are the LARGE viewport, so a bottom sheet measured in vh is taller than the screen whenever the mobile address bar is showing. Dialog's insets are percentages for the same reason. |
-| measure across the other axis | the full containing block — a sheet spans the edge it is anchored to. Not capped on wide viewports in this version; a bottom sheet that stops short of both sides is a different shape and would need its own entry here. |
+| measure across the other axis | the full containing block for an inline-edge sheet — a drawer spans the height it is anchored along. A BLOCK-edge sheet is capped at `size.control.lg` multiplied by 20 and centred with an auto inline margin: spanning a 2560px monitor puts the close control one corner away from the content it closes, and sets a line length nothing else in this system allows. That multiplier is the one Dialog's widest size uses, so a bottom sheet at its widest reads like the widest single surface here rather than like the page. |
+| why the cap is block-edge only | The cross axis of an inline-edge sheet is its height, and capping that would lift a drawer off the top and bottom into a floating panel — a different shape, and not this component. A block-edge sheet stays flush to its own edge either way, so the two corners there stay square and the two facing the page keep `radius.page`. |
 
 ### sheet-footer
 

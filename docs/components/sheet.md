@@ -30,6 +30,7 @@ A native `<dialog>` opened with `showModal()`, held against one edge of the view
 - **A native close is reported rather than ignored** — `<form method="dialog">` is the documented HTML way to close a dialog and the platform can close one for its own reasons too. Neither goes through `onClose`, and the driving effect is keyed on `open`, so it never re-runs to notice — which in Dialog left the scroll lock on the body with nothing open and the page unable to scroll at all. The native `close` event reports `external`, and only while React still believes the sheet is open.
 - **Initial focus is a ref, because React's `autoFocus` cannot work here** — React implements `autoFocus` by calling `.focus()` during commit rather than emitting the HTML attribute, so `showModal()` — which runs afterwards, in an effect — never sees an `[autofocus]` element and applies its own default, undoing it. `initialFocus` is applied after `showModal()` and therefore wins.
 - **The title is a real `<h2>`, as Dialog's is** — Everything behind a modal is inert, so the outline inside it genuinely starts fresh and the title is the top of it. This is the difference from Panel, which sits inside the page's outline and has to be told its level.
+- **A bottom sheet stops short of a wide viewport's sides** — Left open at gate 2 — the recipe said a sheet spans its edge with no cap, and that a sheet stopping short of both sides was a different shape needing its own entry. It does, and it now has one. Spanning the full width of a large monitor is the failure it prevents: the title sits at one corner and its close control at the other, with a line length in between that nothing else in this system permits. Capped and centred on the block edges only, because the equivalent on an inline edge would lift a drawer off the top and bottom and make it a floating panel instead.
 
 ## Props
 
@@ -163,9 +164,9 @@ Source doc: How far it comes in, measured on the axis it slides along.
 
 **Don't use for**
 
-- Expecting it to control the other axis. A sheet spans the edge it is anchored to, always.
+- Expecting it to control the other axis. `size` is the axis the sheet slides along; the other one spans its edge, capped and centred for a block-edge sheet on a wide viewport.
 
-**Accessibility** Every size gives way to a small viewport rather than overflowing it, and never covers the edge it slid from.
+**Accessibility** Every size gives way to a small viewport rather than overflowing it, and never covers the edge it slid from. A bottom sheet is also capped across its width on a wide viewport, which is a line-length decision rather than a size one — it is not affected by this prop.
 
 ### `description`
 
@@ -423,7 +424,8 @@ One measure across the sheet's own axis: block-size for a sheet on a horizontal 
 | md | `size.control.lg multiplied by 12` |
 | lg | `size.control.lg multiplied by 18` |
 | cap across its own axis | `100% of the dialog's containing block less space.padding.lg — stated as a percentage rather than in viewport units on purpose: vh and vw are the LARGE viewport, so a bottom sheet measured in vh is taller than the screen whenever the mobile address bar is showing. Dialog's insets are percentages for the same reason.` |
-| measure across the other axis | `the full containing block — a sheet spans the edge it is anchored to. Not capped on wide viewports in this version; a bottom sheet that stops short of both sides is a different shape and would need its own entry here.` |
+| measure across the other axis | `the full containing block for an inline-edge sheet — a drawer spans the height it is anchored along. A BLOCK-edge sheet is capped at size.control.lg multiplied by 20 and centred with an auto inline margin: spanning a 2560px monitor puts the close control one corner away from the content it closes, and sets a line length nothing else in this system allows. That multiplier is the one Dialog's widest size uses, so a bottom sheet at its widest reads like the widest single surface here rather than like the page.` |
+| why the cap is block-edge only | `The cross axis of an inline-edge sheet is its height, and capping that would lift a drawer off the top and bottom into a floating panel — a different shape, and not this component. A block-edge sheet stays flush to its own edge either way, so the two corners there stay square and the two facing the page keep radius.page.` |
 
 ### footer
 
