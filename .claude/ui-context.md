@@ -1149,9 +1149,9 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-type-label-size`: `0.875rem`
 - `--rata-type-label-text-transform`: `uppercase`
 - `--rata-type-label-weight`: `500`
-- `--rata-type-large-line-height`: `1.4118`
-- `--rata-type-large-size`: `1.0625rem`
-- `--rata-type-large-weight`: `600`
+- `--rata-type-large-line-height`: `1.3333`
+- `--rata-type-large-size`: `1.5rem`
+- `--rata-type-large-weight`: `400`
 - `--rata-type-supporting-line-height`: `1.6667`
 - `--rata-type-supporting-size`: `0.75rem`
 - `--rata-type-supporting-weight`: `400`

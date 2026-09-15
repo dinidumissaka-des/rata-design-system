@@ -50,7 +50,12 @@ const HEADING_STEPS = { 1: 3, 2: 2, 3: 1, 4: 0, 5: -1, 6: -2 };
 /** Text role → step. display-* continue the progression above h1. */
 const TEXT_STEPS = {
   body: 0,
-  large: 1,
+  // Three steps above body, not one. This role's own contract calls it "for
+  // lead paragraphs", and one step above body was 17px against 14px — close
+  // enough that a lead paragraph did not read as one. Steps 2 and 3 carried
+  // no text role at all, so the progression jumped from lg straight to
+  // display-3 at 3xl and there was nothing to set prose at in between.
+  large: 3,
   label: 0,
   code: 0,
   supporting: -1,
@@ -70,7 +75,10 @@ const DEFAULT_HEADING_WEIGHTS = {
 
 const DEFAULT_TEXT_WEIGHTS = {
   body: "{font.weight.regular}",
-  large: "{font.weight.semibold}",
+  // Regular, not semibold. A lead paragraph is still a paragraph, and at the
+  // size this role now sits at a semibold one reads as a heading that forgot
+  // to be one — the same reason every display role is regular.
+  large: "{font.weight.regular}",
   label: "{font.weight.medium}",
   code: "{font.weight.regular}",
   supporting: "{font.weight.regular}",

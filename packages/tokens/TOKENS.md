@@ -885,9 +885,9 @@ The usable typography scale. Each role carries a matched size, weight and line-h
 | `body.size` | `var(--rata-type-body-size)` | `0.875rem` | Default paragraph/UI text size. |
 | `body.weight` | `var(--rata-type-body-weight)` | `400` | Default paragraph/UI text weight. |
 | `body.line-height` | `var(--rata-type-body-line-height)` | `1.4286` | Default paragraph/UI text line-height. |
-| `large.size` | `var(--rata-type-large-size)` | `1.0625rem` | One step above body, for lead paragraphs. |
-| `large.weight` | `var(--rata-type-large-weight)` | `600` | Lead paragraph weight. |
-| `large.line-height` | `var(--rata-type-large-line-height)` | `1.4118` | Lead paragraph line-height. |
+| `large.size` | `var(--rata-type-large-size)` | `1.5rem` | Three steps above body, for lead paragraphs — the one paragraph introducing a page or a section. It was one step above body, which at 17px against 14px did not read as a lead at all. |
+| `large.weight` | `var(--rata-type-large-weight)` | `400` | Lead paragraph weight, and regular rather than semibold: a lead is still a paragraph, and at this size a semibold one reads as a heading. |
+| `large.line-height` | `var(--rata-type-large-line-height)` | `1.3333` | Lead paragraph line-height, from the same tiered leading every other role gets — looser for small text, tighter as the size grows. |
 | `label.size` | `var(--rata-type-label-size)` | `0.875rem` | Form-field and eyebrow label size. |
 | `label.weight` | `var(--rata-type-label-weight)` | `500` | Label weight. |
 | `label.line-height` | `var(--rata-type-label-line-height)` | `1.4286` | Label line-height. |

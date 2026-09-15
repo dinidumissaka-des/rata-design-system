@@ -953,11 +953,18 @@ code {
   letter-spacing: var(--rata-type-tracking-display-1);
 }
 
-/* The one paragraph under the title. type.large is the role for a standfirst
-   — one size above body, which is what the scale documents it for. */
+/* The one paragraph under the title, at type.large — which is the role the
+   scale documents "for lead paragraphs", and this is the only thing in the
+   repo that uses it.
+
+   Taken WHOLE now, weight included. It was size and line-height only, which
+   quietly dropped large's semibold and left the lede at body weight — the
+   cherry-picking this file argues against elsewhere. The role is regular at
+   the source now, so taking all three gives the same result honestly. */
 .pg-lede {
   margin: 0 0 var(--rata-space-stack-lg);
   font-size: var(--rata-type-large-size);
+  font-weight: var(--rata-type-large-weight);
   line-height: var(--rata-type-large-line-height);
   color: var(--rata-theme-fg-secondary);
 }
