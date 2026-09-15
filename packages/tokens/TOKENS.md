@@ -885,9 +885,9 @@ The usable typography scale. Each role carries a matched size, weight and line-h
 | `body.size` | `var(--rata-type-body-size)` | `0.875rem` | Default paragraph/UI text size. |
 | `body.weight` | `var(--rata-type-body-weight)` | `400` | Default paragraph/UI text weight. |
 | `body.line-height` | `var(--rata-type-body-line-height)` | `1.4286` | Default paragraph/UI text line-height. |
-| `large.size` | `var(--rata-type-large-size)` | `1.0625rem` | One step above body, for lead paragraphs. |
-| `large.weight` | `var(--rata-type-large-weight)` | `600` | Lead paragraph weight. |
-| `large.line-height` | `var(--rata-type-large-line-height)` | `1.4118` | Lead paragraph line-height. |
+| `large.size` | `var(--rata-type-large-size)` | `1.5rem` | Three steps above body, for lead paragraphs — the one paragraph introducing a page or a section. It was one step above body, which at 17px against 14px did not read as a lead at all. |
+| `large.weight` | `var(--rata-type-large-weight)` | `400` | Lead paragraph weight, and regular rather than semibold: a lead is still a paragraph, and at this size a semibold one reads as a heading. |
+| `large.line-height` | `var(--rata-type-large-line-height)` | `1.3333` | Lead paragraph line-height, from the same tiered leading every other role gets — looser for small text, tighter as the size grows. |
 | `label.size` | `var(--rata-type-label-size)` | `0.875rem` | Form-field and eyebrow label size. |
 | `label.weight` | `var(--rata-type-label-weight)` | `500` | Label weight. |
 | `label.line-height` | `var(--rata-type-label-line-height)` | `1.4286` | Label line-height. |
@@ -1260,6 +1260,19 @@ The close control. Same construction as Notice's: currentColor on a transparent 
 | hover / press | compose the .rata-state-layer class |
 | focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
 | block alignment | centred on the title's first line, from `type.heading.size` and `type.heading.line-height` |
+
+### heading
+
+One type role, taken whole. Nothing else — a heading has no box of its own.
+
+| Property | Token |
+|---|---|
+| font-size | the size of the chosen role — `type.display-1.size` through `type.heading-6.size` |
+| font-weight | that same role's weight, which is 400 for the display roles and 600 for the heading roles |
+| line-height | that same role's line-height |
+| letter-spacing | `type.tracking.display-1` / display-2 / display-3 for the display roles, and normal for the heading roles — large type set at normal tracking reads loose, which is why the scale carries a tracking step per display role |
+| color | currentColor — a heading takes the colour of the text around it, and the surface it sits on decides that |
+| margin | `space.0` — every margin is the page's, since only the page knows what the heading sits between |
 
 ### icon
 
@@ -1669,7 +1682,8 @@ One measure across the sheet's own axis: block-size for a sheet on a horizontal 
 | md | `size.control.lg` multiplied by 12 |
 | lg | `size.control.lg` multiplied by 18 |
 | cap across its own axis | 100% of the dialog's containing block less `space.padding.lg` — stated as a percentage rather than in viewport units on purpose: vh and vw are the LARGE viewport, so a bottom sheet measured in vh is taller than the screen whenever the mobile address bar is showing. Dialog's insets are percentages for the same reason. |
-| measure across the other axis | the full containing block — a sheet spans the edge it is anchored to. Not capped on wide viewports in this version; a bottom sheet that stops short of both sides is a different shape and would need its own entry here. |
+| measure across the other axis | the full containing block for an inline-edge sheet — a drawer spans the height it is anchored along. A BLOCK-edge sheet is capped at `size.control.lg` multiplied by 20 and centred with an auto inline margin: spanning a 2560px monitor puts the close control one corner away from the content it closes, and sets a line length nothing else in this system allows. That multiplier is the one Dialog's widest size uses, so a bottom sheet at its widest reads like the widest single surface here rather than like the page. |
+| why the cap is block-edge only | The cross axis of an inline-edge sheet is its height, and capping that would lift a drawer off the top and bottom into a floating panel — a different shape, and not this component. A block-edge sheet stays flush to its own edge either way, so the two corners there stay square and the two facing the page keep `radius.page`. |
 
 ### sheet-footer
 
@@ -1724,7 +1738,7 @@ One destination, filling the rail's width so the whole row is the target.
 | Property | Token |
 |---|---|
 | colour | `theme.fg.secondary` |
-| font-size | `type.control.size.sm` |
+| font-size | `type.control.size.md` — 14px. It was the sm step, 12px, which is the size this scale reserves for text inside a small control rather than for a row of running navigation: a rail and a bar are read, not squeezed into a 28px box. Every row takes it, because the disclosure trigger and the nested sublink both compose the link class. |
 | font-weight | `type.control.weight` |
 | block-size | `size.control.md` |
 | padding-inline | `space.control.padding-inline.sm` |
@@ -1849,6 +1863,37 @@ A single-line input with a label, helper text, and validation states.
 | focus border-color | `theme.fg.primary` — the same tone as the outline, so the two read as one stroke instead of a dark ring around a lighter edge. The width is never touched |
 | focus outline | `focus.ring-width` solid `theme.fg.primary`, offset `space.0` — deliberately NOT `theme.focus-ring`, the only such departure in the library. It gives 16.75:1 against the field's fill where `theme.focus-ring` gives 4.31:1, so the indicator is stronger; the cost is that focus here does not match focus on a Button. An outline rather than a thicker border because outlines are out of flow: this control sets height but not width, so a wider border would widen the field |
 | hidden label geometry | compose the .rata-visually-hidden class — the utility, not a rule of this component's own. It clips rather than using display:none, which would take the accessible name off with the pixels |
+
+### text
+
+One type role and one foreground step. No box: text has no padding, no background and no margin of its own.
+
+| Property | Token |
+|---|---|
+| font-size | the chosen role's size — `type.body.size`, `type.large.size`, `type.supporting.size` or `type.label.size` |
+| font-weight | that same role's weight |
+| line-height | that same role's line-height |
+| margin | `space.0` — the page owns the space between blocks, for the reason Heading's contract gives |
+
+### text-label
+
+The label role carries two things the others do not, and they come from the scale rather than from here.
+
+| Property | Token |
+|---|---|
+| text-transform | `type.label.text-transform` |
+| letter-spacing | `type.label.letter-spacing` — uppercase text needs the extra tracking to stay readable, which is why that step exists |
+
+### text-tone
+
+The three documented foreground steps for text, and the reason this prop exists at all: it is the shortest path to the right colour, so nobody reaches for a palette token.
+
+| Property | Token |
+|---|---|
+| primary | `theme.fg.primary` |
+| secondary | `theme.fg.secondary` |
+| muted | `theme.fg.muted` |
+| all three | contrast-verified against `theme.bg.canvas`, `theme.bg.surface` and `theme.bg.subtle` — see the contrast page |
 
 ### toggle-button-group-attached
 
@@ -1988,7 +2033,7 @@ One destination. The resting colour is the secondary text tone, so the current p
 | Property | Token |
 |---|---|
 | colour | `theme.fg.secondary` |
-| font-size | `type.control.size.sm` |
+| font-size | `type.control.size.md` — 14px. It was the sm step, 12px, which is the size this scale reserves for text inside a small control rather than for a row of running navigation: a rail and a bar are read, not squeezed into a 28px box. Every row takes it, because the disclosure trigger and the nested sublink both compose the link class. |
 | font-weight | `type.control.weight` |
 | padding-inline | `space.control.padding-inline.sm` |
 | block-size | `size.control.md` |

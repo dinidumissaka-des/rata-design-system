@@ -32,6 +32,10 @@ jobs:
       # each was written in a shape that could never have fired.
       - run: npm run aria:check
       - run: npm run state-layer:check
+      - run: npm run deps:check
+      - run: npm run alias:check
+      - run: npm run examples:check
+      - run: npm run pairings:check
 
       - run: npm run themes:check
       - run: npm test

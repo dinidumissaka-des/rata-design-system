@@ -35,7 +35,13 @@
 
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { repoRoot, getComponentProps, unionValues, resolveComponent } from "./index.mjs";
+import {
+  repoRoot,
+  getComponentProps,
+  unionValues,
+  resolveComponent,
+  ambiguousAliasError,
+} from "./index.mjs";
 
 /** Fields a written prop entry may carry. Anything else is a typo — we fail on it. */
 const PROP_FIELDS = new Set(["summary", "use", "dont", "conflicts", "a11y", "type", "default", "required"]);
@@ -56,6 +62,9 @@ export async function getComponentContract(name, registry) {
   // is the command CLAUDE.md points at first, so it has to resolve the same
   // names `props` does.
   const resolved = resolveComponent(name, registry);
+  if (resolved.ambiguous) {
+    return { name, issues: [ambiguousAliasError(resolved.via, resolved.ambiguous)] };
+  }
   if (resolved.via !== undefined) {
     console.log(`"${resolved.via}" is ${resolved.name} in this system — showing that.\n`);
     name = resolved.name;

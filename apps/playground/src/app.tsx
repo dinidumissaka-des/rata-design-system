@@ -1,8 +1,25 @@
-import { useEffect, useState } from "react";
-import { MobileNav, Search, SegmentedControl, SideNav, TopNav } from "@rata/react";
+import { Suspense, lazy, useEffect, useState } from "react";
+import { MobileNav, Search, SegmentedControl, SideNav, Spinner, TopNav } from "@rata/react";
 import { tokens } from "@rata/tokens";
-import { TokenDoc, FamilyDoc, ContrastPage, RecipeList } from "./token-docs.js";
-import { ComponentIndex, ComponentPage, contracts, contractsByName } from "./component-page.js";
+import { TokenDoc, FamilyDoc, ContrastPage, RecipeList, FoundationIndex } from "./token-docs.js";
+import { HomePage } from "./home.js";
+// The nav needs a name and a title per component. It used to get them from
+// `contracts.json`, which is 340kB of every decision, prop and worked example
+// in the system — all of it in the chunk that loads before anything appears.
+// This generated index is 1.6kB and comes out of the same contracts, so the
+// staleness check that covers the doc pages covers it too.
+import componentIndex from "../../../docs/components/index.json";
+
+// Everything that actually reads a contract is behind a lazy boundary, which
+// is what keeps contracts.json out of the first chunk. The boundary is by
+// NAME rather than by contract for exactly that reason — see
+// ComponentPageByName.
+const ComponentIndexPage = lazy(() =>
+  import("./component-page.js").then((m) => ({ default: m.ComponentIndex })),
+);
+const ComponentPageByName = lazy(() =>
+  import("./component-page.js").then((m) => ({ default: m.ComponentPageByName })),
+);
 import { componentName, componentPage, hrefFor, parseLocation } from "./routing.js";
 import { AccentSwitcher, DEFAULT_ACCENT } from "./accent-switcher.js";
 import type { Scheme } from "./accent-switcher.js";
@@ -33,10 +50,12 @@ interface NavItem {
 }
 
 const NAV: NavItem[] = [
+  { id: "home", label: "Home", page: "home" },
   {
     id: "foundation",
     label: "Foundation",
     children: [
+      { id: "foundation", label: "Overview" },
       { id: "color", label: "Color" },
       { id: "spacing", label: "Spacing" },
       { id: "radius", label: "Radius" },
@@ -51,7 +70,7 @@ const NAV: NavItem[] = [
     label: "Components",
     children: [
       { id: "components", label: "All components" },
-      ...contracts.map((contract) => ({
+      ...componentIndex.map((contract) => ({
         id: componentPage(contract.name),
         label: contract.title,
       })),
@@ -350,6 +369,19 @@ const spacePrimitives: Array<[string, string]> = [
 // see packages/tokens/src/themes/base.mjs.
 const radiusNames = ["none", "inner", "element", "container", "chat", "page", "pill"] as const;
 
+/**
+ * What a lazy page shows while its chunk arrives. The system's own Spinner,
+ * named, because an unnamed one announces nothing — and on a fast connection
+ * this is never seen at all, which is the point of the chunk being small.
+ */
+function PageSpinner() {
+  return (
+    <div className="pg-page-spinner">
+      <Spinner label="Loading" />
+    </div>
+  );
+}
+
 export function App() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   // Which of the five accent options is applied. The value is a theme slug,
@@ -411,7 +443,6 @@ export function App() {
   }, [page, tab]);
 
   const activeName = componentName(page);
-  const activeComponent = activeName ? contractsByName.get(activeName) ?? null : null;
 
   const query = search.trim().toLowerCase();
 
@@ -430,10 +461,25 @@ export function App() {
   /**
    * The nav, in SideNav's shape.
    *
-   * Each top-level group becomes a labelled section, which is what they
-   * already were — the hand-rolled version expanded and collapsed them, but a
+   * Each top-level group is a DISCLOSURE — an item carrying `items`, which
+   * SideNav renders as a button that expands its list in place. This reverses
+   * an earlier decision here, and the earlier reasoning was not wrong: a
    * labelled section says the same thing to a screen reader without a button
-   * to press. A leaf with no children becomes a one-item unlabelled section.
+   * to press, and that is still true. What it does not do is let a reader
+   * put a group away, and with 28 components under one of them the rail was
+   * long enough that the other group scrolled off.
+   *
+   * Two things the component already handles, which is why this is a change
+   * of shape rather than of behaviour: a group holding the current page
+   * starts open on its own — its contract calls that not a convenience,
+   * since a reader whose page sits inside a collapsed group cannot see where
+   * they are — and the disclosure is a disclosure rather than a menu, because
+   * `role="menu"` would announce a keyboard model a list of links does not
+   * have.
+   *
+   * One section, unlabelled, rather than one per group: the group names are
+   * the disclosure buttons now, and a labelled section wrapping a single
+   * disclosure of the same name would say it twice.
    *
    * `onClick` is where this stopped being possible before: the rows navigate
    * client-side, and until nav items could intercept their own click there
@@ -445,28 +491,35 @@ export function App() {
     navigate(target);
   };
 
-  const navSections = filteredNav.map((item) =>
-    item.children
-      ? {
-          label: item.label,
-          items: item.children.map((leaf) => ({
-            label: leaf.label,
-            href: hrefFor(leaf.id),
-            current: page === leaf.id,
-            onClick: go(leaf.id),
-          })),
-        }
-      : {
-          items: [
-            {
+  const navSections = [
+    {
+      items: filteredNav.map((item) =>
+        item.children
+          ? {
+              label: item.label,
+              // No href: an item with `items` is a disclosure, not a link.
+              items: item.children.map((leaf) => ({
+                label: leaf.label,
+                href: hrefFor(leaf.id),
+                current: page === leaf.id,
+                onClick: go(leaf.id),
+              })),
+              // Forced open while searching. Without this a match inside a
+              // collapsed group is filtered in and still invisible, which
+              // makes the search look broken rather than empty — the
+              // component opens a group for the CURRENT page, which is a
+              // different question from "does it contain a hit".
+              ...(query ? { defaultExpanded: true } : {}),
+            }
+          : {
               label: item.label,
               href: hrefFor(item.page!),
               current: page === item.page,
               onClick: go(item.page!),
-            },
-          ],
-        }
-  );
+            }
+      ),
+    },
+  ];
 
   return (
     <div className="pg-app">
@@ -482,10 +535,46 @@ export function App() {
           either, for the same reason — and because the rail is already called
           "Sections", and two navigation landmarks sharing a name is the exact
           thing TopNav's own contract warns about. */}
+      {/* The two categories. `current` is an EXACT match, not a section match:
+          for a plain link this component renders aria-current="page", which
+          would be a false claim on /foundation/color — you are not on the
+          overview. The rail marks where you actually are. A section-level
+          "you are here" is aria-current="true", which TopNav only emits for
+          a disclosure item, so it is not available here. */}
       <TopNav
         className="pg-header"
+        // Named, because there are two navigation landmarks on this page now
+        // and TopNav's contract says that is exactly when to name one. The
+        // default is "Main", which the side rail's "Sections" is already
+        // distinguishable from — but "Main" describes neither of them.
+        label="Categories"
+        items={[
+          {
+            label: "Foundation",
+            href: hrefFor("foundation"),
+            current: page === "foundation",
+            onClick: () => navigate("foundation"),
+          },
+          {
+            label: "Components",
+            href: hrefFor("components"),
+            current: page === "components",
+            onClick: () => navigate("components"),
+          },
+        ]}
         brand={
-          <span className="pg-brand">
+          // A link to the root, which is what TopNav's contract says to do
+          // with this slot if it should be clickable — and it should, now
+          // there is a root to go to. It stays outside the nav landmark: a
+          // logo is not a destination in the list even when it links home.
+          <a
+            className="pg-brand"
+            href={hrefFor("home")}
+            onClick={(event) => {
+              event.preventDefault();
+              navigate("home");
+            }}
+          >
             {/* Decorative, because the wordmark beside it already names the
                 product. TopNav's contract warns that an image in this slot
                 needs its own alt text — it does, and for a mark paired with
@@ -493,7 +582,7 @@ export function App() {
                 would have a screen reader read the product twice. */}
             <img className="pg-brand-mark" src="/rata-icon.svg" alt="" />
             <strong className="pg-brand-name">Ratā</strong>
-          </span>
+          </a>
         }
         actions={
           <>
@@ -926,23 +1015,31 @@ export function App() {
             </section>
           )}
 
-          {page === "components" && <ComponentIndex onOpen={(name) => navigate(componentPage(name))} />}
+          {page === "home" && <HomePage onOpen={navigate} />}
 
-          {activeComponent && (
-            <ComponentPage contract={activeComponent} tab={tab} onNavigate={navigate} />
+          {page === "foundation" && <FoundationIndex onOpen={navigate} />}
+
+          {page === "components" && (
+            <Suspense fallback={<PageSpinner />}>
+              <ComponentIndexPage onOpen={(name) => navigate(componentPage(name))} />
+            </Suspense>
           )}
 
-          {activeName && !activeComponent && (
-            <section className="pg-section">
-              <h2>Unknown component</h2>
-              <p className="pg-note">
-                Nothing in the registry is called <code>{activeName}</code>. Run{" "}
-                <code>npm run ui -- list</code> for the real names.
-              </p>
-            </section>
+          {/* Resolving the name to a contract is the lazy side's job: knowing
+              a name is unknown requires knowing every known name, and that is
+              the 340kB this boundary exists to defer. */}
+          {activeName !== null && (
+            <Suspense fallback={<PageSpinner />}>
+              <ComponentPageByName name={activeName} tab={tab} onNavigate={navigate} />
+            </Suspense>
           )}
         </main>
-        {inspecting && <TokenDoc path={inspecting} onClose={() => setInspecting(null)} />}
+        {/* Rendered unconditionally, and given the selection rather than
+            gated on it: on a narrow viewport this is a Sheet, and a <dialog>
+            removed from the tree has no exit animation — it would disappear
+            instead of leaving. TokenDoc returns null itself when there is
+            nothing to show and it is not in sheet form. */}
+        <TokenDoc path={inspecting} onClose={() => setInspecting(null)} />
       </div>
     </div>
   );

@@ -36,17 +36,17 @@
 
 /* Sizes */
 .rata-button--sm {
-  height: var(--rata-size-control-sm);
+  block-size: var(--rata-size-control-sm);
   padding-inline: var(--rata-space-3);
 }
 
 .rata-button--md {
-  height: var(--rata-size-control-md);
+  block-size: var(--rata-size-control-md);
   padding-inline: var(--rata-space-4);
 }
 
 .rata-button--lg {
-  height: var(--rata-size-control-lg);
+  block-size: var(--rata-size-control-lg);
   padding-inline: var(--rata-space-5);
 }
 
@@ -69,9 +69,16 @@
   color: var(--rata-theme-accent-role-fg);
 }
 
+/* theme.danger-role.on, NOT theme.fg.on-accent. Every filled role owns its
+   own label token, and this is the case that shows why rather than a tidiness
+   rule: on-accent INVERTS with the accent in the dark scheme (#FFFFFF light,
+   #003D1D dark) while the status fills do not move at all. So this button
+   shipped dark green text on red at 2.58:1 in dark mode — below AA — and
+   4.83:1 in light, which is why looking at it in one scheme found nothing.
+   danger-role.on is #ffffff in both, and 4.83:1 in both. */
 .rata-button--destructive {
   background: var(--rata-theme-danger-role-bg);
-  color: var(--rata-theme-fg-on-accent);
+  color: var(--rata-theme-danger-role-on);
 }
 
 /* States — aria-disabled keeps the control focusable/discoverable for AT */
@@ -91,14 +98,14 @@
 }
 
 .rata-icon-button.rata-button--sm {
-  width: var(--rata-size-control-sm);
+  inline-size: var(--rata-size-control-sm);
 }
 
 .rata-icon-button.rata-button--md {
-  width: var(--rata-size-control-md);
+  inline-size: var(--rata-size-control-md);
 }
 
 .rata-icon-button.rata-button--lg {
-  width: var(--rata-size-control-lg);
+  inline-size: var(--rata-size-control-lg);
 }
 

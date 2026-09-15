@@ -27,6 +27,24 @@
      every time: fill, then be capped. */
   inline-size: 100%;
   block-size: 100%;
+  /* Overriding the UA, and NOT optional. The UA stylesheet gives a modal
+     dialog `max-width: calc(100% - 6px - 2em)` and the same for height — the
+     6px being its 3px border on each side, the 2em its 1em of padding. Both
+     are replaced above, so the subtraction is for box parts this element does
+     not have, and neither constraint survives contact with a sheet:
+
+       an inline-edge sheet stopped 2em short of the viewport's height, which
+       is what "make the sheet full height" turned out to mean;
+
+       a block-edge sheet stopped 2em short of its width, so a bottom sheet
+       did not span the edge it was anchored to.
+
+     Each edge modifier below then caps the one axis it slides along. Stating
+     the base as 100% is what leaves the other axis alone. dialog.css sets
+     these to an inset instead, which is right for something centred and
+     wrong for something flush. */
+  max-inline-size: 100%;
+  max-block-size: 100%;
   border-radius: var(--rata-radius-none);
   background: var(--rata-theme-bg-surface);
   color: var(--rata-theme-fg-primary);
@@ -93,7 +111,26 @@
    These rules come after the base rule on purpose: their `max-*` is meant to
    replace the base's, which is the same cascade dependency dialog.css relies
    on for its widths. */
+/* A block-edge sheet is capped and centred on a wide viewport. Spanning a
+   2560px monitor puts the close control one corner away from the content it
+   closes, and sets a line length nothing else in the system allows.
+
+   control-lg x 20 is the multiplier Dialog's widest size uses, so a bottom
+   sheet at its widest reads like the widest single surface this system draws
+   rather than like the page. No min() against 100% is needed: `inline-size:
+   100%` on the base rule already yields to a narrow viewport, and unlike the
+   main axis there is no edge here that must stay uncovered.
+
+   This applies to the block edges ONLY. The cross axis of an inline-edge
+   sheet is its height, and capping that would lift a drawer off the top and
+   bottom into a floating panel — a different shape, and not this component.
+
+   The corners do not move with it: the sheet is still flush to its own edge,
+   so the two corners there stay square and the two facing the page stay
+   rounded. */
 .rata-sheet--block-end {
+  margin-inline: auto;
+  max-inline-size: calc(var(--rata-size-control-lg) * 20);
   margin-block-start: auto;
   max-block-size: min(
     var(--rata-sheet-measure),
@@ -104,6 +141,8 @@
 }
 
 .rata-sheet--block-start {
+  margin-inline: auto;
+  max-inline-size: calc(var(--rata-size-control-lg) * 20);
   margin-block-end: auto;
   max-block-size: min(
     var(--rata-sheet-measure),

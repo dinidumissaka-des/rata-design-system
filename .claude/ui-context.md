@@ -25,6 +25,7 @@ this path is the honest answer to when it last actually moved.
 | [button-group](../docs/components/button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [checkbox](../docs/components/checkbox.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [dialog](../docs/components/dialog.md) | `@rata/react` | overlays | latest / latest / future | free |
+| [heading](../docs/components/heading.md) | `@rata/react` | content | future / future / future | free |
 | [icon](../docs/components/icon.md) | `@rata/react` | content | latest / latest / future | free |
 | [menu](../docs/components/menu.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [menu-item](../docs/components/menu-item.md) | `@rata/react` | overlays | latest / latest / future | free |
@@ -41,6 +42,7 @@ this path is the honest answer to when it last actually moved.
 | [state-layer](../docs/components/state-layer.md) | `@rata/react` | foundations | latest / na / future | free |
 | [switch](../docs/components/switch.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [tabs](../docs/components/tabs.md) | `@rata/react` | navigation | latest / latest / future | free |
+| [text](../docs/components/text.md) | `@rata/react` | content | future / future / future | free |
 | [text-field](../docs/components/text-field.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [toggle-button](../docs/components/toggle-button.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [toggle-button-group](../docs/components/toggle-button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
@@ -235,6 +237,12 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/dialog.md](../docs/components/dialog.md)
+
+### Heading
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/heading.md](../docs/components/heading.md)
 
 ### Icon (`@rata/icons`)
 
@@ -569,28 +577,15 @@ Extends: `Omit<`
 Real usage (from `apps/`):
 ```tsx
 <Sheet
-        open={open}
-        onClose={() => setOpen(false)}
-        edge={edge}
-        size={size}
-        dismissible={dismissible}
-        title={title}
-        description={description}
-        initialFocus={applyRef}
-        footer={
-          <>
-            <Button variant="secondary" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-            <Button ref={applyRef} onClick={() => setOpen(false)}>
-              Apply
-            </Button>
-          </>
-        }
-      >
-        The body scrolls on its own, so the title and the way out stay put
-        however much goes in here.
-      </Sheet>
+      open={path !== null}
+      onClose={() => onClose()}
+      edge={narrow ? "block-end" : "inline-end"}
+      size="lg"
+      title={<code>{shown ?? ""}</code>}
+      dismissLabel={shown === null ? "Close" : `Close documentation for ${shown}`}
+    >
+      {shown !== null && <TokenDocBody path={shown} />}
+    </Sheet>
 ```
 
 Contract: [docs/components/sheet.md](../docs/components/sheet.md)
@@ -619,7 +614,7 @@ Contract: [docs/components/side-nav.md](../docs/components/side-nav.md)
 
 Real usage (from `apps/`):
 ```tsx
-<Spinner label="Loading results" />
+<Spinner label="Loading" />
 ```
 
 Contract: [docs/components/spinner.md](../docs/components/spinner.md)
@@ -691,6 +686,12 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/tabs.md](../docs/components/tabs.md)
+
+### Text
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/text.md](../docs/components/text.md)
 
 ### Input: Text field (`@rata/react`)
 
@@ -1148,9 +1149,9 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-type-label-size`: `0.875rem`
 - `--rata-type-label-text-transform`: `uppercase`
 - `--rata-type-label-weight`: `500`
-- `--rata-type-large-line-height`: `1.4118`
-- `--rata-type-large-size`: `1.0625rem`
-- `--rata-type-large-weight`: `600`
+- `--rata-type-large-line-height`: `1.3333`
+- `--rata-type-large-size`: `1.5rem`
+- `--rata-type-large-weight`: `400`
 - `--rata-type-supporting-line-height`: `1.6667`
 - `--rata-type-supporting-size`: `0.75rem`
 - `--rata-type-supporting-weight`: `400`
@@ -1162,4 +1163,4 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 
 ## Pages
 
-- `apps/playground/src/app.tsx` — shell: main → section×13
+- `apps/playground/src/app.tsx` — shell: main → section×12

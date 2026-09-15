@@ -91,7 +91,8 @@
         "md": "size.control.lg multiplied by 12",
         "lg": "size.control.lg multiplied by 18",
         "cap across its own axis": "100% of the dialog's containing block less space.padding.lg — stated as a percentage rather than in viewport units on purpose: vh and vw are the LARGE viewport, so a bottom sheet measured in vh is taller than the screen whenever the mobile address bar is showing. Dialog's insets are percentages for the same reason.",
-        "measure across the other axis": "the full containing block — a sheet spans the edge it is anchored to. Not capped on wide viewports in this version; a bottom sheet that stops short of both sides is a different shape and would need its own entry here."
+        "measure across the other axis": "the full containing block for an inline-edge sheet — a drawer spans the height it is anchored along. A BLOCK-edge sheet is capped at size.control.lg multiplied by 20 and centred with an auto inline margin: spanning a 2560px monitor puts the close control one corner away from the content it closes, and sets a line length nothing else in this system allows. That multiplier is the one Dialog's widest size uses, so a bottom sheet at its widest reads like the widest single surface here rather than like the page.",
+        "why the cap is block-edge only": "The cross axis of an inline-edge sheet is its height, and capping that would lift a drawer off the top and bottom into a floating panel — a different shape, and not this component. A block-edge sheet stays flush to its own edge either way, so the two corners there stay square and the two facing the page keep radius.page."
       }
     },
     "footer": {
@@ -152,6 +153,10 @@
       {
         "decision": "The title is a real `<h2>`, as Dialog's is",
         "why": "Everything behind a modal is inert, so the outline inside it genuinely starts fresh and the title is the top of it. This is the difference from Panel, which sits inside the page's outline and has to be told its level."
+      },
+      {
+        "decision": "A bottom sheet stops short of a wide viewport's sides",
+        "why": "Left open at gate 2 — the recipe said a sheet spans its edge with no cap, and that a sheet stopping short of both sides was a different shape needing its own entry. It does, and it now has one. Spanning the full width of a large monitor is the failure it prevents: the title sits at one corner and its close control at the other, with a line length in between that nothing else in this system permits. Capped and centred on the block edges only, because the equivalent on an inline edge would lift a drawer off the top and bottom and make it a floating panel instead."
       }
     ]
   },
@@ -213,9 +218,9 @@
         "`sm` for a short list of actions; `lg` for a form or a document."
       ],
       "dont": [
-        "Expecting it to control the other axis. A sheet spans the edge it is anchored to, always."
+        "Expecting it to control the other axis. `size` is the axis the sheet slides along; the other one spans its edge, capped and centred for a block-edge sheet on a wide viewport."
       ],
-      "a11y": "Every size gives way to a small viewport rather than overflowing it, and never covers the edge it slid from."
+      "a11y": "Every size gives way to a small viewport rather than overflowing it, and never covers the edge it slid from. A bottom sheet is also capped across its width on a wide viewport, which is a line-length decision rather than a size one — it is not affected by this prop."
     },
     "description": {
       "summary": "A line under the title, wired as the sheet's description.",
@@ -280,21 +285,21 @@
   "usage": [
     {
       "case": "A bottom sheet of filters on a narrow viewport",
-      "when": "The commonest use: a set of choices that would not fit beside the results, reachable where a thumb already is.",
-      "example": "const [filtering, setFiltering] = useState(false);\n\n<Button onClick={() => setFiltering(true)}>Filters</Button>\n\n<Sheet\n  open={filtering}\n  onClose={() => setFiltering(false)}\n  title=\"Filters\"\n  description=\"Narrows the 1,204 results below.\"\n  footer={\n    <>\n      <Button variant=\"secondary\" onClick={() => setFiltering(false)}>\n        Cancel\n      </Button>\n      <Button onClick={() => setFiltering(false)}>Apply</Button>\n    </>\n  }\n>\n  <SegmentedControl\n    label=\"Period\"\n    value={period}\n    onValueChange={setPeriod}\n    items={[\n      { value: \"week\", label: \"Week\" },\n      { value: \"month\", label: \"Month\" },\n    ]}\n  />\n</Sheet>",
-      "notes": "`edge` is left at its default, which is `block-end`. The footer holds the two ways out so neither is the close button, whose job is only to abandon the sheet."
+      "when": "The commonest bottom sheet: a set of choices too big for the bar they belong to, applied and dismissed in one go.",
+      "example": "const [filtering, setFiltering] = useState(false);\n\n<Button onClick={() => setFiltering(true)}>Filters</Button>\n\n<Sheet\n  open={filtering}\n  onClose={() => setFiltering(false)}\n  title=\"Filters\"\n  description=\"Applied to the list behind this sheet.\"\n  size=\"md\"\n  footer={\n    <>\n      <Button variant=\"secondary\" onClick={() => setFiltering(false)}>\n        Cancel\n      </Button>\n      <Button onClick={apply}>Apply</Button>\n    </>\n  }\n>\n  <SegmentedControl\n    label=\"Period\"\n    value={period}\n    onValueChange={setPeriod}\n    options={[\n      { value: \"week\", label: \"Week\" },\n      { value: \"month\", label: \"Month\" },\n    ]}\n  />\n</Sheet>",
+      "notes": "`block-end` is the default, so the edge is not stated. The footer holds both ways out, which is what makes Cancel reachable without hunting for the close button at the top of a sheet the reader's thumb is at the bottom of."
     },
     {
       "case": "A detail drawer from the inline edge",
-      "when": "The same content a Panel would hold, on a viewport too narrow to give the panel a column of its own.",
-      "example": "<Sheet\n  open={selected !== null}\n  onClose={() => setSelected(null)}\n  edge=\"inline-end\"\n  size=\"lg\"\n  title={selected?.path ?? \"\"}\n>\n  <TokenDoc path={selected.path} />\n</Sheet>",
-      "notes": "`inline-end` rather than `right`: the sheet follows the reading direction, so a right-to-left document gets it on the other side with no change here. This is the pattern's other half — the same content is a Panel when there is room for one, and the two take the same title."
+      "when": "The same content a Panel would hold, but over the page rather than beside it — because at this width there is no room to put it beside.",
+      "example": "<Sheet\n  open={selected !== null}\n  onClose={() => setSelected(null)}\n  edge=\"inline-end\"\n  size=\"lg\"\n  title={selected?.name ?? \"\"}\n>\n  <RecordDetail record={selected} />\n</Sheet>",
+      "notes": "`inline-end` is logical, so this arrives from the right in a left-to-right document and from the left in a right-to-left one. If the page DOES have room beside the content, this is the wrong component — reach for Panel, which leaves the page usable."
     },
     {
       "case": "A required choice with no way to dismiss it",
-      "when": "Something must be answered before the page behind it means anything — a workspace to act in, a term to accept.",
-      "example": "<Sheet\n  open={needsWorkspace}\n  onClose={() => {}}\n  dismissible={false}\n  size=\"sm\"\n  title=\"Choose a workspace\"\n  initialFocus={firstOptionRef}\n>\n  <RadioGroup\n    label=\"Workspace\"\n    value={workspace}\n    onValueChange={commitWorkspace}\n    items={workspaces}\n  />\n</Sheet>",
-      "notes": "`dismissible={false}` removes the close button and blocks both Escape and the backdrop, so the content itself has to be the way out — here, picking an option commits it. A sheet with neither is a dead end, and a reader will reload the page to escape it."
+      "when": "Rare, and worth resisting. A required choice with no sensible default is the only case that justifies it.",
+      "example": "const keepRef = useRef<HTMLButtonElement>(null);\n\n<Sheet\n  open={migrating}\n  onClose={() => {}}\n  title=\"Choose a workspace\"\n  description=\"Your account belongs to two, and this decides which one opens.\"\n  size=\"sm\"\n  dismissible={false}\n  initialFocus={keepRef}\n  footer={<Button ref={keepRef} onClick={choose}>Continue</Button>}\n>\n  <RadioGroup label=\"Workspace\" value={workspace} onValueChange={setWorkspace}>\n    {workspaces.map((w) => (\n      <Radio key={w.value} value={w.value} label={w.label} />\n    ))}\n  </RadioGroup>\n</Sheet>",
+      "notes": "`dismissible={false}` removes the close button and blocks Escape and the backdrop, so the footer MUST contain a way out — here Continue is it. Without one the sheet is a dead end and the reader will reload the page instead."
     }
   ]
 }

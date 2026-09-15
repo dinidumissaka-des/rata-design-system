@@ -158,10 +158,35 @@ code {
   margin-bottom: var(--rata-space-section);
 }
 
+/* Page titles, on every page — the one rule all fourteen of them share.
+
+   type.display-3, whose contract says in as many words "above h1". The
+   previous version of this comment claimed heading-1 was the largest step
+   the scale generates and that anything larger meant reaching into
+   font.size.*. Both were wrong: type.display-1/2/3 consume font.size
+   5xl/4xl/3xl as proper roles, so the three largest steps on the typography
+   page were never unreachable — they were simply not being asked for.
+
+   Taken WHOLE, size and weight and line-height and tracking together, which
+   is the deal the type family states: each role's steps are generated from
+   the seed in proportion to each other. Note the weight that comes with it —
+   display roles are 400 where the heading roles are 600, because display
+   type is large enough not to need weight for emphasis. Cherry-picking
+   heading-1's 600 onto display-3's size would break exactly the pairing the
+   roles exist to hold.
+
+   display-3 (1.8125rem) rather than display-2 (2.1875rem) or display-1
+   (2.625rem): this is a page title above a dense reference page, not a
+   marketing hero. The ladder is 29 / 17 / 14.
+
+   tracking.display-3 comes with it. Large type set at normal tracking looks
+   loose, which is why the type family carries a tracking step per display
+   role rather than one value for everything. */
 .pg-section h2 {
-  font-size: var(--rata-type-heading-size);
-  font-weight: var(--rata-type-heading-weight);
-  line-height: var(--rata-type-heading-line-height);
+  font-size: var(--rata-type-display-3-size);
+  font-weight: var(--rata-type-display-3-weight);
+  line-height: var(--rata-type-display-3-line-height);
+  letter-spacing: var(--rata-type-tracking-display-3);
   margin: 0 0 var(--rata-space-4);
 }
 
@@ -445,25 +470,6 @@ code {
 
 /* rata-allow: hardcoded-dimension — the inspector rail is a playground layout
    constant, the same kind as .pg-sidebar's width, not a step on the scale */
-/* Placement only, which is all that is left now Panel draws the rail. The
-   surface, the border, the head, the close control and the body's scrolling
-   all come from the component — this states where it sits and how wide it is,
-   which its contract says is the page's job.
-
-   The measure was `width: 340px`. It is control-lg x 9 = 324px now: close to
-   the number that was there, but derived, so it moves with the scale instead
-   of being a value someone once liked.
-
-   Sticks BELOW the header rather than at 0. It was `top: 0` from before the
-   top nav became fixed, which put the panel's own heading underneath it. */
-.pg-inspector {
-  flex-shrink: 0;
-  inline-size: calc(var(--rata-size-control-lg) * 9);
-  position: sticky;
-  inset-block-start: var(--pg-header-block-size);
-  max-block-size: calc(100dvh - var(--pg-header-block-size));
-}
-
 .pg-inspector-meta {
   display: flex;
   align-items: center;
@@ -914,6 +920,304 @@ code {
 
 .pg-panel-stage > .rata-panel {
   inline-size: 100%;
+}
+
+/* Holds the place of a lazily-loaded page while its chunk arrives. Given a
+   block size so the layout does not jump when the page lands — a spinner that
+   collapses to nothing is worse than no spinner. */
+.pg-page-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  block-size: calc(var(--rata-size-control-lg) * 6);
+}
+
+/* ---- Home page ----------------------------------------------------------- */
+
+/* The home page's title only, which is why it is scoped to the section rather
+   than changing `.pg-section h2` — that one rule is every page title on every
+   page, and a 42px heading over a dense reference page is not what display-1
+   is for. A landing page is.
+
+   Scoped this way for specificity as much as intent: `.pg-section h2` is one
+   class and one element, so a bare `.pg-home-title` would have lost to it.
+
+   display-1 taken whole, tracking included. Its weight is 400 — the display
+   roles all are, because type that large does not need weight for emphasis —
+   so this is larger and lighter than the 600 it inherited, not larger and
+   bolder. */
+.pg-section--home h2 {
+  font-size: var(--rata-type-display-1-size);
+  font-weight: var(--rata-type-display-1-weight);
+  line-height: var(--rata-type-display-1-line-height);
+  letter-spacing: var(--rata-type-tracking-display-1);
+}
+
+/* The one paragraph under the title, at type.large — which is the role the
+   scale documents "for lead paragraphs", and this is the only thing in the
+   repo that uses it.
+
+   Taken WHOLE now, weight included. It was size and line-height only, which
+   quietly dropped large's semibold and left the lede at body weight — the
+   cherry-picking this file argues against elsewhere. The role is regular at
+   the source now, so taking all three gives the same result honestly. */
+.pg-lede {
+  margin: 0 0 var(--rata-space-stack-lg);
+  font-size: var(--rata-type-large-size);
+  font-weight: var(--rata-type-large-weight);
+  line-height: var(--rata-type-large-line-height);
+  color: var(--rata-theme-fg-secondary);
+}
+
+.pg-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(calc(var(--rata-size-control-lg) * 6), 1fr));
+  gap: var(--rata-space-gap-lg);
+  margin: 0 0 var(--rata-space-section);
+}
+
+/* The label reads before the number in the DOM, which is the order a
+   <dl> means, and `order` puts the number first visually — a figure is what
+   the eye goes to and the label is what tells you what it was. Safe here for
+   the reason it was safe on the gallery tiles: nothing in this block is
+   focusable, so there is no focus order to desynchronise. */
+.pg-stat {
+  display: flex;
+  flex-direction: column;
+  padding-block-start: var(--rata-space-padding-sm);
+  border-block-start: var(--rata-border-2) solid var(--rata-theme-border-default);
+}
+
+.pg-stat dt {
+  order: 2;
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-control-size-md);
+}
+
+.pg-stat dd {
+  order: 1;
+  margin: 0;
+  font-size: var(--rata-type-display-2-size);
+  font-weight: var(--rata-type-display-2-weight);
+  line-height: var(--rata-type-display-2-line-height);
+  letter-spacing: var(--rata-type-tracking-display-2);
+  color: var(--rata-theme-fg-primary);
+}
+
+.pg-stat-note {
+  order: 3;
+  margin: var(--rata-space-stack-2xs) 0 0;
+  color: var(--rata-theme-fg-muted);
+  font-size: var(--rata-type-supporting-size);
+  line-height: var(--rata-type-supporting-line-height);
+}
+
+/* Two entries rather than the gallery's three-or-fewer, and each carries a
+   paragraph — so the floor is wider and the tile shorter than a specimen
+   needs to be. The top margin is this block's own, because the prose above it
+   ends at a .pg-note and nothing else would separate them. */
+.pg-gallery--entries {
+  margin-block-start: var(--rata-space-section);
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(
+      max(
+        calc(var(--rata-size-control-lg) * 8),
+        calc((100% - var(--rata-space-gap-lg)) / 2)
+      ),
+      1fr
+    )
+  );
+}
+
+.pg-gallery--entries .pg-gallery-stage {
+  aspect-ratio: 16 / 7;
+}
+
+/* ---- Component gallery --------------------------------------------------
+   The components overview: every component running, rather than a row of its
+   name and status. A table answered "what exists and how far along is it";
+   this answers "what does it look like", which is the question someone
+   opening a design system actually arrives with.
+
+   auto-fill rather than a fixed three columns, so the count follows the space
+   instead of a breakpoint — this system has no breakpoint tokens, and a grid
+   is one of the places that costs nothing. control-lg x 9 = 324px is the
+   narrowest a tile can be and still hold a specimen with a couple of
+   controls side by side; at the playground's content width that lands on
+   three, and on two when the token inspector is open. */
+.pg-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(calc(var(--rata-size-control-lg) * 9), 1fr));
+  gap: var(--rata-space-gap-lg);
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+  list-style: none;
+}
+
+/* The containing block for the click overlay below. */
+.pg-gallery-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-stack-sm);
+}
+
+/* The whole tile navigates, and it does so by EXTENDING the name's hit area
+   rather than by wrapping the tile in a link.
+
+   Wrapping is not available: the tile holds a live component, and an <a> or
+   <button> cannot contain one. The standard answer is this — one real
+   control, with an absolutely positioned pseudo-element stretched over the
+   card. Everything follows from the overlay being part of the name element:
+   hovering anywhere on the tile is hovering the name, so the colour change
+   and the pointer cursor already defined for it fire from the whole area,
+   and there is exactly one tab stop per tile rather than one plus whatever
+   the specimen contains.
+
+   ::after and not ::before, which is the opposite of the rule for
+   components: that rule exists because .rata-state-layer owns ::after, and
+   this element does not compose it. It cannot — the state layer keys off the
+   hover of the element it sits on and would want this same pseudo-element. */
+.pg-gallery-name::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--rata-radius-container);
+}
+
+/* Hover lands on the CARD only, not on the caption under it.
+
+   .rata-state-layer is composed on the stage in the markup, so the overlay,
+   its opacity steps and its transition are the system's rather than redrawn
+   here. What these two rules change is only what TRIGGERS it — and they have
+   to, because the layer keys off the hover of the element it sits on and the
+   stage can never be hovered: the click overlay sits above it, and the stage
+   is the name's SIBLING rather than its ancestor, so it is not in the hover
+   chain at all. `:has()` reads the hover from the tile and drives the layer
+   the tile cannot otherwise reach.
+
+   Not the hand-rolled hover `npm run vibe` rejects: that rule fires on a
+   :hover block setting a background in place of the layer, and these set the
+   layer's own documented opacity tokens on the layer's own pseudo-element. An
+   earlier version of this DID swap a background, and the check caught it.
+
+   On the stage rather than the <li>, because the <li>'s box includes the
+   caption and a tint reaching the label is what put this on the card
+   instead. --flush too: no border of its own for the layer to bleed into. And
+   no collision with the click overlay — that is the NAME's ::after, this is
+   the STAGE's. */
+.pg-gallery-item:has(.pg-gallery-name:hover) .pg-gallery-stage::after {
+  opacity: var(--rata-state-hover-opacity);
+}
+
+.pg-gallery-item:has(.pg-gallery-name:active) .pg-gallery-stage::after {
+  opacity: var(--rata-state-press-opacity);
+}
+
+/* The same bargain .pg-example-stage makes — bg.subtle is documented as "a
+   quiet section band inside a surface", and it has its own tone (97/15) so it
+   reads as lifted off the canvas in dark and inset into it in light rather
+   than merging with either.
+
+   The specimen is centred and the tile does not grow with it: a component
+   with a lot in it gets the same frame as a component with one button, which
+   is what makes a page of them scannable. */
+.pg-gallery-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--rata-space-padding-lg);
+  /* A RATIO, not a minimum. `min-block-size` let a tall specimen grow its own
+     tile — SideNav's rail is about half again the height of a lone hamburger
+     — so a row held two cards of different sizes and the grid stopped reading
+     as a grid.
+     16/10 is the proportion of the reference this gallery was built from
+     (375x231 measures 1.62), and being a ratio rather than a height it holds
+     at any column width the auto-fill grid lands on. Every stage in the
+     gallery is therefore identical, because every column is.
+     The cost is real: a specimen taller than its tile is clipped top and
+     bottom by the overflow rule below, and SideNav's is. It shows its middle,
+     which is enough to recognise — and the working copy is a click away. */
+  aspect-ratio: 16 / 10;
+  border-radius: var(--rata-radius-container);
+  background: var(--rata-theme-bg-subtle);
+  overflow: hidden;
+}
+
+/* A button rather than a link because the playground routes in JS, which is
+   the same compromise .pg-link makes; styled as the tile's title. */
+/* The Foundation overview's stage. Accent-filled, so the two overviews are
+   distinguishable at a glance: a component tile shows the thing running, a
+   token category has nothing to run.
+
+   fg.on-accent is not interchangeable with fg.primary here — it is the label
+   token this fill OWNS, and it INVERTS with the accent in the dark scheme
+   while fg.primary does not. Using fg.primary would put dark content on a
+   dark accent in one of the two schemes and look fine in the other.
+
+   The font-size is what sizes the glyph, and using it is not a workaround:
+   Icon's default step is size.icon.text — 1.15em — precisely so an icon
+   follows whatever text size it lands in. Overriding .rata-icon's own
+   inline-size from here would be restyling a component through a class meant
+   for placement.
+
+   The multiplier is off the CONTROL scale rather than the type scale, which
+   is the change from the first version. display-1 is the largest type role
+   and put the glyph at 48px — 31% of the tile's content box, small for the
+   only thing on a tile. But a decorative glyph is not text, and reaching for
+   a bigger type role to size one was the wrong scale to be climbing;
+   multiples of size.control.lg are how this system already states measures
+   that are not text, from Dialog's widths to Sheet's depths.
+
+   control-lg * 2 = 72px, so the glyph is 1.15em of that — about 83px, or
+   41% of a 202px tile, which is the proportion the reference had. */
+.pg-gallery-stage--accent {
+  background: var(--rata-theme-accent-role-bg);
+  color: var(--rata-theme-fg-on-accent);
+  font-size: calc(var(--rata-size-control-lg) * 2);
+}
+
+.pg-gallery-name {
+  align-self: flex-start;
+  padding: var(--rata-space-0);
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-inner);
+  background: none;
+  color: var(--rata-theme-fg-primary);
+  font-family: inherit;
+  font-size: var(--rata-type-heading-size);
+  font-weight: var(--rata-type-heading-weight);
+  line-height: var(--rata-type-heading-line-height);
+  text-align: start;
+  cursor: pointer;
+}
+
+.pg-gallery-name:hover {
+  color: var(--rata-theme-accent-role-fg);
+}
+
+/* rata-allow: focus-removed — the ring is RELOCATED, not removed: it is
+   declared on the overlay immediately below, which covers the whole tile.
+   An outline follows its element's own box, so a ring left here would circle
+   four characters of caption on a tile where clicking anywhere navigates —
+   telling a keyboard user the wrong thing about what they are about to
+   press. The checker cannot see that the next rule puts it back, which is
+   what this exception records. */
+.pg-gallery-name:focus-visible {
+  outline: none;
+}
+
+.pg-gallery-name:focus-visible::after {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+.pg-gallery-empty {
+  margin: var(--rata-space-0);
+  color: var(--rata-theme-fg-muted);
+  font-size: var(--rata-type-body-size);
+  text-align: center;
 }
 
 /* ---- Accent switcher ----------------------------------------------------

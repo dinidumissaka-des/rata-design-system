@@ -1,8 +1,8 @@
 /* Spinner — inline loading indicator sized relative to its container's font. */
 .rata-spinner {
   display: inline-block;
-  width: 1em;
-  height: 1em;
+  inline-size: 1em;
+  block-size: 1em;
   /* Without this the 2px ring is added to the 1em box, so a spinner claiming to
      scale with its font size actually rendered 4px larger than it. */
   box-sizing: border-box;

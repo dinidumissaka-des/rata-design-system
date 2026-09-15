@@ -1,0 +1,119 @@
+{
+  "name": "heading",
+  "title": "Heading",
+  "description": "A heading whose outline level and visual size are stated separately.",
+  "family": "content",
+  "alsoKnownAs": [
+    "title",
+    "h1",
+    "h2",
+    "section-title",
+    "page-title"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "One type role, taken whole. Nothing else — a heading has no box of its own.",
+      "tokens": {
+        "font-size": "the size of the chosen role — type.display-1.size through type.heading-6.size",
+        "font-weight": "that same role's weight, which is 400 for the display roles and 600 for the heading roles",
+        "line-height": "that same role's line-height",
+        "letter-spacing": "type.tracking.display-1 / display-2 / display-3 for the display roles, and normal for the heading roles — large type set at normal tracking reads loose, which is why the scale carries a tracking step per display role",
+        "color": "currentColor — a heading takes the colour of the text around it, and the surface it sits on decides that",
+        "margin": "space.0 — every margin is the page's, since only the page knows what the heading sits between"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "An `h1` through `h6`, with its visual size stated independently of its level. No primitive: there is no keyboard interaction to own and no state to hold.",
+    "decisions": [
+      {
+        "decision": "`level` and `role` are two props, and that is the whole reason this component exists",
+        "why": "A heading's level is an outline decision — it is how a screen-reader user navigates a page, and skipping one breaks that. Its size is a visual decision about emphasis on the page. They are answers to different questions and they disagree constantly: a page's first subsection often wants to be visually large and is still an `h2`, and a small `h4`-sized label deep in a form may be the `h3` of its section. Every typography component that offers only `size`, or only `level`, forces the caller to pick which of the two to get wrong."
+      },
+      {
+        "decision": "`role` defaults to the matching heading step, and that is a convenience rather than a coupling",
+        "why": "`level={2}` with no role renders `heading-2`, because that is right most of the time and asking for both every time would make the common case worse. The point is that the default is overridable in one prop — the coupling is a starting position, not a constraint."
+      },
+      {
+        "decision": "`level` is required and has no default",
+        "why": "There is no level that is right by default. A component that defaulted to `h2` would produce a page of `h2`s, which is exactly the flat outline this playground was already guilty of — every page title was an `h2` and no page had an `h1`. The type refuses it instead of the contract asking nicely, the same way Dialog's `title` is required."
+      },
+      {
+        "decision": "The unnumbered `type.heading` role is not offered",
+        "why": "It resolves to the same size as `heading-3`, so offering both would be two names for one step and a caller would have to guess whether they differ. The numbered ladder is the one that maps onto levels."
+      },
+      {
+        "decision": "It carries no margin",
+        "why": "Only the page knows what a heading sits between — a title above a dense table wants different air from one above prose. A component that shipped its own margin would be overridden everywhere, and an overridden default is worse than none because it looks like a decision."
+      },
+      {
+        "decision": "Tracking comes with the display roles and not with the heading roles",
+        "why": "The type family carries `tracking.display-1/2/3` precisely because large type set at normal tracking reads loose, and it carries no tracking step for the heading roles because they do not need one. Taking the role whole means taking its tracking when it has one — the roles are generated from the seed in proportion to each other, and cherry-picking across them is what breaks that."
+      }
+    ]
+  },
+  "props": {
+    "level": {
+      "type": "1 | 2 | 3 | 4 | 5 | 6",
+      "required": true,
+      "summary": "Where this heading sits in the document outline.",
+      "use": [
+        "The level below whatever heading contains this one — a heading inside a section headed `h2` takes `3`."
+      ],
+      "dont": [
+        "Picking it for size. That is `role`, and the two exist separately so this one can stay correct."
+      ],
+      "a11y": "Becomes the element: `level={3}` renders an `<h3>`. A skipped level breaks heading navigation, which is how many readers move through a page — and only the caller knows the depth, which is why there is no default."
+    },
+    "role": {
+      "type": "HeadingRole",
+      "default": "the `heading-{level}` step",
+      "summary": "How large it looks, independent of its level.",
+      "use": [
+        "A display role on a page title: `level={1} role=\"display-3\"`.",
+        "A smaller role than the level suggests, when a deep heading should not shout: `level={3} role=\"heading-5\"`."
+      ],
+      "dont": [
+        "Using it to fix an outline. If the heading looks wrong at its correct level, this prop is the fix; if the level is wrong, change the level."
+      ],
+      "a11y": "Purely visual. It changes no element and no announcement, which is the point: the outline stays whatever `level` says."
+    },
+    "children": {
+      "type": "ReactNode",
+      "required": true,
+      "summary": "The heading text.",
+      "use": [
+        "A short noun phrase naming what follows."
+      ],
+      "dont": [
+        "Anything interactive. A heading is a signpost, not a control."
+      ],
+      "a11y": "Becomes the heading's accessible name, so it is what a reader hears when navigating by heading."
+    },
+    "className": {
+      "type": "string",
+      "summary": "Extra classes, for placement — not for restyling it.",
+      "use": [
+        "The margin the page wants around it, which this component deliberately does not own."
+      ],
+      "dont": [
+        "Overriding the size. That is what `role` is for, and a hand-written size drifts from the scale the moment the seed changes."
+      ]
+    }
+  },
+  "usage": []
+}

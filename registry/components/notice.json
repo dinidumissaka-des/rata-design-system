@@ -21,6 +21,7 @@
     }
   },
   "dependencies": [
+    "state-layer",
     "icon"
   ],
   "files": [

@@ -170,7 +170,7 @@ Any page with two navigation landmarks.
 
 ```tsx
 <TopNav label="Main" items={sections} brand={<Wordmark />} />
-<SideNav label="Invoices" items={pages} />
+<SideNav label="Invoices" sections={pages} />
 ```
 
 Two navigation landmarks with the same name are indistinguishable in a landmark list, which is the one place they are most useful. Naming them for what they contain — not "top" and "side", which describe where they happen to sit — survives a redesign that moves them.
@@ -236,7 +236,7 @@ One destination. The resting colour is the secondary text tone, so the current p
 | Property | Token |
 |---|---|
 | colour | `theme.fg.secondary` |
-| font-size | `type.control.size.sm` |
+| font-size | `type.control.size.md — 14px. It was the sm step, 12px, which is the size this scale reserves for text inside a small control rather than for a row of running navigation: a rail and a bar are read, not squeezed into a 28px box. Every row takes it, because the disclosure trigger and the nested sublink both compose the link class.` |
 | font-weight | `type.control.weight` |
 | padding-inline | `space.control.padding-inline.sm` |
 | block-size | `size.control.md` |

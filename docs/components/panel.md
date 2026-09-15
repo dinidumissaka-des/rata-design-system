@@ -175,49 +175,66 @@ Extra classes on the panel, for placement and measure — not for restyling it.
 
 ### An inspector beside the thing it documents
 
-A selection in a grid or list opens detail that is read AGAINST what is still on screen — the comparison is the task, so a modal would answer a different question.
+The reader needs to compare the detail against the grid, list or canvas it came from. This is the case the component exists for.
 
 ```tsx
-<div className="pg-with-inspector">
+<div className="page-with-rail">
   <TokenGrid onSelect={setSelected} />
-
   {selected !== null && (
     <Panel
       title={selected}
-      closeLabel={`Close documentation for ${selected}`}
       onClose={() => setSelected(null)}
+      closeLabel="Close token documentation"
     >
-      <TokenDoc path={selected} />
+      <TokenContract path={selected} />
     </Panel>
   )}
 </div>
 ```
 
-The measure comes from the page — `.pg-with-inspector` gives the panel its column — because where one stops fitting depends on the content and the page around it. `closeLabel` is spelled out because "Close" alone does not say what closes when the page holds more than one thing that can.
+The width belongs to `.page-with-rail`, not to the Panel — there is no `size` prop, because where a panel stops fitting depends on the page around it. `closeLabel` is spelled out because "Close" alone is ambiguous on a page that can also close other things.
 
 ### A persistent properties rail
 
-The panel is part of the page's furniture rather than something a selection opens, so there is nothing for a close button to do.
+The panel is part of the page rather than a response to a selection, so there is nothing to close.
 
 ```tsx
 <Panel title="Properties" headingLevel={3}>
-  <PropertyList node={focusedNode} />
+  <PropertyList node={node} />
 </Panel>
 ```
 
-No `onClose`, so no close button is rendered at all — that is how a panel says it is persistent, rather than the caller passing a no-op to get a control they then have to ignore. `headingLevel={3}` because this one sits under a section already headed `<h2>`.
+No `onClose`, so no close button is rendered — that is how a persistent panel is said, rather than by passing a no-op handler to a control the reader can press. `headingLevel={3}` because this page's sections are already `h2`, and a skipped level breaks the heading navigation many readers use to move around.
 
 ### A filter column on the inline-start side
 
-Filters that stay put next to the results they narrow, on a viewport wide enough to show both.
+The panel sits before the content it refines rather than after it, which is where a filter column belongs.
 
 ```tsx
-<Panel title="Filters" edge="inline-start" headingLevel={2}>
-  <CheckboxGroupList facets={facets} onChange={setFacets} />
+<Panel title="Filters" edge="inline-start" onClose={() => setFiltering(false)}>
+  <CheckboxGroup label="Status" items={statuses} />
 </Panel>
 ```
 
-`edge="inline-start"` moves the border to the side facing the results. It does not move the panel — that is the page's layout — it states which edge the panel meets the content across, so the border lands on the right one.
+`edge="inline-start"` moves the border to the side facing the content — it does not move the panel, which is the page's layout. Logical, so in a right-to-left document this is the right-hand column and the border still faces the content.
+
+### The same content as a Sheet, chosen by width
+
+One piece of detail, beside the content when there is room and over it when there is not.
+
+```tsx
+wide ? (
+  <Panel title={record.name} onClose={close}>
+    <RecordDetail record={record} />
+  </Panel>
+) : (
+  <Sheet open onClose={close} edge="block-end" title={record.name}>
+    <RecordDetail record={record} />
+  </Sheet>
+)
+```
+
+`wide` is the page's own media query, not a prop on either component: this system has no breakpoint tokens, because where a rail stops fitting is the page's knowledge. Note that the two are not interchangeable in behaviour — the Sheet traps focus and makes the page inert, and the Panel does neither.
 
 ## Real usage in this repo
 

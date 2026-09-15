@@ -2562,47 +2562,189 @@ export function ComponentPage({
   );
 }
 
+/**
+ * A component page addressed by NAME rather than by contract.
+ *
+ * The indirection is the whole point of it. This module imports
+ * `contracts.json` — 340kB of every decision, prop and worked example in the
+ * system — and that is fine as long as it loads only when someone opens a
+ * component page. But the app shell cannot resolve a name to a contract
+ * without importing the contracts itself, which would drag all of it back
+ * into the first chunk. So the shell hands over the name it parsed from the
+ * URL and the lookup happens on this side of the lazy boundary.
+ *
+ * The unknown-name state lives here for the same reason: knowing a name is
+ * unknown requires knowing every known name.
+ */
+export function ComponentPageByName({
+  name,
+  tab,
+  onNavigate,
+}: {
+  name: string;
+  tab: ComponentTab;
+  onNavigate: (page: Page, tab: ComponentTab) => void;
+}) {
+  const contract = contractsByName.get(name) ?? null;
+
+  if (contract === null) {
+    return (
+      <section className="pg-section">
+        <h2>Unknown component</h2>
+        <p className="pg-note">
+          Nothing in the registry is called <code>{name}</code>. Run{" "}
+          <code>npm run ui -- list</code> for the real names.
+        </p>
+      </section>
+    );
+  }
+
+  return <ComponentPage contract={contract} tab={tab} onNavigate={onNavigate} />;
+}
+
 /** The index page: every component, its family, and where each artifact stands. */
 export function ComponentIndex({ onOpen }: { onOpen: (name: string) => void }) {
+  // Families come from the contracts rather than a list here, so adding one to
+  // the registry adds its tab without anybody remembering to.
+  const families = [...new Set(contracts.map((c) => c.family))].sort();
+  const [family, setFamily] = useState<string>(ALL);
+
+  const shown = family === ALL ? contracts : contracts.filter((c) => c.family === family);
+
   return (
     <section className="pg-section">
       <h2>Components</h2>
       <p className="pg-note">
-        Every component in the registry, built or not. Open one for its contract — what each prop is
-        for, what it conflicts with, and the token recipe behind it.
+        Every component in the registry, each shown running rather than described. Open one for its
+        contract — what each prop is for, what it conflicts with, and the token recipe behind it.
       </p>
-      <table className="pg-table">
-        <thead>
-          <tr>
-            <th>Component</th>
-            <th>Family</th>
-            <th>CSS</th>
-            <th>React</th>
-            <th>Figma</th>
-          </tr>
-        </thead>
-        <tbody>
-          {contracts.map((contract) => (
-            <tr key={contract.name}>
-              <td>
-                <button type="button" className="pg-link" onClick={() => onOpen(contract.name)}>
-                  {contract.title}
-                </button>
-              </td>
-              <td>{contract.family}</td>
-              <td>
-                <StatusPill artifact={contract.status.css} />
-              </td>
-              <td>
-                <StatusPill artifact={contract.status.react} />
-              </td>
-              <td>
-                <StatusPill artifact={contract.status.figma} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Tabs
+        label="Component families"
+        value={family}
+        onValueChange={setFamily}
+        items={[ALL, ...families].map((value) => ({
+          value,
+          label: value === ALL ? "All" : value.charAt(0).toUpperCase() + value.slice(1),
+          // Only the OPEN panel renders its tiles. Tabs keeps every panel
+          // mounted on purpose — its contract says unmounting would throw away
+          // whatever state a panel held, a half-filled form or a scroll
+          // position. A gallery panel holds none: the tiles are inert, which
+          // is the whole premise of that decision absent here. Rendering all
+          // nine would mount sixty specimens to show thirty, since every
+          // component appears under All and again under its family.
+          content: value === family ? <Gallery contracts={shown} onOpen={onOpen} /> : null,
+        }))}
+      />
     </section>
   );
+}
+
+const ALL = "all";
+
+/** The grid itself, so the panel content is one thing and the tabs another. */
+function Gallery({
+  contracts: shownContracts,
+  onOpen,
+}: {
+  contracts: Contract[];
+  onOpen: (name: string) => void;
+}) {
+  return (
+    <ul className="pg-gallery">
+      {shownContracts.map((contract) => (
+        <li key={contract.name} className="pg-gallery-item">
+          {/* INERT, which is the part that makes a clickable tile honest.
+              These specimens are live components with real controls in them —
+              buttons, tabs, a switch. Covering the tile with a click target
+              would leave those controls unreachable by pointer but still in
+              the tab order, so a keyboard could focus and press a page's worth
+              of controls a mouse cannot touch. `inert` removes the subtree
+              from the tab order, from pointer interaction and from the
+              accessibility tree at once: the thumbnail becomes a picture of
+              the component. The working copy is on the component's own
+              page. */}
+          <div
+            className="pg-gallery-stage rata-state-layer rata-state-layer--flush"
+            inert
+          >
+            <ComponentThumbnail name={contract.name} status={contract.status.react?.state} />
+          </div>
+          {/* The name and nothing else. Family and the three artifact states
+              live on the component's own page, which is where there is room to
+              label them. No wrapper either: the <li> is already the column
+              that spaces these two apart. */}
+          <button type="button" className="pg-gallery-name" onClick={() => onOpen(contract.name)}>
+            {contract.title}
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/**
+ * Tiles whose derived specimen is the wrong specimen.
+ *
+ * KEEP THIS SMALL, AND ADD TO IT ONLY FOR A REASON THE TILE CAUSES. Deriving
+ * the thumbnail from EXAMPLES is what stops the gallery drifting from the
+ * contracts, and every entry here opts one component out of that. An entry is
+ * warranted when the best PAGE example and the best THUMBNAIL are genuinely
+ * different things — not when a tile could merely be prettier.
+ *
+ * badge: its first usage case shows the same badge against accent, secondary
+ * and tertiary buttons, which is exactly right on the page — that comparison
+ * is the point of the case — and three of everything in a 202px tile, where
+ * the question is only "what is a badge".
+ */
+const THUMBNAILS: Record<string, () => ReactNode> = {
+  badge: () => (
+    <Button>
+      Messages
+      <Badge variant="accent">3</Badge>
+    </Button>
+  ),
+};
+
+/**
+ * The specimen on a gallery tile: a component's FIRST usage case, rendered
+ * live, unless THUMBNAILS above overrides it.
+ *
+ * Derived rather than curated a second time. `EXAMPLES` already holds a real
+ * demo per usage case, each one keyed by the case string its contract
+ * declares and checked by `playground:check`, so the first of them is the
+ * component's own idea of its simplest form. A separate list of thumbnails
+ * would be a second place to keep in step, and the one that silently rotted.
+ *
+ * Two components reach the fallback, and both should: `state-layer` is a
+ * class other components compose rather than anything renderable, and
+ * `visually-hidden` is invisible by definition. Saying so is more use than an
+ * empty box.
+ */
+function ComponentThumbnail({ name, status }: { name: string; status?: string }) {
+  const override = THUMBNAILS[name];
+  if (override) return <>{override()}</>;
+
+  const cases = EXAMPLES[name];
+  const first = cases ? Object.values(cases)[0] : undefined;
+  if (!first) {
+    // Two different absences, and saying the wrong one is worse than saying
+    // nothing. `future` means the contract is approved and the code is not
+    // written; the other case is a component with no renderable form at all —
+    // state-layer is a class others compose, visually-hidden is invisible by
+    // definition. Before this told both of them they had no visible form.
+    return (
+      <p className="pg-gallery-empty">
+        {status === "future" ? (
+          <>
+            Not built yet — its page is the approved spec, with no code behind it.
+          </>
+        ) : (
+          <>
+            Nothing to show running — <code>{name}</code> has no visible form of its own.
+          </>
+        )}
+      </p>
+    );
+  }
+  return <>{first()}</>;
 }

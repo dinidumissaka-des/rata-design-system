@@ -9,7 +9,12 @@
 // for exactly one action per view, that the only foreground allowed on it is
 // theme.fg.on-accent, or that a tinted region wants accent-role.subtle
 // instead. That is what the contract knows.
-import { Panel } from "@rata/react";
+import { useRef } from "react";
+import { Sheet } from "@rata/react";
+import { Contrast, Gauge, Icon, Palette, Ruler, Shapes, SquareRoundCorner, Type } from "@rata/icons";
+import type { LucideIcon } from "@rata/icons";
+import { NARROW, useMediaQuery } from "./use-media-query.js";
+import type { Page } from "./routing.js";
 import usage from "@rata/tokens/usage";
 
 interface TokenEntry {
@@ -101,30 +106,136 @@ function Ratios({ measured }: { measured: Record<string, number> }) {
 }
 
 /**
- * The full contract for one token. Rendered in the inspector rail when a
- * swatch is clicked.
+ * The Foundation category's overview — the sibling of ComponentIndex.
+ *
+ * It was a derived table: a row per category with its token count read from
+ * usage.json and its description taken from that family's own documented
+ * summary. The tiles carry a glyph and a name instead, which matches the
+ * components gallery beside it — and drops both of those. The count and the
+ * summary are still on each category's own page; nothing was the overview's
+ * only copy.
+ *
+ * A component tile shows the component running. A token category has nothing
+ * to run, so the glyph is what makes the tile recognisable, and the stage is
+ * accent-filled to say at a glance which of the two overviews you are on.
  */
-export function TokenDoc({ path, onClose }: { path: string; onClose: () => void }) {
+const FOUNDATION_CATEGORIES: Array<{
+  id: Page;
+  /** The glyph on this category's tile, since a category has no live specimen. */
+  icon: LucideIcon;
+  label: string;
+}> = [
+  { id: "color", icon: Palette, label: "Color" },
+  { id: "spacing", icon: Ruler, label: "Spacing" },
+  { id: "radius", icon: SquareRoundCorner, label: "Radius" },
+  { id: "typography", icon: Type, label: "Typography" },
+  { id: "motion", icon: Gauge, label: "Motion" },
+  { id: "misc", icon: Shapes, label: "Misc" },
+  { id: "contrast", icon: Contrast, label: "Rules & contrast" },
+];
+
+export function FoundationIndex({ onOpen }: { onOpen: (page: Page) => void }) {
+  return (
+    <section className="pg-section">
+      <h2>Foundation</h2>
+      <p className="pg-note">
+        Every token in the system, by category. Each one is generated from four seeds in{" "}
+        <code>packages/tokens/src/themes/base.mjs</code> — change the seed, not the output. Open a
+        category for the values, and click any one of them for its contract: what it is for, what it
+        is not for, and what to use instead.
+      </p>
+      {/* The same gallery the components overview uses, so the two read as
+          siblings. What differs is what goes in the stage: a component has a
+          live specimen and a token category has none, so these carry a glyph
+          instead — and the stage is accent-filled to say at a glance which of
+          the two overviews you are on. */}
+      <ul className="pg-gallery">
+        {FOUNDATION_CATEGORIES.map((category) => (
+          <li key={category.id} className="pg-gallery-item">
+            <div
+              className="pg-gallery-stage pg-gallery-stage--accent rata-state-layer rata-state-layer--flush"
+              inert
+            >
+              {/* Icon's default size is size.icon.text — 1.15em — so it follows
+                  the font-size the stage sets rather than needing a step of its
+                  own. No label: the tile's name is directly underneath, and the
+                  stage is inert, so the glyph is decoration either way. */}
+              <Icon icon={category.icon} />
+            </div>
+            <button type="button" className="pg-gallery-name" onClick={() => onOpen(category.id)}>
+              {category.label}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/**
+ * The full contract for one token, in a Sheet from whichever edge fits.
+ *
+ * This was a Panel on wide viewports — in the layout, beside the swatch grid,
+ * on the argument that reading a token's contract against the swatches still
+ * on screen is the task. The argument holds in general and lost here on
+ * measure: a rail has to leave the grid room, which capped it at 324px, and
+ * this content is long-form prose with code in it. Purpose, use-for,
+ * do-not-use-for, the substitutions and the measured pairings each wrapped
+ * every few words, and a contract nobody can read comfortably is not
+ * serving the comparison either.
+ *
+ * So it is a Sheet at `size="lg"` — 648px — and the cost is real and
+ * accepted: a sheet is modal, so the grid behind it is inert while it is
+ * open. You no longer compare against the swatches; you read one contract
+ * at a time.
+ *
+ * One component from either edge: `block-end` on a narrow viewport, where the
+ * bottom is where a thumb already is, and `inline-end` on a wide one, which
+ * is where the rail used to sit. `edge` exists so that is one prop rather
+ * than two components.
+ *
+ * Panel is still the right component for a rail whose content fits one, and
+ * its own page in this playground demonstrates it. It is no longer used by
+ * the playground's chrome.
+ *
+ * Kept deliberately free of attribute-level comments: this JSX is scanned
+ * into `docs/components/sheet.md` as the component's real usage in this repo,
+ * and comments between props land there verbatim.
+ */
+export function TokenDoc({ path, onClose }: { path: string | null; onClose: () => void }) {
+  const narrow = useMediaQuery(NARROW);
+
+  // The last path stays available so the sheet can animate OUT with its
+  // content still in it. `path` goes null the instant it closes, and an
+  // unmounted <dialog> has no exit — it would vanish rather than leave.
+  // Written during render, which is safe here because it is derived from the
+  // current props and read by nothing else.
+  const retained = useRef<string | null>(null);
+  if (path !== null) retained.current = path;
+  const shown = path ?? retained.current;
+
+  return (
+    <Sheet
+      open={path !== null}
+      onClose={() => onClose()}
+      edge={narrow ? "block-end" : "inline-end"}
+      size="lg"
+      title={<code>{shown ?? ""}</code>}
+      dismissLabel={shown === null ? "Close" : `Close documentation for ${shown}`}
+    >
+      {shown !== null && <TokenDocBody path={shown} />}
+    </Sheet>
+  );
+}
+
+/** The documentation itself, identical from either edge. */
+function TokenDocBody({ path }: { path: string }) {
   const { entry, matchedPath, exact, step } = lookupTokenDoc(path);
   const { verified, gaps } = contrastFor(path);
   const stepNote = entry?.scale && step ? entry.scale[step] : null;
 
   return (
-    // This rail was hand-rolled until Panel existed: its own <aside>, its own
-    // head, its own close button with its own focus ring, and `width: 340px`
-    // — a bare pixel value in a repo whose first rule is that there are none.
-    // What is left here is placement, which is what Panel's contract says the
-    // page owns.
-    <Panel
-      className="pg-inspector"
-      title={<code>{path}</code>}
-      headingLevel={3}
-      onClose={onClose}
-      // Not "Close": the page can have this open beside a grid of swatches,
-      // and a control named for the thing it closes is the difference between
-      // a useful announcement and "button".
-      closeLabel={`Close documentation for ${path}`}
-    >
+    <>
 
       {!entry && (
         <p className="pg-note">
@@ -251,7 +362,7 @@ export function TokenDoc({ path, onClose }: { path: string; onClose: () => void 
           )}
         </>
       )}
-    </Panel>
+    </>
   );
 }
 

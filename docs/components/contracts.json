@@ -1476,6 +1476,141 @@
     "example": "<Dialog\n        open={open}\n        onClose={() => setOpen(false)}\n        title={title}\n        description={description}\n        size={size}\n        dismissible={dismissible}\n        initialFocus={cancelRef}\n        footer={\n          <>\n            <Button ref={cancelRef} variant=\"secondary\" onClick={() => setOpen(false)}>\n              Cancel\n            </Button>\n            <Button variant={destructive ? \"destructive\" : \"primary\"} onClick={() => setOpen(false)}>\n              {destructive ? \"Delete\" : \"Save\"}\n            </Button>\n          </>\n        }\n      >\n        This cannot be undone.\n      </Dialog>"
   },
   {
+    "name": "heading",
+    "title": "Heading",
+    "description": "A heading whose outline level and visual size are stated separately.",
+    "family": "content",
+    "tier": "free",
+    "status": {
+      "css": {
+        "state": "future"
+      },
+      "react": {
+        "state": "future"
+      },
+      "figma": {
+        "state": "future"
+      }
+    },
+    "dependencies": [],
+    "importPath": "@rata/react",
+    "mode": "spec",
+    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "extends": null,
+    "props": [
+      {
+        "name": "level",
+        "type": "1 | 2 | 3 | 4 | 5 | 6",
+        "optional": false,
+        "description": null,
+        "declared": false,
+        "summary": "Where this heading sits in the document outline.",
+        "use": [
+          "The level below whatever heading contains this one — a heading inside a section headed `h2` takes `3`."
+        ],
+        "dont": [
+          "Picking it for size. That is `role`, and the two exist separately so this one can stay correct."
+        ],
+        "conflicts": [],
+        "a11y": "Becomes the element: `level={3}` renders an `<h3>`. A skipped level breaks heading navigation, which is how many readers move through a page — and only the caller knows the depth, which is why there is no default."
+      },
+      {
+        "name": "role",
+        "type": "HeadingRole",
+        "optional": true,
+        "default": "the `heading-{level}` step",
+        "description": null,
+        "declared": false,
+        "summary": "How large it looks, independent of its level.",
+        "use": [
+          "A display role on a page title: `level={1} role=\"display-3\"`.",
+          "A smaller role than the level suggests, when a deep heading should not shout: `level={3} role=\"heading-5\"`."
+        ],
+        "dont": [
+          "Using it to fix an outline. If the heading looks wrong at its correct level, this prop is the fix; if the level is wrong, change the level."
+        ],
+        "conflicts": [],
+        "a11y": "Purely visual. It changes no element and no announcement, which is the point: the outline stays whatever `level` says."
+      },
+      {
+        "name": "children",
+        "type": "ReactNode",
+        "optional": false,
+        "description": null,
+        "declared": false,
+        "summary": "The heading text.",
+        "use": [
+          "A short noun phrase naming what follows."
+        ],
+        "dont": [
+          "Anything interactive. A heading is a signpost, not a control."
+        ],
+        "conflicts": [],
+        "a11y": "Becomes the heading's accessible name, so it is what a reader hears when navigating by heading."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "optional": true,
+        "description": null,
+        "declared": false,
+        "summary": "Extra classes, for placement — not for restyling it.",
+        "use": [
+          "The margin the page wants around it, which this component deliberately does not own."
+        ],
+        "dont": [
+          "Overriding the size. That is what `role` is for, and a hand-written size drifts from the scale the moment the seed changes."
+        ],
+        "conflicts": [],
+        "a11y": null
+      }
+    ],
+    "usage": [],
+    "behavior": {
+      "summary": "An `h1` through `h6`, with its visual size stated independently of its level. No primitive: there is no keyboard interaction to own and no state to hold.",
+      "decisions": [
+        {
+          "decision": "`level` and `role` are two props, and that is the whole reason this component exists",
+          "why": "A heading's level is an outline decision — it is how a screen-reader user navigates a page, and skipping one breaks that. Its size is a visual decision about emphasis on the page. They are answers to different questions and they disagree constantly: a page's first subsection often wants to be visually large and is still an `h2`, and a small `h4`-sized label deep in a form may be the `h3` of its section. Every typography component that offers only `size`, or only `level`, forces the caller to pick which of the two to get wrong."
+        },
+        {
+          "decision": "`role` defaults to the matching heading step, and that is a convenience rather than a coupling",
+          "why": "`level={2}` with no role renders `heading-2`, because that is right most of the time and asking for both every time would make the common case worse. The point is that the default is overridable in one prop — the coupling is a starting position, not a constraint."
+        },
+        {
+          "decision": "`level` is required and has no default",
+          "why": "There is no level that is right by default. A component that defaulted to `h2` would produce a page of `h2`s, which is exactly the flat outline this playground was already guilty of — every page title was an `h2` and no page had an `h1`. The type refuses it instead of the contract asking nicely, the same way Dialog's `title` is required."
+        },
+        {
+          "decision": "The unnumbered `type.heading` role is not offered",
+          "why": "It resolves to the same size as `heading-3`, so offering both would be two names for one step and a caller would have to guess whether they differ. The numbered ladder is the one that maps onto levels."
+        },
+        {
+          "decision": "It carries no margin",
+          "why": "Only the page knows what a heading sits between — a title above a dense table wants different air from one above prose. A component that shipped its own margin would be overridden everywhere, and an overridden default is worse than none because it looks like a decision."
+        },
+        {
+          "decision": "Tracking comes with the display roles and not with the heading roles",
+          "why": "The type family carries `tracking.display-1/2/3` precisely because large type set at normal tracking reads loose, and it carries no tracking step for the heading roles because they do not need one. Taking the role whole means taking its tracking when it has one — the roles are generated from the seed in proportion to each other, and cherry-picking across them is what breaks that."
+        }
+      ]
+    },
+    "tokens": {
+      "base": {
+        "summary": "One type role, taken whole. Nothing else — a heading has no box of its own.",
+        "tokens": {
+          "font-size": "the size of the chosen role — type.display-1.size through type.heading-6.size",
+          "font-weight": "that same role's weight, which is 400 for the display roles and 600 for the heading roles",
+          "line-height": "that same role's line-height",
+          "letter-spacing": "type.tracking.display-1 / display-2 / display-3 for the display roles, and normal for the heading roles — large type set at normal tracking reads loose, which is why the scale carries a tracking step per display role",
+          "color": "currentColor — a heading takes the colour of the text around it, and the surface it sits on decides that",
+          "margin": "space.0 — every margin is the page's, since only the page knows what the heading sits between"
+        }
+      }
+    },
+    "example": null
+  },
+  {
     "name": "icon",
     "title": "Icon",
     "description": "A Lucide glyph sized from the size.icon.* scale, inheriting its colour from the text around it.",
@@ -1633,7 +1768,8 @@
     },
     "dependencies": [
       "state-layer",
-      "menu-item"
+      "menu-item",
+      "icon"
     ],
     "importPath": "@rata/react",
     "mode": "documented",
@@ -2370,6 +2506,7 @@
       }
     },
     "dependencies": [
+      "state-layer",
       "icon"
     ],
     "importPath": "@rata/react",
@@ -2785,21 +2922,27 @@
     "usage": [
       {
         "case": "An inspector beside the thing it documents",
-        "when": "A selection in a grid or list opens detail that is read AGAINST what is still on screen — the comparison is the task, so a modal would answer a different question.",
-        "example": "<div className=\"pg-with-inspector\">\n  <TokenGrid onSelect={setSelected} />\n\n  {selected !== null && (\n    <Panel\n      title={selected}\n      closeLabel={`Close documentation for ${selected}`}\n      onClose={() => setSelected(null)}\n    >\n      <TokenDoc path={selected} />\n    </Panel>\n  )}\n</div>",
-        "notes": "The measure comes from the page — `.pg-with-inspector` gives the panel its column — because where one stops fitting depends on the content and the page around it. `closeLabel` is spelled out because \"Close\" alone does not say what closes when the page holds more than one thing that can."
+        "when": "The reader needs to compare the detail against the grid, list or canvas it came from. This is the case the component exists for.",
+        "example": "<div className=\"page-with-rail\">\n  <TokenGrid onSelect={setSelected} />\n  {selected !== null && (\n    <Panel\n      title={selected}\n      onClose={() => setSelected(null)}\n      closeLabel=\"Close token documentation\"\n    >\n      <TokenContract path={selected} />\n    </Panel>\n  )}\n</div>",
+        "notes": "The width belongs to `.page-with-rail`, not to the Panel — there is no `size` prop, because where a panel stops fitting depends on the page around it. `closeLabel` is spelled out because \"Close\" alone is ambiguous on a page that can also close other things."
       },
       {
         "case": "A persistent properties rail",
-        "when": "The panel is part of the page's furniture rather than something a selection opens, so there is nothing for a close button to do.",
-        "example": "<Panel title=\"Properties\" headingLevel={3}>\n  <PropertyList node={focusedNode} />\n</Panel>",
-        "notes": "No `onClose`, so no close button is rendered at all — that is how a panel says it is persistent, rather than the caller passing a no-op to get a control they then have to ignore. `headingLevel={3}` because this one sits under a section already headed `<h2>`."
+        "when": "The panel is part of the page rather than a response to a selection, so there is nothing to close.",
+        "example": "<Panel title=\"Properties\" headingLevel={3}>\n  <PropertyList node={node} />\n</Panel>",
+        "notes": "No `onClose`, so no close button is rendered — that is how a persistent panel is said, rather than by passing a no-op handler to a control the reader can press. `headingLevel={3}` because this page's sections are already `h2`, and a skipped level breaks the heading navigation many readers use to move around."
       },
       {
         "case": "A filter column on the inline-start side",
-        "when": "Filters that stay put next to the results they narrow, on a viewport wide enough to show both.",
-        "example": "<Panel title=\"Filters\" edge=\"inline-start\" headingLevel={2}>\n  <CheckboxGroupList facets={facets} onChange={setFacets} />\n</Panel>",
-        "notes": "`edge=\"inline-start\"` moves the border to the side facing the results. It does not move the panel — that is the page's layout — it states which edge the panel meets the content across, so the border lands on the right one."
+        "when": "The panel sits before the content it refines rather than after it, which is where a filter column belongs.",
+        "example": "<Panel title=\"Filters\" edge=\"inline-start\" onClose={() => setFiltering(false)}>\n  <CheckboxGroup label=\"Status\" items={statuses} />\n</Panel>",
+        "notes": "`edge=\"inline-start\"` moves the border to the side facing the content — it does not move the panel, which is the page's layout. Logical, so in a right-to-left document this is the right-hand column and the border still faces the content."
+      },
+      {
+        "case": "The same content as a Sheet, chosen by width",
+        "when": "One piece of detail, beside the content when there is room and over it when there is not.",
+        "example": "wide ? (\n  <Panel title={record.name} onClose={close}>\n    <RecordDetail record={record} />\n  </Panel>\n) : (\n  <Sheet open onClose={close} edge=\"block-end\" title={record.name}>\n    <RecordDetail record={record} />\n  </Sheet>\n)",
+        "notes": "`wide` is the page's own media query, not a prop on either component: this system has no breakpoint tokens, because where a rail stops fitting is the page's knowledge. Note that the two are not interchangeable in behaviour — the Sheet traps focus and makes the page inert, and the Panel does neither."
       }
     ],
     "behavior": {
@@ -4014,10 +4157,10 @@
           "`sm` for a short list of actions; `lg` for a form or a document."
         ],
         "dont": [
-          "Expecting it to control the other axis. A sheet spans the edge it is anchored to, always."
+          "Expecting it to control the other axis. `size` is the axis the sheet slides along; the other one spans its edge, capped and centred for a block-edge sheet on a wide viewport."
         ],
         "conflicts": [],
-        "a11y": "Every size gives way to a small viewport rather than overflowing it, and never covers the edge it slid from."
+        "a11y": "Every size gives way to a small viewport rather than overflowing it, and never covers the edge it slid from. A bottom sheet is also capped across its width on a wide viewport, which is a line-length decision rather than a size one — it is not affected by this prop."
       },
       {
         "name": "description",
@@ -4121,21 +4264,21 @@
     "usage": [
       {
         "case": "A bottom sheet of filters on a narrow viewport",
-        "when": "The commonest use: a set of choices that would not fit beside the results, reachable where a thumb already is.",
-        "example": "const [filtering, setFiltering] = useState(false);\n\n<Button onClick={() => setFiltering(true)}>Filters</Button>\n\n<Sheet\n  open={filtering}\n  onClose={() => setFiltering(false)}\n  title=\"Filters\"\n  description=\"Narrows the 1,204 results below.\"\n  footer={\n    <>\n      <Button variant=\"secondary\" onClick={() => setFiltering(false)}>\n        Cancel\n      </Button>\n      <Button onClick={() => setFiltering(false)}>Apply</Button>\n    </>\n  }\n>\n  <SegmentedControl\n    label=\"Period\"\n    value={period}\n    onValueChange={setPeriod}\n    items={[\n      { value: \"week\", label: \"Week\" },\n      { value: \"month\", label: \"Month\" },\n    ]}\n  />\n</Sheet>",
-        "notes": "`edge` is left at its default, which is `block-end`. The footer holds the two ways out so neither is the close button, whose job is only to abandon the sheet."
+        "when": "The commonest bottom sheet: a set of choices too big for the bar they belong to, applied and dismissed in one go.",
+        "example": "const [filtering, setFiltering] = useState(false);\n\n<Button onClick={() => setFiltering(true)}>Filters</Button>\n\n<Sheet\n  open={filtering}\n  onClose={() => setFiltering(false)}\n  title=\"Filters\"\n  description=\"Applied to the list behind this sheet.\"\n  size=\"md\"\n  footer={\n    <>\n      <Button variant=\"secondary\" onClick={() => setFiltering(false)}>\n        Cancel\n      </Button>\n      <Button onClick={apply}>Apply</Button>\n    </>\n  }\n>\n  <SegmentedControl\n    label=\"Period\"\n    value={period}\n    onValueChange={setPeriod}\n    options={[\n      { value: \"week\", label: \"Week\" },\n      { value: \"month\", label: \"Month\" },\n    ]}\n  />\n</Sheet>",
+        "notes": "`block-end` is the default, so the edge is not stated. The footer holds both ways out, which is what makes Cancel reachable without hunting for the close button at the top of a sheet the reader's thumb is at the bottom of."
       },
       {
         "case": "A detail drawer from the inline edge",
-        "when": "The same content a Panel would hold, on a viewport too narrow to give the panel a column of its own.",
-        "example": "<Sheet\n  open={selected !== null}\n  onClose={() => setSelected(null)}\n  edge=\"inline-end\"\n  size=\"lg\"\n  title={selected?.path ?? \"\"}\n>\n  <TokenDoc path={selected.path} />\n</Sheet>",
-        "notes": "`inline-end` rather than `right`: the sheet follows the reading direction, so a right-to-left document gets it on the other side with no change here. This is the pattern's other half — the same content is a Panel when there is room for one, and the two take the same title."
+        "when": "The same content a Panel would hold, but over the page rather than beside it — because at this width there is no room to put it beside.",
+        "example": "<Sheet\n  open={selected !== null}\n  onClose={() => setSelected(null)}\n  edge=\"inline-end\"\n  size=\"lg\"\n  title={selected?.name ?? \"\"}\n>\n  <RecordDetail record={selected} />\n</Sheet>",
+        "notes": "`inline-end` is logical, so this arrives from the right in a left-to-right document and from the left in a right-to-left one. If the page DOES have room beside the content, this is the wrong component — reach for Panel, which leaves the page usable."
       },
       {
         "case": "A required choice with no way to dismiss it",
-        "when": "Something must be answered before the page behind it means anything — a workspace to act in, a term to accept.",
-        "example": "<Sheet\n  open={needsWorkspace}\n  onClose={() => {}}\n  dismissible={false}\n  size=\"sm\"\n  title=\"Choose a workspace\"\n  initialFocus={firstOptionRef}\n>\n  <RadioGroup\n    label=\"Workspace\"\n    value={workspace}\n    onValueChange={commitWorkspace}\n    items={workspaces}\n  />\n</Sheet>",
-        "notes": "`dismissible={false}` removes the close button and blocks both Escape and the backdrop, so the content itself has to be the way out — here, picking an option commits it. A sheet with neither is a dead end, and a reader will reload the page to escape it."
+        "when": "Rare, and worth resisting. A required choice with no sensible default is the only case that justifies it.",
+        "example": "const keepRef = useRef<HTMLButtonElement>(null);\n\n<Sheet\n  open={migrating}\n  onClose={() => {}}\n  title=\"Choose a workspace\"\n  description=\"Your account belongs to two, and this decides which one opens.\"\n  size=\"sm\"\n  dismissible={false}\n  initialFocus={keepRef}\n  footer={<Button ref={keepRef} onClick={choose}>Continue</Button>}\n>\n  <RadioGroup label=\"Workspace\" value={workspace} onValueChange={setWorkspace}>\n    {workspaces.map((w) => (\n      <Radio key={w.value} value={w.value} label={w.label} />\n    ))}\n  </RadioGroup>\n</Sheet>",
+        "notes": "`dismissible={false}` removes the close button and blocks Escape and the backdrop, so the footer MUST contain a way out — here Continue is it. Without one the sheet is a dead end and the reader will reload the page instead."
       }
     ],
     "behavior": {
@@ -4176,6 +4319,10 @@
         {
           "decision": "The title is a real `<h2>`, as Dialog's is",
           "why": "Everything behind a modal is inert, so the outline inside it genuinely starts fresh and the title is the top of it. This is the difference from Panel, which sits inside the page's outline and has to be told its level."
+        },
+        {
+          "decision": "A bottom sheet stops short of a wide viewport's sides",
+          "why": "Left open at gate 2 — the recipe said a sheet spans its edge with no cap, and that a sheet stopping short of both sides was a different shape needing its own entry. It does, and it now has one. Spanning the full width of a large monitor is the failure it prevents: the title sits at one corner and its close control at the other, with a line length in between that nothing else in this system permits. Capped and centred on the block edges only, because the equivalent on an inline edge would lift a drawer off the top and bottom and make it a floating panel instead."
         }
       ]
     },
@@ -4221,7 +4368,8 @@
           "md": "size.control.lg multiplied by 12",
           "lg": "size.control.lg multiplied by 18",
           "cap across its own axis": "100% of the dialog's containing block less space.padding.lg — stated as a percentage rather than in viewport units on purpose: vh and vw are the LARGE viewport, so a bottom sheet measured in vh is taller than the screen whenever the mobile address bar is showing. Dialog's insets are percentages for the same reason.",
-          "measure across the other axis": "the full containing block — a sheet spans the edge it is anchored to. Not capped on wide viewports in this version; a bottom sheet that stops short of both sides is a different shape and would need its own entry here."
+          "measure across the other axis": "the full containing block for an inline-edge sheet — a drawer spans the height it is anchored along. A BLOCK-edge sheet is capped at size.control.lg multiplied by 20 and centred with an auto inline margin: spanning a 2560px monitor puts the close control one corner away from the content it closes, and sets a line length nothing else in this system allows. That multiplier is the one Dialog's widest size uses, so a bottom sheet at its widest reads like the widest single surface here rather than like the page.",
+          "why the cap is block-edge only": "The cross axis of an inline-edge sheet is its height, and capping that would lift a drawer off the top and bottom into a floating panel — a different shape, and not this component. A block-edge sheet stays flush to its own edge either way, so the two corners there stay square and the two facing the page keep radius.page."
         }
       },
       "footer": {
@@ -4244,7 +4392,7 @@
         }
       }
     },
-    "example": "<Sheet\n        open={open}\n        onClose={() => setOpen(false)}\n        edge={edge}\n        size={size}\n        dismissible={dismissible}\n        title={title}\n        description={description}\n        initialFocus={applyRef}\n        footer={\n          <>\n            <Button variant=\"secondary\" onClick={() => setOpen(false)}>\n              Cancel\n            </Button>\n            <Button ref={applyRef} onClick={() => setOpen(false)}>\n              Apply\n            </Button>\n          </>\n        }\n      >\n        The body scrolls on its own, so the title and the way out stay put\n        however much goes in here.\n      </Sheet>"
+    "example": "<Sheet\n      open={path !== null}\n      onClose={() => onClose()}\n      edge={narrow ? \"block-end\" : \"inline-end\"}\n      size=\"lg\"\n      title={<code>{shown ?? \"\"}</code>}\n      dismissLabel={shown === null ? \"Close\" : `Close documentation for ${shown}`}\n    >\n      {shown !== null && <TokenDocBody path={shown} />}\n    </Sheet>"
   },
   {
     "name": "side-nav",
@@ -4414,7 +4562,7 @@
         "summary": "One destination, filling the rail's width so the whole row is the target.",
         "tokens": {
           "colour": "theme.fg.secondary",
-          "font-size": "type.control.size.sm",
+          "font-size": "type.control.size.md — 14px. It was the sm step, 12px, which is the size this scale reserves for text inside a small control rather than for a row of running navigation: a rail and a bar are read, not squeezed into a 28px box. Every row takes it, because the disclosure trigger and the nested sublink both compose the link class.",
           "font-weight": "type.control.weight",
           "block-size": "size.control.md",
           "padding-inline": "space.control.padding-inline.sm",
@@ -4492,7 +4640,7 @@
     ],
     "behavior": null,
     "tokens": {},
-    "example": "<Spinner label=\"Loading results\" />"
+    "example": "<Spinner label=\"Loading\" />"
   },
   {
     "name": "state-layer",
@@ -5068,6 +5216,172 @@
       }
     },
     "example": "<Tabs\n        label=\"Invoice\"\n        items={[\n          { value: \"details\", label: \"Details\", content: \"Amount, dates, and the client.\" },\n          { value: \"history\", label: \"History\", content: \"Every change, most recent first.\" },\n          { value: \"notes\", label: \"Notes\", content: \"Anything the team wrote down.\" },\n        ]}\n      />"
+  },
+  {
+    "name": "text",
+    "title": "Text",
+    "description": "Body and supporting text at a named role from the type scale.",
+    "family": "content",
+    "tier": "free",
+    "status": {
+      "css": {
+        "state": "future"
+      },
+      "react": {
+        "state": "future"
+      },
+      "figma": {
+        "state": "future"
+      }
+    },
+    "dependencies": [],
+    "importPath": "@rata/react",
+    "mode": "spec",
+    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "extends": null,
+    "props": [
+      {
+        "name": "children",
+        "type": "ReactNode",
+        "optional": false,
+        "description": null,
+        "declared": false,
+        "summary": "The text.",
+        "use": [
+          "A paragraph, a sentence of help text, an eyebrow label."
+        ],
+        "dont": [
+          "Block content inside `as=\"p\"`. A paragraph cannot contain a list or another paragraph, and the browser will silently close it early."
+        ],
+        "conflicts": [],
+        "a11y": "Plain content. Nothing here is announced as anything but text, which is the point."
+      },
+      {
+        "name": "as",
+        "type": "TextElement",
+        "optional": true,
+        "default": "\"p\"",
+        "description": null,
+        "declared": false,
+        "summary": "Whether this is a block of text or a run inside one.",
+        "use": [
+          "`span` for text inside a sentence, a row or a control's label area."
+        ],
+        "dont": [
+          "`span` for a paragraph. It is not a block, so the page's spacing rules will not apply to it."
+        ],
+        "conflicts": [],
+        "a11y": "Neither element carries a role, so this changes nothing that is announced — it changes what the text is, structurally, for spacing and for selection."
+      },
+      {
+        "name": "role",
+        "type": "TextRole",
+        "optional": true,
+        "default": "\"body\"",
+        "description": null,
+        "declared": false,
+        "summary": "Which step of the scale this text is set at.",
+        "use": [
+          "`supporting` for help text under a field, a timestamp, secondary metadata in a row.",
+          "`large` for a standfirst — one paragraph introducing a page, set above body size.",
+          "`label` for an uppercase eyebrow over a section or a group of fields."
+        ],
+        "dont": [
+          "`supporting` to mean disabled. It is smaller, not dimmer, and it is still meant to be read — `tone` is the prop that changes emphasis."
+        ],
+        "conflicts": [],
+        "a11y": "`label` renders uppercase through `text-transform`, so the text stays lowercase in the accessibility tree and a screen reader does not spell it out letter by letter. Typing it in capitals would."
+      },
+      {
+        "name": "tone",
+        "type": "TextTone",
+        "optional": true,
+        "default": "\"primary\"",
+        "description": null,
+        "declared": false,
+        "summary": "Which of the three documented foreground steps it takes.",
+        "use": [
+          "`secondary` for text that supports the primary content and is still read in full.",
+          "`muted` for the least prominent text on a surface — a placeholder-like hint, a disabled row's caption."
+        ],
+        "dont": [
+          "A status or accent colour. Those belong to a role, and running text carrying one reads as a link or an error; Notice is the component for a coloured message.",
+          "`muted` for anything load-bearing. It is the lowest of the three and the first to fail on an unusual background."
+        ],
+        "conflicts": [],
+        "a11y": "All three are contrast-verified against canvas, surface and subtle. None of them is below the text floor — this prop cannot make text fail contrast on a documented background, which is why it is a closed set of three rather than a colour."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "optional": true,
+        "description": null,
+        "declared": false,
+        "summary": "Extra classes, for placement — not for restyling it.",
+        "use": [
+          "The margin or measure the page wants, neither of which this component owns."
+        ],
+        "dont": [
+          "Overriding size or colour. Those are `role` and `tone`, and a hand-written value drifts from the scale the moment the seed moves."
+        ],
+        "conflicts": [],
+        "a11y": null
+      }
+    ],
+    "usage": [],
+    "behavior": {
+      "summary": "A `<p>` or a `<span>` set to one named role of the type scale. No primitive and no state.",
+      "decisions": [
+        {
+          "decision": "Headings are a different component",
+          "why": "A heading enters the document outline and is a navigation target; body text is neither. That is a difference in semantics rather than in looks, which is this system's test for splitting a component — the same test that separated Tabs from SegmentedControl. A single `as=\"h2\"` prop here could not require a level only when the element happens to be a heading, and a heading without a level is the bug both components exist to prevent."
+        },
+        {
+          "decision": "`as` offers `p` and `span` and nothing else",
+          "why": "Those are the two things running text is: a block of prose, or a run inside one. `div` is the one that would turn this into a layout wrapper — and a `<div>` holding text is how a component like this stops being about type and starts being about boxes. A text block that must contain block content is not one paragraph and should not pretend to be."
+        },
+        {
+          "decision": "`tone` is part of it, even though the type roles carry no colour",
+          "why": "The type scale is size, weight and line-height only, so a caller styling text still has to pick a foreground — and picking wrongly is this system's most common token error, which `internal/vibe-tests` exists to measure. Three named steps that map onto the three documented and contrast-verified `theme.fg.*` values make the correct choice the shortest one. It is deliberately not open-ended: a role colour or a status colour on running text is a different decision, and Notice owns it."
+        },
+        {
+          "decision": "`code` is not a role here",
+          "why": "`type.code` exists, but inline code is a `<code>` ELEMENT — a semantic claim about the content, not a size. Offering it as a role would mean either rendering the wrong element or accepting `as=\"code\" role=\"code\"`, which says the same thing twice. Inline code belongs to a base layer styling `code` directly, which `@rata/css` does not ship yet and which is a separate gap from this component."
+        },
+        {
+          "decision": "No line clamping in this version",
+          "why": "`-webkit-line-clamp` is the only way to truncate at a line count and it needs three coupled declarations plus a fixed display mode, which changes how the element lays out — and truncated text needs its full value reachable some other way or the content is simply gone. It deserves its own pass rather than riding along with the scale."
+        }
+      ]
+    },
+    "tokens": {
+      "base": {
+        "summary": "One type role and one foreground step. No box: text has no padding, no background and no margin of its own.",
+        "tokens": {
+          "font-size": "the chosen role's size — type.body.size, type.large.size, type.supporting.size or type.label.size",
+          "font-weight": "that same role's weight",
+          "line-height": "that same role's line-height",
+          "margin": "space.0 — the page owns the space between blocks, for the reason Heading's contract gives"
+        }
+      },
+      "label": {
+        "summary": "The label role carries two things the others do not, and they come from the scale rather than from here.",
+        "tokens": {
+          "text-transform": "type.label.text-transform",
+          "letter-spacing": "type.label.letter-spacing — uppercase text needs the extra tracking to stay readable, which is why that step exists"
+        }
+      },
+      "tone": {
+        "summary": "The three documented foreground steps for text, and the reason this prop exists at all: it is the shortest path to the right colour, so nobody reaches for a palette token.",
+        "tokens": {
+          "primary": "theme.fg.primary",
+          "secondary": "theme.fg.secondary",
+          "muted": "theme.fg.muted",
+          "all three": "contrast-verified against theme.bg.canvas, theme.bg.surface and theme.bg.subtle — see the contrast page"
+        }
+      }
+    },
+    "example": null
   },
   {
     "name": "text-field",
@@ -6158,7 +6472,7 @@
       {
         "case": "A banner beside a side nav, where both landmarks need names",
         "when": "Any page with two navigation landmarks.",
-        "example": "<TopNav label=\"Main\" items={sections} brand={<Wordmark />} />\n<SideNav label=\"Invoices\" items={pages} />",
+        "example": "<TopNav label=\"Main\" items={sections} brand={<Wordmark />} />\n<SideNav label=\"Invoices\" sections={pages} />",
         "notes": "Two navigation landmarks with the same name are indistinguishable in a landmark list, which is the one place they are most useful. Naming them for what they contain — not \"top\" and \"side\", which describe where they happen to sit — survives a redesign that moves them."
       },
       {
@@ -6228,7 +6542,7 @@
         "summary": "One destination. The resting colour is the secondary text tone, so the current page reads as the emphasised one rather than the others reading as dimmed.",
         "tokens": {
           "colour": "theme.fg.secondary",
-          "font-size": "type.control.size.sm",
+          "font-size": "type.control.size.md — 14px. It was the sm step, 12px, which is the size this scale reserves for text inside a small control rather than for a row of running navigation: a rail and a bar are read, not squeezed into a 28px box. Every row takes it, because the disclosure trigger and the nested sublink both compose the link class.",
           "font-weight": "type.control.weight",
           "padding-inline": "space.control.padding-inline.sm",
           "block-size": "size.control.md",

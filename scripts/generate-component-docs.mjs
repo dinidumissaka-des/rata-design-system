@@ -158,6 +158,30 @@ function renderJson(contracts) {
   return JSON.stringify(withoutIssues, null, 2) + "\n";
 }
 
+/**
+ * The nav's view of the registry: a name and a title each, nothing more.
+ *
+ * It exists for one reason, and it is a size one. `contracts.json` is 340kB
+ * and the playground's sidebar needs two fields out of it, so importing the
+ * whole thing to build a list of links put every component's full contract —
+ * every decision, every prop, every worked example — into the bundle that
+ * loads before anything is on screen. This is 2kB and it is generated from
+ * the same contracts, so it cannot drift from them: the staleness check below
+ * covers it exactly as it covers the pages.
+ */
+function renderComponentIndex(contracts) {
+  // `status` is here so the home page can count what is built without
+  // importing contracts.json — which is the 340kB the components page is
+  // lazily loaded to keep out of the first chunk. One short string per
+  // component; the file stays a couple of kB.
+  const rows = contracts.map((c) => ({
+    name: c.name,
+    title: c.title,
+    status: c.status?.react?.state ?? "unknown",
+  }));
+  return JSON.stringify(rows, null, 2) + "\n";
+}
+
 function renderIndex(contracts) {
   const rows = contracts.map((c) => {
     const react = c.status?.react?.state ?? "tbd";
@@ -244,6 +268,7 @@ async function main() {
   const pages = new Map(contracts.map((c) => [`${c.name}.md`, renderPage(c)]));
   pages.set("README.md", renderIndex(contracts));
   pages.set("contracts.json", renderJson(contracts));
+  pages.set("index.json", renderComponentIndex(contracts));
 
   if (CHECK_ONLY) {
     const stale = [];

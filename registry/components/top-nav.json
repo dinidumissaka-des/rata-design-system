@@ -142,7 +142,7 @@
     {
       "case": "A banner beside a side nav, where both landmarks need names",
       "when": "Any page with two navigation landmarks.",
-      "example": "<TopNav label=\"Main\" items={sections} brand={<Wordmark />} />\n<SideNav label=\"Invoices\" items={pages} />",
+      "example": "<TopNav label=\"Main\" items={sections} brand={<Wordmark />} />\n<SideNav label=\"Invoices\" sections={pages} />",
       "notes": "Two navigation landmarks with the same name are indistinguishable in a landmark list, which is the one place they are most useful. Naming them for what they contain — not \"top\" and \"side\", which describe where they happen to sit — survives a redesign that moves them."
     },
     {
@@ -175,7 +175,7 @@
       "summary": "One destination. The resting colour is the secondary text tone, so the current page reads as the emphasised one rather than the others reading as dimmed.",
       "tokens": {
         "colour": "theme.fg.secondary",
-        "font-size": "type.control.size.sm",
+        "font-size": "type.control.size.md — 14px. It was the sm step, 12px, which is the size this scale reserves for text inside a small control rather than for a row of running navigation: a rail and a bar are read, not squeezed into a 28px box. Every row takes it, because the disclosure trigger and the nested sublink both compose the link class.",
         "font-weight": "type.control.weight",
         "padding-inline": "space.control.padding-inline.sm",
         "block-size": "size.control.md",

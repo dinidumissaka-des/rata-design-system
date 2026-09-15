@@ -212,16 +212,44 @@ function packageNameFor(sourcePath) {
  */
 export function resolveComponent(name, registry) {
   if (registry[name]) return { name, entry: registry[name] };
-  for (const [canonical, entry] of Object.entries(registry)) {
-    if ((entry.alsoKnownAs ?? []).includes(name)) {
-      return { name: canonical, entry, via: name };
-    }
+
+  const candidates = Object.entries(registry)
+    .filter(([, entry]) => (entry.alsoKnownAs ?? []).includes(name))
+    .map(([canonical]) => canonical)
+    .sort();
+
+  if (candidates.length === 0) return {};
+  if (candidates.length === 1) {
+    const canonical = candidates[0];
+    return { name: canonical, entry: registry[canonical], via: name };
   }
-  return {};
+  // AMBIGUOUS, so it refuses to choose. Three aliases in this registry point at
+  // two components each, and `drawer` is the one that matters: it is a Sheet
+  // held against an edge and it is also MobileNav, which is a drawer holding
+  // a SideNav. This used to return whichever came first in key order and
+  // announce it as THE answer — so `drawer` resolved to mobile-nav, and
+  // someone who wanted an edge-anchored panel was handed a component that
+  // requires a `sections` prop. Guessing confidently is the exact failure the
+  // lookup commands exist to prevent.
+  return { ambiguous: candidates, via: name };
+}
+
+/**
+ * The message for an alias that names more than one component.
+ *
+ * Shared so `props`, `contract` and `add` say the same thing — they disagreed
+ * about which names even existed, which is its own version of this bug.
+ */
+export function ambiguousAliasError(via, candidates) {
+  return (
+    `"${via}" names more than one component in this system: ` +
+    `${candidates.join(", ")}. Say which — don't guess.`
+  );
 }
 
 export async function getComponentProps(name, registry) {
-  const { name: resolved, entry, via } = resolveComponent(name, registry);
+  const { name: resolved, entry, via, ambiguous } = resolveComponent(name, registry);
+  if (ambiguous) return { error: ambiguousAliasError(via, ambiguous) };
   if (!entry) return { error: `Unknown component: "${name}". Run \`rata list\` — don't guess.` };
   if (via !== undefined) {
     console.log(`"${via}" is ${resolved} in this system — showing that.\n`);
