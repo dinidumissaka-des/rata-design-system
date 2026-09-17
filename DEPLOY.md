@@ -110,11 +110,11 @@ ever click, which is exactly the shape of bug that survives testing.
 ```
 
 This does not swallow the real files. Vercel's routing order is
-redirects → **filesystem** → rewrites, so `/assets/index-abc123.js` and
-`/rata-icon.svg` are served before the rewrite is ever consulted. A
-blanket rewrite is safe here for that reason and only that reason; on a
-host that applied rewrites first, this would break every asset on the
-page.
+redirects → **filesystem** → rewrites, so a real file — `/assets/index-abc123.js`,
+or anything dropped in `apps/playground/public/` — is served before the
+rewrite is ever consulted. A blanket rewrite is safe here for that reason
+and only that reason; on a host that applied rewrites first, this would
+break every asset on the page.
 
 ## The cache headers
 
