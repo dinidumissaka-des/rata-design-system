@@ -3,6 +3,7 @@ import type { LucideIcon } from "@rata/icons";
 import usage from "@rata/tokens/usage";
 import componentIndex from "../../../docs/components/index.json";
 import type { Page } from "./routing.js";
+import { TableScroll } from "./table-scroll.js";
 
 /**
  * The playground's front door.
@@ -83,53 +84,55 @@ export function HomePage({ onOpen }: { onOpen: (page: Page) => void }) {
           quoting `51 → 0 errors` from the last time someone ran `npm run
           vibe` would not be. */}
       <h3>Machine-readable</h3>
-      <table className="pg-table">
-        <thead>
-          <tr>
-            <th>Artifact</th>
-            <th>What it carries</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <code>@rata/tokens/usage</code>
-            </td>
-            <td>
-              Every token&rsquo;s contract as JSON — what it is for, what it is{" "}
-              <em>not</em> for, what to use instead, and the measured contrast of every documented
-              pairing. This page&rsquo;s own numbers are read from it.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <code>@rata/tokens</code> types
-            </td>
-            <td>
-              The same rules as JSDoc, so they arrive on hover and in completions rather than
-              needing to be looked up.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <code>contracts.json</code>
-            </td>
-            <td>
-              Every component contract as JSON. The derived half — prop names, types, defaults — is
-              parsed from source, so the build fails if a documented prop stops existing.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <code>rata props</code> · <code>rata contract</code>
-            </td>
-            <td>
-              A CLI that answers both from the implementation, for an agent writing code against
-              this system rather than reading about it.
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <TableScroll>
+        <table className="pg-table">
+          <thead>
+            <tr>
+              <th>Artifact</th>
+              <th>What it carries</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <code>@rata/tokens/usage</code>
+              </td>
+              <td>
+                Every token&rsquo;s contract as JSON — what it is for, what it is{" "}
+                <em>not</em> for, what to use instead, and the measured contrast of every documented
+                pairing. This page&rsquo;s own numbers are read from it.
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <code>@rata/tokens</code> types
+              </td>
+              <td>
+                The same rules as JSDoc, so they arrive on hover and in completions rather than
+                needing to be looked up.
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <code>contracts.json</code>
+              </td>
+              <td>
+                Every component contract as JSON. The derived half — prop names, types, defaults — is
+                parsed from source, so the build fails if a documented prop stops existing.
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <code>rata props</code> · <code>rata contract</code>
+              </td>
+              <td>
+                A CLI that answers both from the implementation, for an agent writing code against
+                this system rather than reading about it.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </TableScroll>
       <p className="pg-note">
         Whether any of that actually changes what a machine writes is itself tested:{" "}
         <code>internal/vibe-tests</code> scores generated component code with the guidance and

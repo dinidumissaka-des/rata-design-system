@@ -15,6 +15,7 @@ import { Contrast, Gauge, Icon, Palette, Ruler, Shapes, SquareRoundCorner, Type 
 import type { LucideIcon } from "@rata/icons";
 import { NARROW, useMediaQuery } from "./use-media-query.js";
 import type { Page } from "./routing.js";
+import { TableScroll } from "./table-scroll.js";
 import usage from "@rata/tokens/usage";
 
 interface TokenEntry {
@@ -408,32 +409,34 @@ export function ContrastPage() {
           Re-measured from the resolved values on every build — {pairings.length} pairings. A
           pairing that stops holding fails the build rather than shipping.
         </p>
-        <table className="pg-table">
-          <thead>
-            <tr>
-              <th>Foreground</th>
-              <th>Background</th>
-              <th>Requires</th>
-              <th>Measured</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pairings.map((p) => (
-              <tr key={`${p.fg}|${p.bg}`}>
-                <td>
-                  <code>{p.fg}</code>
-                </td>
-                <td>
-                  <code>{p.bg}</code>
-                </td>
-                <td>{p.requires}</td>
-                <td>
-                  <Ratios measured={p.measured} />
-                </td>
+        <TableScroll>
+          <table className="pg-table">
+            <thead>
+              <tr>
+                <th>Foreground</th>
+                <th>Background</th>
+                <th>Requires</th>
+                <th>Measured</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {pairings.map((p) => (
+                <tr key={`${p.fg}|${p.bg}`}>
+                  <td>
+                    <code>{p.fg}</code>
+                  </td>
+                  <td>
+                    <code>{p.bg}</code>
+                  </td>
+                  <td>{p.requires}</td>
+                  <td>
+                    <Ratios measured={p.measured} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </TableScroll>
       </section>
 
       <section className="pg-section">
@@ -468,24 +471,26 @@ export function RecipeList() {
         <div className="pg-recipe" key={name}>
           <div className="pg-ramp-title">{name}</div>
           {recipe.summary && <p className="pg-note">{recipe.summary}</p>}
-          <table className="pg-table">
-            <thead>
-              <tr>
-                <th>Property</th>
-                <th>Token</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(recipe.tokens).map(([property, token]) => (
-                <tr key={property}>
-                  <td>{property}</td>
-                  <td>
-                    <code>{token}</code>
-                  </td>
+          <TableScroll>
+            <table className="pg-table">
+              <thead>
+                <tr>
+                  <th>Property</th>
+                  <th>Token</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {Object.entries(recipe.tokens).map(([property, token]) => (
+                  <tr key={property}>
+                    <td>{property}</td>
+                    <td>
+                      <code>{token}</code>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </TableScroll>
         </div>
       ))}
     </>

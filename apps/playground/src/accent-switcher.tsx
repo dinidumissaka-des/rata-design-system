@@ -1,4 +1,4 @@
-import { SegmentedControl } from "@rata/react";
+import { Radio, RadioGroup, SegmentedControl } from "@rata/react";
 
 /**
  * The accent switcher — this system's five accent options.
@@ -58,24 +58,85 @@ export const ACCENTS: AccentOption[] = [
 
 export const DEFAULT_ACCENT = "pine";
 
+/**
+ * The swatch and the name, which both layouts below show.
+ *
+ * The swatch carries `data-rata-theme` and `data-theme` itself — both, because
+ * a theme's dark half is scoped `[data-rata-theme="x"][data-theme="dark"]`,
+ * one compound selector — so each one resolves `--rata-theme-accent-role-bg`
+ * through its own theme's scope and shows the real generated fill rather than
+ * a hex re-typed here.
+ */
+function AccentLabel({ accent, scheme }: { accent: AccentOption; scheme: Scheme }) {
+  return (
+    <span className="pg-accent-option">
+      <span
+        className="pg-accent-swatch"
+        data-rata-theme={accent.slug}
+        data-theme={scheme}
+        aria-hidden="true"
+      />
+      <span className="pg-accent-name">{accent.title}</span>
+    </span>
+  );
+}
+
 export function AccentSwitcher({
   value,
   scheme,
   onChange,
+  layout = "bar",
 }: {
   value: string;
   scheme: Scheme;
   onChange: (slug: string) => void;
+  /**
+   * Which shape the question takes.
+   *
+   * `bar` is a SegmentedControl: one choice out of five, every answer shown,
+   * which is what this always was. It was a hand-rolled fieldset of radios,
+   * written before this system had the component — and a design system's own
+   * chrome using a hand-rolled version of a component it ships is the kind of
+   * thing nobody notices until the component changes and the copy does not.
+   *
+   * `list` is a RadioGroup, for the drawer. Not a preference: five swatched
+   * names do not fit side by side across a drawer's width, and the segmented
+   * control's own contract says where that line is — "more than five, or long
+   * labels. The bar stops being scannable and a RadioGroup or a select reads
+   * better." A swatch plus a word is a long label at 288px. The alternatives
+   * were both worse: `fullWidth` squeezes five options into 57px each and
+   * clips the names, and stacking the swatch over its name overflows a
+   * control whose height is one line by contract. So the bar gives way to the
+   * list, the same way the rail gives way to the drawer holding it, and
+   * nothing is hidden from a phone that a desktop can see.
+   *
+   * The notes stay `title` text on the bar and become each radio's
+   * `description` in the list — a tooltip is unreachable on a touch screen,
+   * and the drawer is the one place with room to just say it.
+   */
+  layout?: "bar" | "list";
 }) {
+  if (layout === "list") {
+    return (
+      <RadioGroup
+        className="pg-accent-list"
+        label="Accent colour"
+        value={value}
+        onValueChange={onChange}
+      >
+        {ACCENTS.map((accent) => (
+          <Radio
+            key={accent.slug}
+            value={accent.slug}
+            label={<AccentLabel accent={accent} scheme={scheme} />}
+            description={accent.note}
+          />
+        ))}
+      </RadioGroup>
+    );
+  }
+
   return (
-    /* A SegmentedControl, which is what this always was: one choice out of
-       five, every answer shown. It was a hand-rolled fieldset of radios,
-       written before this system had the component — and a design system's own
-       chrome using a hand-rolled version of a component it ships is the kind
-       of thing nobody notices until the component changes and the copy does
-       not.
-       The swatch goes in the option's label, which is a ReactNode, so each one
-       still resolves its own theme's accent rather than a hex re-typed here. */
     <SegmentedControl
       className="pg-accent"
       label="Accent colour"
@@ -85,18 +146,8 @@ export function AccentSwitcher({
       options={ACCENTS.map((accent) => ({
         value: accent.slug,
         label: (
-          <span className="pg-accent-option" title={accent.note}>
-            {/* Both attributes, because a theme's dark half is scoped
-                [data-rata-theme="x"][data-theme="dark"] — one compound
-                selector, so the swatch needs both to show the right value in
-                dark mode. */}
-            <span
-              className="pg-accent-swatch"
-              data-rata-theme={accent.slug}
-              data-theme={scheme}
-              aria-hidden="true"
-            />
-            <span className="pg-accent-name">{accent.title}</span>
+          <span title={accent.note}>
+            <AccentLabel accent={accent} scheme={scheme} />
           </span>
         ),
       }))}

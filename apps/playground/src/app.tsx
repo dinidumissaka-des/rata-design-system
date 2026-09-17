@@ -24,6 +24,8 @@ import { componentName, componentPage, hrefFor, parseLocation } from "./routing.
 import { AccentSwitcher, DEFAULT_ACCENT } from "./accent-switcher.js";
 import type { Scheme } from "./accent-switcher.js";
 import type { ComponentTab, Page } from "./routing.js";
+import { NARROW, useMediaQuery } from "./use-media-query.js";
+import { TableScroll } from "./table-scroll.js";
 
 // One page per category, primitives and semantics merged into one flowing
 // view (no sub-split). All token categories nest under one "Foundation"
@@ -393,6 +395,58 @@ export function App() {
   const [search, setSearch] = useState("");
   const [inspecting, setInspecting] = useState<string | null>(null);
 
+  // The same width at which the rail gives way to the drawer. The bar's
+  // actions slot holds three controls, and below this width the two theme
+  // controls do not fit beside the drawer trigger — the whole cluster ran off
+  // the end of the bar, taking the page into horizontal scroll with it. The
+  // page owns the breakpoint for the same reason it owns the rail's: where a
+  // bar stops fitting depends on what this page put in it.
+  const narrow = useMediaQuery(NARROW);
+
+  /* The accent seed drives every generated colour token, so it sits next to
+     the scheme toggle: both re-theme the whole page, and neither belongs to
+     any one page's content. Built once here because the pair has two homes —
+     the bar's actions slot on a wide viewport, the drawer's footer on a
+     narrow one — and two copies of it would be two copies to keep in step.
+
+     The scheme control is a SegmentedControl rather than a button that
+     toggles. The button was labelled with the scheme you were NOT in — "Dark
+     theme" while the page was light — which is the classic ambiguity of a
+     toggle whose label describes its action rather than its state. Two named
+     options with one marked is a question being answered, which is what this
+     is. */
+  const themeControls = (
+    <>
+      <AccentSwitcher
+        value={accent}
+        scheme={theme}
+        onChange={setAccent}
+        layout={narrow ? "list" : "bar"}
+      />
+      <SegmentedControl
+        label="Colour scheme"
+        size="sm"
+        fullWidth={narrow}
+        value={theme}
+        onValueChange={(next) => setTheme(next as Scheme)}
+        options={[
+          { value: "light", label: "Light" },
+          { value: "dark", label: "Dark" },
+        ]}
+      />
+    </>
+  );
+
+  /* Built as a value rather than inline in the tag below, and deliberately:
+     `npm run ui -- props <name> --example` lifts a real usage out of `apps/`
+     by matching the tag, and its matcher stops at the first `>` inside the
+     attributes. An inline `<div>…</div>` here is such a `>`, so writing it
+     inline silently cost MobileNav its real example on the docs page and in
+     .claude/ui-context.md, and the generator fell back to a demo. */
+  const drawerFooter = narrow ? (
+    <div className="pg-drawer-theme">{themeControls}</div>
+  ) : undefined;
+
   const { page, tab } = route;
 
   // Every page has an address, so the back button and a pasted link both work.
@@ -586,32 +640,22 @@ export function App() {
         }
         actions={
           <>
+            {/* Below the breakpoint the theme controls ride in the drawer's
+                footer instead of beside the trigger. That slot is documented
+                for exactly this — "the things a top nav would put in its
+                actions slot, which has nowhere else to go at this width" —
+                and it is outside the drawer's nav landmark, which is correct:
+                neither control is a destination. Rendered in one place or the
+                other, never both, so there is one accent control on the page
+                and one scheme control, each with one accessible name. */}
             <MobileNav
               className="pg-drawer-trigger"
               title="Ratā"
               label="Sections"
               sections={navSections}
+              footer={drawerFooter}
             />
-            {/* The accent seed drives every generated colour token, so it sits
-                next to the scheme toggle: both re-theme the whole page, and
-                neither belongs to any one page's content. */}
-            <AccentSwitcher value={accent} scheme={theme} onChange={setAccent} />
-            {/* A SegmentedControl rather than a button that toggles. The
-                button was labelled with the scheme you were NOT in — "Dark
-                theme" while the page was light — which is the classic
-                ambiguity of a toggle whose label describes its action rather
-                than its state. Two named options with one marked is a
-                question being answered, which is what this is. */}
-            <SegmentedControl
-              label="Colour scheme"
-              size="sm"
-              value={theme}
-              onValueChange={(next) => setTheme(next as Scheme)}
-              options={[
-                { value: "light", label: "Light" },
-                { value: "dark", label: "Dark" },
-              ]}
-            />
+            {!narrow && themeControls}
           </>
         }
       />
@@ -820,28 +864,30 @@ export function App() {
                   {base, ratio}, so there is no second hand-listed scale
                   sitting beside it to show. */}
               <TypeSamples title="font.size" items={Object.entries(tokens.font.size)} />
-              <table className="pg-table">
-                <thead>
-                  <tr>
-                    <th>font.weight</th>
-                    <th>font.letter-spacing</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>
-                      {Object.entries(tokens.font.weight)
-                        .map(([n, v]) => `${n}: ${v}`)
-                        .join(" · ")}
-                    </td>
-                    <td>
-                      {Object.entries(tokens.font["letter-spacing"])
-                        .map(([n, v]) => `${n}: ${v}`)
-                        .join(" · ")}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <TableScroll>
+                <table className="pg-table">
+                  <thead>
+                    <tr>
+                      <th>font.weight</th>
+                      <th>font.letter-spacing</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        {Object.entries(tokens.font.weight)
+                          .map(([n, v]) => `${n}: ${v}`)
+                          .join(" · ")}
+                      </td>
+                      <td>
+                        {Object.entries(tokens.font["letter-spacing"])
+                          .map(([n, v]) => `${n}: ${v}`)
+                          .join(" · ")}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </TableScroll>
               <div className="pg-type-sample-row">
                 <span className="pg-bar-label">type.heading</span>
                 {/* The size column the generated-scale rows above also carry.
@@ -890,22 +936,24 @@ export function App() {
                   The quick brown fox jumps over the lazy dog
                 </span>
               </div>
-              <table className="pg-table">
-                <thead>
-                  <tr>
-                    <th>type.tracking</th>
-                    <th>value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(tokens.type.tracking).map(([name, value]) => (
-                    <tr key={name}>
-                      <td>{name}</td>
-                      <td style={{ letterSpacing: value }}>{value} — tracked text</td>
+              <TableScroll>
+                <table className="pg-table">
+                  <thead>
+                    <tr>
+                      <th>type.tracking</th>
+                      <th>value</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {Object.entries(tokens.type.tracking).map(([name, value]) => (
+                      <tr key={name}>
+                        <td>{name}</td>
+                        <td style={{ letterSpacing: value }}>{value} — tracked text</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </TableScroll>
             </section>
           )}
 
@@ -953,52 +1001,54 @@ export function App() {
                   </div>
                 ))}
               </div>
-              <table className="pg-table">
-                <thead>
-                  <tr>
-                    <th>Token</th>
-                    <th>Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>border (1 / 2 / 3)</td>
-                    <td>
-                      {tokens.border["1"]} / {tokens.border["2"]} / {tokens.border["3"]}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>border.default</td>
-                    <td>{tokens.border.default}</td>
-                  </tr>
-                  <tr>
-                    <td>opacity (8 / 12 / 50)</td>
-                    <td>
-                      {tokens.opacity["8"]} / {tokens.opacity["12"]} / {tokens.opacity["50"]}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>state (hover / press / disabled)</td>
-                    <td>
-                      {tokens.state["hover-opacity"]} / {tokens.state["press-opacity"]} /{" "}
-                      {tokens.state["disabled-opacity"]}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>focus (ring-width / offset / style)</td>
-                    <td>
-                      {tokens.focus["ring-width"]} / {tokens.focus["ring-offset"]} /{" "}
-                      {tokens.focus["ring-style"]}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>size.control (sm / md / lg)</td>
-                    <td>
-                      {tokens.size.control.sm} / {tokens.size.control.md} / {tokens.size.control.lg}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              <TableScroll>
+                <table className="pg-table">
+                  <thead>
+                    <tr>
+                      <th>Token</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>border (1 / 2 / 3)</td>
+                      <td>
+                        {tokens.border["1"]} / {tokens.border["2"]} / {tokens.border["3"]}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>border.default</td>
+                      <td>{tokens.border.default}</td>
+                    </tr>
+                    <tr>
+                      <td>opacity (8 / 12 / 50)</td>
+                      <td>
+                        {tokens.opacity["8"]} / {tokens.opacity["12"]} / {tokens.opacity["50"]}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>state (hover / press / disabled)</td>
+                      <td>
+                        {tokens.state["hover-opacity"]} / {tokens.state["press-opacity"]} /{" "}
+                        {tokens.state["disabled-opacity"]}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>focus (ring-width / offset / style)</td>
+                      <td>
+                        {tokens.focus["ring-width"]} / {tokens.focus["ring-offset"]} /{" "}
+                        {tokens.focus["ring-style"]}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>size.control (sm / md / lg)</td>
+                      <td>
+                        {tokens.size.control.sm} / {tokens.size.control.md} / {tokens.size.control.lg}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </TableScroll>
             </section>
           )}
 

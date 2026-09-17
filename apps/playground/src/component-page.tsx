@@ -82,6 +82,7 @@ import {
 } from "@rata/icons";
 import { COMPONENT_TABS, componentPage } from "./routing.js";
 import type { ComponentTab, Page } from "./routing.js";
+import { TableScroll } from "./table-scroll.js";
 import contractsJson from "../../../docs/components/contracts.json";
 
 export interface ContractProp {
@@ -2296,24 +2297,26 @@ function OverviewTab({
             <div className="pg-recipe" key={variant}>
               <div className="pg-ramp-title">{variant}</div>
               {recipe.summary && <p className="pg-note">{recipe.summary}</p>}
-              <table className="pg-table">
-                <thead>
-                  <tr>
-                    <th>Property</th>
-                    <th>Token</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {Object.entries(recipe.tokens ?? {}).map(([property, token]) => (
-                    <tr key={property}>
-                      <td>{property}</td>
-                      <td>
-                        <code>{token}</code>
-                      </td>
+              <TableScroll>
+                <table className="pg-table">
+                  <thead>
+                    <tr>
+                      <th>Property</th>
+                      <th>Token</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {Object.entries(recipe.tokens ?? {}).map(([property, token]) => (
+                      <tr key={property}>
+                        <td>{property}</td>
+                        <td>
+                          <code>{token}</code>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </TableScroll>
             </div>
           ))}
         </section>
