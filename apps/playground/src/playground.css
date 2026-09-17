@@ -1601,24 +1601,12 @@ code {
 }
 
 /* The wordmark in the TopNav examples — a stand-in for whatever a product
-   puts in the brand slot. */
+   puts in the brand slot. The flex is for the wordmark's own alignment in
+   the bar; there is no `gap` because there is nothing to sit beside. The
+   mark that used to is gone, and .pg-brand-mark with it. */
 .pg-brand {
   display: flex;
   align-items: center;
-  gap: var(--rata-space-gap-sm);
-}
-
-/* Both axes stated, because the file itself is 300px square and an <img>
-   lays out at its intrinsic size for the frame before the stylesheet
-   arrives — a 300px logo shoving the bar open, once.
-
-   icon-lg is 24px, which is also the wordmark's line box at heading size
-   (17px x 1.41). The mark and the name therefore occupy the same band,
-   which is what makes them read as one lockup rather than two things that
-   happen to be adjacent. */
-.pg-brand-mark {
-  inline-size: var(--rata-size-icon-lg);
-  block-size: var(--rata-size-icon-lg);
 }
 
 .pg-brand-name {
