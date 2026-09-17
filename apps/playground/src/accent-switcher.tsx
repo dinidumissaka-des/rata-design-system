@@ -110,9 +110,12 @@ export function AccentSwitcher({
    * list, the same way the rail gives way to the drawer holding it, and
    * nothing is hidden from a phone that a desktop can see.
    *
-   * The notes stay `title` text on the bar and become each radio's
-   * `description` in the list — a tooltip is unreachable on a touch screen,
-   * and the drawer is the one place with room to just say it.
+   * The notes stay `title` text on the bar and are left off the list. They
+   * were each radio's `description` for a while, on the reasoning that a
+   * tooltip is unreachable on a touch screen — true, but it turned a footer
+   * into five paragraphs and pushed the scheme toggle under them. What the
+   * drawer owes a reader is the choice, legibly; why the lime seed generates
+   * a dark fill is a thing to read on the Color page, not under a swatch.
    */
   layout?: "bar" | "list";
 }) {
@@ -129,7 +132,6 @@ export function AccentSwitcher({
             key={accent.slug}
             value={accent.slug}
             label={<AccentLabel accent={accent} scheme={scheme} />}
-            description={accent.note}
           />
         ))}
       </RadioGroup>
