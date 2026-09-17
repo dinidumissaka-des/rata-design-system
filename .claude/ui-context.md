@@ -347,6 +347,7 @@ Real usage (from `apps/`):
               title="Ratā"
               label="Sections"
               sections={navSections}
+              footer={drawerFooter}
             />
 ```
 

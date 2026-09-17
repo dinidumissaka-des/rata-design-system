@@ -29,6 +29,40 @@
    edge rather than a row of buttons. */
 .rata-tabs--horizontal > .rata-tabs-list {
   border-block-end: var(--rata-border-default) solid var(--rata-theme-border-default);
+  /* Scrolls rather than wrapping, the same bargain .rata-top-nav-list makes
+     and for the same reason: a tab strip that grows to two rows moves
+     everything below it, and a wrapped row of tabs reads as a mistake. The
+     tabs themselves refuse to shrink below their label (`white-space: nowrap`
+     above), so without this a strip wider than its column pushed the whole
+     page into horizontal scroll — which is what six families did to the
+     component index on a phone.
+
+     The rule stays put while the tabs move under it: it is drawn on this
+     element's own border box, which is the visible column, not the scrolled
+     content. The scrollbar is hidden because the strip is a row of controls
+     rather than a region — the marker under the selected tab already says
+     there is more than one, and arrow keys reach every tab regardless. */
+  overflow-x: auto;
+  scrollbar-width: none;
+  /* The selected tab's marker hangs below its tab by the rule's own width, so
+     that it covers the rule (see the ::before rules below) — and a scroll
+     container clips whatever hangs outside it. This padding is exactly that
+     overhang, given back, so the marker stays whole at every width instead of
+     losing its bottom half the moment a strip is scrollable. It costs the
+     marker its overlap: it now sits flush on the rule rather than over it,
+     which at one device pixel is the cheapest of the ways out of this. */
+  padding-block-end: var(--rata-border-default);
+}
+
+.rata-tabs--horizontal > .rata-tabs-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* A tab keeps its label on one line (above), so in a scrolling strip it must
+   also keep its width — flex would otherwise shrink every tab to fit and
+   overflow the text instead of the row. */
+.rata-tabs--horizontal > .rata-tabs-list > .rata-tabs-tab {
+  flex-shrink: 0;
 }
 
 .rata-tabs--vertical > .rata-tabs-list {

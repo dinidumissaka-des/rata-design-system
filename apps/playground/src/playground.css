@@ -45,6 +45,12 @@ body {
 code {
   font-family: var(--rata-font-family-mono);
   font-size: var(--rata-type-body-size);
+  /* Half of what this page quotes inline has no spaces in it — a file path, a
+     token name, a `Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type">` — and
+     an unbreakable word longer than its column does not overflow quietly, it
+     widens the page. `break-word` only breaks one that would not fit on a line
+     of its own, so ordinary prose and short names are untouched. */
+  overflow-wrap: break-word;
 }
 
 .pg-app {
@@ -81,16 +87,6 @@ code {
   display: none;
 }
 
-@media (max-width: 60rem) {
-  .pg-drawer-trigger {
-    display: inline-flex;
-  }
-
-  .pg-sidebar {
-    display: none;
-  }
-}
-
 .pg-layout {
   display: flex;
   align-items: flex-start;
@@ -115,6 +111,23 @@ code {
   padding-block-start: var(--rata-space-page-block-start);
   padding-inline: var(--rata-space-4);
   border-inline-end: var(--rata-border-1) solid var(--rata-theme-border-default);
+}
+
+/* AFTER both base rules, not before them. A media query carries no
+   specificity of its own, so `.pg-sidebar { display: none }` written above
+   `.pg-sidebar { display: flex }` loses the cascade to it and the rail stayed
+   on screen at every width — next to the drawer trigger that had correctly
+   appeared, with the rail's 6-control column eating two thirds of a phone
+   viewport and pushing every page into horizontal scroll. Source order is the
+   whole rule here: keep this block last. */
+@media (max-width: 60rem) {
+  .pg-drawer-trigger {
+    display: inline-flex;
+  }
+
+  .pg-sidebar {
+    display: none;
+  }
 }
 
 /* The input's own outline is suppressed below (a pill-shaped container needs
@@ -403,6 +416,10 @@ code {
 /* Elevation previews */
 .pg-elevation-row {
   display: flex;
+  /* Wraps, because each tile is an independent specimen rather than part of a
+     sequence you read across — nothing is lost by the sixth one starting a new
+     line, and six 88px tiles in a row is wider than a phone. */
+  flex-wrap: wrap;
   gap: var(--rata-space-gap-lg);
   margin-bottom: var(--rata-space-stack-md);
 }
@@ -420,6 +437,21 @@ code {
   block-size: 64px;
   background: var(--rata-theme-bg-surface);
   border-radius: var(--rata-radius-element);
+}
+
+/* Takes a dense table's overflow so the page does not — see TableScroll in
+   src/table-scroll.tsx for why the table keeps its own width. The focus ring
+   is not optional: this is in the tab order precisely so it can be scrolled
+   from the keyboard, and a focusable thing with no visible focus is the same
+   bug as no focus at all. */
+.pg-table-scroll {
+  overflow-x: auto;
+}
+
+.pg-table-scroll:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+  border-radius: var(--rata-radius-inner);
 }
 
 .pg-table {
@@ -878,8 +910,14 @@ code {
 }
 
 /* One column below the reading width: the control belongs under the prose it
-   belongs to, not squeezed beside it. */
-@media (max-width: 900px) {
+   belongs to, not squeezed beside it.
+
+   60rem, not the 900px this used to say. This app has ONE breakpoint, stated
+   once in src/use-media-query.ts, because a layout with two in it reads as a
+   bug whichever one you are looking at — and this was the second. The 60px
+   band between the two was real: the rail had already given way to the drawer
+   while the prop rows were still three columns wide. */
+@media (max-width: 60rem) {
   .pg-prop-row {
     grid-template-columns: minmax(0, 1fr);
     gap: var(--rata-space-gap-sm);
@@ -899,7 +937,7 @@ code {
    tab is a real URL. That mistook having an address for being a
    destination. These are three views of one contract — Tabs' own example of
    what it is for — and driving its `value` from the URL is the documented
-   way to keep them linkable.
+   way to keep them linkable. */
 
 .pg-section--head {
   margin-bottom: var(--rata-space-stack-lg);
@@ -1048,7 +1086,16 @@ code {
    three, and on two when the token inspector is open. */
 .pg-gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(calc(var(--rata-size-control-lg) * 9), 1fr));
+  /* `min(…, 100%)` around the track's minimum, because a bare minmax() minimum
+     is a floor the grid will honour past the point the container can hold it:
+     at 320px the tiles were 324px wide inside a 272px column and took the page
+     with them. Wrapped this way the tile is 324px wherever there is room for
+     324px, and exactly one column wide where there is not — which is the same
+     "the count follows the space" rule, carried all the way down. */
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(calc(var(--rata-size-control-lg) * 9), 100%), 1fr)
+  );
   gap: var(--rata-space-gap-lg);
   margin: var(--rata-space-0);
   padding: var(--rata-space-0);
@@ -1262,25 +1309,27 @@ code {
   box-shadow: inset 0 0 0 var(--rata-border-1) var(--rata-theme-border-strong);
 }
 
-/* Five names are wide. Below the sidebar breakpoint the swatches carry the
-   control alone — clipped rather than removed, so each option keeps the
-   accessible name the component reads from its label. */
-@media (max-width: 60rem) {
-  .pg-accent-name {
-    position: absolute;
-    inline-size: var(--rata-border-1);
-    block-size: var(--rata-border-1);
-    margin: calc(-1 * var(--rata-border-1));
-    padding: var(--rata-space-0);
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-    border: var(--rata-space-0);
-  }
+/* The names used to be clipped below the sidebar breakpoint, to buy the bar
+   enough room for five options beside the scheme toggle and the drawer
+   trigger. It never bought enough — the cluster still ran off the end of the
+   bar — and the fix is where the controls live, not how wide they are: below
+   that width the pair moves into the drawer's footer (see App), which is the
+   slot MobileNav documents for "the things a top nav would put in its actions
+   slot, which has nowhere else to go at this width". A drawer has room for
+   five names, so nothing is clipped anywhere now.
 
-  .pg-accent-option {
-    gap: var(--rata-space-0);
-  }
+   The pair, stacked, in the drawer footer. The footer is already a column, so
+   this is the cluster's own measure: each control fills the drawer's width
+   rather than sitting at its natural size against the start edge. */
+.pg-drawer-theme {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-gap-md);
+  /* The footer is the last thing in a scrolling drawer, and on a phone the
+     bottom of the sheet is also where the browser's own chrome sits, so the
+     controls get a little more air under them than the drawer's padding
+     alone gives. */
+  padding-block-end: var(--rata-space-2);
 }
 
 /* ---- Component overview: hero + specimens --------------------------------

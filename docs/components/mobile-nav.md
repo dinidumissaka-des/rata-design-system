@@ -281,6 +281,7 @@ Don't. A drawer covering the page is modal whether or not it is called one: with
               title="Ratā"
               label="Sections"
               sections={navSections}
+              footer={drawerFooter}
             />
 ```
 
