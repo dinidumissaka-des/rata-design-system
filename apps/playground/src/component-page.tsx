@@ -19,6 +19,7 @@ import {
   ButtonGroup,
   Checkbox,
   Dialog,
+  Heading,
   Panel,
   Sheet,
   Menu,
@@ -35,6 +36,7 @@ import {
   TopNav,
   Spinner,
   Switch,
+  Text,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
@@ -319,6 +321,94 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
 
   radio: {
     "Inside its group": () => <RadioStage />,
+  },
+
+  /* The levels below are 4 and 5, while the contract's own examples show 1 and
+     3. That is not drift — a specimen renders into THIS page's outline, and
+     this page's title is an h2 with its sections at h3, so an example card
+     lives under an h3 and its headings belong at 4. A specimen written
+     `level={1}` gave the page its only h1, buried inside a card, which is
+     exactly the outline damage Heading exists to prevent. The role is what
+     carries the lesson here and it is unchanged: a deep level wearing a big
+     size is the same demonstration as a shallow one. */
+  heading: {
+    "A page title that outranks its own size": () => (
+      <div className="pg-block-stack">
+        <Heading level={4} role="display-3">
+          Design tokens
+        </Heading>
+        <Text role="large" tone="secondary">
+          Still the page&rsquo;s only h1 — the display role changed how it looks and
+          nothing about where it sits.
+        </Text>
+      </div>
+    ),
+    "A section heading at its natural size": () => (
+      <div className="pg-block-stack">
+        <Heading level={4}>Contrast pairings</Heading>
+        <Text tone="secondary">
+          No role passed: the level renders its own matching step.
+        </Text>
+      </div>
+    ),
+    "A deep heading that should not shout": () => (
+      <div className="pg-block-stack">
+        <Heading level={4}>Known gaps</Heading>
+        <Heading level={4} role="heading-5">
+          Known gaps
+        </Heading>
+        <Text role="supporting" tone="muted">
+          Both are h4. Only the second one steps its size down.
+        </Text>
+      </div>
+    ),
+  },
+
+  text: {
+    "A standfirst under a page title": () => (
+      <div className="pg-block-stack">
+        <Heading level={4} role="heading-1">
+          Token discipline
+        </Heading>
+        <Text role="large" tone="secondary">
+          Every value in this system comes from a token, and every token says what
+          it is for.
+        </Text>
+      </div>
+    ),
+    "Help text under a field": () => (
+      /* Guidance belonging to the GROUP, which is the case the contract's note
+         carves out: a single field's help text is its own `description` prop,
+         which also wires up the aria-describedby. Staged with real controls
+         that own their labels — an earlier version of this specimen set the
+         label itself in `<Text role="label">`, which looks like a field label,
+         is announced as nothing, and would leave anyone copying it with an
+         unlabelled input. */
+      <div className="pg-block-stack">
+        <Switch label="Email me about releases" defaultChecked />
+        <Switch label="Email me about incidents" />
+        <Text role="supporting" tone="muted">
+          Both go to your billing address, which only an admin can change.
+        </Text>
+      </div>
+    ),
+    "An eyebrow over a group": () => (
+      <div className="pg-block-stack">
+        <Text role="label" tone="secondary">
+          Notifications
+        </Text>
+        <Text>Choose which events send you an email.</Text>
+      </div>
+    ),
+    "A run inside a sentence": () => (
+      <Text>
+        Last synced{" "}
+        <Text as="span" tone="muted">
+          four minutes ago
+        </Text>
+        .
+      </Text>
+    ),
   },
 
   badge: {

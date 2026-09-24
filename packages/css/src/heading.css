@@ -1,0 +1,79 @@
+/* Heading — an h1–h6 whose visual size is stated separately from its level.
+
+   The two are different questions and they disagree constantly: a page's first
+   subsection is often visually large and still an `h2`. So the element comes
+   from `level` and every value below comes from `role`, and nothing here reads
+   the element name — an `<h2>` and an `<h6>` with the same role are identical.
+
+   Each role is taken whole: size, weight, line-height and, where the scale
+   carries one, tracking. The display roles have a tracking step because large
+   type set at normal tracking reads loose; the heading roles have none because
+   they do not need one. Cherry-picking across roles is what breaks the
+   proportions the seed generates. */
+.rata-heading {
+  /* Only the page knows what a heading sits between, so it owns the space.
+     A default margin here would be overridden everywhere, and an overridden
+     default looks like a decision. */
+  margin: var(--rata-space-0);
+  font-family: var(--rata-font-family-heading);
+  /* The surface decides the colour; a heading is the same text as its
+     neighbours, only larger. */
+  color: currentColor;
+}
+
+.rata-heading--display-1 {
+  font-size: var(--rata-type-display-1-size);
+  font-weight: var(--rata-type-display-1-weight);
+  line-height: var(--rata-type-display-1-line-height);
+  letter-spacing: var(--rata-type-tracking-display-1);
+}
+
+.rata-heading--display-2 {
+  font-size: var(--rata-type-display-2-size);
+  font-weight: var(--rata-type-display-2-weight);
+  line-height: var(--rata-type-display-2-line-height);
+  letter-spacing: var(--rata-type-tracking-display-2);
+}
+
+.rata-heading--display-3 {
+  font-size: var(--rata-type-display-3-size);
+  font-weight: var(--rata-type-display-3-weight);
+  line-height: var(--rata-type-display-3-line-height);
+  letter-spacing: var(--rata-type-tracking-display-3);
+}
+
+.rata-heading--heading-1 {
+  font-size: var(--rata-type-heading-1-size);
+  font-weight: var(--rata-type-heading-1-weight);
+  line-height: var(--rata-type-heading-1-line-height);
+}
+
+.rata-heading--heading-2 {
+  font-size: var(--rata-type-heading-2-size);
+  font-weight: var(--rata-type-heading-2-weight);
+  line-height: var(--rata-type-heading-2-line-height);
+}
+
+.rata-heading--heading-3 {
+  font-size: var(--rata-type-heading-3-size);
+  font-weight: var(--rata-type-heading-3-weight);
+  line-height: var(--rata-type-heading-3-line-height);
+}
+
+.rata-heading--heading-4 {
+  font-size: var(--rata-type-heading-4-size);
+  font-weight: var(--rata-type-heading-4-weight);
+  line-height: var(--rata-type-heading-4-line-height);
+}
+
+.rata-heading--heading-5 {
+  font-size: var(--rata-type-heading-5-size);
+  font-weight: var(--rata-type-heading-5-weight);
+  line-height: var(--rata-type-heading-5-line-height);
+}
+
+.rata-heading--heading-6 {
+  font-size: var(--rata-type-heading-6-size);
+  font-weight: var(--rata-type-heading-6-weight);
+  line-height: var(--rata-type-heading-6-line-height);
+}

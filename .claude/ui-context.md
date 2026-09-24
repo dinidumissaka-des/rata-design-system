@@ -25,7 +25,7 @@ this path is the honest answer to when it last actually moved.
 | [button-group](../docs/components/button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [checkbox](../docs/components/checkbox.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [dialog](../docs/components/dialog.md) | `@rata/react` | overlays | latest / latest / future | free |
-| [heading](../docs/components/heading.md) | `@rata/react` | content | future / future / future | free |
+| [heading](../docs/components/heading.md) | `@rata/react` | content | latest / latest / future | free |
 | [icon](../docs/components/icon.md) | `@rata/react` | content | latest / latest / future | free |
 | [menu](../docs/components/menu.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [menu-item](../docs/components/menu-item.md) | `@rata/react` | overlays | latest / latest / future | free |
@@ -42,7 +42,7 @@ this path is the honest answer to when it last actually moved.
 | [state-layer](../docs/components/state-layer.md) | `@rata/react` | foundations | latest / na / future | free |
 | [switch](../docs/components/switch.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [tabs](../docs/components/tabs.md) | `@rata/react` | navigation | latest / latest / future | free |
-| [text](../docs/components/text.md) | `@rata/react` | content | future / future / future | free |
+| [text](../docs/components/text.md) | `@rata/react` | content | latest / latest / future | free |
 | [text-field](../docs/components/text-field.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [toggle-button](../docs/components/toggle-button.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [toggle-button-group](../docs/components/toggle-button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
@@ -238,9 +238,22 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/dialog.md](../docs/components/dialog.md)
 
-### Heading
+### Heading (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<HTMLAttributes<HTMLHeadingElement>, "role">`
+
+- `level: HeadingLevel`
+  Where this heading sits in the document outline.
+- `role?: HeadingRole`
+  How large it looks, independent of its level.
+- `children: ReactNode`
+  The heading text.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Heading level={4}>Known gaps</Heading>
+```
 
 Contract: [docs/components/heading.md](../docs/components/heading.md)
 
@@ -688,9 +701,24 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/tabs.md](../docs/components/tabs.md)
 
-### Text
+### Text (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<HTMLAttributes<HTMLElement>, "role">`
+
+- `children: ReactNode`
+  The text.
+- `as?: TextElement` — default: `"p"`
+  Whether this is a block of text or a run inside one.
+- `role?: TextRole` — default: `"body"`
+  Which step of the scale this text is set at.
+- `tone?: TextTone` — default: `"primary"`
+  Which of the three documented foreground steps it takes.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Text>Choose which events send you an email.</Text>
+```
 
 Contract: [docs/components/text.md](../docs/components/text.md)
 

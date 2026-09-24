@@ -1483,10 +1483,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -1494,16 +1496,16 @@
     },
     "dependencies": [],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLHeadingElement>, \"role\">",
     "props": [
       {
         "name": "level",
-        "type": "1 | 2 | 3 | 4 | 5 | 6",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "HeadingLevel",
+        "description": "Where this heading sits in the document outline.",
+        "declared": true,
         "summary": "Where this heading sits in the document outline.",
         "use": [
           "The level below whatever heading contains this one — a heading inside a section headed `h2` takes `3`."
@@ -1516,11 +1518,10 @@
       },
       {
         "name": "role",
-        "type": "HeadingRole",
         "optional": true,
-        "default": "the `heading-{level}` step",
-        "description": null,
-        "declared": false,
+        "type": "HeadingRole",
+        "description": "How large it looks, independent of its level.",
+        "declared": true,
         "summary": "How large it looks, independent of its level.",
         "use": [
           "A display role on a page title: `level={1} role=\"display-3\"`.",
@@ -1534,10 +1535,10 @@
       },
       {
         "name": "children",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The heading text.",
+        "declared": true,
         "summary": "The heading text.",
         "use": [
           "A short noun phrase naming what follows."
@@ -1550,10 +1551,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
+        "type": "string",
         "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Extra classes, for placement — not for restyling it.",
         "use": [
           "The margin the page wants around it, which this component deliberately does not own."
@@ -1565,7 +1566,32 @@
         "a11y": null
       }
     ],
-    "usage": [],
+    "usage": [
+      {
+        "case": "A page title that outranks its own size",
+        "when": "The commonest reason both props exist: one `h1` per page, set at a display step so it reads as the title.",
+        "example": "<Heading level={1} role=\"display-3\">Design tokens</Heading>",
+        "notes": "The level is what a screen-reader user navigates by; the role is only how large it looks. Writing `level={3}` to get this size would leave the page with no `h1` at all."
+      },
+      {
+        "case": "A section heading at its natural size",
+        "when": "Inside a page already headed `h1`, where nothing about the section asks to be louder.",
+        "example": "<Heading level={2}>Contrast pairings</Heading>",
+        "notes": "No `role`: `heading-2` is the default for `level={2}`, and the common case should not have to say so twice."
+      },
+      {
+        "case": "A deep heading that should not shout",
+        "when": "A sub-subsection whose correct level would otherwise draw more attention than it deserves.",
+        "example": "<Heading level={4} role=\"heading-5\">Known gaps</Heading>",
+        "notes": "The outline stays correct and only the size moves — which is the direction this prop is for. If the heading feels wrong at its correct level, change the role; if the level itself is wrong, change the level."
+      },
+      {
+        "case": "Reaching for the wrong component",
+        "when": "The text is an uppercase eyebrow over a group, not an entry in the outline.",
+        "example": "<Heading level={6}>Foundations</Heading>",
+        "notes": "Don't. Nothing navigates to it and it heads no section, so it does not belong in the outline — that is `<Text role=\"label\">`. A heading level spent on decoration is a level a real heading can no longer use."
+      }
+    ],
     "behavior": {
       "summary": "An `h1` through `h6`, with its visual size stated independently of its level. No primitive: there is no keyboard interaction to own and no state to hold.",
       "decisions": [
@@ -1608,7 +1634,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Heading level={4}>Known gaps</Heading>"
   },
   {
     "name": "icon",
@@ -5229,10 +5255,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -5240,16 +5268,16 @@
     },
     "dependencies": [],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLElement>, \"role\">",
     "props": [
       {
         "name": "children",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The text.",
+        "declared": true,
         "summary": "The text.",
         "use": [
           "A paragraph, a sentence of help text, an eyebrow label."
@@ -5262,11 +5290,15 @@
       },
       {
         "name": "as",
-        "type": "TextElement",
         "optional": true,
+        "type": "TextElement",
+        "description": "Whether this is a block of text or a run inside one.",
         "default": "\"p\"",
-        "description": null,
-        "declared": false,
+        "values": [
+          "p",
+          "span"
+        ],
+        "declared": true,
         "summary": "Whether this is a block of text or a run inside one.",
         "use": [
           "`span` for text inside a sentence, a row or a control's label area."
@@ -5279,11 +5311,17 @@
       },
       {
         "name": "role",
-        "type": "TextRole",
         "optional": true,
+        "type": "TextRole",
+        "description": "Which step of the scale this text is set at.",
         "default": "\"body\"",
-        "description": null,
-        "declared": false,
+        "values": [
+          "body",
+          "large",
+          "supporting",
+          "label"
+        ],
+        "declared": true,
         "summary": "Which step of the scale this text is set at.",
         "use": [
           "`supporting` for help text under a field, a timestamp, secondary metadata in a row.",
@@ -5298,11 +5336,16 @@
       },
       {
         "name": "tone",
-        "type": "TextTone",
         "optional": true,
+        "type": "TextTone",
+        "description": "Which of the three documented foreground steps it takes.",
         "default": "\"primary\"",
-        "description": null,
-        "declared": false,
+        "values": [
+          "primary",
+          "secondary",
+          "muted"
+        ],
+        "declared": true,
         "summary": "Which of the three documented foreground steps it takes.",
         "use": [
           "`secondary` for text that supports the primary content and is still read in full.",
@@ -5317,10 +5360,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
+        "type": "string",
         "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Extra classes, for placement — not for restyling it.",
         "use": [
           "The margin or measure the page wants, neither of which this component owns."
@@ -5332,7 +5375,38 @@
         "a11y": null
       }
     ],
-    "usage": [],
+    "usage": [
+      {
+        "case": "A standfirst under a page title",
+        "when": "One paragraph introducing a page, set above body size so it reads as the way in rather than as the first paragraph of the content.",
+        "example": "<Text role=\"large\" tone=\"secondary\">Every value in this system comes from a token, and every token says what it is for.</Text>",
+        "notes": "`secondary` rather than `primary`: it supports the title above it and is still read in full. One of these per page — a second stops being an introduction."
+      },
+      {
+        "case": "Help text under a field",
+        "when": "A line of guidance that belongs to the control above it.",
+        "example": "<Text role=\"supporting\" tone=\"muted\">Used for billing receipts only.</Text>",
+        "notes": "`supporting` is smaller, not dimmer — `tone` is what changes emphasis, and the two are separate so help text can be small and still fully legible. If the field is a TextField, its own `description` prop already does this and wires up the `aria-describedby`; reach for this only outside one."
+      },
+      {
+        "case": "An eyebrow over a group",
+        "when": "A short uppercase label naming a group of fields or a section of a settings page.",
+        "example": "<Text role=\"label\" tone=\"secondary\">Notifications</Text>",
+        "notes": "The capitals come from `text-transform`, so the text stays lowercase in the accessibility tree. Typed in capitals it may be spelled out letter by letter. This is also the right answer when a `<Heading>` was tempting but nothing navigates to the label."
+      },
+      {
+        "case": "A run inside a sentence",
+        "when": "Part of a line needs a different step or tone from the rest of it.",
+        "example": "<Text>Last synced <Text as=\"span\" tone=\"muted\">four minutes ago</Text>.</Text>",
+        "notes": "`span` because it is not a block — a nested `p` would close the outer one early and the page's spacing rules would apply to something that is half a sentence."
+      },
+      {
+        "case": "Reaching for the wrong component",
+        "when": "The message is a warning the reader has to act on.",
+        "example": "<Text tone=\"secondary\">Your trial ends in three days.</Text>",
+        "notes": "Don't lean on this and then colour it — `tone` is deliberately closed to three neutral steps, because a status colour on running text reads as a link or an error. A message that needs a colour needs Notice, which has the role tokens, the icon and somewhere to put the action."
+      }
+    ],
     "behavior": {
       "summary": "A `<p>` or a `<span>` set to one named role of the type scale. No primitive and no state.",
       "decisions": [
@@ -5385,7 +5459,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Text>Choose which events send you an email.</Text>"
   },
   {
     "name": "text-field",

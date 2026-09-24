@@ -12,17 +12,32 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
     }
   },
   "dependencies": [],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/heading.css",
+      "target": "styles/heading.css"
+    },
+    {
+      "source": "packages/react/src/heading.tsx",
+      "target": "components/heading.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -68,8 +83,6 @@
   },
   "props": {
     "level": {
-      "type": "1 | 2 | 3 | 4 | 5 | 6",
-      "required": true,
       "summary": "Where this heading sits in the document outline.",
       "use": [
         "The level below whatever heading contains this one — a heading inside a section headed `h2` takes `3`."
@@ -80,8 +93,6 @@
       "a11y": "Becomes the element: `level={3}` renders an `<h3>`. A skipped level breaks heading navigation, which is how many readers move through a page — and only the caller knows the depth, which is why there is no default."
     },
     "role": {
-      "type": "HeadingRole",
-      "default": "the `heading-{level}` step",
       "summary": "How large it looks, independent of its level.",
       "use": [
         "A display role on a page title: `level={1} role=\"display-3\"`.",
@@ -93,8 +104,6 @@
       "a11y": "Purely visual. It changes no element and no announcement, which is the point: the outline stays whatever `level` says."
     },
     "children": {
-      "type": "ReactNode",
-      "required": true,
       "summary": "The heading text.",
       "use": [
         "A short noun phrase naming what follows."
@@ -105,7 +114,6 @@
       "a11y": "Becomes the heading's accessible name, so it is what a reader hears when navigating by heading."
     },
     "className": {
-      "type": "string",
       "summary": "Extra classes, for placement — not for restyling it.",
       "use": [
         "The margin the page wants around it, which this component deliberately does not own."
@@ -115,5 +123,30 @@
       ]
     }
   },
-  "usage": []
+  "usage": [
+    {
+      "case": "A page title that outranks its own size",
+      "when": "The commonest reason both props exist: one `h1` per page, set at a display step so it reads as the title.",
+      "example": "<Heading level={1} role=\"display-3\">Design tokens</Heading>",
+      "notes": "The level is what a screen-reader user navigates by; the role is only how large it looks. Writing `level={3}` to get this size would leave the page with no `h1` at all."
+    },
+    {
+      "case": "A section heading at its natural size",
+      "when": "Inside a page already headed `h1`, where nothing about the section asks to be louder.",
+      "example": "<Heading level={2}>Contrast pairings</Heading>",
+      "notes": "No `role`: `heading-2` is the default for `level={2}`, and the common case should not have to say so twice."
+    },
+    {
+      "case": "A deep heading that should not shout",
+      "when": "A sub-subsection whose correct level would otherwise draw more attention than it deserves.",
+      "example": "<Heading level={4} role=\"heading-5\">Known gaps</Heading>",
+      "notes": "The outline stays correct and only the size moves — which is the direction this prop is for. If the heading feels wrong at its correct level, change the role; if the level itself is wrong, change the level."
+    },
+    {
+      "case": "Reaching for the wrong component",
+      "when": "The text is an uppercase eyebrow over a group, not an entry in the outline.",
+      "example": "<Heading level={6}>Foundations</Heading>",
+      "notes": "Don't. Nothing navigates to it and it heads no section, so it does not belong in the outline — that is `<Text role=\"label\">`. A heading level spent on decoration is a level a real heading can no longer use."
+    }
+  ]
 }

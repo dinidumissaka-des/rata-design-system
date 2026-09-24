@@ -1,6 +1,8 @@
 import { describe, expect, test, afterEach } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { Badge } from "./badge.js";
+import { Heading } from "./heading.js";
+import { Text } from "./text.js";
 import { Breadcrumbs } from "./breadcrumbs.js";
 import { Spinner } from "./spinner.js";
 import { ButtonGroup } from "./button-group.js";
@@ -105,5 +107,82 @@ describe("ButtonGroup", () => {
     expect(group.getAttribute("aria-orientation")).toBeNull();
     // Both buttons stay their own tab stop, attached or not.
     expect(screen.getAllByRole("button").map((b) => b.tabIndex)).toEqual([0, 0]);
+  });
+});
+
+describe("Heading", () => {
+  test("level decides the element, and nothing else does", () => {
+    const { container } = render(<Heading level={3}>Known gaps</Heading>);
+    expect(container.querySelector("h3")).toBeTruthy();
+  });
+
+  test("role moves the size and leaves the outline alone", () => {
+    const { container } = render(
+      <Heading level={2} role="display-1">
+        Design tokens
+      </Heading>
+    );
+    const el = container.querySelector("h2");
+    expect(el).toBeTruthy();
+    expect(el?.className).toContain("rata-heading--display-1");
+  });
+
+  test("role defaults to the matching heading step, so the common case says it once", () => {
+    const { container } = render(<Heading level={4}>Contrast</Heading>);
+    expect(container.querySelector("h4")?.className).toContain("rata-heading--heading-4");
+  });
+
+  test("the type step never leaks out as ARIA's role attribute", () => {
+    const { container } = render(
+      <Heading level={1} role="display-3">
+        Design tokens
+      </Heading>
+    );
+    // A heading's role in the accessibility tree comes from its level. If this
+    // prop reached the DOM it would overwrite exactly that, which is the one
+    // thing the component exists to keep correct.
+    expect(container.querySelector("h1")?.hasAttribute("role")).toBe(false);
+    expect(screen.getByRole("heading", { level: 1 })).toBeTruthy();
+  });
+});
+
+describe("Text", () => {
+  test("a block by default, a run when asked", () => {
+    const { container } = render(<Text>Last synced</Text>);
+    expect(container.querySelector("p")).toBeTruthy();
+
+    cleanup();
+    const run = render(<Text as="span">four minutes ago</Text>);
+    expect(run.container.querySelector("span")).toBeTruthy();
+  });
+
+  test("body and primary are the defaults, so plain text needs no props", () => {
+    const { container } = render(<Text>Every value comes from a token.</Text>);
+    const el = container.querySelector("p");
+    expect(el?.className).toContain("rata-text--body");
+    expect(el?.className).toContain("rata-text--primary");
+  });
+
+  test("role and tone are separate: smaller is not dimmer", () => {
+    const { container } = render(
+      <Text role="supporting" tone="secondary">
+        Used for billing receipts only.
+      </Text>
+    );
+    const el = container.querySelector("p");
+    expect(el?.className).toContain("rata-text--supporting");
+    expect(el?.className).toContain("rata-text--secondary");
+  });
+
+  test("the label role capitalises in CSS, so the text stays as typed", () => {
+    render(<Text role="label">Notifications</Text>);
+    // Typed in capitals, a screen reader may spell it out letter by letter.
+    // text-transform leaves the accessibility tree holding the original.
+    expect(screen.getByText("Notifications").textContent).toBe("Notifications");
+  });
+
+  test("the type step never leaks out as ARIA's role attribute", () => {
+    const { container } = render(<Text role="label">Notifications</Text>);
+    expect(container.querySelector("p")?.hasAttribute("role")).toBe(false);
   });
 });

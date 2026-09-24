@@ -27,6 +27,10 @@ const ORDER = [
   "radio-group.css",
   // After radio: the switch shares their construction and redraws the control.
   "switch.css",
+  // Typography before the components that set text inside themselves: both are
+  // element-agnostic and neither should win over a component's own type rules.
+  "heading.css",
+  "text.css",
   "badge.css",
   "avatar.css",
   "breadcrumbs.css",

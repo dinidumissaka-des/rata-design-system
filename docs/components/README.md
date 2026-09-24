@@ -20,7 +20,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Button Group](button-group.md) | `button-group` | buttons | latest / latest | documented | free |
 | [Checkbox](checkbox.md) | `checkbox` | inputs | latest / latest | documented | free |
 | [Dialog](dialog.md) | `dialog` | overlays | latest / latest | documented | free |
-| [Heading](heading.md) | `heading` | content | future / future | spec | free |
+| [Heading](heading.md) | `heading` | content | latest / latest | documented | free |
 | [Icon](icon.md) | `icon` | content | latest / latest | documented | free |
 | [Menu](menu.md) | `menu` | overlays | latest / latest | documented | free |
 | [MenuItem](menu-item.md) | `menu-item` | overlays | latest / latest | documented | free |
@@ -37,7 +37,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [State layer](state-layer.md) | `state-layer` | foundations | latest / na | css-only | free |
 | [Switch](switch.md) | `switch` | inputs | latest / latest | documented | free |
 | [Tabs](tabs.md) | `tabs` | navigation | latest / latest | documented | free |
-| [Text](text.md) | `text` | content | future / future | spec | free |
+| [Text](text.md) | `text` | content | latest / latest | documented | free |
 | [Input: Text field](text-field.md) | `text-field` | inputs | latest / latest | documented | free |
 | [Toggle Button](toggle-button.md) | `toggle-button` | buttons | latest / latest | documented | free |
 | [Toggle Button Group](toggle-button-group.md) | `toggle-button-group` | buttons | latest / latest | documented | free |

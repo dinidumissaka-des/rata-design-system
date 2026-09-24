@@ -37,7 +37,7 @@
   {
     "name": "heading",
     "title": "Heading",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "icon",
@@ -122,7 +122,7 @@
   {
     "name": "text",
     "title": "Text",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "text-field",
