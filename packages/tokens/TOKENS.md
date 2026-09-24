@@ -1307,6 +1307,65 @@ The revealed content. Indented to the trigger's own inline padding so the two re
 | colour | inherited — the panel holds whatever the caller puts in it and tints none of it |
 | when closed | display: none via [hidden] — stated rather than left to the UA stylesheet, because a `display` added to this rule later would silently outrank it and start painting an empty box |
 
+### field
+
+A column. The gap is the only measurement here, and it is deliberately tighter than it looks it should be.
+
+| Property | Token |
+|---|---|
+| display | flex, column |
+| gap | `space.stack.2xs` — not `space.stack.xs`: the label and the helper text each carry their own line-height leading, so the perceived gap is already larger than the number, and the next step up reads as separation rather than as grouping |
+
+### field-label
+
+The control's name, at the label role of the type scale.
+
+| Property | Token |
+|---|---|
+| colour | `theme.fg.primary` |
+| font-size | `type.label.size` |
+| font-weight | `type.label.weight` |
+| line-height | `type.label.line-height` |
+
+### field-required-marker
+
+The asterisk. Required-ness is information, not a fault, so it is not the danger tone.
+
+| Property | Token |
+|---|---|
+| colour | `theme.fg.secondary` |
+
+### field-description
+
+Persistent helper text, and always ahead of the message in the description order so a constraint is heard before a failure.
+
+| Property | Token |
+|---|---|
+| margin | `space.0` |
+| colour | `theme.fg.secondary` |
+| font-size | `type.supporting.size` |
+| line-height | `type.supporting.line-height` |
+
+### field-message
+
+The status-dependent line. Neutral until the status says otherwise, so a field that has not been judged does not look judged.
+
+| Property | Token |
+|---|---|
+| margin | `space.0` |
+| colour | `theme.fg.secondary` |
+| font-size | `type.supporting.size` |
+| line-height | `type.supporting.line-height` |
+| when invalid | `theme.danger-role.fg` — the role's text colour on the page background, never its saturated bg, which is a non-text indicator tone |
+
+### field-disabled
+
+Dimmed as a whole rather than removed, because the control underneath stays focusable and readable.
+
+| Property | Token |
+|---|---|
+| opacity | `state.disabled-opacity`, on the root so the label and helper text dim with the control |
+
 ### heading
 
 One type role, taken whole. Nothing else — a heading has no box of its own.
@@ -1881,12 +1940,10 @@ The region a tab reveals. Focusable even with nothing focusable inside, so Tab f
 
 ### text-field
 
-A single-line input with a label, helper text, and validation states.
+The input's BOX, and nothing around it. The label, required marker, helper text, message and disabled dimming are Field's recipe — this component composes Field and overrides only inside the control, which is the split that lets Select and TextArea cost a stylesheet each.
 
 | Property | Token |
 |---|---|
-| label color | `theme.fg.primary` |
-| label font-size | `type.label.size` |
 | input background | `theme.bg.surface` |
 | input color | `theme.fg.primary` |
 | input font-family | `font.family.sans` |
@@ -1896,19 +1953,13 @@ A single-line input with a label, helper text, and validation states.
 | height | `size.control.md` — and `size.control.sm` / .lg at the other sizes. Together with padding-inline this is the only thing `size` changes |
 | padding-inline | `space.control.padding-inline.md` — and the sm / lg steps at the other sizes |
 | border-radius | `radius.element` |
-| helper text color | `theme.fg.secondary` |
-| error text color | `theme.danger-role.fg` |
 | error border-color | `theme.danger-role.fg` |
 | validating (in-progress) ring | `theme.accent-role.ring` |
 | valid ring | `theme.success-role.ring` |
 | invalid ring | `theme.danger-role.ring` |
-| gap between label, input, and helper | `space.stack.2xs` — the tightest vertical step. The text either side carries line-height leading of its own, so this reads looser than 4px and `space.stack.xs` read as separation |
-| required marker color | `theme.fg.secondary` — required-ness is information, not a fault, so it is deliberately not the danger role's foreground; the requirement itself is announced through aria-required |
-| disabled opacity | `state.disabled-opacity` on the root — the field stays readable and focusable, which is why it emits aria-disabled and readOnly rather than the native disabled attribute |
 | hover inner band | `theme.bg.muted` at `border.2`, drawn as an inset shadow so the fill recedes 2px while the border stays `border.1` and the outer edge does not move. Idle only — the validation rings occupy the same 2px and box-shadow does not accumulate |
 | focus border-color | `theme.fg.primary` — the same tone as the outline, so the two read as one stroke instead of a dark ring around a lighter edge. The width is never touched |
 | focus outline | `focus.ring-width` solid `theme.fg.primary`, offset `space.0` — deliberately NOT `theme.focus-ring`, the only such departure in the library. It gives 16.75:1 against the field's fill where `theme.focus-ring` gives 4.31:1, so the indicator is stronger; the cost is that focus here does not match focus on a Button. An outline rather than a thicker border because outlines are out of flow: this control sets height but not width, so a wider border would widen the field |
-| hidden label geometry | compose the .rata-visually-hidden class — the utility, not a rule of this component's own. It clips rather than using display:none, which would take the accessible name off with the pixels |
 
 ### text
 

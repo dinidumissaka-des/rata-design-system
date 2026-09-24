@@ -10,39 +10,21 @@
    What is lost is consistency: focus on this field does not look like focus on
    a Button, and that is a real cost this comment exists to record. */
 
-/* Text field — a labelled single-line input with helper text and validation
-   states. Structure comes from the primitive: it puts data-status and
-   data-disabled on the root, so every state below is a selector on those
-   rather than a class the caller has to remember to add.
+/* Text field — THE BOX, and nothing around it. The label, required marker,
+   helper text, message and disabled dimming live in field.css, which this
+   component composes; what is left here is the one part that is genuinely a
+   text field rather than a field. Every selector below that reads
+   `.rata-text-field[data-status=…]` is matching the Field root, which carries
+   both classes.
+
+   Structure comes from the primitive: it puts data-status and data-disabled on
+   the root, so every state below is a selector on those rather than a class
+   the caller has to remember to add.
 
    The rings are inset strokes (theme.*-role.ring), deliberately NOT the focus
    ring. A field can be focused and invalid at the same time, so the two have
    to coexist: the ring is inside the border box, the focus outline is drawn
    outside it at focus.ring-offset. */
-.rata-text-field {
-  display: flex;
-  flex-direction: column;
-  /* stack.2xs, not stack.xs: the label and the helper text each carry their own
-     line-height leading, so the perceived gap is already larger than the
-     number and stack.xs read as separation rather than grouping. */
-  gap: var(--rata-space-stack-2xs);
-}
-
-.rata-text-field-label {
-  color: var(--rata-theme-fg-primary);
-  font-family: var(--rata-font-family-sans);
-  font-size: var(--rata-type-label-size);
-  font-weight: var(--rata-type-label-weight);
-  line-height: var(--rata-type-label-line-height);
-}
-
-
-/* Required-ness is information, not a fault, so this is not the danger tone.
-   It is also aria-hidden in the markup: aria-required already announces it,
-   and reading the marker aloud would say it twice. */
-.rata-text-field-required {
-  color: var(--rata-theme-fg-secondary);
-}
 
 .rata-text-field-input {
   /* An input inherits neither family nor size from the page — browsers give it
@@ -132,22 +114,6 @@
   border-color: var(--rata-theme-fg-primary);
 }
 
-/* Helper text — persistent, and always ahead of the message in the
-   description order, so a constraint is heard before a failure. */
-.rata-text-field-description {
-  margin: 0;
-  color: var(--rata-theme-fg-secondary);
-  font-size: var(--rata-type-supporting-size);
-  line-height: var(--rata-type-supporting-line-height);
-}
-
-.rata-text-field-message {
-  margin: 0;
-  color: var(--rata-theme-fg-secondary);
-  font-size: var(--rata-type-supporting-size);
-  line-height: var(--rata-type-supporting-line-height);
-}
-
 /* ---- Validation states, selected from the primitive's data-status --------
    Each state changes more than colour: the ring is a second, non-chromatic
    cue, and the message text is what actually carries the meaning. */
@@ -172,17 +138,9 @@
 /* The error message takes the danger role's foreground, which is the tone
    verified against surfaces — not the saturated bg, which is a non-text
    indicator colour. */
-.rata-text-field[data-status="invalid"] .rata-text-field-message {
-  color: var(--rata-theme-danger-role-fg);
-}
-
 /* Disabled: readable and focusable, dimmed rather than removed. The input
    carries readOnly and aria-disabled from the primitive; nothing here uses the
    native disabled attribute. */
-.rata-text-field[data-disabled] {
-  opacity: var(--rata-state-disabled-opacity);
-}
-
 .rata-text-field[data-disabled] .rata-text-field-input {
   cursor: not-allowed;
 }

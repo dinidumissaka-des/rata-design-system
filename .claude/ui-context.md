@@ -26,6 +26,7 @@ this path is the honest answer to when it last actually moved.
 | [checkbox](../docs/components/checkbox.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [dialog](../docs/components/dialog.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [disclosure](../docs/components/disclosure.md) | `@rata/react` | content | latest / latest / future | free |
+| [field](../docs/components/field.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [heading](../docs/components/heading.md) | `@rata/react` | content | latest / latest / future | free |
 | [icon](../docs/components/icon.md) | `@rata/react` | content | latest / latest / future | free |
 | [menu](../docs/components/menu.md) | `@rata/react` | overlays | latest / latest / future | free |
@@ -267,6 +268,32 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/disclosure.md](../docs/components/disclosure.md)
+
+### Field (`@rata/react`)
+
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children">`
+
+- `label: ReactNode`
+  The control's name. Always required — `labelHidden` hides it, nothing removes it.
+- `children: (control: FieldControlProps) => ReactNode`
+  Renders the control, given the id and ARIA it must carry.
+- `labelHidden?: boolean`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the control. Defaults to a generated one.
+- `status?: FieldStatus` — default: `"idle"`
+  Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the control's ring.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `message?: ReactNode`
+  Status-dependent message under the control: the error, confirmation, or in-flight note.
+- `required?: boolean`
+  Marks the field required to assistive technology and in the label.
+- `disabled?: boolean`
+  Blocks editing while keeping the field focusable, readable and announced.
+- `className?: string`
+
+Contract: [docs/components/field.md](../docs/components/field.md)
 
 ### Heading (`@rata/react`)
 

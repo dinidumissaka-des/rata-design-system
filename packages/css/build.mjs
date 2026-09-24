@@ -18,6 +18,9 @@ const ORDER = [
   // After toggle-button: the attached bar overrides the radius each option sets.
   "toggle-button-group.css",
   "icon.css",
+  // Before text-field: Field owns everything around a control's box, and the
+  // components that compose it override only inside that box.
+  "field.css",
   "text-field.css",
   // After text-field: search borrows its look and its focus treatment.
   "search.css",

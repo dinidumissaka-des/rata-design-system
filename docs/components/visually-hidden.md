@@ -22,7 +22,7 @@ Takes an element off screen while leaving it in the accessibility tree.
 The component's own `labelHidden` prop composes this — a field in a toolbar, a checkbox under a column heading that already names it.
 
 ```tsx
-<label className="rata-text-field-label rata-visually-hidden" htmlFor={id}>
+<label className="rata-field-label rata-visually-hidden" htmlFor={id}>
   Search
 </label>
 ```

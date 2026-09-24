@@ -40,6 +40,11 @@
     "status": "latest"
   },
   {
+    "name": "field",
+    "title": "Field",
+    "status": "latest"
+  },
+  {
     "name": "heading",
     "title": "Heading",
     "status": "latest"
