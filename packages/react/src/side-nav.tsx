@@ -193,12 +193,17 @@ function SideNavDisclosure({ item }: { item: SideNavItem }) {
         <Icon icon={ChevronDown} className="rata-side-nav-chevron" />
       </button>
 
-      {/* Unmounted when closed rather than hidden: there is nothing to animate
-          here, and a hidden list is one more thing that can be reached by a
-          find-in-page while claiming to be collapsed. */}
-      {open && (
-        <ul {...disclosure.panel} className="rata-side-nav-sublist">
-          {item.items?.map((child) => (
+      {/* The list ELEMENT stays; its ITEMS do not. A hidden list is one more
+          thing that can be reached by a find-in-page while claiming to be
+          collapsed, so the links are unmounted — but removing the element too
+          left the trigger's `aria-controls` pointing at nothing whenever the
+          group was shut, which is the opposite of what `getDisclosureProps`
+          documents when it says the reference is pointed at always. An empty
+          hidden `<ul>` satisfies both: nothing to find, and an id that
+          resolves. */}
+      <ul {...disclosure.panel} className="rata-side-nav-sublist" hidden={!open}>
+        {open &&
+          item.items?.map((child) => (
             <li key={child.href}>
               <a
                 className="rata-side-nav-link rata-side-nav-sublink rata-state-layer rata-state-layer--flush"
@@ -211,8 +216,7 @@ function SideNavDisclosure({ item }: { item: SideNavItem }) {
               </a>
             </li>
           ))}
-        </ul>
-      )}
+      </ul>
     </>
   );
 }

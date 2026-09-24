@@ -135,6 +135,13 @@
 /* The nested list, expanded in place. Indented from its parent so the nesting
    is visible rather than implied by order alone — the same reasoning the
    playground's own nested checkbox rows follow. */
+/* `display: flex` below outranks the UA stylesheet's `display: none` for
+   [hidden], so the empty shell that keeps aria-controls resolving would
+   otherwise render as a flex box with its own margins. */
+.rata-side-nav-sublist[hidden] {
+  display: none;
+}
+
 .rata-side-nav-sublist {
   display: flex;
   flex-direction: column;
