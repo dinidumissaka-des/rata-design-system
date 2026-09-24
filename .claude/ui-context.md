@@ -46,6 +46,7 @@ this path is the honest answer to when it last actually moved.
 | [tabs](../docs/components/tabs.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [text](../docs/components/text.md) | `@rata/react` | content | latest / latest / future | free |
 | [text-field](../docs/components/text-field.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [textarea](../docs/components/textarea.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [toggle-button](../docs/components/toggle-button.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [toggle-button-group](../docs/components/toggle-button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [top-nav](../docs/components/top-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
@@ -810,6 +811,40 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/text-field.md](../docs/components/text-field.md)
+
+### Textarea (`@rata/react`)
+
+Extends: `Omit<`
+
+- `label: ReactNode`
+  The control's label. Always required — `labelHidden` hides it, nothing removes it.
+- `rows?: number` — default: `3`
+  How many lines of text the control shows before it scrolls.
+- `resize?: TextareaResize` — default: `"vertical"`
+  Whether the reader may drag the control taller.
+- `labelHidden?: boolean`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the control. Defaults to a generated one.
+- `status?: FieldStatus` — default: `"idle"`
+  Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `message?: ReactNode`
+  Status-dependent message under the control.
+- `required?: boolean`
+  Marks the control required to assistive technology and in the label.
+- `disabled?: boolean`
+  Blocks editing while keeping the control focusable, readable and announced.
+- `className?: string`
+  Class for the wrapper. The control itself is styled by the system.
+
+Real usage (from `apps/`):
+```tsx
+<Textarea label="Internal note" rows={2} resize="none" labelHidden />
+```
+
+Contract: [docs/components/textarea.md](../docs/components/textarea.md)
 
 ### Toggle Button (`@rata/react`)
 

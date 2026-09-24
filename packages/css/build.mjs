@@ -22,7 +22,8 @@ const ORDER = [
   // components that compose it override only inside that box.
   "field.css",
   "text-field.css",
-  // After text-field: search borrows its look and its focus treatment.
+  // After text-field: both borrow its look and its focus treatment.
+  "textarea.css",
   "search.css",
   "checkbox.css",
   // After checkbox: radio shares its construction and overrides the shape.

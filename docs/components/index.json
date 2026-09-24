@@ -140,6 +140,11 @@
     "status": "latest"
   },
   {
+    "name": "textarea",
+    "title": "Textarea",
+    "status": "latest"
+  },
+  {
     "name": "toggle-button",
     "title": "Toggle Button",
     "status": "latest"

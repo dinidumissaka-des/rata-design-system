@@ -6341,6 +6341,304 @@
     "example": "<TextField label=\"Retry limit\" description=\"How many times to try again.\" />"
   },
   {
+    "name": "textarea",
+    "title": "Textarea",
+    "description": "A labelled multi-line text input.",
+    "family": "inputs",
+    "tier": "free",
+    "status": {
+      "css": {
+        "state": "latest",
+        "version": "0.1.0"
+      },
+      "react": {
+        "state": "latest",
+        "version": "0.1.0"
+      },
+      "figma": {
+        "state": "future"
+      }
+    },
+    "dependencies": [
+      "field"
+    ],
+    "importPath": "@rata/react",
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<",
+    "props": [
+      {
+        "name": "label",
+        "optional": false,
+        "type": "ReactNode",
+        "description": "The control's label. Always required — `labelHidden` hides it, nothing removes it.",
+        "declared": true,
+        "summary": "The control's label. Always required — `labelHidden` hides it, nothing removes it.",
+        "use": [
+          "A short noun phrase naming what goes in it: \"Release notes\", not \"Type your release notes\"."
+        ],
+        "dont": [
+          "Leaving it off because a placeholder says the same thing. The placeholder is gone on the first keystroke."
+        ],
+        "conflicts": [],
+        "a11y": "Bound to the control by Field, so it is the accessible name and clicking it focuses the control."
+      },
+      {
+        "name": "rows",
+        "optional": true,
+        "type": "number",
+        "description": "How many lines of text the control shows before it scrolls.",
+        "default": "3",
+        "declared": true,
+        "summary": "How many lines of text the control shows before it scrolls.",
+        "use": [
+          "Three for a note, eight or more for something someone will draft in.",
+          "A number that matches what you expect, so the reader can see how much is wanted of them."
+        ],
+        "dont": [
+          "One. A single-line control is a `TextField`, and a one-row textarea is that with worse keyboard behaviour — Enter inserts a newline instead of submitting."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "resize",
+        "optional": true,
+        "type": "TextareaResize",
+        "description": "Whether the reader may drag the control taller.",
+        "default": "\"vertical\"",
+        "values": [
+          "vertical",
+          "none"
+        ],
+        "declared": true,
+        "summary": "Whether the reader may drag the control taller.",
+        "use": [
+          "`none` only where a taller control would break the layout around it — a fixed-height panel, a row in a dense table."
+        ],
+        "dont": [
+          "`none` as a default because the handle looks untidy. It is the cheapest fix a reader has for a field that turned out too small, and taking it away costs them more than it saves you."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "labelHidden",
+        "optional": true,
+        "type": "boolean",
+        "description": "Takes the label off screen while leaving it in the accessibility tree.",
+        "declared": true,
+        "summary": "Takes the label off screen while leaving it in the accessibility tree.",
+        "use": [
+          "A control whose meaning is already carried by a heading directly above it."
+        ],
+        "dont": [
+          "Pairing it with a placeholder standing in for the name."
+        ],
+        "conflicts": [],
+        "a11y": "The label element is still rendered and still bound. Only the pixels go."
+      },
+      {
+        "name": "id",
+        "optional": true,
+        "type": "string",
+        "description": "Stable id for the control. Defaults to a generated one.",
+        "declared": true,
+        "summary": "Stable id for the control, when something outside needs to point at it.",
+        "use": [
+          "A form library that addresses fields by id, or an error summary linking to the control it names."
+        ],
+        "dont": [
+          "Reusing one across two fields. Every id under it is derived from this."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "status",
+        "optional": true,
+        "type": "FieldStatus",
+        "description": "Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.",
+        "default": "\"idle\"",
+        "declared": true,
+        "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
+        "use": [
+          "`invalid` with a `message` saying what to do about it."
+        ],
+        "dont": [
+          "`invalid` with no message. The ring says something is wrong; only the message says what."
+        ],
+        "conflicts": [],
+        "a11y": "Field's, unchanged: `invalid` sets `aria-invalid` and pulls the message into `aria-describedby`, and while idle the message stays on the page but leaves the chain."
+      },
+      {
+        "name": "description",
+        "optional": true,
+        "type": "ReactNode",
+        "description": "Persistent helper text under the control.",
+        "declared": true,
+        "summary": "Persistent helper text under the control.",
+        "use": [
+          "The length limit, stated before someone writes past it — this is where a counter's job mostly lives."
+        ],
+        "dont": [
+          "Repeating the label in a sentence. It is read out after the name."
+        ],
+        "conflicts": [],
+        "a11y": "Joins `aria-describedby` ahead of the message, so a constraint is heard before a failure."
+      },
+      {
+        "name": "message",
+        "optional": true,
+        "type": "ReactNode",
+        "description": "Status-dependent message under the control.",
+        "declared": true,
+        "summary": "Status-dependent message under the control.",
+        "use": [
+          "What to do about an `invalid` status, in the imperative: \"Keep this under 500 characters.\""
+        ],
+        "dont": [
+          "Putting the permanent limit here. It leaves the description chain whenever the status returns to idle — that is `description`."
+        ],
+        "conflicts": [],
+        "a11y": "Announced politely rather than as an alert, because it is already in `aria-describedby`."
+      },
+      {
+        "name": "required",
+        "optional": true,
+        "type": "boolean",
+        "description": "Marks the control required to assistive technology and in the label.",
+        "declared": true,
+        "summary": "Marks the control required, in the label and to assistive technology.",
+        "use": [
+          "Controls that genuinely block submission."
+        ],
+        "dont": [
+          "Pairing it with a hand-written asterisk in `label`. Field renders one."
+        ],
+        "conflicts": [],
+        "a11y": "`aria-required` on the control; the rendered marker is `aria-hidden`."
+      },
+      {
+        "name": "disabled",
+        "optional": true,
+        "type": "boolean",
+        "description": "Blocks editing while keeping the control focusable, readable and announced.",
+        "declared": true,
+        "summary": "Blocks editing while keeping the control focusable, readable and announced.",
+        "use": [
+          "A note whose content is decided elsewhere and should still be readable in full."
+        ],
+        "dont": [
+          "Assuming the value is withheld. `readOnly` still submits."
+        ],
+        "conflicts": [],
+        "a11y": "`aria-disabled` plus `readOnly` from Field, never the native attribute."
+      },
+      {
+        "name": "className",
+        "optional": true,
+        "type": "string",
+        "description": "Class for the wrapper. The control itself is styled by the system.",
+        "declared": true,
+        "summary": "Class for the wrapper — the width the form wants, not a restyle.",
+        "use": [
+          "The measure or grid placement the form decides."
+        ],
+        "dont": [
+          "Setting a height. That is `rows`, and a hand-written height stops matching the line count the reader sees."
+        ],
+        "conflicts": [],
+        "a11y": null
+      }
+    ],
+    "usage": [
+      {
+        "case": "A note someone will actually draft in",
+        "when": "The commonest case: free text with a stated limit.",
+        "example": "<Textarea\n  label=\"Release notes\"\n  rows={8}\n  description=\"Markdown is fine. Around 500 characters reads best.\"\n/>",
+        "notes": "The limit goes in `description` rather than a counter, because it is the thing worth knowing BEFORE writing. Eight rows says how much is wanted more honestly than any sentence would."
+      },
+      {
+        "case": "Too long, and said so",
+        "when": "Reporting a limit the writer has passed.",
+        "example": "<Textarea\n  label=\"Release notes\"\n  status=\"invalid\"\n  message=\"Keep this under 500 characters.\"\n/>",
+        "notes": "The message is the imperative, not the diagnosis — \"too long\" tells someone what happened, this tells them what to do. The ring and the colour say it twice more."
+      },
+      {
+        "case": "A layout that cannot take a taller control",
+        "when": "A fixed-height panel, or a control inside a dense row.",
+        "example": "<Textarea label=\"Internal note\" rows={2} resize=\"none\" labelHidden />",
+        "notes": "`none` because the container genuinely cannot grow, which is the only reason for it. The label is hidden rather than absent — the row's own header is carrying the name visually, and nothing about the accessible name changes."
+      },
+      {
+        "case": "Reaching for the wrong component",
+        "when": "The value is one line and Enter should submit the form.",
+        "example": "<Textarea label=\"Email\" rows={1} />",
+        "notes": "Don't. That is `TextField`. A one-row textarea looks almost right and behaves wrong: Enter inserts a newline instead of submitting, and the value can arrive with line breaks in it that nothing upstream expects."
+      }
+    ],
+    "behavior": {
+      "summary": "A `<textarea>` inside a `Field`. No primitive of its own: `getFieldProps` already supplies every id and ARIA attribute, and a multi-line control needs nothing a single-line one does not.",
+      "decisions": [
+        {
+          "decision": "A separate component, not a `multiline` prop on TextField",
+          "why": "`TextField` is typed to `HTMLInputElement` and forwards its ref as one, so a boolean that silently swapped the element would invalidate half its props at runtime while still compiling. The elements also differ in ways a caller has to know about: `rows` and `wrap` exist on one and not the other, and Enter inserts a newline here where it submits there. This system's test for splitting is a difference in semantics rather than in looks, and that is what this is — the same test that separated Text from Heading."
+        },
+        {
+          "decision": "`rows` sets the height, and there is no `size` prop",
+          "why": "`TextField`'s `size` exists to choose a control height from the control scale. A multi-line control's height is how many lines it shows, which is what `rows` already says — offering both would be two props for one measurement, and a caller would have to guess which wins."
+        },
+        {
+          "decision": "It does not grow with its content in this version",
+          "why": "The honest options are all costly: `field-sizing: content` is not supported widely enough to be the only mechanism, the replicated-content grid trick needs a wrapper element around the control that exists purely to be measured, and measuring in JS means a resize observer per field. Each is a real decision about the DOM this component puts on the page, and none of them should ride along with the box. `rows` plus a resize handle covers the case meanwhile, and the caller can see how much room they are giving."
+        },
+        {
+          "decision": "`resize` defaults to `vertical`, and horizontal is not offered",
+          "why": "Letting a reader make the box taller is the cheapest possible fix for a field that turned out too small, and it costs the layout nothing — the control's inline size is the form's. Horizontal resize does cost the layout: a control dragged wider than its column overflows whatever contains it, and no form anticipates that. `none` is there for the layouts that cannot tolerate a height change either."
+        },
+        {
+          "decision": "No character counter",
+          "why": "A counter is two things — a number that updates, and an announcement policy for when it should interrupt a typist — and both belong to the caller who knows the limit. `Field` already has the slot: `description` for the limit stated up front, `message` with `status=\"invalid\"` for having passed it. Building it in would mean choosing a live-region policy on everyone's behalf."
+        },
+        {
+          "decision": "`disabled` is `aria-disabled` plus `readOnly`, inherited from Field",
+          "why": "Nothing new is decided here; it is named so the contract does not read as though the question were open. The same consequence applies — a readOnly control still submits its value."
+        }
+      ]
+    },
+    "tokens": {
+      "base": {
+        "summary": "The box, and only the box — Field owns the label, helper text, message and disabled dimming. Every value below is the one `.rata-text-field-input` uses, deliberately: the two controls sit in the same form and a reader should not be able to tell they were built separately.",
+        "tokens": {
+          "font-family": "font.family.sans — a control inherits neither family nor size from the page, so both are stated",
+          "font-size": "type.control.size.md — the same constant the button family and the text field use, so all three measure their text alike",
+          "line-height": "type.control.line-height.md — and here it also decides the height, since `rows` multiplies it",
+          "background": "theme.bg.surface",
+          "color": "theme.fg.primary",
+          "border-color": "theme.border.strong",
+          "border-radius": "radius.element",
+          "padding-inline": "space.control.padding-inline.md — matching the text field's md step, which is the only step this control has",
+          "padding-block": "space.padding.xs — a single-line control centres its text with its height, and a multi-line one has no height to centre against, so the space has to be stated",
+          "placeholder color": "theme.fg.muted"
+        }
+      },
+      "states": {
+        "summary": "Selected from the primitive's data-status on the Field root, exactly as the text field's are. The rings are inset strokes, never the focus ring, so a control can be focused and invalid at once.",
+        "tokens": {
+          "hover inner band": "theme.bg.muted at border.2 as an inset shadow, idle only — the validation rings occupy the same 2px and box-shadow does not accumulate",
+          "focus border-color": "theme.fg.primary",
+          "focus outline": "focus.ring-width solid theme.fg.primary at space.0 offset — the same deliberate departure the text field documents, so the two controls' focus looks identical",
+          "validating ring": "theme.accent-role.ring",
+          "valid ring": "theme.success-role.ring",
+          "invalid ring": "theme.danger-role.ring",
+          "disabled cursor": "not-allowed — the dimming itself is Field's, on the root"
+        }
+      }
+    },
+    "example": "<Textarea label=\"Internal note\" rows={2} resize=\"none\" labelHidden />"
+  },
+  {
     "name": "toggle-button",
     "title": "Toggle Button",
     "description": "A button that stays on: an on/off state the user sets directly, announced with aria-pressed.",

@@ -38,6 +38,7 @@ import {
   Spinner,
   Switch,
   Text,
+  Textarea,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
@@ -436,6 +437,35 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     "Opened from outside by something that went wrong": () => (
       <div className="pg-block-stack">
         <DisclosureStage />
+      </div>
+    ),
+  },
+
+  textarea: {
+    "A note someone will actually draft in": () => (
+      <div className="pg-block-stack">
+        <Textarea
+          label="Release notes"
+          rows={5}
+          description="Markdown is fine. Around 500 characters reads best."
+          defaultValue={"Fixed the disabled trap in getDisclosureProps.\nExtracted Field."}
+        />
+      </div>
+    ),
+    "Too long, and said so": () => (
+      <div className="pg-block-stack">
+        <Textarea
+          label="Release notes"
+          rows={3}
+          status="invalid"
+          message="Keep this under 500 characters."
+          defaultValue="A very long changelog that ran well past what the release page can show without scrolling…"
+        />
+      </div>
+    ),
+    "A layout that cannot take a taller control": () => (
+      <div className="pg-block-stack">
+        <Textarea label="Internal note" rows={2} resize="none" labelHidden />
       </div>
     ),
   },

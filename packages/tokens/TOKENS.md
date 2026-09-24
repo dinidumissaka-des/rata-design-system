@@ -1992,6 +1992,37 @@ The three documented foreground steps for text, and the reason this prop exists 
 | muted | `theme.fg.muted` |
 | all three | contrast-verified against `theme.bg.canvas`, `theme.bg.surface` and `theme.bg.subtle` — see the contrast page |
 
+### textarea
+
+The box, and only the box — Field owns the label, helper text, message and disabled dimming. Every value below is the one `.rata-text-field-input` uses, deliberately: the two controls sit in the same form and a reader should not be able to tell they were built separately.
+
+| Property | Token |
+|---|---|
+| font-family | `font.family.sans` — a control inherits neither family nor size from the page, so both are stated |
+| font-size | `type.control.size.md` — the same constant the button family and the text field use, so all three measure their text alike |
+| line-height | `type.control.line-height.md` — and here it also decides the height, since `rows` multiplies it |
+| background | `theme.bg.surface` |
+| color | `theme.fg.primary` |
+| border-color | `theme.border.strong` |
+| border-radius | `radius.element` |
+| padding-inline | `space.control.padding-inline.md` — matching the text field's md step, which is the only step this control has |
+| padding-block | `space.padding.xs` — a single-line control centres its text with its height, and a multi-line one has no height to centre against, so the space has to be stated |
+| placeholder color | `theme.fg.muted` |
+
+### textarea-states
+
+Selected from the primitive's data-status on the Field root, exactly as the text field's are. The rings are inset strokes, never the focus ring, so a control can be focused and invalid at once.
+
+| Property | Token |
+|---|---|
+| hover inner band | `theme.bg.muted` at `border.2` as an inset shadow, idle only — the validation rings occupy the same 2px and box-shadow does not accumulate |
+| focus border-color | `theme.fg.primary` |
+| focus outline | `focus.ring-width` solid `theme.fg.primary` at `space.0` offset — the same deliberate departure the text field documents, so the two controls' focus looks identical |
+| validating ring | `theme.accent-role.ring` |
+| valid ring | `theme.success-role.ring` |
+| invalid ring | `theme.danger-role.ring` |
+| disabled cursor | not-allowed — the dimming itself is Field's, on the root |
+
 ### toggle-button-group-attached
 
 The default, and what a segmented control is: the options are one question, so they close up into one bar and only the outer corners round.
