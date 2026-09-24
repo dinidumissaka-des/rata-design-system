@@ -1476,6 +1476,587 @@
     "example": "<Dialog\n        open={open}\n        onClose={() => setOpen(false)}\n        title={title}\n        description={description}\n        size={size}\n        dismissible={dismissible}\n        initialFocus={cancelRef}\n        footer={\n          <>\n            <Button ref={cancelRef} variant=\"secondary\" onClick={() => setOpen(false)}>\n              Cancel\n            </Button>\n            <Button variant={destructive ? \"destructive\" : \"primary\"} onClick={() => setOpen(false)}>\n              {destructive ? \"Delete\" : \"Save\"}\n            </Button>\n          </>\n        }\n      >\n        This cannot be undone.\n      </Dialog>"
   },
   {
+    "name": "disclosure",
+    "title": "Disclosure",
+    "description": "A button that shows and hides a panel of content, expanded in place.",
+    "family": "content",
+    "tier": "free",
+    "status": {
+      "css": {
+        "state": "latest",
+        "version": "0.1.0"
+      },
+      "react": {
+        "state": "latest",
+        "version": "0.1.0"
+      },
+      "figma": {
+        "state": "future"
+      }
+    },
+    "dependencies": [
+      "state-layer",
+      "icon"
+    ],
+    "importPath": "@rata/react",
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLDivElement>, \"title\" | \"children\">",
+    "props": [
+      {
+        "name": "title",
+        "optional": false,
+        "type": "ReactNode",
+        "description": "The trigger's label — what the button says it will reveal.",
+        "declared": true,
+        "summary": "The trigger's label — what the button says it will reveal.",
+        "use": [
+          "A short phrase naming the content, not the action: \"Shipping address\", not \"Show shipping address\". The button already announces that it expands."
+        ],
+        "dont": [
+          "A sentence. The trigger is a control at control size, and a label that wraps has stopped being one.",
+          "Anything interactive. A button inside a button does not nest, and the browser will not render what you wrote."
+        ],
+        "conflicts": [],
+        "a11y": "Becomes the trigger's accessible name, and — through `aria-labelledby` — the panel's as well, so the revealed region is never anonymous. With `headingLevel` set it is also the heading's text."
+      },
+      {
+        "name": "children",
+        "optional": false,
+        "type": "ReactNode",
+        "description": "The content the trigger reveals.",
+        "declared": true,
+        "summary": "The content the trigger reveals.",
+        "use": [
+          "Anything: prose, a form, a table. The panel is a plain region and imposes no structure on it."
+        ],
+        "dont": [
+          "Content that must keep state while closed. The panel's content unmounts rather than hiding, so a half-filled form inside it is gone on reopen — lift that state above the disclosure."
+        ],
+        "conflicts": [],
+        "a11y": "Everything inside stays in the tab order exactly where it is. That is the promise a disclosure makes and a menu does not."
+      },
+      {
+        "name": "headingLevel",
+        "optional": true,
+        "type": "DisclosureHeadingLevel",
+        "description": "Wraps the trigger in a heading at this level, so a stack of these is navigable by heading.",
+        "declared": true,
+        "summary": "Wraps the trigger in a heading at this level, turning a stack of these into an accordion someone can navigate by heading.",
+        "use": [
+          "On every section of a set that divides a page — the level below whatever heading the set sits under.",
+          "Left off for a single disclosure inside a form or a paragraph, which heads nothing."
+        ],
+        "dont": [
+          "Picking it for size. The trigger is a control and takes the control type scale at every level; this only changes what the outline says."
+        ],
+        "conflicts": [],
+        "a11y": "The APG's accordion pattern is a heading containing a button, and that pairing is what lets a reader jump between sections instead of tabbing through them. A skipped level breaks that navigation, which is why there is no default — only the caller knows the depth."
+      },
+      {
+        "name": "open",
+        "optional": true,
+        "type": "boolean",
+        "description": "Controls the panel from outside, for when something other than the trigger decides.",
+        "declared": true,
+        "summary": "Controls the panel from outside, for when something other than the trigger decides.",
+        "use": [
+          "Opening the section that holds a failed field after a form is submitted.",
+          "Persisting which sections a reader had open across a navigation."
+        ],
+        "dont": [
+          "Passing it alongside `defaultOpen`. One of them owns the state; passing both means the uncontrolled value is silently ignored from the first render."
+        ],
+        "conflicts": [
+          "defaultOpen"
+        ],
+        "a11y": "Drives `aria-expanded` on the trigger. Because the panel unmounts when closed, this prop is also what decides whether its content exists at all."
+      },
+      {
+        "name": "defaultOpen",
+        "optional": true,
+        "type": "boolean",
+        "description": "The starting state when the component owns it.",
+        "default": "false",
+        "declared": true,
+        "summary": "The starting state when the component owns it.",
+        "use": [
+          "Opening the one section that is the point of the page, leaving the rest closed.",
+          "Opening the section containing the current item, the way `SideNav` expands the group holding the current page — a reader inside a collapsed group cannot see where they are."
+        ],
+        "dont": [
+          "Opening everything. A set that starts fully open is a page with headings in it, and the disclosures are only costing the reader a click to get back to."
+        ],
+        "conflicts": [
+          "open"
+        ],
+        "a11y": null
+      },
+      {
+        "name": "onOpenChange",
+        "optional": true,
+        "type": "(open: boolean) => void",
+        "description": "Fires when the trigger is pressed or Escape closes the panel.",
+        "declared": true,
+        "summary": "Fires when the trigger is pressed or Escape closes the panel.",
+        "use": [
+          "Storing which sections a reader keeps open.",
+          "Loading the section's content the first time it opens."
+        ],
+        "dont": [
+          "Treating it as a click handler. Escape calls it too, and so does any future way of closing the panel."
+        ],
+        "conflicts": [],
+        "a11y": "The component returns focus to the trigger when Escape closes the panel, before this fires — a caller does not have to restore it and should not fight it."
+      },
+      {
+        "name": "disabled",
+        "optional": true,
+        "type": "boolean",
+        "description": "Marks the disclosure unavailable without removing it from the page.",
+        "default": "false",
+        "declared": true,
+        "summary": "Marks the disclosure unavailable without removing it from the page.",
+        "use": [
+          "A section that has nothing in it yet, where hiding it entirely would make the page change shape."
+        ],
+        "dont": [
+          "Hiding content the reader is not allowed to see. Disabled is a statement about the control, not a security boundary, and the panel's absence is not enforcement."
+        ],
+        "conflicts": [],
+        "a11y": "`aria-disabled`, never the native attribute: the trigger stays focusable and discoverable, and the primitive blocks the activation. Styled with state.disabled-opacity."
+      },
+      {
+        "name": "className",
+        "optional": true,
+        "type": "string",
+        "description": null,
+        "declared": true,
+        "summary": "Extra classes, for placement — not for restyling it.",
+        "use": [
+          "The margin the page wants around it, or the rule between it and the next one, neither of which this component owns."
+        ],
+        "dont": [
+          "Rebuilding the trigger's hover. Compose `.rata-state-layer`, which it already carries."
+        ],
+        "conflicts": [],
+        "a11y": null
+      }
+    ],
+    "usage": [
+      {
+        "case": "One optional section in a form",
+        "when": "Settings most people never change, kept off the page until asked for.",
+        "example": "<Disclosure title=\"Advanced options\">\n  <TextField label=\"Retry limit\" />\n</Disclosure>",
+        "notes": "No `headingLevel`: this heads nothing and nobody navigates to it. The fields inside stay in the tab order where they are, which is the promise that makes a disclosure the right pattern here rather than a menu."
+      },
+      {
+        "case": "A page divided into sections",
+        "when": "Several disclosures in a row, each a part of one document.",
+        "example": "<Disclosure title=\"Shipping address\" headingLevel={3} defaultOpen>\n  <Text>Where the order goes.</Text>\n</Disclosure>",
+        "notes": "`headingLevel` is what makes the set navigable by heading instead of only by tabbing. Level 3 because the section it sits in is headed by an h2 — the same outline rule `Heading` enforces."
+      },
+      {
+        "case": "Opened from outside by something that went wrong",
+        "when": "A submit failed and the offending field is inside a collapsed section.",
+        "example": "<Disclosure title=\"Billing\" open={hasBillingError} onOpenChange={setBillingOpen}>\n  <TextField label=\"Card number\" status=\"invalid\" message=\"Check this number.\" />\n</Disclosure>",
+        "notes": "Controlled, because the trigger is no longer the only thing that decides. A reader must never be shown an error message about a field they cannot see."
+      },
+      {
+        "case": "Reaching for the wrong component",
+        "when": "The panel holds commands rather than content — Rename, Duplicate, Delete.",
+        "example": "<Disclosure title=\"Actions\">\n  <Button variant=\"tertiary\">Rename</Button>\n  <Button variant=\"tertiary\">Delete</Button>\n</Disclosure>",
+        "notes": "Don't. That is `Menu`: a list of commands promises arrow-key navigation and one tab stop, and a disclosure gives neither — so every command lands in the page's tab order. The two are different ARIA patterns for different things, which is exactly why the primitive is separate from `getMenuProps`."
+      }
+    ],
+    "behavior": {
+      "summary": "A trigger that shows and hides a panel, built on `getDisclosureProps` — the primitive three navigation components already use. Open state is controlled or uncontrolled; Escape closes it from either half and hands focus back to the trigger.",
+      "decisions": [
+        {
+          "decision": "This is a disclosure and not a menu, and the difference is the whole reason the primitive exists separately",
+          "why": "A menu promises a keyboard model — one tab stop, arrow keys, typeahead — that assistive technology announces and users then expect. A disclosure promises nothing beyond \"this button reveals that\", and everything inside the panel stays in the tab order where it was. Reaching for `role=\"menu\"` on a panel of links or form fields is among the commonest mistakes in this area, and `getDisclosureProps` documents it at length. This component is the standalone consumer of that argument."
+        },
+        {
+          "decision": "Closed empties the panel rather than removing it",
+          "why": "Two promises pull against each other here and the split keeps both. The content is unmounted, for the reason `SideNav` first gave: hidden content is still reachable by find-in-page, so a panel claiming to be collapsed could be scrolled to and read, and a chart inside a closed section would go on measuring a hidden box. But the panel ELEMENT stays, empty and `hidden`, because `getDisclosureProps` points `aria-controls` at it whether open or shut — a reference that appears and disappears is one assistive technology has to re-read to discover, and a dangling IDREF is simply ignored, which made that reference inert exactly half the time. An empty hidden shell is reachable by no find-in-page and resolves for every reader. The cost is unchanged: state inside the panel resets, which is the caller's to manage and is stated in `children`'s entry."
+        },
+        {
+          "decision": "It does not animate open in this version",
+          "why": "Transitioning to `height: auto` needs either a measured pixel height or a `grid-template-rows: 0fr → 1fr` wrapper, and both put a second element around the caller's content purely to move it. Unmounting when closed forecloses the transition anyway — there is nothing in the DOM to animate from. The chevron rotates, which is the part that reports the state change, and the panel appears. Animating the panel is its own pass with its own decision about the wrapper."
+        },
+        {
+          "decision": "`headingLevel` is optional and there is no default",
+          "why": "The APG's disclosure pattern is a bare button, and that is right for one \"Show advanced options\" in a form. The APG's accordion pattern wraps each trigger in a heading, and that is what makes a stack of sections navigable by heading. Those are the same component in two situations, so the wrapper is a prop rather than a second component — and it has no default for the reason `Heading`'s `level` has none: only the caller knows the depth, and a component that guessed would produce a page of `h3`s."
+        },
+        {
+          "decision": "It owns no box, no background and no rule between sections",
+          "why": "A lone disclosure sits in running content, where a border and a padded box would be an uninvited card. The rules that divide a stack of sections are a property of the stack — they need to know which section is first and last — and inventing them here would mean every standalone use has to override them. Same reasoning as `Heading` carrying no margin."
+        },
+        {
+          "decision": "An accordion — a set where opening one closes the others — is a different entry, and this is not it",
+          "why": "That behavior needs an owner above the individual sections: something holding which one is open, the way `RadioGroup` holds the selected radio and `ToggleButtonGroup` holds its selection mode. A `single`/`multiple` prop on the unit could not express it, because a unit cannot close its siblings. `accordion` resolves here for now because one collapsible section is what most people asking for one actually want; when the coordinating entry ships, the alias moves to it."
+        },
+        {
+          "decision": "`disabled` is `aria-disabled`, and the primitive blocks the activation",
+          "why": "This system's rule for every interactive primitive: a disabled control stays focusable and screen-reader-discoverable, and `getDisclosureProps` already guards the click and emits `aria-disabled` rather than the native attribute. Nothing new is decided here — it is named so the contract does not read as though the question were open."
+        },
+        {
+          "decision": "Escape closes it from the trigger as well as from inside the panel",
+          "why": "A disclosure does not move focus when it opens, so after the trigger is pressed focus is still on the trigger. An Escape handler bound only to the panel would therefore never fire in the commonest case: open it, press Escape, nothing happens. The primitive puts the same handler on both halves for exactly this, and leaves the key alone while closed so a surrounding Dialog still receives it."
+        }
+      ]
+    },
+    "tokens": {
+      "base": {
+        "summary": "Nothing. The component owns no box, no background and no rule — a lone disclosure sits in running content, and the divider between stacked sections belongs to the set rather than to the unit.",
+        "tokens": {
+          "box": "none — see the decision on why the rules between sections are not this component's"
+        }
+      },
+      "trigger": {
+        "summary": "A control, sized and padded from the control scale so it lines up with the buttons around it. Full-bleed in its inline axis: the whole row is the target, which is what makes a wide section header feel pressable rather than only its text.",
+        "tokens": {
+          "min-block-size": "size.control.md as a FLOOR rather than a fixed height — a section title long enough to wrap must be allowed to, the same call `SideNav` made for its rows. A fixed block-size would clip the second line.",
+          "padding-inline": "space.control.padding-inline.sm",
+          "border-radius": "radius.element",
+          "colour": "theme.fg.primary",
+          "font-size": "type.control.size.md",
+          "font-weight": "type.control.weight",
+          "gap between the label and the chevron": "space.gap.sm",
+          "chevron size": "size.icon.text",
+          "hover / press": "compose the .rata-state-layer class",
+          "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible",
+          "disabled": "state.disabled-opacity"
+        }
+      },
+      "chevron": {
+        "summary": "The only thing that moves. It rotates between the two states at the interactive duration, which is the pair reserved for a control answering a press.",
+        "tokens": {
+          "transition": "motion.interactive.duration with motion.interactive.easing",
+          "colour": "currentColor — it repeats what aria-expanded already says, so it can never disagree with the trigger it sits in"
+        }
+      },
+      "panel": {
+        "summary": "The revealed content. Indented to the trigger's own inline padding so the two read as one block, and given room above it rather than below — what follows the disclosure is the page's spacing problem, not this component's.",
+        "tokens": {
+          "padding-block-start": "space.padding.sm",
+          "padding-inline": "space.control.padding-inline.sm — matching the trigger, so the label and the content it reveals share an edge",
+          "colour": "inherited — the panel holds whatever the caller puts in it and tints none of it",
+          "when closed": "display: none via [hidden] — stated rather than left to the UA stylesheet, because a `display` added to this rule later would silently outrank it and start painting an empty box"
+        }
+      }
+    },
+    "example": "<Disclosure title=\"Advanced options\">\n          <TextField label=\"Retry limit\" description=\"How many times to try again.\" />\n        </Disclosure>"
+  },
+  {
+    "name": "field",
+    "title": "Field",
+    "description": "The label, helper text, message and validation state around a form control.",
+    "family": "inputs",
+    "tier": "free",
+    "status": {
+      "css": {
+        "state": "latest",
+        "version": "0.1.0"
+      },
+      "react": {
+        "state": "latest",
+        "version": "0.1.0"
+      },
+      "figma": {
+        "state": "future"
+      }
+    },
+    "dependencies": [
+      "visually-hidden"
+    ],
+    "importPath": "@rata/react",
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLDivElement>, \"children\">",
+    "props": [
+      {
+        "name": "label",
+        "optional": false,
+        "type": "ReactNode",
+        "description": "The control's name. Always required — `labelHidden` hides it, nothing removes it.",
+        "declared": true,
+        "summary": "The control's name.",
+        "use": [
+          "A short noun phrase: \"Billing email\", not \"Enter your billing email\"."
+        ],
+        "dont": [
+          "Leaving it out for a field whose purpose looks obvious. There is no unlabelled option — `labelHidden` is how a visually bare field is built."
+        ],
+        "conflicts": [],
+        "a11y": "Bound to the control with `for`/`id` by the primitive, so it is the accessible name and clicking it focuses the control."
+      },
+      {
+        "name": "children",
+        "optional": false,
+        "type": "(control: FieldControlProps) => ReactNode",
+        "description": "Renders the control, given the id and ARIA it must carry.",
+        "declared": true,
+        "summary": "Renders the control, given the id and ARIA it must carry.",
+        "use": [
+          "Spreading the argument onto the control and nothing else: `{(control) => <select {...control} />}`.",
+          "Wrapping a control this system does not own yet, which is the case Field exists for outside its own components."
+        ],
+        "dont": [
+          "Dropping the argument. A control rendered without it has no id, no accessible name and no description chain — and it will look correct, which is what makes it worth saying."
+        ],
+        "conflicts": [],
+        "a11y": "The argument carries `id`, `aria-describedby`, `aria-invalid`, `aria-required`, `aria-disabled` and `readOnly`. Every one of them is derived, so none can drift from the label and message beside it."
+      },
+      {
+        "name": "labelHidden",
+        "optional": true,
+        "type": "boolean",
+        "description": "Takes the label off screen while leaving it in the accessibility tree.",
+        "declared": true,
+        "summary": "Takes the label off screen while leaving it in the accessibility tree.",
+        "use": [
+          "A field whose meaning is already carried by its surroundings — a search box under a heading that names it."
+        ],
+        "dont": [
+          "Using it and then relying on `placeholder` to carry the name. The placeholder disappears on the first keystroke."
+        ],
+        "conflicts": [],
+        "a11y": "The label element is still rendered and still bound. Nothing about the accessible name changes — only the pixels."
+      },
+      {
+        "name": "id",
+        "optional": true,
+        "type": "string",
+        "description": "Stable id for the control. Defaults to a generated one.",
+        "declared": true,
+        "summary": "Stable id for the control, when something outside needs to point at it.",
+        "use": [
+          "A form library that addresses fields by id, or an external error summary linking to the field it describes."
+        ],
+        "dont": [
+          "Reusing one across two fields. Every id under it — description, message — is derived from this, so a duplicate silently crosses two fields' wiring."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "status",
+        "optional": true,
+        "type": "FieldStatus",
+        "description": "Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the control's ring.",
+        "default": "\"idle\"",
+        "values": [
+          "idle",
+          "validating",
+          "valid",
+          "invalid"
+        ],
+        "declared": true,
+        "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the control's ring.",
+        "use": [
+          "`validating` for an in-flight check, such as a uniqueness lookup.",
+          "`invalid` with a `message` saying what to do about it."
+        ],
+        "dont": [
+          "`invalid` with no message. The ring says something is wrong and the colour says it twice; only the message says what."
+        ],
+        "conflicts": [],
+        "a11y": "`invalid` sets `aria-invalid` and pulls the message into `aria-describedby`; `validating` sets `aria-busy`. While `idle` the message stays on the page but leaves the description chain, so a stale message is not announced."
+      },
+      {
+        "name": "description",
+        "optional": true,
+        "type": "ReactNode",
+        "description": "Persistent helper text under the control.",
+        "declared": true,
+        "summary": "Persistent helper text under the control.",
+        "use": [
+          "A constraint the reader needs before they type: a format, a limit, where the value ends up."
+        ],
+        "dont": [
+          "Repeating the label in a sentence. It is read out after the name, so a restatement is heard twice."
+        ],
+        "conflicts": [],
+        "a11y": "Joins `aria-describedby` ahead of the message, so a constraint is heard before a failure."
+      },
+      {
+        "name": "message",
+        "optional": true,
+        "type": "ReactNode",
+        "description": "Status-dependent message under the control: the error, confirmation, or in-flight note.",
+        "declared": true,
+        "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
+        "use": [
+          "What to do about an `invalid` status, in the imperative: \"Check this number.\""
+        ],
+        "dont": [
+          "Putting the permanent constraint here. It vanishes from the description chain whenever the status returns to idle — that is `description`."
+        ],
+        "conflicts": [],
+        "a11y": "Announced politely rather than as an alert: it is already in `aria-describedby`, and an assertive region would announce it a second time when focus lands."
+      },
+      {
+        "name": "required",
+        "optional": true,
+        "type": "boolean",
+        "description": "Marks the field required to assistive technology and in the label.",
+        "declared": true,
+        "summary": "Marks the field required, in the label and to assistive technology.",
+        "use": [
+          "Fields that genuinely block submission. On a form where nearly everything is required, mark the optional ones instead."
+        ],
+        "dont": [
+          "Pairing it with a hand-written asterisk in `label`. This renders one, and the second would be read out."
+        ],
+        "conflicts": [],
+        "a11y": "`aria-required` on the control. The rendered asterisk is `aria-hidden`, because announcing it too would say the requirement twice."
+      },
+      {
+        "name": "disabled",
+        "optional": true,
+        "type": "boolean",
+        "description": "Blocks editing while keeping the field focusable, readable and announced.",
+        "declared": true,
+        "summary": "Blocks editing while keeping the field focusable, readable and announced.",
+        "use": [
+          "A field whose value is decided elsewhere and should still be readable."
+        ],
+        "dont": [
+          "Assuming the value is withheld. `readOnly` still submits — if the value must not reach the server, do not render the field."
+        ],
+        "conflicts": [],
+        "a11y": "`aria-disabled` plus `readOnly`, never the native attribute, so the field stays in the tab order and the accessibility tree."
+      },
+      {
+        "name": "className",
+        "optional": true,
+        "type": "string",
+        "description": null,
+        "declared": true,
+        "summary": "Class for the wrapper — the width the form wants, not a restyle.",
+        "use": [
+          "The measure or grid placement the form decides, which this component deliberately does not own."
+        ],
+        "dont": [
+          "Restyling the label or message. Those come from the type scale, and a hand-written size drifts the moment the seed moves."
+        ],
+        "conflicts": [],
+        "a11y": null
+      }
+    ],
+    "usage": [
+      {
+        "case": "A control this system does not wrap yet",
+        "when": "The case Field exists for: a native control with no component of its own.",
+        "example": "<Field label=\"Country\" description=\"Where the order ships.\">\n  {(control) => (\n    <select {...control}>\n      <option>Sri Lanka</option>\n    </select>\n  )}\n</Field>",
+        "notes": "The argument is spread onto the control and nowhere else. Everything the reader hears — the name, the helper text, the requirement — is wired from it."
+      },
+      {
+        "case": "A field that failed validation",
+        "when": "Reporting what went wrong, where the reader can act on it.",
+        "example": "<Field label=\"Card number\" status=\"invalid\" message=\"Check this number.\" required>\n  {(control) => <input {...control} inputMode=\"numeric\" />}\n</Field>",
+        "notes": "The ring, the colour and the message say it three ways, and only the message says what to do. `status` also decides that the message joins the description chain — while idle it stays on the page and leaves the chain, so a stale error is not announced."
+      },
+      {
+        "case": "A third-party control given the system's treatment",
+        "when": "A date picker or combobox from another library, which should still look and announce like every other field.",
+        "example": "<Field label=\"Departure\" description=\"Any date after today.\">\n  {(control) => <ThirdPartyDatePicker {...control} />}\n</Field>",
+        "notes": "Field styles nothing inside the control, which is what makes this work — it owns the label, the helper text and the state, and leaves the box alone."
+      },
+      {
+        "case": "Reaching for the wrong component",
+        "when": "The control already has a wrapper of its own.",
+        "example": "<Field label=\"Email\">\n  {(control) => <TextField label=\"Email\" {...control} />}\n</Field>",
+        "notes": "Don't. `TextField` is built on Field and renders its own label, so this produces two labels and two ids for one input. `<TextField label=\"Email\" />` is the whole thing — reach for Field only where no wrapper exists."
+      }
+    ],
+    "behavior": {
+      "primitive": "getFieldProps",
+      "summary": "Owns everything around a form control — the label, the required marker, the helper text, the message, and the `data-status` the control's own CSS selects on. Built on `getFieldProps`, which derives every id from the field's own and is the same primitive `TextField` has always used.",
+      "decisions": [
+        {
+          "decision": "The control arrives as a function, not as children",
+          "why": "Field has to hand the control its `id`, `aria-describedby`, `aria-invalid`, `aria-required`, `aria-disabled` and `readOnly`. Of the three ways to do that, cloning `children` breaks the moment someone wraps their input in a fragment or a div; a context the control opts into makes a control rendered OUTSIDE a Field silently unlabelled, which is the failure this component exists to prevent. A function makes the wiring visible at the call site, works for a control from another library, and cannot be forgotten — there is nothing to render without it."
+        },
+        {
+          "decision": "It does not style the control's box",
+          "why": "Height, inline padding, border and focus ring stay with each control, because they genuinely differ: a textarea grows with its content, a select reserves a well for its chevron, a checkbox is square and small. Field owning them would mean every control overriding them. What Field owns is what is identical across all of them — which is everything outside the box."
+        },
+        {
+          "decision": "`status` lives here rather than on the control",
+          "why": "It drives `data-status` on the root, and each control's stylesheet selects on that for its own ring. One state, read by many controls, set in one place — and it is also what decides whether the message joins the description chain, which is an accessibility fact about the group rather than about the input."
+        },
+        {
+          "decision": "`TextField` keeps its flat API and is rebuilt on this, not replaced by it",
+          "why": "`<TextField label=\"Email\" />` stays one element with one prop — a component whose commonest use got more verbose to serve an abstraction would be a bad trade. Field is what TextField is made of. Callers reach for Field directly for the controls that have no wrapper yet and for third-party ones; everything else keeps the shorthand."
+        },
+        {
+          "decision": "The primitive is renamed `getFieldProps`, with the old name kept as an alias",
+          "why": "It was called `getTextFieldProps`, and nothing in it has ever been about text: it returns `root`, `label`, `input`, `description` and `message` bags containing ids and ARIA, and a `<select>` or `<textarea>` could consume it unchanged today. A Select built on something called `getTextFieldProps` would be the lookup surface lying about itself. `getTextFieldProps` and `TextFieldStatus` continue to be exported as aliases so nothing outside this repo breaks."
+        },
+        {
+          "decision": "`disabled` is `aria-disabled` plus `readOnly`, never the native attribute",
+          "why": "This system's rule, and for an input `readOnly` is the analogue of the button's click guard: it blocks editing while keeping the control in the tab order and the accessibility tree. Note the consequence, which is the same one `TextField`'s contract already carries — a readOnly field still submits its value."
+        },
+        {
+          "decision": "`labelHidden` hides the pixels, never the label",
+          "why": "The label element is still rendered and still bound by `for`, so nothing about the accessible name changes. The alternative people reach for — dropping the label and letting `placeholder` stand in — loses the name on the first keystroke, which is when the reader most needs it."
+        }
+      ]
+    },
+    "tokens": {
+      "base": {
+        "summary": "A column. The gap is the only measurement here, and it is deliberately tighter than it looks it should be.",
+        "tokens": {
+          "display": "flex, column",
+          "gap": "space.stack.2xs — not space.stack.xs: the label and the helper text each carry their own line-height leading, so the perceived gap is already larger than the number, and the next step up reads as separation rather than as grouping"
+        }
+      },
+      "label": {
+        "summary": "The control's name, at the label role of the type scale.",
+        "tokens": {
+          "colour": "theme.fg.primary",
+          "font-size": "type.label.size",
+          "font-weight": "type.label.weight",
+          "line-height": "type.label.line-height"
+        }
+      },
+      "required-marker": {
+        "summary": "The asterisk. Required-ness is information, not a fault, so it is not the danger tone.",
+        "tokens": {
+          "colour": "theme.fg.secondary"
+        }
+      },
+      "description": {
+        "summary": "Persistent helper text, and always ahead of the message in the description order so a constraint is heard before a failure.",
+        "tokens": {
+          "margin": "space.0",
+          "colour": "theme.fg.secondary",
+          "font-size": "type.supporting.size",
+          "line-height": "type.supporting.line-height"
+        }
+      },
+      "message": {
+        "summary": "The status-dependent line. Neutral until the status says otherwise, so a field that has not been judged does not look judged.",
+        "tokens": {
+          "margin": "space.0",
+          "colour": "theme.fg.secondary",
+          "font-size": "type.supporting.size",
+          "line-height": "type.supporting.line-height",
+          "when invalid": "theme.danger-role.fg — the role's text colour on the page background, never its saturated bg, which is a non-text indicator tone"
+        }
+      },
+      "disabled": {
+        "summary": "Dimmed as a whole rather than removed, because the control underneath stays focusable and readable.",
+        "tokens": {
+          "opacity": "state.disabled-opacity, on the root so the label and helper text dim with the control"
+        }
+      }
+    },
+    "example": null
+  },
+  {
     "name": "heading",
     "title": "Heading",
     "description": "A heading whose outline level and visual size are stated separately.",
@@ -1483,10 +2064,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -1494,16 +2077,16 @@
     },
     "dependencies": [],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLHeadingElement>, \"role\">",
     "props": [
       {
         "name": "level",
-        "type": "1 | 2 | 3 | 4 | 5 | 6",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "HeadingLevel",
+        "description": "Where this heading sits in the document outline.",
+        "declared": true,
         "summary": "Where this heading sits in the document outline.",
         "use": [
           "The level below whatever heading contains this one — a heading inside a section headed `h2` takes `3`."
@@ -1516,11 +2099,10 @@
       },
       {
         "name": "role",
-        "type": "HeadingRole",
         "optional": true,
-        "default": "the `heading-{level}` step",
-        "description": null,
-        "declared": false,
+        "type": "HeadingRole",
+        "description": "How large it looks, independent of its level.",
+        "declared": true,
         "summary": "How large it looks, independent of its level.",
         "use": [
           "A display role on a page title: `level={1} role=\"display-3\"`.",
@@ -1534,10 +2116,10 @@
       },
       {
         "name": "children",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The heading text.",
+        "declared": true,
         "summary": "The heading text.",
         "use": [
           "A short noun phrase naming what follows."
@@ -1550,10 +2132,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
+        "type": "string",
         "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Extra classes, for placement — not for restyling it.",
         "use": [
           "The margin the page wants around it, which this component deliberately does not own."
@@ -1565,7 +2147,32 @@
         "a11y": null
       }
     ],
-    "usage": [],
+    "usage": [
+      {
+        "case": "A page title that outranks its own size",
+        "when": "The commonest reason both props exist: one `h1` per page, set at a display step so it reads as the title.",
+        "example": "<Heading level={1} role=\"display-3\">Design tokens</Heading>",
+        "notes": "The level is what a screen-reader user navigates by; the role is only how large it looks. Writing `level={3}` to get this size would leave the page with no `h1` at all."
+      },
+      {
+        "case": "A section heading at its natural size",
+        "when": "Inside a page already headed `h1`, where nothing about the section asks to be louder.",
+        "example": "<Heading level={2}>Contrast pairings</Heading>",
+        "notes": "No `role`: `heading-2` is the default for `level={2}`, and the common case should not have to say so twice."
+      },
+      {
+        "case": "A deep heading that should not shout",
+        "when": "A sub-subsection whose correct level would otherwise draw more attention than it deserves.",
+        "example": "<Heading level={4} role=\"heading-5\">Known gaps</Heading>",
+        "notes": "The outline stays correct and only the size moves — which is the direction this prop is for. If the heading feels wrong at its correct level, change the role; if the level itself is wrong, change the level."
+      },
+      {
+        "case": "Reaching for the wrong component",
+        "when": "The text is an uppercase eyebrow over a group, not an entry in the outline.",
+        "example": "<Heading level={6}>Foundations</Heading>",
+        "notes": "Don't. Nothing navigates to it and it heads no section, so it does not belong in the outline — that is `<Text role=\"label\">`. A heading level spent on decoration is a level a real heading can no longer use."
+      }
+    ],
     "behavior": {
       "summary": "An `h1` through `h6`, with its visual size stated independently of its level. No primitive: there is no keyboard interaction to own and no state to hold.",
       "decisions": [
@@ -1608,7 +2215,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Heading level={4}>Known gaps</Heading>"
   },
   {
     "name": "icon",
@@ -4026,6 +4633,397 @@
     "example": "<SegmentedControl\n          label=\"Sort\"\n          fullWidth\n          size=\"sm\"\n          options={[\n            { value: \"newest\", label: \"Newest\" },\n            { value: \"oldest\", label: \"Oldest\" },\n          ]}\n        />"
   },
   {
+    "name": "select",
+    "title": "Select",
+    "description": "A labelled control for choosing one option from a list.",
+    "family": "inputs",
+    "tier": "free",
+    "status": {
+      "css": {
+        "state": "latest",
+        "version": "0.1.0"
+      },
+      "react": {
+        "state": "latest",
+        "version": "0.1.0"
+      },
+      "figma": {
+        "state": "future"
+      }
+    },
+    "dependencies": [
+      "field",
+      "icon"
+    ],
+    "importPath": "@rata/react",
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<",
+    "props": [
+      {
+        "name": "label",
+        "optional": false,
+        "type": "ReactNode",
+        "description": "The control's label. Always required — `labelHidden` hides it, nothing removes it.",
+        "declared": true,
+        "summary": "The control's label. Always required — `labelHidden` hides it, nothing removes it.",
+        "use": [
+          "A short noun phrase naming what is being chosen: \"Country\", not \"Choose a country\"."
+        ],
+        "dont": [
+          "Leaving it off because the placeholder says it. The placeholder is gone the moment someone answers."
+        ],
+        "conflicts": [],
+        "a11y": "Bound to the control by Field, so it is the accessible name and clicking it focuses the control."
+      },
+      {
+        "name": "options",
+        "optional": false,
+        "type": "Array<SelectOption | SelectOptionGroup>",
+        "description": "The choices, in the order they are read.",
+        "declared": true,
+        "summary": "The choices, in the order they are read.",
+        "use": [
+          "A flat array for a short list; groups once the list is long enough that a reader has to hunt.",
+          "The order a reader expects — alphabetical for places, frequency for everything else."
+        ],
+        "dont": [
+          "A label that is anything but a string. An `<option>` holds text, so a ReactNode would be flattened or would crash.",
+          "One option. A control with a single choice is not a choice; state the value as text."
+        ],
+        "conflicts": [],
+        "a11y": "A disabled option stays in the list and is announced as unavailable rather than removed, so the list a reader hears does not change shape under them."
+      },
+      {
+        "name": "placeholder",
+        "optional": true,
+        "type": "string",
+        "description": "Shown while nothing is chosen, as an option that cannot be chosen.",
+        "declared": true,
+        "summary": "Shown while nothing is chosen, as an option that cannot be chosen.",
+        "use": [
+          "Naming the act rather than repeating the label: \"Select a country\" under a label that already says Country."
+        ],
+        "dont": [
+          "Using it as the label. It disappears on the first answer, and a control whose name vanishes when used has no name.",
+          "Leaving it off on a `required` control with no `defaultValue`. The first option would then be pre-chosen, and a reader who wanted it cannot tell their answer from the control's assumption."
+        ],
+        "conflicts": [],
+        "a11y": "Rendered disabled and empty, so it is announced but cannot be selected — and `required` validation treats it as unanswered rather than as a value."
+      },
+      {
+        "name": "value",
+        "optional": true,
+        "type": "string",
+        "description": "Controls the chosen option from outside.",
+        "declared": true,
+        "summary": "Controls the chosen option from outside.",
+        "use": [
+          "A form library, or one field whose choices depend on another's answer."
+        ],
+        "dont": [
+          "Passing it alongside `defaultValue`. One of them owns the state."
+        ],
+        "conflicts": [
+          "defaultValue"
+        ],
+        "a11y": null
+      },
+      {
+        "name": "defaultValue",
+        "optional": true,
+        "type": "string",
+        "description": "The starting choice when the component owns the state.",
+        "declared": true,
+        "summary": "The starting choice when the component owns the state.",
+        "use": [
+          "A genuine default the reader would usually want, which is different from the first option happening to be selected."
+        ],
+        "dont": [
+          "Pairing it with `placeholder`. The placeholder would never be seen, which makes it a lie in the markup."
+        ],
+        "conflicts": [
+          "value"
+        ],
+        "a11y": null
+      },
+      {
+        "name": "onValueChange",
+        "optional": true,
+        "type": "(value: string) => void",
+        "description": "Fires with the chosen value when it changes.",
+        "declared": true,
+        "summary": "Fires with the chosen value when it changes.",
+        "use": [
+          "Reading the answer without unpacking an event, which is what every other choice component in this system does."
+        ],
+        "dont": [
+          "Expecting it on first render. It fires on change, so an initial value is the caller's to know."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "size",
+        "optional": true,
+        "type": "SelectSize",
+        "description": "Control height and inline padding. Text size does not change with it.",
+        "default": "\"md\"",
+        "values": [
+          "sm",
+          "md",
+          "lg"
+        ],
+        "declared": true,
+        "summary": "Control height and inline padding. Text size does not change with it.",
+        "use": [
+          "Matching whatever the control sits beside — a select and a button in one row should be the same height."
+        ],
+        "dont": [
+          "`sm` to fit more on the page. It is the same text at a smaller target, which costs a reader more than the space is worth."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "labelHidden",
+        "optional": true,
+        "type": "boolean",
+        "description": "Takes the label off screen while leaving it in the accessibility tree.",
+        "declared": true,
+        "summary": "Takes the label off screen while leaving it in the accessibility tree.",
+        "use": [
+          "A control whose meaning is already carried by a heading or column header directly above it."
+        ],
+        "dont": [
+          "Pairing it with a placeholder standing in for the name."
+        ],
+        "conflicts": [],
+        "a11y": "The label element is still rendered and still bound. Only the pixels go."
+      },
+      {
+        "name": "id",
+        "optional": true,
+        "type": "string",
+        "description": "Stable id for the control. Defaults to a generated one.",
+        "declared": true,
+        "summary": "Stable id for the control, when something outside needs to point at it.",
+        "use": [
+          "A form library that addresses fields by id, or an error summary linking to the control it names."
+        ],
+        "dont": [
+          "Reusing one across two fields. Every id under it is derived from this."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "status",
+        "optional": true,
+        "type": "FieldStatus",
+        "description": "Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.",
+        "default": "\"idle\"",
+        "declared": true,
+        "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
+        "use": [
+          "`invalid` with a `message` saying what to do about it."
+        ],
+        "dont": [
+          "`invalid` with no message. The ring says something is wrong; only the message says what."
+        ],
+        "conflicts": [],
+        "a11y": "Field's, unchanged."
+      },
+      {
+        "name": "description",
+        "optional": true,
+        "type": "ReactNode",
+        "description": "Persistent helper text under the control.",
+        "declared": true,
+        "summary": "Persistent helper text under the control.",
+        "use": [
+          "What the choice affects, when that is not obvious from the options themselves."
+        ],
+        "dont": [
+          "Listing the options again in prose."
+        ],
+        "conflicts": [],
+        "a11y": "Joins `aria-describedby` ahead of the message, so a constraint is heard before a failure."
+      },
+      {
+        "name": "message",
+        "optional": true,
+        "type": "ReactNode",
+        "description": "Status-dependent message under the control.",
+        "declared": true,
+        "summary": "Status-dependent message under the control.",
+        "use": [
+          "What to do about an `invalid` status, in the imperative."
+        ],
+        "dont": [
+          "Putting a permanent note here. It leaves the description chain whenever the status returns to idle."
+        ],
+        "conflicts": [],
+        "a11y": "Announced politely rather than as an alert, because it is already in `aria-describedby`."
+      },
+      {
+        "name": "required",
+        "optional": true,
+        "type": "boolean",
+        "description": "Marks the control required to assistive technology and in the label.",
+        "declared": true,
+        "summary": "Marks the control required, in the label and to assistive technology.",
+        "use": [
+          "With a `placeholder`, so there is an unanswered state for the requirement to be about."
+        ],
+        "dont": [
+          "Pairing it with a hand-written asterisk in `label`. Field renders one."
+        ],
+        "conflicts": [],
+        "a11y": "`aria-required` on the control; the rendered marker is `aria-hidden`."
+      },
+      {
+        "name": "disabled",
+        "optional": true,
+        "type": "boolean",
+        "description": "Marks the whole control unavailable.",
+        "declared": true,
+        "summary": "Marks the whole control unavailable while keeping it focusable and announced.",
+        "use": [
+          "A choice that depends on an answer nobody has given yet."
+        ],
+        "dont": [
+          "Disabling it to show a fixed value. A control nobody can change is text — render the text."
+        ],
+        "conflicts": [],
+        "a11y": "`aria-disabled` from Field. Note that unlike a text input, a select has no `readOnly` to fall back on, so the native attribute IS used here to block the change — the contract's one departure from the system rule, because the alternative is a control that looks unavailable and is not."
+      },
+      {
+        "name": "className",
+        "optional": true,
+        "type": "string",
+        "description": "Class for the wrapper. The control itself is styled by the system.",
+        "declared": true,
+        "summary": "Class for the wrapper — the width the form wants, not a restyle.",
+        "use": [
+          "The measure or grid placement the form decides."
+        ],
+        "dont": [
+          "Restyling the chevron or the options. The first is positioned against the control's own padding, and the second the platform draws."
+        ],
+        "conflicts": [],
+        "a11y": null
+      }
+    ],
+    "usage": [
+      {
+        "case": "One choice from a short list",
+        "when": "The commonest case, with nothing chosen until the reader chooses.",
+        "example": "<Select\n  label=\"Environment\"\n  placeholder=\"Select an environment\"\n  options={[\n    { value: \"dev\", label: \"Development\" },\n    { value: \"prod\", label: \"Production\" },\n  ]}\n  required\n/>",
+        "notes": "`placeholder` with `required` is the pairing that makes an unanswered state possible. Without it the first option is pre-chosen and a reader cannot tell their answer from the control's assumption."
+      },
+      {
+        "case": "A list long enough to need grouping",
+        "when": "Enough options that a reader has to hunt rather than scan.",
+        "example": "<Select\n  label=\"Region\"\n  placeholder=\"Select a region\"\n  options={[\n    { label: \"Asia\", options: [{ value: \"lk\", label: \"Sri Lanka\" }] },\n    { label: \"Europe\", options: [{ value: \"pt\", label: \"Portugal\" }] },\n  ]}\n/>",
+        "notes": "A group in place of an option is the whole API. Nothing about a group is styleable, for the same reason nothing about an option is."
+      },
+      {
+        "case": "A choice that failed validation",
+        "when": "Reporting an answer the form cannot accept.",
+        "example": "<Select\n  label=\"Environment\"\n  status=\"invalid\"\n  message=\"Pick an environment you have access to.\"\n  options={[{ value: \"prod\", label: \"Production\" }]}\n/>",
+        "notes": "The ring and the message are Field's, identical to a text field's — which is the point of both being built on it."
+      },
+      {
+        "case": "Reaching for the wrong component",
+        "when": "The options need icons, two lines, or colour.",
+        "example": "<Select\n  label=\"Assignee\"\n  options={[{ value: \"ada\", label: \"Ada Hartley — Engineering\" }]}\n/>",
+        "notes": "Don't fake it with punctuation. An `<option>` is text the operating system draws, so a design that needs more than a string has outgrown this component — that is the listbox version, which is a separate entry with its own primitive, and it does not exist yet. Say so rather than shipping a string that pretends."
+      }
+    ],
+    "behavior": {
+      "summary": "A native `<select>` inside a `Field`. No primitive of its own: `getFieldProps` supplies every id and ARIA attribute, and the platform supplies the rest.",
+      "decisions": [
+        {
+          "decision": "It is a native `<select>`, not a listbox built out of divs",
+          "why": "What the platform gives away here is enormous and expensive to rebuild: the picker a phone shows instead of a dropdown, the full keyboard model including typeahead, the behaviour when the list is longer than the viewport, and an accessibility implementation that is correct by construction rather than by our testing. A built listbox needs a primitive owning roving focus, `aria-activedescendant`, typeahead and popover placement, and it is worse on a phone no matter how well it is written. The cost of choosing native is real and is stated in the next decision — it is not that nobody noticed."
+        },
+        {
+          "decision": "Options cannot be styled, and that is the price",
+          "why": "A `<option>` renders as the operating system draws it. No icon, no second line, no badge, no colour. So this component cannot express an option that is anything more than a string — and when a design needs that, the answer is not to force it here but to build the listbox version, which will be a separate entry with its own primitive and its own contract. Naming the limit is what stops someone discovering it three screens into a build."
+        },
+        {
+          "decision": "An option's `label` is a string, where every other option type in this system takes a ReactNode",
+          "why": "`TabItem`, `SegmentedControlOption` and the rest take a ReactNode because they render into elements this system controls. An `<option>` holds text and nothing else, so a ReactNode here would either be silently flattened or crash on a fragment. The type says what the element can actually hold, which is the only honest thing it can say."
+        },
+        {
+          "decision": "No `multiple`",
+          "why": "The native multi-select is a scrolling box that requires modifier-clicking to use and that readers routinely fail to operate or even recognise as multi-choice. Choosing several things is a different interaction with a different contract — a checkbox group for a short list, a dedicated component for a long one — and a boolean here would quietly turn a well-understood control into a badly-understood one."
+        },
+        {
+          "decision": "`placeholder` renders a disabled empty option rather than a real choice",
+          "why": "A select always has a value, so an unanswered one has to show something. Making that something selectable would let a reader deliberately choose \"Select a country\", which then has to be validated against as though it were a mistake they made rather than one the control invited. Disabled and empty means it can be shown and cannot be chosen — and with `required`, the browser's own validation already treats it as unanswered."
+        },
+        {
+          "decision": "The chevron is drawn by this system, over a control with `appearance: none`",
+          "why": "The platform's arrow cannot be themed, sized or recoloured, so a select next to this system's other controls looked like it came from somewhere else. Drawing our own means reserving the space for it in the control's end padding — reserved whether or not a value is chosen, so picking one does not reflow the text under the reader's eye. The glyph takes `pointer-events: none`, so the whole control including the chevron stays one click target."
+        },
+        {
+          "decision": "`size` exists here where `Textarea` has none",
+          "why": "A select is a single-line control and lines up in a row with buttons and text fields, so it takes the same control scale they do. A textarea's height is a line count and has nothing to line up with, which is why that component has `rows` instead. The prop is on the component whose measurement it actually describes."
+        },
+        {
+          "decision": "Options may be grouped, because the platform does it for free",
+          "why": "`<optgroup>` costs three lines here and is the difference between a usable list of forty and an unusable one. Passing a group in place of an option is the whole API — nothing about a group is styleable either, for the reason above."
+        }
+      ]
+    },
+    "tokens": {
+      "base": {
+        "summary": "The box, matching `.rata-text-field-input` step for step so a select and a text field in one row are indistinguishable in everything but their content. Field owns the label, helper text, message and disabled dimming.",
+        "tokens": {
+          "font-family": "font.family.sans",
+          "font-size": "type.control.size.md — constant across all three sizes, the same constant the button family and the text field use",
+          "line-height": "type.control.line-height.md",
+          "background": "theme.bg.surface",
+          "color": "theme.fg.primary",
+          "border-color": "theme.border.strong",
+          "border-radius": "radius.element",
+          "block-size": "size.control.md — and size.control.sm / size.control.lg at the other sizes",
+          "padding-inline-start": "space.control.padding-inline.md — and the sm / lg steps at the other sizes"
+        }
+      },
+      "chevron-well": {
+        "summary": "Room reserved at the end edge for the chevron, which is drawn rather than inherited: the platform's own arrow cannot be themed, so the control sets appearance to none and this system supplies the glyph.",
+        "tokens": {
+          "padding-inline-end": "space.control.padding-inline.md plus size.icon.text plus space.gap.sm — reserved whether or not a value is chosen, so nothing reflows when one is",
+          "chevron size": "size.icon.text",
+          "chevron colour": "theme.fg.secondary — it is an affordance rather than content, so it sits below the value it points at",
+          "chevron inset": "space.control.padding-inline.md from the end edge"
+        }
+      },
+      "placeholder": {
+        "summary": "The unchosen state. Muted rather than primary, so a control nobody has answered looks unanswered.",
+        "tokens": {
+          "colour": "theme.fg.muted"
+        }
+      },
+      "states": {
+        "summary": "Selected from the primitive's data-status on the Field root, exactly as the text field's are. The rings are inset strokes, never the focus ring, so a control can be focused and invalid at once.",
+        "tokens": {
+          "hover inner band": "theme.bg.muted at border.2 as an inset shadow, idle only — the validation rings occupy the same 2px and box-shadow does not accumulate",
+          "focus border-color": "theme.fg.primary",
+          "focus outline": "focus.ring-width solid theme.fg.primary at space.0 offset — the same deliberate departure the text field documents, so every control in a form focuses alike",
+          "validating ring": "theme.accent-role.ring",
+          "valid ring": "theme.success-role.ring",
+          "invalid ring": "theme.danger-role.ring",
+          "disabled cursor": "not-allowed — the dimming itself is Field's, on the root"
+        }
+      }
+    },
+    "example": "<Select\n          label=\"Environment\"\n          status=\"invalid\"\n          message=\"Pick an environment you have access to.\"\n          defaultValue=\"prod\"\n          options={[\n            { value: \"dev\", label: \"Development\" },\n            { value: \"prod\", label: \"Production\" },\n          ]}\n        />"
+  },
+  {
     "name": "sheet",
     "title": "Sheet",
     "description": "A modal surface anchored to an edge of the viewport — a bottom sheet or a side drawer.",
@@ -5229,10 +6227,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -5240,16 +6240,16 @@
     },
     "dependencies": [],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLElement>, \"role\">",
     "props": [
       {
         "name": "children",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The text.",
+        "declared": true,
         "summary": "The text.",
         "use": [
           "A paragraph, a sentence of help text, an eyebrow label."
@@ -5262,11 +6262,15 @@
       },
       {
         "name": "as",
-        "type": "TextElement",
         "optional": true,
+        "type": "TextElement",
+        "description": "Whether this is a block of text or a run inside one.",
         "default": "\"p\"",
-        "description": null,
-        "declared": false,
+        "values": [
+          "p",
+          "span"
+        ],
+        "declared": true,
         "summary": "Whether this is a block of text or a run inside one.",
         "use": [
           "`span` for text inside a sentence, a row or a control's label area."
@@ -5279,11 +6283,17 @@
       },
       {
         "name": "role",
-        "type": "TextRole",
         "optional": true,
+        "type": "TextRole",
+        "description": "Which step of the scale this text is set at.",
         "default": "\"body\"",
-        "description": null,
-        "declared": false,
+        "values": [
+          "body",
+          "large",
+          "supporting",
+          "label"
+        ],
+        "declared": true,
         "summary": "Which step of the scale this text is set at.",
         "use": [
           "`supporting` for help text under a field, a timestamp, secondary metadata in a row.",
@@ -5298,11 +6308,16 @@
       },
       {
         "name": "tone",
-        "type": "TextTone",
         "optional": true,
+        "type": "TextTone",
+        "description": "Which of the three documented foreground steps it takes.",
         "default": "\"primary\"",
-        "description": null,
-        "declared": false,
+        "values": [
+          "primary",
+          "secondary",
+          "muted"
+        ],
+        "declared": true,
         "summary": "Which of the three documented foreground steps it takes.",
         "use": [
           "`secondary` for text that supports the primary content and is still read in full.",
@@ -5317,10 +6332,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
+        "type": "string",
         "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Extra classes, for placement — not for restyling it.",
         "use": [
           "The margin or measure the page wants, neither of which this component owns."
@@ -5332,7 +6347,38 @@
         "a11y": null
       }
     ],
-    "usage": [],
+    "usage": [
+      {
+        "case": "A standfirst under a page title",
+        "when": "One paragraph introducing a page, set above body size so it reads as the way in rather than as the first paragraph of the content.",
+        "example": "<Text role=\"large\" tone=\"secondary\">Every value in this system comes from a token, and every token says what it is for.</Text>",
+        "notes": "`secondary` rather than `primary`: it supports the title above it and is still read in full. One of these per page — a second stops being an introduction."
+      },
+      {
+        "case": "Help text under a field",
+        "when": "A line of guidance that belongs to the control above it.",
+        "example": "<Text role=\"supporting\" tone=\"muted\">Used for billing receipts only.</Text>",
+        "notes": "`supporting` is smaller, not dimmer — `tone` is what changes emphasis, and the two are separate so help text can be small and still fully legible. If the field is a TextField, its own `description` prop already does this and wires up the `aria-describedby`; reach for this only outside one."
+      },
+      {
+        "case": "An eyebrow over a group",
+        "when": "A short uppercase label naming a group of fields or a section of a settings page.",
+        "example": "<Text role=\"label\" tone=\"secondary\">Notifications</Text>",
+        "notes": "The capitals come from `text-transform`, so the text stays lowercase in the accessibility tree. Typed in capitals it may be spelled out letter by letter. This is also the right answer when a `<Heading>` was tempting but nothing navigates to the label."
+      },
+      {
+        "case": "A run inside a sentence",
+        "when": "Part of a line needs a different step or tone from the rest of it.",
+        "example": "<Text>Last synced <Text as=\"span\" tone=\"muted\">four minutes ago</Text>.</Text>",
+        "notes": "`span` because it is not a block — a nested `p` would close the outer one early and the page's spacing rules would apply to something that is half a sentence."
+      },
+      {
+        "case": "Reaching for the wrong component",
+        "when": "The message is a warning the reader has to act on.",
+        "example": "<Text tone=\"secondary\">Your trial ends in three days.</Text>",
+        "notes": "Don't lean on this and then colour it — `tone` is deliberately closed to three neutral steps, because a status colour on running text reads as a link or an error. A message that needs a colour needs Notice, which has the role tokens, the icon and somewhere to put the action."
+      }
+    ],
     "behavior": {
       "summary": "A `<p>` or a `<span>` set to one named role of the type scale. No primitive and no state.",
       "decisions": [
@@ -5385,7 +6431,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Text>Choose which events send you an email.</Text>"
   },
   {
     "name": "text-field",
@@ -5407,6 +6453,7 @@
       }
     },
     "dependencies": [
+      "field",
       "visually-hidden"
     ],
     "importPath": "@rata/react",
@@ -5501,12 +6548,6 @@
         "type": "TextFieldStatus",
         "description": "Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.",
         "default": "\"idle\"",
-        "values": [
-          "idle",
-          "validating",
-          "valid",
-          "invalid"
-        ],
         "declared": true,
         "summary": "Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and which ring token the field wears.",
         "use": [
@@ -5645,8 +6686,7 @@
       }
     ],
     "behavior": {
-      "primitive": "getTextFieldProps",
-      "summary": "Label/description/message association, validation semantics, and the disabled contract — independent of React and of any styling. The caller owns the `id`; the description and message ids are derived from it, so association cannot be hand-wired wrong.",
+      "summary": "The box of a single-line input, and its validation rings. Label/description/message association, the validation semantics and the disabled contract all come from Field, which this composes — the caller owns the `id` and every other id is derived from it, so association cannot be hand-wired wrong.",
       "decisions": [
         {
           "decision": "`readOnly` is the disabled mechanism, not the native `disabled` attribute",
@@ -5668,10 +6708,8 @@
     },
     "tokens": {
       "base": {
-        "summary": "A single-line input with a label, helper text, and validation states.",
+        "summary": "The input's BOX, and nothing around it. The label, required marker, helper text, message and disabled dimming are Field's recipe — this component composes Field and overrides only inside the control, which is the split that lets Select and TextArea cost a stylesheet each.",
         "tokens": {
-          "label color": "theme.fg.primary",
-          "label font-size": "type.label.size",
           "input background": "theme.bg.surface",
           "input color": "theme.fg.primary",
           "input font-family": "font.family.sans",
@@ -5681,23 +6719,315 @@
           "height": "size.control.md — and size.control.sm / .lg at the other sizes. Together with padding-inline this is the only thing `size` changes",
           "padding-inline": "space.control.padding-inline.md — and the sm / lg steps at the other sizes",
           "border-radius": "radius.element",
-          "helper text color": "theme.fg.secondary",
-          "error text color": "theme.danger-role.fg",
           "error border-color": "theme.danger-role.fg",
           "validating (in-progress) ring": "theme.accent-role.ring",
           "valid ring": "theme.success-role.ring",
           "invalid ring": "theme.danger-role.ring",
-          "gap between label, input, and helper": "space.stack.2xs — the tightest vertical step. The text either side carries line-height leading of its own, so this reads looser than 4px and space.stack.xs read as separation",
-          "required marker color": "theme.fg.secondary — required-ness is information, not a fault, so it is deliberately not the danger role's foreground; the requirement itself is announced through aria-required",
-          "disabled opacity": "state.disabled-opacity on the root — the field stays readable and focusable, which is why it emits aria-disabled and readOnly rather than the native disabled attribute",
           "hover inner band": "theme.bg.muted at border.2, drawn as an inset shadow so the fill recedes 2px while the border stays border.1 and the outer edge does not move. Idle only — the validation rings occupy the same 2px and box-shadow does not accumulate",
           "focus border-color": "theme.fg.primary — the same tone as the outline, so the two read as one stroke instead of a dark ring around a lighter edge. The width is never touched",
-          "focus outline": "focus.ring-width solid theme.fg.primary, offset space.0 — deliberately NOT theme.focus-ring, the only such departure in the library. It gives 16.75:1 against the field's fill where theme.focus-ring gives 4.31:1, so the indicator is stronger; the cost is that focus here does not match focus on a Button. An outline rather than a thicker border because outlines are out of flow: this control sets height but not width, so a wider border would widen the field",
-          "hidden label geometry": "compose the .rata-visually-hidden class — the utility, not a rule of this component's own. It clips rather than using display:none, which would take the accessible name off with the pixels"
+          "focus outline": "focus.ring-width solid theme.fg.primary, offset space.0 — deliberately NOT theme.focus-ring, the only such departure in the library. It gives 16.75:1 against the field's fill where theme.focus-ring gives 4.31:1, so the indicator is stronger; the cost is that focus here does not match focus on a Button. An outline rather than a thicker border because outlines are out of flow: this control sets height but not width, so a wider border would widen the field"
         }
       }
     },
-    "example": "<TextField className=\"pg-field\" label=\"Search\" labelHidden placeholder=\"Search…\" />"
+    "example": "<TextField label=\"Retry limit\" description=\"How many times to try again.\" />"
+  },
+  {
+    "name": "textarea",
+    "title": "Textarea",
+    "description": "A labelled multi-line text input.",
+    "family": "inputs",
+    "tier": "free",
+    "status": {
+      "css": {
+        "state": "latest",
+        "version": "0.1.0"
+      },
+      "react": {
+        "state": "latest",
+        "version": "0.1.0"
+      },
+      "figma": {
+        "state": "future"
+      }
+    },
+    "dependencies": [
+      "field"
+    ],
+    "importPath": "@rata/react",
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<",
+    "props": [
+      {
+        "name": "label",
+        "optional": false,
+        "type": "ReactNode",
+        "description": "The control's label. Always required — `labelHidden` hides it, nothing removes it.",
+        "declared": true,
+        "summary": "The control's label. Always required — `labelHidden` hides it, nothing removes it.",
+        "use": [
+          "A short noun phrase naming what goes in it: \"Release notes\", not \"Type your release notes\"."
+        ],
+        "dont": [
+          "Leaving it off because a placeholder says the same thing. The placeholder is gone on the first keystroke."
+        ],
+        "conflicts": [],
+        "a11y": "Bound to the control by Field, so it is the accessible name and clicking it focuses the control."
+      },
+      {
+        "name": "rows",
+        "optional": true,
+        "type": "number",
+        "description": "How many lines of text the control shows before it scrolls.",
+        "default": "3",
+        "declared": true,
+        "summary": "How many lines of text the control shows before it scrolls.",
+        "use": [
+          "Three for a note, eight or more for something someone will draft in.",
+          "A number that matches what you expect, so the reader can see how much is wanted of them."
+        ],
+        "dont": [
+          "One. A single-line control is a `TextField`, and a one-row textarea is that with worse keyboard behaviour — Enter inserts a newline instead of submitting."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "resize",
+        "optional": true,
+        "type": "TextareaResize",
+        "description": "Whether the reader may drag the control taller.",
+        "default": "\"vertical\"",
+        "values": [
+          "vertical",
+          "none"
+        ],
+        "declared": true,
+        "summary": "Whether the reader may drag the control taller.",
+        "use": [
+          "`none` only where a taller control would break the layout around it — a fixed-height panel, a row in a dense table."
+        ],
+        "dont": [
+          "`none` as a default because the handle looks untidy. It is the cheapest fix a reader has for a field that turned out too small, and taking it away costs them more than it saves you."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "labelHidden",
+        "optional": true,
+        "type": "boolean",
+        "description": "Takes the label off screen while leaving it in the accessibility tree.",
+        "declared": true,
+        "summary": "Takes the label off screen while leaving it in the accessibility tree.",
+        "use": [
+          "A control whose meaning is already carried by a heading directly above it."
+        ],
+        "dont": [
+          "Pairing it with a placeholder standing in for the name."
+        ],
+        "conflicts": [],
+        "a11y": "The label element is still rendered and still bound. Only the pixels go."
+      },
+      {
+        "name": "id",
+        "optional": true,
+        "type": "string",
+        "description": "Stable id for the control. Defaults to a generated one.",
+        "declared": true,
+        "summary": "Stable id for the control, when something outside needs to point at it.",
+        "use": [
+          "A form library that addresses fields by id, or an error summary linking to the control it names."
+        ],
+        "dont": [
+          "Reusing one across two fields. Every id under it is derived from this."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "status",
+        "optional": true,
+        "type": "FieldStatus",
+        "description": "Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.",
+        "default": "\"idle\"",
+        "declared": true,
+        "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
+        "use": [
+          "`invalid` with a `message` saying what to do about it."
+        ],
+        "dont": [
+          "`invalid` with no message. The ring says something is wrong; only the message says what."
+        ],
+        "conflicts": [],
+        "a11y": "Field's, unchanged: `invalid` sets `aria-invalid` and pulls the message into `aria-describedby`, and while idle the message stays on the page but leaves the chain."
+      },
+      {
+        "name": "description",
+        "optional": true,
+        "type": "ReactNode",
+        "description": "Persistent helper text under the control.",
+        "declared": true,
+        "summary": "Persistent helper text under the control.",
+        "use": [
+          "The length limit, stated before someone writes past it — this is where a counter's job mostly lives."
+        ],
+        "dont": [
+          "Repeating the label in a sentence. It is read out after the name."
+        ],
+        "conflicts": [],
+        "a11y": "Joins `aria-describedby` ahead of the message, so a constraint is heard before a failure."
+      },
+      {
+        "name": "message",
+        "optional": true,
+        "type": "ReactNode",
+        "description": "Status-dependent message under the control.",
+        "declared": true,
+        "summary": "Status-dependent message under the control.",
+        "use": [
+          "What to do about an `invalid` status, in the imperative: \"Keep this under 500 characters.\""
+        ],
+        "dont": [
+          "Putting the permanent limit here. It leaves the description chain whenever the status returns to idle — that is `description`."
+        ],
+        "conflicts": [],
+        "a11y": "Announced politely rather than as an alert, because it is already in `aria-describedby`."
+      },
+      {
+        "name": "required",
+        "optional": true,
+        "type": "boolean",
+        "description": "Marks the control required to assistive technology and in the label.",
+        "declared": true,
+        "summary": "Marks the control required, in the label and to assistive technology.",
+        "use": [
+          "Controls that genuinely block submission."
+        ],
+        "dont": [
+          "Pairing it with a hand-written asterisk in `label`. Field renders one."
+        ],
+        "conflicts": [],
+        "a11y": "`aria-required` on the control; the rendered marker is `aria-hidden`."
+      },
+      {
+        "name": "disabled",
+        "optional": true,
+        "type": "boolean",
+        "description": "Blocks editing while keeping the control focusable, readable and announced.",
+        "declared": true,
+        "summary": "Blocks editing while keeping the control focusable, readable and announced.",
+        "use": [
+          "A note whose content is decided elsewhere and should still be readable in full."
+        ],
+        "dont": [
+          "Assuming the value is withheld. `readOnly` still submits."
+        ],
+        "conflicts": [],
+        "a11y": "`aria-disabled` plus `readOnly` from Field, never the native attribute."
+      },
+      {
+        "name": "className",
+        "optional": true,
+        "type": "string",
+        "description": "Class for the wrapper. The control itself is styled by the system.",
+        "declared": true,
+        "summary": "Class for the wrapper — the width the form wants, not a restyle.",
+        "use": [
+          "The measure or grid placement the form decides."
+        ],
+        "dont": [
+          "Setting a height. That is `rows`, and a hand-written height stops matching the line count the reader sees."
+        ],
+        "conflicts": [],
+        "a11y": null
+      }
+    ],
+    "usage": [
+      {
+        "case": "A note someone will actually draft in",
+        "when": "The commonest case: free text with a stated limit.",
+        "example": "<Textarea\n  label=\"Release notes\"\n  rows={8}\n  description=\"Markdown is fine. Around 500 characters reads best.\"\n/>",
+        "notes": "The limit goes in `description` rather than a counter, because it is the thing worth knowing BEFORE writing. Eight rows says how much is wanted more honestly than any sentence would."
+      },
+      {
+        "case": "Too long, and said so",
+        "when": "Reporting a limit the writer has passed.",
+        "example": "<Textarea\n  label=\"Release notes\"\n  status=\"invalid\"\n  message=\"Keep this under 500 characters.\"\n/>",
+        "notes": "The message is the imperative, not the diagnosis — \"too long\" tells someone what happened, this tells them what to do. The ring and the colour say it twice more."
+      },
+      {
+        "case": "A layout that cannot take a taller control",
+        "when": "A fixed-height panel, or a control inside a dense row.",
+        "example": "<Textarea label=\"Internal note\" rows={2} resize=\"none\" labelHidden />",
+        "notes": "`none` because the container genuinely cannot grow, which is the only reason for it. The label is hidden rather than absent — the row's own header is carrying the name visually, and nothing about the accessible name changes."
+      },
+      {
+        "case": "Reaching for the wrong component",
+        "when": "The value is one line and Enter should submit the form.",
+        "example": "<Textarea label=\"Email\" rows={1} />",
+        "notes": "Don't. That is `TextField`. A one-row textarea looks almost right and behaves wrong: Enter inserts a newline instead of submitting, and the value can arrive with line breaks in it that nothing upstream expects."
+      }
+    ],
+    "behavior": {
+      "summary": "A `<textarea>` inside a `Field`. No primitive of its own: `getFieldProps` already supplies every id and ARIA attribute, and a multi-line control needs nothing a single-line one does not.",
+      "decisions": [
+        {
+          "decision": "A separate component, not a `multiline` prop on TextField",
+          "why": "`TextField` is typed to `HTMLInputElement` and forwards its ref as one, so a boolean that silently swapped the element would invalidate half its props at runtime while still compiling. The elements also differ in ways a caller has to know about: `rows` and `wrap` exist on one and not the other, and Enter inserts a newline here where it submits there. This system's test for splitting is a difference in semantics rather than in looks, and that is what this is — the same test that separated Text from Heading."
+        },
+        {
+          "decision": "`rows` sets the height, and there is no `size` prop",
+          "why": "`TextField`'s `size` exists to choose a control height from the control scale. A multi-line control's height is how many lines it shows, which is what `rows` already says — offering both would be two props for one measurement, and a caller would have to guess which wins."
+        },
+        {
+          "decision": "It does not grow with its content in this version",
+          "why": "The honest options are all costly: `field-sizing: content` is not supported widely enough to be the only mechanism, the replicated-content grid trick needs a wrapper element around the control that exists purely to be measured, and measuring in JS means a resize observer per field. Each is a real decision about the DOM this component puts on the page, and none of them should ride along with the box. `rows` plus a resize handle covers the case meanwhile, and the caller can see how much room they are giving."
+        },
+        {
+          "decision": "`resize` defaults to `vertical`, and horizontal is not offered",
+          "why": "Letting a reader make the box taller is the cheapest possible fix for a field that turned out too small, and it costs the layout nothing — the control's inline size is the form's. Horizontal resize does cost the layout: a control dragged wider than its column overflows whatever contains it, and no form anticipates that. `none` is there for the layouts that cannot tolerate a height change either."
+        },
+        {
+          "decision": "No character counter",
+          "why": "A counter is two things — a number that updates, and an announcement policy for when it should interrupt a typist — and both belong to the caller who knows the limit. `Field` already has the slot: `description` for the limit stated up front, `message` with `status=\"invalid\"` for having passed it. Building it in would mean choosing a live-region policy on everyone's behalf."
+        },
+        {
+          "decision": "`disabled` is `aria-disabled` plus `readOnly`, inherited from Field",
+          "why": "Nothing new is decided here; it is named so the contract does not read as though the question were open. The same consequence applies — a readOnly control still submits its value."
+        }
+      ]
+    },
+    "tokens": {
+      "base": {
+        "summary": "The box, and only the box — Field owns the label, helper text, message and disabled dimming. Every value below is the one `.rata-text-field-input` uses, deliberately: the two controls sit in the same form and a reader should not be able to tell they were built separately.",
+        "tokens": {
+          "font-family": "font.family.sans — a control inherits neither family nor size from the page, so both are stated",
+          "font-size": "type.control.size.md — the same constant the button family and the text field use, so all three measure their text alike",
+          "line-height": "type.control.line-height.md — and here it also decides the height, since `rows` multiplies it",
+          "background": "theme.bg.surface",
+          "color": "theme.fg.primary",
+          "border-color": "theme.border.strong",
+          "border-radius": "radius.element",
+          "padding-inline": "space.control.padding-inline.md — matching the text field's md step, which is the only step this control has",
+          "padding-block": "space.padding.xs — a single-line control centres its text with its height, and a multi-line one has no height to centre against, so the space has to be stated",
+          "placeholder color": "theme.fg.muted"
+        }
+      },
+      "states": {
+        "summary": "Selected from the primitive's data-status on the Field root, exactly as the text field's are. The rings are inset strokes, never the focus ring, so a control can be focused and invalid at once.",
+        "tokens": {
+          "hover inner band": "theme.bg.muted at border.2 as an inset shadow, idle only — the validation rings occupy the same 2px and box-shadow does not accumulate",
+          "focus border-color": "theme.fg.primary",
+          "focus outline": "focus.ring-width solid theme.fg.primary at space.0 offset — the same deliberate departure the text field documents, so the two controls' focus looks identical",
+          "validating ring": "theme.accent-role.ring",
+          "valid ring": "theme.success-role.ring",
+          "invalid ring": "theme.danger-role.ring",
+          "disabled cursor": "not-allowed — the dimming itself is Field's, on the root"
+        }
+      }
+    },
+    "example": "<Textarea label=\"Internal note\" rows={2} resize=\"none\" labelHidden />"
   },
   {
     "name": "toggle-button",
@@ -6595,7 +7925,7 @@
       {
         "case": "A label whose text is redundant on screen",
         "when": "The component's own `labelHidden` prop composes this — a field in a toolbar, a checkbox under a column heading that already names it.",
-        "example": "<label className=\"rata-text-field-label rata-visually-hidden\" htmlFor={id}>\n  Search\n</label>",
+        "example": "<label className=\"rata-field-label rata-visually-hidden\" htmlFor={id}>\n  Search\n</label>",
         "notes": "The point is what it is *not*: `display: none` and `visibility: hidden` both remove the element from the accessibility tree, so a label hidden that way takes the control's accessible name with it. This clips instead — the element is still rendered, still bound, still read."
       },
       {

@@ -19,6 +19,8 @@ import {
   ButtonGroup,
   Checkbox,
   Dialog,
+  Disclosure,
+  Heading,
   Panel,
   Sheet,
   Menu,
@@ -30,11 +32,14 @@ import {
   MobileNav,
   Search,
   SegmentedControl,
+  Select,
   SideNav,
   Tabs,
   TopNav,
   Spinner,
   Switch,
+  Text,
+  Textarea,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
@@ -319,6 +324,206 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
 
   radio: {
     "Inside its group": () => <RadioStage />,
+  },
+
+  /* The levels below are 4 and 5, while the contract's own examples show 1 and
+     3. That is not drift — a specimen renders into THIS page's outline, and
+     this page's title is an h2 with its sections at h3, so an example card
+     lives under an h3 and its headings belong at 4. A specimen written
+     `level={1}` gave the page its only h1, buried inside a card, which is
+     exactly the outline damage Heading exists to prevent. The role is what
+     carries the lesson here and it is unchanged: a deep level wearing a big
+     size is the same demonstration as a shallow one. */
+  heading: {
+    "A page title that outranks its own size": () => (
+      <div className="pg-block-stack">
+        <Heading level={4} role="display-3">
+          Design tokens
+        </Heading>
+        <Text role="large" tone="secondary">
+          Still the page&rsquo;s only h1 — the display role changed how it looks and
+          nothing about where it sits.
+        </Text>
+      </div>
+    ),
+    "A section heading at its natural size": () => (
+      <div className="pg-block-stack">
+        <Heading level={4}>Contrast pairings</Heading>
+        <Text tone="secondary">
+          No role passed: the level renders its own matching step.
+        </Text>
+      </div>
+    ),
+    "A deep heading that should not shout": () => (
+      <div className="pg-block-stack">
+        <Heading level={4}>Known gaps</Heading>
+        <Heading level={4} role="heading-5">
+          Known gaps
+        </Heading>
+        <Text role="supporting" tone="muted">
+          Both are h4. Only the second one steps its size down.
+        </Text>
+      </div>
+    ),
+  },
+
+  text: {
+    "A standfirst under a page title": () => (
+      <div className="pg-block-stack">
+        <Heading level={4} role="heading-1">
+          Token discipline
+        </Heading>
+        <Text role="large" tone="secondary">
+          Every value in this system comes from a token, and every token says what
+          it is for.
+        </Text>
+      </div>
+    ),
+    "Help text under a field": () => (
+      /* Guidance belonging to the GROUP, which is the case the contract's note
+         carves out: a single field's help text is its own `description` prop,
+         which also wires up the aria-describedby. Staged with real controls
+         that own their labels — an earlier version of this specimen set the
+         label itself in `<Text role="label">`, which looks like a field label,
+         is announced as nothing, and would leave anyone copying it with an
+         unlabelled input. */
+      <div className="pg-block-stack">
+        <Switch label="Email me about releases" defaultChecked />
+        <Switch label="Email me about incidents" />
+        <Text role="supporting" tone="muted">
+          Both go to your billing address, which only an admin can change.
+        </Text>
+      </div>
+    ),
+    "An eyebrow over a group": () => (
+      <div className="pg-block-stack">
+        <Text role="label" tone="secondary">
+          Notifications
+        </Text>
+        <Text>Choose which events send you an email.</Text>
+      </div>
+    ),
+    "A run inside a sentence": () => (
+      <Text>
+        Last synced{" "}
+        <Text as="span" tone="muted">
+          four minutes ago
+        </Text>
+        .
+      </Text>
+    ),
+  },
+
+  disclosure: {
+    "One optional section in a form": () => (
+      <div className="pg-block-stack">
+        <Disclosure title="Advanced options">
+          <TextField label="Retry limit" description="How many times to try again." />
+        </Disclosure>
+      </div>
+    ),
+    "A page divided into sections": () => (
+      <div className="pg-block-stack">
+        <Disclosure title="Shipping address" headingLevel={4} defaultOpen>
+          <Text tone="secondary">Where the order goes.</Text>
+        </Disclosure>
+        <Disclosure title="Billing address" headingLevel={4}>
+          <Text tone="secondary">Where the receipt goes.</Text>
+        </Disclosure>
+        <Disclosure title="Delivery notes" headingLevel={4}>
+          <Text tone="secondary">Anything the courier should know.</Text>
+        </Disclosure>
+      </div>
+    ),
+    "Opened from outside by something that went wrong": () => (
+      <div className="pg-block-stack">
+        <DisclosureStage />
+      </div>
+    ),
+  },
+
+  textarea: {
+    "A note someone will actually draft in": () => (
+      <div className="pg-block-stack">
+        <Textarea
+          label="Release notes"
+          rows={5}
+          description="Markdown is fine. Around 500 characters reads best."
+          defaultValue={"Fixed the disabled trap in getDisclosureProps.\nExtracted Field."}
+        />
+      </div>
+    ),
+    "Too long, and said so": () => (
+      <div className="pg-block-stack">
+        <Textarea
+          label="Release notes"
+          rows={3}
+          status="invalid"
+          message="Keep this under 500 characters."
+          defaultValue="A very long changelog that ran well past what the release page can show without scrolling…"
+        />
+      </div>
+    ),
+    "A layout that cannot take a taller control": () => (
+      <div className="pg-block-stack">
+        <Textarea label="Internal note" rows={2} resize="none" labelHidden />
+      </div>
+    ),
+  },
+
+  select: {
+    "One choice from a short list": () => (
+      <div className="pg-block-stack">
+        <Select
+          label="Environment"
+          placeholder="Select an environment"
+          required
+          options={[
+            { value: "dev", label: "Development" },
+            { value: "stg", label: "Staging" },
+            { value: "prod", label: "Production" },
+          ]}
+        />
+      </div>
+    ),
+    "A list long enough to need grouping": () => (
+      <div className="pg-block-stack">
+        <Select
+          label="Region"
+          placeholder="Select a region"
+          options={[
+            {
+              label: "Asia",
+              options: [
+                { value: "lk", label: "Sri Lanka" },
+                { value: "sg", label: "Singapore" },
+              ],
+            },
+            {
+              label: "Europe",
+              options: [
+                { value: "pt", label: "Portugal" },
+                { value: "ie", label: "Ireland" },
+              ],
+            },
+          ]}
+        />
+      </div>
+    ),
+    "A choice that failed validation": () => (
+      <div className="pg-block-stack">
+        <Select
+          label="Environment"
+          status="invalid"
+          message="Pick an environment you have access to."
+          defaultValue="prod"
+          options={[
+            { value: "dev", label: "Development" },
+            { value: "prod", label: "Production" },
+          ]}
+        />
+      </div>
+    ),
   },
 
   badge: {
@@ -1159,6 +1364,29 @@ function MenuItemStage({
         {children}
       </MenuItem>
     </Menu>
+  );
+}
+
+/**
+ * A Disclosure whose open state something other than the trigger decides.
+ *
+ * A component rather than an inline render, for the reason `RadioStage` gives:
+ * it needs useState, and a hook written straight into an EXAMPLES entry would
+ * join the hook list of whatever is rendering it and change its length on
+ * navigation.
+ *
+ * It starts open and with the field already invalid, because that is the
+ * situation the case is about — a submit failed and the offending field is
+ * inside a section the reader cannot see. Closing it from here is the part
+ * worth trying: the trigger still reports, and the state above it still owns
+ * the answer.
+ */
+function DisclosureStage() {
+  const [open, setOpen] = useState(true);
+  return (
+    <Disclosure title="Billing" open={open} onOpenChange={setOpen}>
+      <TextField label="Card number" status="invalid" message="Check this number." />
+    </Disclosure>
   );
 }
 

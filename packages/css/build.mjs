@@ -18,8 +18,13 @@ const ORDER = [
   // After toggle-button: the attached bar overrides the radius each option sets.
   "toggle-button-group.css",
   "icon.css",
+  // Before text-field: Field owns everything around a control's box, and the
+  // components that compose it override only inside that box.
+  "field.css",
   "text-field.css",
-  // After text-field: search borrows its look and its focus treatment.
+  // After text-field: all three borrow its look and its focus treatment.
+  "textarea.css",
+  "select.css",
   "search.css",
   "checkbox.css",
   // After checkbox: radio shares its construction and overrides the shape.
@@ -27,8 +32,13 @@ const ORDER = [
   "radio-group.css",
   // After radio: the switch shares their construction and redraws the control.
   "switch.css",
+  // Typography before the components that set text inside themselves: both are
+  // element-agnostic and neither should win over a component's own type rules.
+  "heading.css",
+  "text.css",
   "badge.css",
   "avatar.css",
+  "disclosure.css",
   "breadcrumbs.css",
   "top-nav.css",
   "side-nav.css",

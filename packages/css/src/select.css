@@ -1,0 +1,152 @@
+/* rata-allow: missing-focus-ring — the same deliberate departure text-field.css
+   records at length: this control's focus indicator is theme.fg.primary rather
+   than theme.focus-ring, because the stronger contrast is worth more on a
+   plain surface than matching Button is. The reasoning is written out once,
+   there; what matters here is that every control in one form focuses alike. */
+
+/* Select — THE BOX and the chevron well, and nothing around them. Label,
+   helper text, message and disabled dimming come from field.css, which this
+   composes; every selector reading `.rata-select[data-status=…]` is matching
+   the Field root, which carries both classes.
+
+   Every value is the one .rata-text-field-input uses, deliberately: a select
+   and a text field in one row should be indistinguishable in everything but
+   their content.
+
+   The OPTIONS are not styled here and cannot be — the operating system draws
+   them. That limit is the price of getting the platform's picker, keyboard
+   model and typeahead for free, and the contract states it rather than
+   leaving it to be discovered. */
+.rata-select-control {
+  /* A control inherits neither family nor size from the page. */
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-control-size-md);
+  line-height: var(--rata-type-control-line-height-md);
+  border: var(--rata-border-default) solid var(--rata-theme-border-strong);
+  border-radius: var(--rata-radius-element);
+  background: var(--rata-theme-bg-surface);
+  color: var(--rata-theme-fg-primary);
+  /* The platform's own arrow cannot be themed, sized or recoloured, so a
+     select beside this system's other controls looked imported from
+     elsewhere. Suppressed here; the glyph is supplied below. */
+  appearance: none;
+  /* Stated rather than assumed: @rata/css does not normalise box-sizing, and
+     this control sets an explicit height alongside a border. */
+  box-sizing: border-box;
+  inline-size: 100%;
+  cursor: pointer;
+  transition:
+    border-color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing),
+    box-shadow var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing);
+}
+
+/* Sizes — the box, not the text, matching .rata-button and
+   .rata-text-field-input step for step so all three line up in a row.
+
+   The end padding reserves room for the chevron WHETHER OR NOT a value is
+   chosen: reserving only once answered would reflow the text under the
+   reader's eye at the moment they answer. */
+.rata-select-control--sm {
+  block-size: var(--rata-size-control-sm);
+  padding-inline-start: var(--rata-space-control-padding-inline-sm);
+  padding-inline-end: calc(
+    var(--rata-space-control-padding-inline-sm) + var(--rata-size-icon-text) +
+      var(--rata-space-gap-sm)
+  );
+}
+
+.rata-select-control--md {
+  block-size: var(--rata-size-control-md);
+  padding-inline-start: var(--rata-space-control-padding-inline-md);
+  padding-inline-end: calc(
+    var(--rata-space-control-padding-inline-md) + var(--rata-size-icon-text) +
+      var(--rata-space-gap-sm)
+  );
+}
+
+.rata-select-control--lg {
+  block-size: var(--rata-size-control-lg);
+  padding-inline-start: var(--rata-space-control-padding-inline-lg);
+  padding-inline-end: calc(
+    var(--rata-space-control-padding-inline-lg) + var(--rata-size-icon-text) +
+      var(--rata-space-gap-sm)
+  );
+}
+
+/* The control and its glyph share a stacking context. The wrapper is inline
+   rather than the Field root, because the root also holds the label and the
+   helper text and the chevron belongs to neither. */
+.rata-select-well {
+  position: relative;
+  display: flex;
+}
+
+/* An affordance rather than content, so it sits a step below the value it
+   points at. pointer-events: none keeps the whole control one click target —
+   without it, clicking the arrow would miss. */
+.rata-select-chevron {
+  position: absolute;
+  inset-block-start: 50%;
+  translate: 0 -50%;
+  inset-inline-end: var(--rata-space-control-padding-inline-md);
+  color: var(--rata-theme-fg-secondary);
+  pointer-events: none;
+}
+
+.rata-select-control--sm ~ .rata-select-chevron {
+  inset-inline-end: var(--rata-space-control-padding-inline-sm);
+}
+
+.rata-select-control--lg ~ .rata-select-chevron {
+  inset-inline-end: var(--rata-space-control-padding-inline-lg);
+}
+
+/* Nothing chosen yet. Muted rather than primary, so a control nobody has
+   answered looks unanswered — the same tone a placeholder takes elsewhere.
+
+   Asked of the DOM rather than tracked in React on purpose: the browser owns
+   which option is checked in the uncontrolled case, so a data attribute set
+   from props would have been right on first render and wrong from the first
+   answer onward. This is correct in both modes and needs no state. */
+.rata-select-control:has(option[value=""]:checked) {
+  color: var(--rata-theme-fg-muted);
+}
+
+/* Idle only, for the reason text-field.css gives: the validation rings below
+   are inset shadows occupying this exact 2px, and box-shadow does not
+   accumulate across rules. The ring wins, because it carries meaning. */
+.rata-select[data-status="idle"]:not([data-disabled]) .rata-select-control:hover {
+  box-shadow: inset 0 0 0 var(--rata-border-2) var(--rata-theme-bg-muted);
+}
+
+.rata-select-control:focus-visible {
+  /* An outline rather than a thicker border: outlines are out of flow, so this
+     cannot move anything. */
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-fg-primary);
+  outline-offset: var(--rata-space-0);
+  /* Darkens to the outline's tone so the two read as one stroke. */
+  border-color: var(--rata-theme-fg-primary);
+}
+
+/* ---- Validation states, selected from the primitive's data-status -------- */
+
+.rata-select[data-status="validating"] .rata-select-control {
+  box-shadow: var(--rata-theme-accent-role-ring);
+}
+
+.rata-select[data-status="valid"] .rata-select-control {
+  box-shadow: var(--rata-theme-success-role-ring);
+}
+
+/* Outranks the focus rule on specificity, which is what we want: a focused
+   invalid control keeps its danger border, so focusing an error does not look
+   like clearing it. */
+.rata-select[data-status="invalid"] .rata-select-control {
+  border-color: var(--rata-theme-danger-role-fg);
+  box-shadow: var(--rata-theme-danger-role-ring);
+}
+
+/* Dimmed by Field on the root; what is left here is the pointer. */
+.rata-select[data-disabled] .rata-select-control {
+  cursor: not-allowed;
+}

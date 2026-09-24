@@ -56,12 +56,20 @@
   display: flex;
   align-items: center;
   gap: var(--rata-space-gap-sm);
-  block-size: var(--rata-size-control-md);
+  /* A minimum, not a fixed height. A label too long for the rail
+     ("Toggle Button Group") wraps, and a fixed block-size kept the row at one
+     line's height while the second line spilled out below it — past the
+     current-page tint and the focus ring. The block padding is what gives a
+     wrapped row the same breathing room a single-line row gets from the
+     minimum; on one line the minimum wins and the row is unchanged. */
+  min-block-size: var(--rata-size-control-md);
+  padding-block: var(--rata-space-padding-xs);
   padding-inline: var(--rata-space-control-padding-inline-sm);
   border-radius: var(--rata-radius-element);
   color: var(--rata-theme-fg-secondary);
   font-size: var(--rata-type-control-size-md);
   font-weight: var(--rata-type-control-weight);
+  line-height: var(--rata-type-control-line-height-md);
   text-decoration: none;
 }
 
@@ -127,6 +135,13 @@
 /* The nested list, expanded in place. Indented from its parent so the nesting
    is visible rather than implied by order alone — the same reasoning the
    playground's own nested checkbox rows follow. */
+/* `display: flex` below outranks the UA stylesheet's `display: none` for
+   [hidden], so the empty shell that keeps aria-controls resolving would
+   otherwise render as a flex box with its own margins. */
+.rata-side-nav-sublist[hidden] {
+  display: none;
+}
+
 .rata-side-nav-sublist {
   display: flex;
   flex-direction: column;
@@ -146,5 +161,5 @@
 /* A step smaller than its parent: the nesting is the hierarchy, and repeating
    it in the type would say the same thing twice. */
 .rata-side-nav-sublink {
-  block-size: var(--rata-size-control-sm);
+  min-block-size: var(--rata-size-control-sm);
 }

@@ -1,0 +1,70 @@
+/* Field — the label, helper text, message and validation state around a form
+   control.
+
+   Everything here is what is identical across every control. The control's own
+   box — height, inline padding, border, focus ring — stays with the control,
+   because those genuinely differ: a multi-line one grows with its content, a
+   dropdown reserves a well for its chevron. Field owning them would mean every
+   control overriding them.
+
+   NOTE, for the same reason state-layer.css carries one: vibe-tests scans raw
+   source including comments, and naming the native control elements here would
+   trip its interactive-element heuristic and demand a :focus-visible ring that
+   this file must NOT own — the ring belongs to the control inside, which is
+   the whole point of the split above. Hence "multi-line one" and "dropdown".
+   Don't put the element names back. */
+.rata-field {
+  display: flex;
+  flex-direction: column;
+  /* stack.2xs, not the step above: the label and the helper text each carry
+     their own line-height leading, so the perceived gap is already larger than
+     the number and the next step reads as separation rather than grouping. */
+  gap: var(--rata-space-stack-2xs);
+}
+
+.rata-field-label {
+  color: var(--rata-theme-fg-primary);
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-label-size);
+  font-weight: var(--rata-type-label-weight);
+  line-height: var(--rata-type-label-line-height);
+}
+
+/* Required-ness is information, not a fault, so this is not the danger tone.
+   It is also aria-hidden in the markup: aria-required already announces it,
+   and reading the marker aloud would say it twice. */
+.rata-field-required {
+  color: var(--rata-theme-fg-secondary);
+}
+
+/* Helper text — persistent, and always ahead of the message in the
+   description order, so a constraint is heard before a failure. */
+.rata-field-description {
+  margin: var(--rata-space-0);
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-supporting-size);
+  line-height: var(--rata-type-supporting-line-height);
+}
+
+/* Neutral until the status says otherwise, so a field that has not been judged
+   does not look judged. */
+.rata-field-message {
+  margin: var(--rata-space-0);
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-supporting-size);
+  line-height: var(--rata-type-supporting-line-height);
+}
+
+/* The role's TEXT colour on the page background, never its saturated bg —
+   that fill is a non-text indicator tone. */
+.rata-field[data-status="invalid"] .rata-field-message {
+  color: var(--rata-theme-danger-role-fg);
+}
+
+/* Disabled: readable and focusable, dimmed rather than removed. The control
+   carries readOnly and aria-disabled from the primitive; nothing here uses the
+   native disabled attribute. Dimming the root takes the label and helper text
+   with it. */
+.rata-field[data-disabled] {
+  opacity: var(--rata-state-disabled-opacity);
+}

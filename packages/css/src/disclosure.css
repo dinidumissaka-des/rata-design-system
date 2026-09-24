@@ -1,0 +1,96 @@
+/* Disclosure — a button that shows and hides a panel, expanded in place.
+
+   The component owns no box: no background, no border, and no rule between
+   one disclosure and the next. A lone disclosure sits in running content,
+   where a padded card would be uninvited, and the rules that divide a stack
+   of sections need to know which section is first and last — which is the
+   set's knowledge, not the unit's. Same reasoning as Heading carrying no
+   margin. The class is here so `className` has something to sit beside. */
+.rata-disclosure {
+  display: block;
+}
+
+/* Present only when `headingLevel` is set, and then it is a wrapper for the
+   outline rather than a type step: the trigger inside it is a control and
+   takes the control scale at every level. `font: inherit` is what stops an
+   `<h3>` making the button three sizes larger than the same button in a
+   disclosure with no heading. */
+.rata-disclosure-heading {
+  margin: var(--rata-space-0);
+  font: inherit;
+}
+
+/* Full-bleed in its inline axis on purpose: the whole row is the target, which
+   is what makes a wide section header feel pressable rather than only its
+   text. Hover and press come from .rata-state-layer, composed in the markup. */
+.rata-disclosure-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--rata-space-gap-sm);
+  inline-size: 100%;
+  min-block-size: var(--rata-size-control-md);
+  padding-inline: var(--rata-space-control-padding-inline-sm);
+  /* Stated for the reason button.css gives: an explicit size alongside padding
+     renders larger than the token says under content-box, and @rata/css ships
+     no global reset. */
+  box-sizing: border-box;
+  border: var(--rata-border-default) solid transparent;
+  border-radius: var(--rata-radius-element);
+  background: none;
+  color: var(--rata-theme-fg-primary);
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-control-size-md);
+  font-weight: var(--rata-type-control-weight);
+  line-height: var(--rata-type-control-line-height-md);
+  /* The label reads from the start edge; only the chevron is pushed to the
+     end, by the label's own flex below. */
+  text-align: start;
+  cursor: pointer;
+}
+
+.rata-disclosure-trigger:focus-visible {
+  outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* aria-disabled, never the native attribute: the trigger stays focusable and
+   discoverable, and getDisclosureProps blocks the activation. */
+.rata-disclosure-trigger[aria-disabled="true"] {
+  opacity: var(--rata-state-disabled-opacity);
+  cursor: not-allowed;
+}
+
+/* Takes the slack, so the chevron sits against the end edge however short the
+   label is — the same construction .rata-side-nav-trigger-label uses. */
+.rata-disclosure-label {
+  flex: 1;
+  min-inline-size: 0;
+}
+
+/* The only thing that moves. Decorative: aria-expanded already says which way
+   it points, so it can never disagree with the trigger it sits in. */
+.rata-disclosure-chevron {
+  flex-shrink: 0;
+  transition: rotate var(--rata-motion-interactive-duration)
+    var(--rata-motion-interactive-easing);
+}
+
+.rata-disclosure-trigger[aria-expanded="true"] .rata-disclosure-chevron {
+  rotate: 180deg;
+}
+
+/* Indented to the trigger's own inline padding, so the label and the content
+   it reveals share an edge. Room above it and none below: what follows the
+   disclosure is the page's spacing problem, not this component's. */
+/* The shell that keeps aria-controls resolving while the content is gone.
+   Stated rather than left to the UA stylesheet: this rule sets padding, and a
+   future `display` on the panel would silently outrank [hidden] and start
+   painting an empty box. */
+.rata-disclosure-panel[hidden] {
+  display: none;
+}
+
+.rata-disclosure-panel {
+  padding-block-start: var(--rata-space-padding-sm);
+  padding-inline: var(--rata-space-control-padding-inline-sm);
+}

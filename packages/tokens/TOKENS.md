@@ -1261,6 +1261,111 @@ The close control. Same construction as Notice's: currentColor on a transparent 
 | focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
 | block alignment | centred on the title's first line, from `type.heading.size` and `type.heading.line-height` |
 
+### disclosure
+
+Nothing. The component owns no box, no background and no rule — a lone disclosure sits in running content, and the divider between stacked sections belongs to the set rather than to the unit.
+
+| Property | Token |
+|---|---|
+| box | none — see the decision on why the rules between sections are not this component's |
+
+### disclosure-trigger
+
+A control, sized and padded from the control scale so it lines up with the buttons around it. Full-bleed in its inline axis: the whole row is the target, which is what makes a wide section header feel pressable rather than only its text.
+
+| Property | Token |
+|---|---|
+| min-block-size | `size.control.md` as a FLOOR rather than a fixed height — a section title long enough to wrap must be allowed to, the same call `SideNav` made for its rows. A fixed block-size would clip the second line. |
+| padding-inline | `space.control.padding-inline.sm` |
+| border-radius | `radius.element` |
+| colour | `theme.fg.primary` |
+| font-size | `type.control.size.md` |
+| font-weight | `type.control.weight` |
+| gap between the label and the chevron | `space.gap.sm` |
+| chevron size | `size.icon.text` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+| disabled | `state.disabled-opacity` |
+
+### disclosure-chevron
+
+The only thing that moves. It rotates between the two states at the interactive duration, which is the pair reserved for a control answering a press.
+
+| Property | Token |
+|---|---|
+| transition | `motion.interactive.duration` with `motion.interactive.easing` |
+| colour | currentColor — it repeats what aria-expanded already says, so it can never disagree with the trigger it sits in |
+
+### disclosure-panel
+
+The revealed content. Indented to the trigger's own inline padding so the two read as one block, and given room above it rather than below — what follows the disclosure is the page's spacing problem, not this component's.
+
+| Property | Token |
+|---|---|
+| padding-block-start | `space.padding.sm` |
+| padding-inline | `space.control.padding-inline.sm` — matching the trigger, so the label and the content it reveals share an edge |
+| colour | inherited — the panel holds whatever the caller puts in it and tints none of it |
+| when closed | display: none via [hidden] — stated rather than left to the UA stylesheet, because a `display` added to this rule later would silently outrank it and start painting an empty box |
+
+### field
+
+A column. The gap is the only measurement here, and it is deliberately tighter than it looks it should be.
+
+| Property | Token |
+|---|---|
+| display | flex, column |
+| gap | `space.stack.2xs` — not `space.stack.xs`: the label and the helper text each carry their own line-height leading, so the perceived gap is already larger than the number, and the next step up reads as separation rather than as grouping |
+
+### field-label
+
+The control's name, at the label role of the type scale.
+
+| Property | Token |
+|---|---|
+| colour | `theme.fg.primary` |
+| font-size | `type.label.size` |
+| font-weight | `type.label.weight` |
+| line-height | `type.label.line-height` |
+
+### field-required-marker
+
+The asterisk. Required-ness is information, not a fault, so it is not the danger tone.
+
+| Property | Token |
+|---|---|
+| colour | `theme.fg.secondary` |
+
+### field-description
+
+Persistent helper text, and always ahead of the message in the description order so a constraint is heard before a failure.
+
+| Property | Token |
+|---|---|
+| margin | `space.0` |
+| colour | `theme.fg.secondary` |
+| font-size | `type.supporting.size` |
+| line-height | `type.supporting.line-height` |
+
+### field-message
+
+The status-dependent line. Neutral until the status says otherwise, so a field that has not been judged does not look judged.
+
+| Property | Token |
+|---|---|
+| margin | `space.0` |
+| colour | `theme.fg.secondary` |
+| font-size | `type.supporting.size` |
+| line-height | `type.supporting.line-height` |
+| when invalid | `theme.danger-role.fg` — the role's text colour on the page background, never its saturated bg, which is a non-text indicator tone |
+
+### field-disabled
+
+Dimmed as a whole rather than removed, because the control underneath stays focusable and readable.
+
+| Property | Token |
+|---|---|
+| opacity | `state.disabled-opacity`, on the root so the label and helper text dim with the control |
+
 ### heading
 
 One type role, taken whole. Nothing else — a heading has no box of its own.
@@ -1632,6 +1737,55 @@ The answer, raised out of the track. Marked twice over: the surface is the visua
 | colour | `theme.fg.primary` |
 | elevation | `theme.elevation.raised` |
 
+### select
+
+The box, matching `.rata-text-field-input` step for step so a select and a text field in one row are indistinguishable in everything but their content. Field owns the label, helper text, message and disabled dimming.
+
+| Property | Token |
+|---|---|
+| font-family | `font.family.sans` |
+| font-size | `type.control.size.md` — constant across all three sizes, the same constant the button family and the text field use |
+| line-height | `type.control.line-height.md` |
+| background | `theme.bg.surface` |
+| color | `theme.fg.primary` |
+| border-color | `theme.border.strong` |
+| border-radius | `radius.element` |
+| block-size | `size.control.md` — and `size.control.sm` / `size.control.lg` at the other sizes |
+| padding-inline-start | `space.control.padding-inline.md` — and the sm / lg steps at the other sizes |
+
+### select-chevron-well
+
+Room reserved at the end edge for the chevron, which is drawn rather than inherited: the platform's own arrow cannot be themed, so the control sets appearance to none and this system supplies the glyph.
+
+| Property | Token |
+|---|---|
+| padding-inline-end | `space.control.padding-inline.md` plus `size.icon.text` plus `space.gap.sm` — reserved whether or not a value is chosen, so nothing reflows when one is |
+| chevron size | `size.icon.text` |
+| chevron colour | `theme.fg.secondary` — it is an affordance rather than content, so it sits below the value it points at |
+| chevron inset | `space.control.padding-inline.md` from the end edge |
+
+### select-placeholder
+
+The unchosen state. Muted rather than primary, so a control nobody has answered looks unanswered.
+
+| Property | Token |
+|---|---|
+| colour | `theme.fg.muted` |
+
+### select-states
+
+Selected from the primitive's data-status on the Field root, exactly as the text field's are. The rings are inset strokes, never the focus ring, so a control can be focused and invalid at once.
+
+| Property | Token |
+|---|---|
+| hover inner band | `theme.bg.muted` at `border.2` as an inset shadow, idle only — the validation rings occupy the same 2px and box-shadow does not accumulate |
+| focus border-color | `theme.fg.primary` |
+| focus outline | `focus.ring-width` solid `theme.fg.primary` at `space.0` offset — the same deliberate departure the text field documents, so every control in a form focuses alike |
+| validating ring | `theme.accent-role.ring` |
+| valid ring | `theme.success-role.ring` |
+| invalid ring | `theme.danger-role.ring` |
+| disabled cursor | not-allowed — the dimming itself is Field's, on the root |
+
 ### sheet
 
 A modal surface held against one edge. Unlike Dialog it is flush with that edge, so only the corners that face the page are rounded.
@@ -1835,12 +1989,10 @@ The region a tab reveals. Focusable even with nothing focusable inside, so Tab f
 
 ### text-field
 
-A single-line input with a label, helper text, and validation states.
+The input's BOX, and nothing around it. The label, required marker, helper text, message and disabled dimming are Field's recipe — this component composes Field and overrides only inside the control, which is the split that lets Select and TextArea cost a stylesheet each.
 
 | Property | Token |
 |---|---|
-| label color | `theme.fg.primary` |
-| label font-size | `type.label.size` |
 | input background | `theme.bg.surface` |
 | input color | `theme.fg.primary` |
 | input font-family | `font.family.sans` |
@@ -1850,19 +2002,13 @@ A single-line input with a label, helper text, and validation states.
 | height | `size.control.md` — and `size.control.sm` / .lg at the other sizes. Together with padding-inline this is the only thing `size` changes |
 | padding-inline | `space.control.padding-inline.md` — and the sm / lg steps at the other sizes |
 | border-radius | `radius.element` |
-| helper text color | `theme.fg.secondary` |
-| error text color | `theme.danger-role.fg` |
 | error border-color | `theme.danger-role.fg` |
 | validating (in-progress) ring | `theme.accent-role.ring` |
 | valid ring | `theme.success-role.ring` |
 | invalid ring | `theme.danger-role.ring` |
-| gap between label, input, and helper | `space.stack.2xs` — the tightest vertical step. The text either side carries line-height leading of its own, so this reads looser than 4px and `space.stack.xs` read as separation |
-| required marker color | `theme.fg.secondary` — required-ness is information, not a fault, so it is deliberately not the danger role's foreground; the requirement itself is announced through aria-required |
-| disabled opacity | `state.disabled-opacity` on the root — the field stays readable and focusable, which is why it emits aria-disabled and readOnly rather than the native disabled attribute |
 | hover inner band | `theme.bg.muted` at `border.2`, drawn as an inset shadow so the fill recedes 2px while the border stays `border.1` and the outer edge does not move. Idle only — the validation rings occupy the same 2px and box-shadow does not accumulate |
 | focus border-color | `theme.fg.primary` — the same tone as the outline, so the two read as one stroke instead of a dark ring around a lighter edge. The width is never touched |
 | focus outline | `focus.ring-width` solid `theme.fg.primary`, offset `space.0` — deliberately NOT `theme.focus-ring`, the only such departure in the library. It gives 16.75:1 against the field's fill where `theme.focus-ring` gives 4.31:1, so the indicator is stronger; the cost is that focus here does not match focus on a Button. An outline rather than a thicker border because outlines are out of flow: this control sets height but not width, so a wider border would widen the field |
-| hidden label geometry | compose the .rata-visually-hidden class — the utility, not a rule of this component's own. It clips rather than using display:none, which would take the accessible name off with the pixels |
 
 ### text
 
@@ -1894,6 +2040,37 @@ The three documented foreground steps for text, and the reason this prop exists 
 | secondary | `theme.fg.secondary` |
 | muted | `theme.fg.muted` |
 | all three | contrast-verified against `theme.bg.canvas`, `theme.bg.surface` and `theme.bg.subtle` — see the contrast page |
+
+### textarea
+
+The box, and only the box — Field owns the label, helper text, message and disabled dimming. Every value below is the one `.rata-text-field-input` uses, deliberately: the two controls sit in the same form and a reader should not be able to tell they were built separately.
+
+| Property | Token |
+|---|---|
+| font-family | `font.family.sans` — a control inherits neither family nor size from the page, so both are stated |
+| font-size | `type.control.size.md` — the same constant the button family and the text field use, so all three measure their text alike |
+| line-height | `type.control.line-height.md` — and here it also decides the height, since `rows` multiplies it |
+| background | `theme.bg.surface` |
+| color | `theme.fg.primary` |
+| border-color | `theme.border.strong` |
+| border-radius | `radius.element` |
+| padding-inline | `space.control.padding-inline.md` — matching the text field's md step, which is the only step this control has |
+| padding-block | `space.padding.xs` — a single-line control centres its text with its height, and a multi-line one has no height to centre against, so the space has to be stated |
+| placeholder color | `theme.fg.muted` |
+
+### textarea-states
+
+Selected from the primitive's data-status on the Field root, exactly as the text field's are. The rings are inset strokes, never the focus ring, so a control can be focused and invalid at once.
+
+| Property | Token |
+|---|---|
+| hover inner band | `theme.bg.muted` at `border.2` as an inset shadow, idle only — the validation rings occupy the same 2px and box-shadow does not accumulate |
+| focus border-color | `theme.fg.primary` |
+| focus outline | `focus.ring-width` solid `theme.fg.primary` at `space.0` offset — the same deliberate departure the text field documents, so the two controls' focus looks identical |
+| validating ring | `theme.accent-role.ring` |
+| valid ring | `theme.success-role.ring` |
+| invalid ring | `theme.danger-role.ring` |
+| disabled cursor | not-allowed — the dimming itself is Field's, on the root |
 
 ### toggle-button-group-attached
 

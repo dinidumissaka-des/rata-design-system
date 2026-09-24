@@ -35,9 +35,19 @@
     "status": "latest"
   },
   {
+    "name": "disclosure",
+    "title": "Disclosure",
+    "status": "latest"
+  },
+  {
+    "name": "field",
+    "title": "Field",
+    "status": "latest"
+  },
+  {
     "name": "heading",
     "title": "Heading",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "icon",
@@ -90,6 +100,11 @@
     "status": "latest"
   },
   {
+    "name": "select",
+    "title": "Select",
+    "status": "latest"
+  },
+  {
     "name": "sheet",
     "title": "Sheet",
     "status": "latest"
@@ -122,11 +137,16 @@
   {
     "name": "text",
     "title": "Text",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "text-field",
     "title": "Input: Text field",
+    "status": "latest"
+  },
+  {
+    "name": "textarea",
+    "title": "Textarea",
     "status": "latest"
   },
   {

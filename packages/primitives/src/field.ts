@@ -1,5 +1,13 @@
 /**
- * Headless text-field behavior.
+ * Headless FIELD behavior — the label, description, message and validation
+ * wiring that sits around a form control.
+ *
+ * Nothing here is about text. It returns `root`, `label`, `input`,
+ * `description` and `message` bags containing ids and ARIA and no element of
+ * any kind, which is why a `<select>` or a `<textarea>` can consume it
+ * unchanged. It was called `getTextFieldProps` while `TextField` was its only
+ * consumer; the old names are still exported at the bottom of this file so
+ * nothing outside this repo breaks.
  *
  * Pure function (no framework hooks) so it is trivially testable and portable
  * to non-React wrappers later. The caller owns the `id` — the React wrapper
@@ -18,12 +26,12 @@
  * in-flight async checks (a uniqueness lookup, say). Each maps to its own
  * ring token in step 2.
  */
-export type TextFieldStatus = "idle" | "validating" | "valid" | "invalid";
+export type FieldStatus = "idle" | "validating" | "valid" | "invalid";
 
-export interface TextFieldOptions {
+export interface FieldOptions {
   /** Stable unique id for this field. The wrapper supplies it (`useId`). */
   id: string;
-  status?: TextFieldStatus;
+  status?: FieldStatus;
   disabled?: boolean;
   required?: boolean;
   /** True when the caller renders helper text under the input. */
@@ -34,23 +42,15 @@ export interface TextFieldOptions {
   describedBy?: string;
 }
 
-export interface TextFieldProps {
+export interface FieldParts {
   root: {
-    "data-status": TextFieldStatus;
+    "data-status": FieldStatus;
     "data-disabled": "" | undefined;
   };
   label: {
     htmlFor: string;
   };
-  input: {
-    id: string;
-    "aria-describedby": string | undefined;
-    "aria-invalid": true | undefined;
-    "aria-required": true | undefined;
-    "aria-disabled": true | undefined;
-    "aria-busy": true | undefined;
-    readOnly: true | undefined;
-  };
+  input: FieldControlProps;
   description: {
     id: string;
   };
@@ -60,7 +60,18 @@ export interface TextFieldProps {
   };
 }
 
-export function getTextFieldProps(options: TextFieldOptions): TextFieldProps {
+/** Everything the control itself must carry. Spread it onto the control and nowhere else. */
+export interface FieldControlProps {
+  id: string;
+  "aria-describedby": string | undefined;
+  "aria-invalid": true | undefined;
+  "aria-required": true | undefined;
+  "aria-disabled": true | undefined;
+  "aria-busy": true | undefined;
+  readOnly: true | undefined;
+}
+
+export function getFieldProps(options: FieldOptions): FieldParts {
   const {
     id,
     status = "idle",
@@ -109,3 +120,12 @@ export function getTextFieldProps(options: TextFieldOptions): TextFieldProps {
     },
   };
 }
+
+/**
+ * The names this primitive had while `TextField` was its only consumer.
+ * Kept so nothing outside this repo breaks on the rename.
+ */
+export const getTextFieldProps = getFieldProps;
+export type TextFieldStatus = FieldStatus;
+export type TextFieldOptions = FieldOptions;
+export type TextFieldProps = FieldParts;

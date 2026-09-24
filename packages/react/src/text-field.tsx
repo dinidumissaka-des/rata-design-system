@@ -1,10 +1,11 @@
-import { forwardRef, useId } from "react";
+import { forwardRef } from "react";
 import type { InputHTMLAttributes, ReactNode } from "react";
-import { getTextFieldProps } from "@rata/primitives";
-import type { TextFieldStatus } from "@rata/primitives";
+import type { FieldStatus } from "@rata/primitives";
+import { Field } from "./field.js";
 import { cx } from "./cx.js";
 
-export type { TextFieldStatus };
+/** The name this status had while TextField was the only thing that had one. */
+export type TextFieldStatus = FieldStatus;
 
 export type TextFieldSize = "sm" | "md" | "lg";
 
@@ -42,22 +43,28 @@ export interface TextFieldProps
 /**
  * A labelled single-line input.
  *
- * The primitive owns every association: it derives the description and message
- * ids from the field's own id, so `htmlFor` and `aria-describedby` are never
- * hand-wired here and cannot drift apart. It also decides the description
+ * Built on `Field`, which owns the label, the required marker, the helper
+ * text, the message and the `data-status` this stylesheet selects on for its
+ * ring. What is left here is the one thing that is genuinely a text field: the
+ * box. That split is why `Select` and `TextArea` cost a stylesheet each rather
+ * than a stylesheet plus a copy of the wiring.
+ *
+ * The flat API is deliberate and survives the rebuild — `<TextField
+ * label="Email" />` is still one element with one prop. A component whose
+ * commonest use got more verbose to serve an abstraction would be a bad trade,
+ * so `Field` is what this is made OF, not something a caller has to assemble.
+ *
+ * Every association is still the primitive's: it derives the description and
+ * message ids from the field's own id, so `htmlFor` and `aria-describedby` are
+ * never hand-wired and cannot drift apart. It also decides the description
  * *order* — the persistent hint before the status message, so a constraint is
  * heard before a failure.
  *
- * `labelHidden` is the only concession to a field without a visible label, and
- * it concedes the pixels rather than the name: the label element is still
- * rendered and still bound by `for`, so nothing about the accessible name
- * changes. The alternative people reach for — dropping the label and letting
- * `placeholder` stand in — loses the name on the first keystroke.
- *
- * `disabled` emits `aria-disabled` plus `readOnly`, never the native attribute:
- * that is the input's analogue of the button's click guard, and it keeps the
- * field in the tab order and the accessibility tree. Note the consequence the
- * contract calls out — a readOnly field still submits its value.
+ * `disabled` emits `aria-disabled` plus `readOnly`, never the native
+ * attribute: that is the input's analogue of the button's click guard, and it
+ * keeps the field in the tab order and the accessibility tree. Note the
+ * consequence the contract calls out — a readOnly field still submits its
+ * value.
  */
 export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function TextField(
   {
@@ -76,57 +83,27 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function T
   },
   ref
 ) {
-  const generated = useId();
-  const fieldId = id ?? generated;
-
-  const field = getTextFieldProps({
-    id: fieldId,
-    status,
-    disabled,
-    required,
-    hasDescription: description !== undefined && description !== "",
-    hasMessage: message !== undefined && message !== "",
-    describedBy,
-  });
-
   return (
-    <div className={cx("rata-text-field", className)} {...field.root}>
-      <label
-        className={cx("rata-text-field-label", labelHidden && "rata-visually-hidden")}
-        {...field.label}
-      >
-        {label}
-        {/* aria-hidden: aria-required already announces the requirement, and
-            reading the marker too would say it twice. */}
-        {required && (
-          <span className="rata-text-field-required" aria-hidden="true">
-            {" *"}
-          </span>
-        )}
-      </label>
-
-      <input
-        ref={ref}
-        {...rest}
-        {...field.input}
-        className={cx("rata-text-field-input", `rata-text-field-input--${size}`)}
-      />
-
-      {description !== undefined && description !== "" && (
-        <p className="rata-text-field-description" {...field.description}>
-          {description}
-        </p>
+    <Field
+      className={cx("rata-text-field", className)}
+      label={label}
+      labelHidden={labelHidden}
+      id={id}
+      status={status}
+      description={description}
+      message={message}
+      disabled={disabled}
+      required={required}
+      aria-describedby={describedBy}
+    >
+      {(control) => (
+        <input
+          ref={ref}
+          {...rest}
+          {...control}
+          className={cx("rata-text-field-input", `rata-text-field-input--${size}`)}
+        />
       )}
-
-      {/* Rendered whenever there is one, but only joins the description chain
-          while the status is not idle — the primitive decides that, so a
-          message left behind after a reset stops being announced without
-          disappearing from the page. */}
-      {message !== undefined && message !== "" && (
-        <p className="rata-text-field-message" {...field.message}>
-          {message}
-        </p>
-      )}
-    </div>
+    </Field>
   );
 });

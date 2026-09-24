@@ -1,0 +1,100 @@
+/* rata-allow: missing-focus-ring — same deliberate departure text-field.css
+   records at length: this control's focus indicator is theme.fg.primary rather
+   than theme.focus-ring, because the stronger contrast is worth more on a
+   plain surface than consistency with Button is. The reasoning is written out
+   once, there; what matters here is that the two form controls match each
+   other, since they sit in the same form. */
+
+/* Textarea — THE BOX, and nothing around it. Label, helper text, message and
+   disabled dimming come from field.css, which this composes; every selector
+   below reading `.rata-textarea[data-status=…]` is matching the Field root,
+   which carries both classes.
+
+   Every value is the one .rata-text-field-input uses. That is the point rather
+   than a coincidence: the two sit in one form, and a reader should not be able
+   to tell they were built separately. */
+.rata-textarea-input {
+  /* A control inherits neither family nor size from the page — browsers give
+     it their own — so both are stated, at the constant the button family and
+     the text field share. */
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-control-size-md);
+  /* Here this does double duty: it is also what `rows` multiplies to decide
+     the height, so changing it changes how tall a 3-row control is. */
+  line-height: var(--rata-type-control-line-height-md);
+  border: var(--rata-border-default) solid var(--rata-theme-border-strong);
+  border-radius: var(--rata-radius-element);
+  background: var(--rata-theme-bg-surface);
+  color: var(--rata-theme-fg-primary);
+  padding-inline: var(--rata-space-control-padding-inline-md);
+  /* A single-line control centres its text against its own height. This one
+     has no height to centre against — the height is a line count — so the
+     space above and below has to be stated. */
+  padding-block: var(--rata-space-padding-xs);
+  /* Stated rather than assumed: @rata/css does not normalise box-sizing, and
+     a control with a border whose width the form sets would otherwise measure
+     2px wider than the column it was given. */
+  box-sizing: border-box;
+  /* The form owns the width, the same bargain the text field makes. */
+  inline-size: 100%;
+  transition:
+    border-color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing),
+    box-shadow var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing);
+}
+
+/* Dragging it taller is the cheapest fix a reader has for a control that
+   turned out too small, and it costs the layout nothing — the inline size is
+   the form's either way. Horizontal is not offered at all: a control dragged
+   wider than its column overflows whatever contains it. */
+.rata-textarea-input--resize-vertical {
+  resize: vertical;
+}
+
+.rata-textarea-input--resize-none {
+  resize: none;
+}
+
+.rata-textarea-input::placeholder {
+  color: var(--rata-theme-fg-muted);
+}
+
+/* Idle only, for the reason text-field.css gives: the validation rings below
+   are inset shadows occupying this exact 2px, and box-shadow does not
+   accumulate across rules. The ring wins, because it carries meaning. */
+.rata-textarea[data-status="idle"]:not([data-disabled]) .rata-textarea-input:hover {
+  box-shadow: inset 0 0 0 var(--rata-border-2) var(--rata-theme-bg-muted);
+}
+
+.rata-textarea-input:focus-visible {
+  /* An outline rather than a thicker border: outlines are out of flow, so this
+     cannot move anything — and this control does set an explicit inline size,
+     where a grown border would have eaten into the padding. */
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-fg-primary);
+  outline-offset: var(--rata-space-0);
+  /* Darkens to the outline's tone so the two read as one stroke. The width is
+     untouched — nothing here changes the control's geometry. */
+  border-color: var(--rata-theme-fg-primary);
+}
+
+/* ---- Validation states, selected from the primitive's data-status -------- */
+
+.rata-textarea[data-status="validating"] .rata-textarea-input {
+  box-shadow: var(--rata-theme-accent-role-ring);
+}
+
+.rata-textarea[data-status="valid"] .rata-textarea-input {
+  box-shadow: var(--rata-theme-success-role-ring);
+}
+
+/* Outranks the focus rule on specificity, which is the outcome we want: a
+   focused invalid control keeps its danger border, so focusing an error does
+   not look like clearing it. The focus outline still draws outside. */
+.rata-textarea[data-status="invalid"] .rata-textarea-input {
+  border-color: var(--rata-theme-danger-role-fg);
+  box-shadow: var(--rata-theme-danger-role-ring);
+}
+
+/* Dimmed by Field on the root; what is left here is the pointer. */
+.rata-textarea[data-disabled] .rata-textarea-input {
+  cursor: not-allowed;
+}

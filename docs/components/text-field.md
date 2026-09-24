@@ -15,13 +15,11 @@ import { InputTextfield } from "@rata/react";
 | Family | inputs |
 | Tier | free |
 | Status (css / react / figma) | latest / latest / future |
-| Depends on | `visually-hidden` |
+| Depends on | `field`, `visually-hidden` |
 
 ## Behavior
 
-Label/description/message association, validation semantics, and the disabled contract — independent of React and of any styling. The caller owns the `id`; the description and message ids are derived from it, so association cannot be hand-wired wrong.
-
-Headless contract: `getTextFieldProps` in `packages/primitives/src/text-field.ts` — importable from `@rata/primitives` without the React wrapper or any CSS.
+The box of a single-line input, and its validation rings. Label/description/message association, the validation semantics and the disabled contract all come from Field, which this composes — the caller owns the `id` and every other id is derived from it, so association cannot be hand-wired wrong.
 
 - **`readOnly` is the disabled mechanism, not the native `disabled` attribute** — Consistent with the system-wide rule that disabled controls stay focusable and screen-reader discoverable. A button blocks activation in its click guard; an input has no activation to guard, so `readOnly` is the analogue. Consequence to know: a readOnly field still submits its value, where a disabled one does not.
 - **One four-state `status` enum rather than separate booleans** — `idle | validating | valid | invalid` maps one-to-one onto the four ring mappings in the token recipe, and drives `aria-invalid` and `aria-busy`. Separate `invalid`/`validating` booleans would make contradictory combinations expressible.
@@ -335,19 +333,17 @@ A search input beside a magnifier, or a column of fields under a header that nam
 ## Real usage in this repo
 
 ```tsx
-<TextField className="pg-field" label="Search" labelHidden placeholder="Search…" />
+<TextField label="Retry limit" description="How many times to try again." />
 ```
 
 ## Token recipe
 
 ### base
 
-A single-line input with a label, helper text, and validation states.
+The input's BOX, and nothing around it. The label, required marker, helper text, message and disabled dimming are Field's recipe — this component composes Field and overrides only inside the control, which is the split that lets Select and TextArea cost a stylesheet each.
 
 | Property | Token |
 |---|---|
-| label color | `theme.fg.primary` |
-| label font-size | `type.label.size` |
 | input background | `theme.bg.surface` |
 | input color | `theme.fg.primary` |
 | input font-family | `font.family.sans` |
@@ -357,16 +353,10 @@ A single-line input with a label, helper text, and validation states.
 | height | `size.control.md — and size.control.sm / .lg at the other sizes. Together with padding-inline this is the only thing `size` changes` |
 | padding-inline | `space.control.padding-inline.md — and the sm / lg steps at the other sizes` |
 | border-radius | `radius.element` |
-| helper text color | `theme.fg.secondary` |
-| error text color | `theme.danger-role.fg` |
 | error border-color | `theme.danger-role.fg` |
 | validating (in-progress) ring | `theme.accent-role.ring` |
 | valid ring | `theme.success-role.ring` |
 | invalid ring | `theme.danger-role.ring` |
-| gap between label, input, and helper | `space.stack.2xs — the tightest vertical step. The text either side carries line-height leading of its own, so this reads looser than 4px and space.stack.xs read as separation` |
-| required marker color | `theme.fg.secondary — required-ness is information, not a fault, so it is deliberately not the danger role's foreground; the requirement itself is announced through aria-required` |
-| disabled opacity | `state.disabled-opacity on the root — the field stays readable and focusable, which is why it emits aria-disabled and readOnly rather than the native disabled attribute` |
 | hover inner band | `theme.bg.muted at border.2, drawn as an inset shadow so the fill recedes 2px while the border stays border.1 and the outer edge does not move. Idle only — the validation rings occupy the same 2px and box-shadow does not accumulate` |
 | focus border-color | `theme.fg.primary — the same tone as the outline, so the two read as one stroke instead of a dark ring around a lighter edge. The width is never touched` |
 | focus outline | `focus.ring-width solid theme.fg.primary, offset space.0 — deliberately NOT theme.focus-ring, the only such departure in the library. It gives 16.75:1 against the field's fill where theme.focus-ring gives 4.31:1, so the indicator is stronger; the cost is that focus here does not match focus on a Button. An outline rather than a thicker border because outlines are out of flow: this control sets height but not width, so a wider border would widen the field` |
-| hidden label geometry | `compose the .rata-visually-hidden class — the utility, not a rule of this component's own. It clips rather than using display:none, which would take the accessible name off with the pixels` |

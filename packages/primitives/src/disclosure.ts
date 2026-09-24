@@ -76,8 +76,16 @@ export function getDisclosureProps(options: DisclosureOptions): DisclosureProps 
    * Left alone when already closed, so the key belongs to whatever is around
    * the disclosure — a Dialog that should close, say — rather than being
    * swallowed by a collapsed one.
+   *
+   * Left alone when disabled, for the same reason the click is. Guarding only
+   * the pointer made `disabled` mean two different things on one control: a
+   * disclosure rendered open AND disabled could still be closed with Escape
+   * and then could not be reopened, which is a trap rather than a disabled
+   * control. No shipped component passed `disabled` until Disclosure did, so
+   * nothing exercised this path.
    */
   function onKeyDown(event: DisclosureKeyEvent) {
+    if (disabled) return;
     if (!open) return;
     if (event.key !== "Escape") return;
     event.preventDefault();

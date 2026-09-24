@@ -12,17 +12,32 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
     }
   },
   "dependencies": [],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/text.css",
+      "target": "styles/text.css"
+    },
+    {
+      "source": "packages/react/src/text.tsx",
+      "target": "components/text.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -78,8 +93,6 @@
   },
   "props": {
     "children": {
-      "type": "ReactNode",
-      "required": true,
       "summary": "The text.",
       "use": [
         "A paragraph, a sentence of help text, an eyebrow label."
@@ -90,8 +103,6 @@
       "a11y": "Plain content. Nothing here is announced as anything but text, which is the point."
     },
     "as": {
-      "type": "TextElement",
-      "default": "\"p\"",
       "summary": "Whether this is a block of text or a run inside one.",
       "use": [
         "`span` for text inside a sentence, a row or a control's label area."
@@ -102,8 +113,6 @@
       "a11y": "Neither element carries a role, so this changes nothing that is announced — it changes what the text is, structurally, for spacing and for selection."
     },
     "role": {
-      "type": "TextRole",
-      "default": "\"body\"",
       "summary": "Which step of the scale this text is set at.",
       "use": [
         "`supporting` for help text under a field, a timestamp, secondary metadata in a row.",
@@ -116,8 +125,6 @@
       "a11y": "`label` renders uppercase through `text-transform`, so the text stays lowercase in the accessibility tree and a screen reader does not spell it out letter by letter. Typing it in capitals would."
     },
     "tone": {
-      "type": "TextTone",
-      "default": "\"primary\"",
       "summary": "Which of the three documented foreground steps it takes.",
       "use": [
         "`secondary` for text that supports the primary content and is still read in full.",
@@ -130,7 +137,6 @@
       "a11y": "All three are contrast-verified against canvas, surface and subtle. None of them is below the text floor — this prop cannot make text fail contrast on a documented background, which is why it is a closed set of three rather than a colour."
     },
     "className": {
-      "type": "string",
       "summary": "Extra classes, for placement — not for restyling it.",
       "use": [
         "The margin or measure the page wants, neither of which this component owns."
@@ -140,5 +146,36 @@
       ]
     }
   },
-  "usage": []
+  "usage": [
+    {
+      "case": "A standfirst under a page title",
+      "when": "One paragraph introducing a page, set above body size so it reads as the way in rather than as the first paragraph of the content.",
+      "example": "<Text role=\"large\" tone=\"secondary\">Every value in this system comes from a token, and every token says what it is for.</Text>",
+      "notes": "`secondary` rather than `primary`: it supports the title above it and is still read in full. One of these per page — a second stops being an introduction."
+    },
+    {
+      "case": "Help text under a field",
+      "when": "A line of guidance that belongs to the control above it.",
+      "example": "<Text role=\"supporting\" tone=\"muted\">Used for billing receipts only.</Text>",
+      "notes": "`supporting` is smaller, not dimmer — `tone` is what changes emphasis, and the two are separate so help text can be small and still fully legible. If the field is a TextField, its own `description` prop already does this and wires up the `aria-describedby`; reach for this only outside one."
+    },
+    {
+      "case": "An eyebrow over a group",
+      "when": "A short uppercase label naming a group of fields or a section of a settings page.",
+      "example": "<Text role=\"label\" tone=\"secondary\">Notifications</Text>",
+      "notes": "The capitals come from `text-transform`, so the text stays lowercase in the accessibility tree. Typed in capitals it may be spelled out letter by letter. This is also the right answer when a `<Heading>` was tempting but nothing navigates to the label."
+    },
+    {
+      "case": "A run inside a sentence",
+      "when": "Part of a line needs a different step or tone from the rest of it.",
+      "example": "<Text>Last synced <Text as=\"span\" tone=\"muted\">four minutes ago</Text>.</Text>",
+      "notes": "`span` because it is not a block — a nested `p` would close the outer one early and the page's spacing rules would apply to something that is half a sentence."
+    },
+    {
+      "case": "Reaching for the wrong component",
+      "when": "The message is a warning the reader has to act on.",
+      "example": "<Text tone=\"secondary\">Your trial ends in three days.</Text>",
+      "notes": "Don't lean on this and then colour it — `tone` is deliberately closed to three neutral steps, because a status colour on running text reads as a link or an error. A message that needs a colour needs Notice, which has the role tokens, the icon and somewhere to put the action."
+    }
+  ]
 }

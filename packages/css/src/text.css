@@ -1,0 +1,62 @@
+/* Text — body and supporting copy at one named step of the type scale.
+
+   No box: no padding, no background, no margin. The page owns the space
+   between blocks, for the reason heading.css gives.
+
+   `tone` exists because the type roles carry size, weight and line-height and
+   no colour, so anyone styling text still has to choose a foreground — and
+   choosing wrongly (a palette token, a role colour on running text) is this
+   system's commonest token error. Three named steps that map onto the three
+   contrast-verified `theme.fg.*` values make the correct choice the shortest
+   one to write. */
+.rata-text {
+  margin: var(--rata-space-0);
+  font-family: var(--rata-font-family-sans);
+}
+
+.rata-text--body {
+  font-size: var(--rata-type-body-size);
+  font-weight: var(--rata-type-body-weight);
+  line-height: var(--rata-type-body-line-height);
+}
+
+.rata-text--large {
+  font-size: var(--rata-type-large-size);
+  font-weight: var(--rata-type-large-weight);
+  line-height: var(--rata-type-large-line-height);
+}
+
+.rata-text--supporting {
+  font-size: var(--rata-type-supporting-size);
+  font-weight: var(--rata-type-supporting-weight);
+  line-height: var(--rata-type-supporting-line-height);
+}
+
+/* The label role carries two things the others do not, and both come from the
+   scale rather than from here: uppercase text needs the extra tracking to stay
+   readable, which is exactly why that step exists.
+
+   The transform is CSS rather than capitals in the markup, so the text stays
+   lowercase in the accessibility tree — typed in capitals, a screen reader may
+   spell it out letter by letter. */
+.rata-text--label {
+  font-size: var(--rata-type-label-size);
+  font-weight: var(--rata-type-label-weight);
+  line-height: var(--rata-type-label-line-height);
+  letter-spacing: var(--rata-type-label-letter-spacing);
+  text-transform: var(--rata-type-label-text-transform);
+}
+
+.rata-text--primary {
+  color: var(--rata-theme-fg-primary);
+}
+
+.rata-text--secondary {
+  color: var(--rata-theme-fg-secondary);
+}
+
+/* The lowest of the three and the first to fail on an unusual background —
+   documented for hints and captions, never for anything load-bearing. */
+.rata-text--muted {
+  color: var(--rata-theme-fg-muted);
+}

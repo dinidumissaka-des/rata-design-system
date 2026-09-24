@@ -210,9 +210,10 @@ describe("SideNav", () => {
       );
     });
 
-    test("the nested list is unmounted while shut, not merely hidden", async () => {
+    test("the nested links are unmounted while shut, not merely hidden", async () => {
       // A hidden list is one more thing a find-in-page can reach while the
-      // group claims to be collapsed.
+      // group claims to be collapsed. The <ul> itself stays, empty and hidden,
+      // so the trigger's aria-controls keeps resolving — see the test below.
       const { container } = render(
         <SideNav
           sections={[
@@ -220,9 +221,30 @@ describe("SideNav", () => {
           ]}
         />
       );
-      expect(container.querySelector(".rata-side-nav-sublist")).toBeNull();
+      expect(screen.queryByRole("link", { name: "Revenue" })).toBeNull();
+      expect(container.querySelector(".rata-side-nav-sublist")?.hasAttribute("hidden")).toBe(true);
+
       await userEvent.click(screen.getByRole("button", { name: /Reports/ }));
-      expect(container.querySelector(".rata-side-nav-sublist")).toBeTruthy();
+      expect(screen.getByRole("link", { name: "Revenue" })).toBeTruthy();
+      expect(container.querySelector(".rata-side-nav-sublist")?.hasAttribute("hidden")).toBe(false);
+    });
+
+    test("aria-controls resolves whether the group is open or shut", async () => {
+      render(
+        <SideNav
+          sections={[
+            { items: [{ label: "Reports", items: [{ label: "Revenue", href: "/r" }] }] },
+          ]}
+        />
+      );
+      const trigger = screen.getByRole("button", { name: /Reports/ });
+      const id = trigger.getAttribute("aria-controls")!;
+      // A dangling IDREF is ignored, so a reference that resolves only while
+      // open is inert exactly half the time — the opposite of what
+      // getDisclosureProps documents when it points at the panel always.
+      expect(document.getElementById(id)).toBeTruthy();
+      await userEvent.click(trigger);
+      expect(document.getElementById(id)).toBeTruthy();
     });
 
     test("the nested list is named by its trigger", async () => {

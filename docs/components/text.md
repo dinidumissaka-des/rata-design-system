@@ -5,14 +5,16 @@
 
 Body and supporting text at a named role from the type scale.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Text } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `text` |
 | Family | content |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | — |
 
 ## Behavior
@@ -26,6 +28,8 @@ A `<p>` or a `<span>` set to one named role of the type scale. No primitive and 
 - **No line clamping in this version** — `-webkit-line-clamp` is the only way to truncate at a line count and it needs three coupled declarations plus a fixed display mode, which changes how the element lays out — and truncated text needs its full value reachable some other way or the content is simply gone. It deserves its own pass rather than riding along with the scale.
 
 ## Props
+
+Extends `Omit<HTMLAttributes<HTMLElement>, "role">`.
 
 | Prop | Type | Default | Summary |
 |---|---|---|---|
@@ -126,6 +130,64 @@ Extra classes, for placement — not for restyling it.
 **Don't use for**
 
 - Overriding size or colour. Those are `role` and `tone`, and a hand-written value drifts from the scale the moment the seed moves.
+
+## Use cases
+
+### A standfirst under a page title
+
+One paragraph introducing a page, set above body size so it reads as the way in rather than as the first paragraph of the content.
+
+```tsx
+<Text role="large" tone="secondary">Every value in this system comes from a token, and every token says what it is for.</Text>
+```
+
+`secondary` rather than `primary`: it supports the title above it and is still read in full. One of these per page — a second stops being an introduction.
+
+### Help text under a field
+
+A line of guidance that belongs to the control above it.
+
+```tsx
+<Text role="supporting" tone="muted">Used for billing receipts only.</Text>
+```
+
+`supporting` is smaller, not dimmer — `tone` is what changes emphasis, and the two are separate so help text can be small and still fully legible. If the field is a TextField, its own `description` prop already does this and wires up the `aria-describedby`; reach for this only outside one.
+
+### An eyebrow over a group
+
+A short uppercase label naming a group of fields or a section of a settings page.
+
+```tsx
+<Text role="label" tone="secondary">Notifications</Text>
+```
+
+The capitals come from `text-transform`, so the text stays lowercase in the accessibility tree. Typed in capitals it may be spelled out letter by letter. This is also the right answer when a `<Heading>` was tempting but nothing navigates to the label.
+
+### A run inside a sentence
+
+Part of a line needs a different step or tone from the rest of it.
+
+```tsx
+<Text>Last synced <Text as="span" tone="muted">four minutes ago</Text>.</Text>
+```
+
+`span` because it is not a block — a nested `p` would close the outer one early and the page's spacing rules would apply to something that is half a sentence.
+
+### Reaching for the wrong component
+
+The message is a warning the reader has to act on.
+
+```tsx
+<Text tone="secondary">Your trial ends in three days.</Text>
+```
+
+Don't lean on this and then colour it — `tone` is deliberately closed to three neutral steps, because a status colour on running text reads as a link or an error. A message that needs a colour needs Notice, which has the role tokens, the icon and somewhere to put the action.
+
+## Real usage in this repo
+
+```tsx
+<Text>Choose which events send you an email.</Text>
+```
 
 ## Token recipe
 

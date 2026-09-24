@@ -25,7 +25,9 @@ this path is the honest answer to when it last actually moved.
 | [button-group](../docs/components/button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [checkbox](../docs/components/checkbox.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [dialog](../docs/components/dialog.md) | `@rata/react` | overlays | latest / latest / future | free |
-| [heading](../docs/components/heading.md) | `@rata/react` | content | future / future / future | free |
+| [disclosure](../docs/components/disclosure.md) | `@rata/react` | content | latest / latest / future | free |
+| [field](../docs/components/field.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [heading](../docs/components/heading.md) | `@rata/react` | content | latest / latest / future | free |
 | [icon](../docs/components/icon.md) | `@rata/react` | content | latest / latest / future | free |
 | [menu](../docs/components/menu.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [menu-item](../docs/components/menu-item.md) | `@rata/react` | overlays | latest / latest / future | free |
@@ -36,14 +38,16 @@ this path is the honest answer to when it last actually moved.
 | [radio-group](../docs/components/radio-group.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [search](../docs/components/search.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [segmented-control](../docs/components/segmented-control.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [select](../docs/components/select.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [sheet](../docs/components/sheet.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [side-nav](../docs/components/side-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [spinner](../docs/components/spinner.md) | `@rata/react` | loading | latest / latest / future | free |
 | [state-layer](../docs/components/state-layer.md) | `@rata/react` | foundations | latest / na / future | free |
 | [switch](../docs/components/switch.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [tabs](../docs/components/tabs.md) | `@rata/react` | navigation | latest / latest / future | free |
-| [text](../docs/components/text.md) | `@rata/react` | content | future / future / future | free |
+| [text](../docs/components/text.md) | `@rata/react` | content | latest / latest / future | free |
 | [text-field](../docs/components/text-field.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [textarea](../docs/components/textarea.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [toggle-button](../docs/components/toggle-button.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [toggle-button-group](../docs/components/toggle-button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [top-nav](../docs/components/top-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
@@ -238,9 +242,77 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/dialog.md](../docs/components/dialog.md)
 
-### Heading
+### Disclosure (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, "title" | "children">`
+
+- `title: ReactNode`
+  The trigger's label — what the button says it will reveal.
+- `children: ReactNode`
+  The content the trigger reveals.
+- `headingLevel?: DisclosureHeadingLevel`
+  Wraps the trigger in a heading at this level, so a stack of these is navigable by heading.
+- `open?: boolean`
+  Controls the panel from outside, for when something other than the trigger decides.
+- `defaultOpen?: boolean` — default: `false`
+  The starting state when the component owns it.
+- `onOpenChange?: (open: boolean) => void`
+  Fires when the trigger is pressed or Escape closes the panel.
+- `disabled?: boolean` — default: `false`
+  Marks the disclosure unavailable without removing it from the page.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Disclosure title="Advanced options">
+          <TextField label="Retry limit" description="How many times to try again." />
+        </Disclosure>
+```
+
+Contract: [docs/components/disclosure.md](../docs/components/disclosure.md)
+
+### Field (`@rata/react`)
+
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children">`
+
+- `label: ReactNode`
+  The control's name. Always required — `labelHidden` hides it, nothing removes it.
+- `children: (control: FieldControlProps) => ReactNode`
+  Renders the control, given the id and ARIA it must carry.
+- `labelHidden?: boolean`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the control. Defaults to a generated one.
+- `status?: FieldStatus` — default: `"idle"`
+  Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the control's ring.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `message?: ReactNode`
+  Status-dependent message under the control: the error, confirmation, or in-flight note.
+- `required?: boolean`
+  Marks the field required to assistive technology and in the label.
+- `disabled?: boolean`
+  Blocks editing while keeping the field focusable, readable and announced.
+- `className?: string`
+
+Contract: [docs/components/field.md](../docs/components/field.md)
+
+### Heading (`@rata/react`)
+
+Extends: `Omit<HTMLAttributes<HTMLHeadingElement>, "role">`
+
+- `level: HeadingLevel`
+  Where this heading sits in the document outline.
+- `role?: HeadingRole`
+  How large it looks, independent of its level.
+- `children: ReactNode`
+  The heading text.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Heading level={4}>Known gaps</Heading>
+```
 
 Contract: [docs/components/heading.md](../docs/components/heading.md)
 
@@ -550,6 +622,57 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/segmented-control.md](../docs/components/segmented-control.md)
 
+### Select (`@rata/react`)
+
+Extends: `Omit<`
+
+- `label: ReactNode`
+  The control's label. Always required — `labelHidden` hides it, nothing removes it.
+- `options: Array<SelectOption | SelectOptionGroup>`
+  The choices, in the order they are read.
+- `placeholder?: string`
+  Shown while nothing is chosen, as an option that cannot be chosen.
+- `value?: string`
+  Controls the chosen option from outside.
+- `defaultValue?: string`
+  The starting choice when the component owns the state.
+- `onValueChange?: (value: string) => void`
+  Fires with the chosen value when it changes.
+- `size?: SelectSize` — default: `"md"`
+  Control height and inline padding. Text size does not change with it.
+- `labelHidden?: boolean`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the control. Defaults to a generated one.
+- `status?: FieldStatus` — default: `"idle"`
+  Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `message?: ReactNode`
+  Status-dependent message under the control.
+- `required?: boolean`
+  Marks the control required to assistive technology and in the label.
+- `disabled?: boolean`
+  Marks the whole control unavailable.
+- `className?: string`
+  Class for the wrapper. The control itself is styled by the system.
+
+Real usage (from `apps/`):
+```tsx
+<Select
+          label="Environment"
+          status="invalid"
+          message="Pick an environment you have access to."
+          defaultValue="prod"
+          options={[
+            { value: "dev", label: "Development" },
+            { value: "prod", label: "Production" },
+          ]}
+        />
+```
+
+Contract: [docs/components/select.md](../docs/components/select.md)
+
 ### Sheet (`@rata/react`)
 
 Extends: `Omit<`
@@ -688,9 +811,24 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/tabs.md](../docs/components/tabs.md)
 
-### Text
+### Text (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<HTMLAttributes<HTMLElement>, "role">`
+
+- `children: ReactNode`
+  The text.
+- `as?: TextElement` — default: `"p"`
+  Whether this is a block of text or a run inside one.
+- `role?: TextRole` — default: `"body"`
+  Which step of the scale this text is set at.
+- `tone?: TextTone` — default: `"primary"`
+  Which of the three documented foreground steps it takes.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Text>Choose which events send you an email.</Text>
+```
 
 Contract: [docs/components/text.md](../docs/components/text.md)
 
@@ -721,10 +859,44 @@ Extends: `Omit<`
 
 Real usage (from `apps/`):
 ```tsx
-<TextField className="pg-field" label="Search" labelHidden placeholder="Search…" />
+<TextField label="Retry limit" description="How many times to try again." />
 ```
 
 Contract: [docs/components/text-field.md](../docs/components/text-field.md)
+
+### Textarea (`@rata/react`)
+
+Extends: `Omit<`
+
+- `label: ReactNode`
+  The control's label. Always required — `labelHidden` hides it, nothing removes it.
+- `rows?: number` — default: `3`
+  How many lines of text the control shows before it scrolls.
+- `resize?: TextareaResize` — default: `"vertical"`
+  Whether the reader may drag the control taller.
+- `labelHidden?: boolean`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the control. Defaults to a generated one.
+- `status?: FieldStatus` — default: `"idle"`
+  Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `message?: ReactNode`
+  Status-dependent message under the control.
+- `required?: boolean`
+  Marks the control required to assistive technology and in the label.
+- `disabled?: boolean`
+  Blocks editing while keeping the control focusable, readable and announced.
+- `className?: string`
+  Class for the wrapper. The control itself is styled by the system.
+
+Real usage (from `apps/`):
+```tsx
+<Textarea label="Internal note" rows={2} resize="none" labelHidden />
+```
+
+Contract: [docs/components/textarea.md](../docs/components/textarea.md)
 
 ### Toggle Button (`@rata/react`)
 

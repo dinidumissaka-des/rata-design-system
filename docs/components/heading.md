@@ -5,14 +5,16 @@
 
 A heading whose outline level and visual size are stated separately.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Heading } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `heading` |
 | Family | content |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | — |
 
 ## Behavior
@@ -28,17 +30,19 @@ An `h1` through `h6`, with its visual size stated independently of its level. No
 
 ## Props
 
+Extends `Omit<HTMLAttributes<HTMLHeadingElement>, "role">`.
+
 | Prop | Type | Default | Summary |
 |---|---|---|---|
-| `level` | `1 \| 2 \| 3 \| 4 \| 5 \| 6` | — | Where this heading sits in the document outline. |
-| `role?` | `HeadingRole` | `the `heading-{level}` step` | How large it looks, independent of its level. |
+| `level` | `HeadingLevel` | — | Where this heading sits in the document outline. |
+| `role?` | `HeadingRole` | — | How large it looks, independent of its level. |
 | `children` | `ReactNode` | — | The heading text. |
 | `className?` | `string` | — | Extra classes, for placement — not for restyling it. |
 
 ### `level`
 
 ```ts
-level: 1 | 2 | 3 | 4 | 5 | 6
+level: HeadingLevel
 ```
 
 Where this heading sits in the document outline.
@@ -56,7 +60,7 @@ Where this heading sits in the document outline.
 ### `role`
 
 ```ts
-role?: HeadingRole = the `heading-{level}` step
+role?: HeadingRole
 ```
 
 How large it looks, independent of its level.
@@ -105,6 +109,54 @@ Extra classes, for placement — not for restyling it.
 **Don't use for**
 
 - Overriding the size. That is what `role` is for, and a hand-written size drifts from the scale the moment the seed changes.
+
+## Use cases
+
+### A page title that outranks its own size
+
+The commonest reason both props exist: one `h1` per page, set at a display step so it reads as the title.
+
+```tsx
+<Heading level={1} role="display-3">Design tokens</Heading>
+```
+
+The level is what a screen-reader user navigates by; the role is only how large it looks. Writing `level={3}` to get this size would leave the page with no `h1` at all.
+
+### A section heading at its natural size
+
+Inside a page already headed `h1`, where nothing about the section asks to be louder.
+
+```tsx
+<Heading level={2}>Contrast pairings</Heading>
+```
+
+No `role`: `heading-2` is the default for `level={2}`, and the common case should not have to say so twice.
+
+### A deep heading that should not shout
+
+A sub-subsection whose correct level would otherwise draw more attention than it deserves.
+
+```tsx
+<Heading level={4} role="heading-5">Known gaps</Heading>
+```
+
+The outline stays correct and only the size moves — which is the direction this prop is for. If the heading feels wrong at its correct level, change the role; if the level itself is wrong, change the level.
+
+### Reaching for the wrong component
+
+The text is an uppercase eyebrow over a group, not an entry in the outline.
+
+```tsx
+<Heading level={6}>Foundations</Heading>
+```
+
+Don't. Nothing navigates to it and it heads no section, so it does not belong in the outline — that is `<Text role="label">`. A heading level spent on decoration is a level a real heading can no longer use.
+
+## Real usage in this repo
+
+```tsx
+<Heading level={4}>Known gaps</Heading>
+```
 
 ## Token recipe
 

@@ -40,9 +40,11 @@ before writing a prop you haven't used in this repo before.
 **Component names are `kebab-case` and match the registry exactly**
 (`button`, `state-layer`, `text-field`) — check `npm run ui -- list` before
 typing one from memory. `card` and `table` are the names most often reached
-for that are not in the registry at all — see the Card note below. As of
-`dialog` shipping, no registry entry is in the `future` state; the next one
-added will be, and the contract will say so before any code exists.
+for that are not in the registry at all — see the Card note below. Which
+entries are in the `future` state changes every time one ships, so this file
+deliberately doesn't name them: `npm run ui -- list` is the only current
+answer. A `future` entry is a contract approved at gate 1 with no code behind
+it, and its page says **spec** before any implementation exists.
 
 ## Pre-write ritual
 

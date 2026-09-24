@@ -59,5 +59,8 @@ export type {
 } from "./segmented-control.js";
 export { getSwitchProps } from "./switch.js";
 export type { SwitchOptions, SwitchProps } from "./switch.js";
-export { getTextFieldProps } from "./text-field.js";
-export type { TextFieldOptions, TextFieldProps, TextFieldStatus } from "./text-field.js";
+export { getFieldProps } from "./field.js";
+export type { FieldOptions, FieldParts, FieldControlProps, FieldStatus } from "./field.js";
+// The names this primitive had while TextField was its only consumer.
+export { getTextFieldProps } from "./field.js";
+export type { TextFieldOptions, TextFieldProps, TextFieldStatus } from "./field.js";
