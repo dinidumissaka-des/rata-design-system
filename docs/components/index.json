@@ -35,6 +35,11 @@
     "status": "latest"
   },
   {
+    "name": "disclosure",
+    "title": "Disclosure",
+    "status": "latest"
+  },
+  {
     "name": "heading",
     "title": "Heading",
     "status": "latest"

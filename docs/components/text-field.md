@@ -335,7 +335,7 @@ A search input beside a magnifier, or a column of fields under a header that nam
 ## Real usage in this repo
 
 ```tsx
-<TextField className="pg-field" label="Search" labelHidden placeholder="Search…" />
+<TextField label="Retry limit" description="How many times to try again." />
 ```
 
 ## Token recipe

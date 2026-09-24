@@ -1261,6 +1261,52 @@ The close control. Same construction as Notice's: currentColor on a transparent 
 | focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
 | block alignment | centred on the title's first line, from `type.heading.size` and `type.heading.line-height` |
 
+### disclosure
+
+Nothing. The component owns no box, no background and no rule — a lone disclosure sits in running content, and the divider between stacked sections belongs to the set rather than to the unit.
+
+| Property | Token |
+|---|---|
+| box | none — see the decision on why the rules between sections are not this component's |
+
+### disclosure-trigger
+
+A control, sized and padded from the control scale so it lines up with the buttons around it. Full-bleed in its inline axis: the whole row is the target, which is what makes a wide section header feel pressable rather than only its text.
+
+| Property | Token |
+|---|---|
+| min-block-size | `size.control.md` as a FLOOR rather than a fixed height — a section title long enough to wrap must be allowed to, the same call `SideNav` made for its rows. A fixed block-size would clip the second line. |
+| padding-inline | `space.control.padding-inline.sm` |
+| border-radius | `radius.element` |
+| colour | `theme.fg.primary` |
+| font-size | `type.control.size.md` |
+| font-weight | `type.control.weight` |
+| gap between the label and the chevron | `space.gap.sm` |
+| chevron size | `size.icon.text` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+| disabled | `state.disabled-opacity` |
+
+### disclosure-chevron
+
+The only thing that moves. It rotates between the two states at the interactive duration, which is the pair reserved for a control answering a press.
+
+| Property | Token |
+|---|---|
+| transition | `motion.interactive.duration` with `motion.interactive.easing` |
+| colour | currentColor — it repeats what aria-expanded already says, so it can never disagree with the trigger it sits in |
+
+### disclosure-panel
+
+The revealed content. Indented to the trigger's own inline padding so the two read as one block, and given room above it rather than below — what follows the disclosure is the page's spacing problem, not this component's.
+
+| Property | Token |
+|---|---|
+| padding-block-start | `space.padding.sm` |
+| padding-inline | `space.control.padding-inline.sm` — matching the trigger, so the label and the content it reveals share an edge |
+| colour | inherited — the panel holds whatever the caller puts in it and tints none of it |
+| when closed | display: none via [hidden] — stated rather than left to the UA stylesheet, because a `display` added to this rule later would silently outrank it and start painting an empty box |
+
 ### heading
 
 One type role, taken whole. Nothing else — a heading has no box of its own.

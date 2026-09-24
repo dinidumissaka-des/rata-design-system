@@ -33,6 +33,7 @@ const ORDER = [
   "text.css",
   "badge.css",
   "avatar.css",
+  "disclosure.css",
   "breadcrumbs.css",
   "top-nav.css",
   "side-nav.css",

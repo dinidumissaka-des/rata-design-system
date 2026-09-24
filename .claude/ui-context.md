@@ -25,6 +25,7 @@ this path is the honest answer to when it last actually moved.
 | [button-group](../docs/components/button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [checkbox](../docs/components/checkbox.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [dialog](../docs/components/dialog.md) | `@rata/react` | overlays | latest / latest / future | free |
+| [disclosure](../docs/components/disclosure.md) | `@rata/react` | content | latest / latest / future | free |
 | [heading](../docs/components/heading.md) | `@rata/react` | content | latest / latest / future | free |
 | [icon](../docs/components/icon.md) | `@rata/react` | content | latest / latest / future | free |
 | [menu](../docs/components/menu.md) | `@rata/react` | overlays | latest / latest / future | free |
@@ -237,6 +238,35 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/dialog.md](../docs/components/dialog.md)
+
+### Disclosure (`@rata/react`)
+
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, "title" | "children">`
+
+- `title: ReactNode`
+  The trigger's label — what the button says it will reveal.
+- `children: ReactNode`
+  The content the trigger reveals.
+- `headingLevel?: DisclosureHeadingLevel`
+  Wraps the trigger in a heading at this level, so a stack of these is navigable by heading.
+- `open?: boolean`
+  Controls the panel from outside, for when something other than the trigger decides.
+- `defaultOpen?: boolean` — default: `false`
+  The starting state when the component owns it.
+- `onOpenChange?: (open: boolean) => void`
+  Fires when the trigger is pressed or Escape closes the panel.
+- `disabled?: boolean` — default: `false`
+  Marks the disclosure unavailable without removing it from the page.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Disclosure title="Advanced options">
+          <TextField label="Retry limit" description="How many times to try again." />
+        </Disclosure>
+```
+
+Contract: [docs/components/disclosure.md](../docs/components/disclosure.md)
 
 ### Heading (`@rata/react`)
 
@@ -749,7 +779,7 @@ Extends: `Omit<`
 
 Real usage (from `apps/`):
 ```tsx
-<TextField className="pg-field" label="Search" labelHidden placeholder="Search…" />
+<TextField label="Retry limit" description="How many times to try again." />
 ```
 
 Contract: [docs/components/text-field.md](../docs/components/text-field.md)

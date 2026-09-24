@@ -24,6 +24,8 @@ export { Heading } from "./heading.js";
 export type { HeadingProps, HeadingLevel, HeadingRole } from "./heading.js";
 export { Text } from "./text.js";
 export type { TextProps, TextElement, TextRole, TextTone } from "./text.js";
+export { Disclosure } from "./disclosure.js";
+export type { DisclosureProps, DisclosureHeadingLevel } from "./disclosure.js";
 export { Badge } from "./badge.js";
 export type { BadgeProps, BadgeVariant } from "./badge.js";
 export { Breadcrumbs } from "./breadcrumbs.js";

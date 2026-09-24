@@ -19,6 +19,7 @@ import {
   ButtonGroup,
   Checkbox,
   Dialog,
+  Disclosure,
   Heading,
   Panel,
   Sheet,
@@ -408,6 +409,34 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
         </Text>
         .
       </Text>
+    ),
+  },
+
+  disclosure: {
+    "One optional section in a form": () => (
+      <div className="pg-block-stack">
+        <Disclosure title="Advanced options">
+          <TextField label="Retry limit" description="How many times to try again." />
+        </Disclosure>
+      </div>
+    ),
+    "A page divided into sections": () => (
+      <div className="pg-block-stack">
+        <Disclosure title="Shipping address" headingLevel={4} defaultOpen>
+          <Text tone="secondary">Where the order goes.</Text>
+        </Disclosure>
+        <Disclosure title="Billing address" headingLevel={4}>
+          <Text tone="secondary">Where the receipt goes.</Text>
+        </Disclosure>
+        <Disclosure title="Delivery notes" headingLevel={4}>
+          <Text tone="secondary">Anything the courier should know.</Text>
+        </Disclosure>
+      </div>
+    ),
+    "Opened from outside by something that went wrong": () => (
+      <div className="pg-block-stack">
+        <DisclosureStage />
+      </div>
     ),
   },
 
@@ -1249,6 +1278,29 @@ function MenuItemStage({
         {children}
       </MenuItem>
     </Menu>
+  );
+}
+
+/**
+ * A Disclosure whose open state something other than the trigger decides.
+ *
+ * A component rather than an inline render, for the reason `RadioStage` gives:
+ * it needs useState, and a hook written straight into an EXAMPLES entry would
+ * join the hook list of whatever is rendering it and change its length on
+ * navigation.
+ *
+ * It starts open and with the field already invalid, because that is the
+ * situation the case is about — a submit failed and the offending field is
+ * inside a section the reader cannot see. Closing it from here is the part
+ * worth trying: the trigger still reports, and the state above it still owns
+ * the answer.
+ */
+function DisclosureStage() {
+  const [open, setOpen] = useState(true);
+  return (
+    <Disclosure title="Billing" open={open} onOpenChange={setOpen}>
+      <TextField label="Card number" status="invalid" message="Check this number." />
+    </Disclosure>
   );
 }
 

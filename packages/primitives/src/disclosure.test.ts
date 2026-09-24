@@ -74,6 +74,18 @@ describe("getDisclosureProps", () => {
     expect(event.preventDefault).not.toHaveBeenCalled();
   });
 
+  test("disabled refuses Escape too, so an open one cannot become unreopenable", () => {
+    const onOpenChange = vi.fn();
+    const p = props({ open: true, disabled: true, onOpenChange });
+    const event = { key: "Escape", preventDefault: vi.fn() };
+    p.trigger.onKeyDown(event);
+    p.panel.onKeyDown(event);
+    // Guarding only the click let Escape close a control whose own trigger
+    // then refused to reopen it.
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(event.preventDefault).not.toHaveBeenCalled();
+  });
+
   test("disabled refuses to open and says so", () => {
     const onOpenChange = vi.fn();
     const event = click();

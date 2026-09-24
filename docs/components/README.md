@@ -20,6 +20,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Button Group](button-group.md) | `button-group` | buttons | latest / latest | documented | free |
 | [Checkbox](checkbox.md) | `checkbox` | inputs | latest / latest | documented | free |
 | [Dialog](dialog.md) | `dialog` | overlays | latest / latest | documented | free |
+| [Disclosure](disclosure.md) | `disclosure` | content | latest / latest | documented | free |
 | [Heading](heading.md) | `heading` | content | latest / latest | documented | free |
 | [Icon](icon.md) | `icon` | content | latest / latest | documented | free |
 | [Menu](menu.md) | `menu` | overlays | latest / latest | documented | free |
