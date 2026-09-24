@@ -4633,6 +4633,397 @@
     "example": "<SegmentedControl\n          label=\"Sort\"\n          fullWidth\n          size=\"sm\"\n          options={[\n            { value: \"newest\", label: \"Newest\" },\n            { value: \"oldest\", label: \"Oldest\" },\n          ]}\n        />"
   },
   {
+    "name": "select",
+    "title": "Select",
+    "description": "A labelled control for choosing one option from a list.",
+    "family": "inputs",
+    "tier": "free",
+    "status": {
+      "css": {
+        "state": "latest",
+        "version": "0.1.0"
+      },
+      "react": {
+        "state": "latest",
+        "version": "0.1.0"
+      },
+      "figma": {
+        "state": "future"
+      }
+    },
+    "dependencies": [
+      "field",
+      "icon"
+    ],
+    "importPath": "@rata/react",
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<",
+    "props": [
+      {
+        "name": "label",
+        "optional": false,
+        "type": "ReactNode",
+        "description": "The control's label. Always required — `labelHidden` hides it, nothing removes it.",
+        "declared": true,
+        "summary": "The control's label. Always required — `labelHidden` hides it, nothing removes it.",
+        "use": [
+          "A short noun phrase naming what is being chosen: \"Country\", not \"Choose a country\"."
+        ],
+        "dont": [
+          "Leaving it off because the placeholder says it. The placeholder is gone the moment someone answers."
+        ],
+        "conflicts": [],
+        "a11y": "Bound to the control by Field, so it is the accessible name and clicking it focuses the control."
+      },
+      {
+        "name": "options",
+        "optional": false,
+        "type": "Array<SelectOption | SelectOptionGroup>",
+        "description": "The choices, in the order they are read.",
+        "declared": true,
+        "summary": "The choices, in the order they are read.",
+        "use": [
+          "A flat array for a short list; groups once the list is long enough that a reader has to hunt.",
+          "The order a reader expects — alphabetical for places, frequency for everything else."
+        ],
+        "dont": [
+          "A label that is anything but a string. An `<option>` holds text, so a ReactNode would be flattened or would crash.",
+          "One option. A control with a single choice is not a choice; state the value as text."
+        ],
+        "conflicts": [],
+        "a11y": "A disabled option stays in the list and is announced as unavailable rather than removed, so the list a reader hears does not change shape under them."
+      },
+      {
+        "name": "placeholder",
+        "optional": true,
+        "type": "string",
+        "description": "Shown while nothing is chosen, as an option that cannot be chosen.",
+        "declared": true,
+        "summary": "Shown while nothing is chosen, as an option that cannot be chosen.",
+        "use": [
+          "Naming the act rather than repeating the label: \"Select a country\" under a label that already says Country."
+        ],
+        "dont": [
+          "Using it as the label. It disappears on the first answer, and a control whose name vanishes when used has no name.",
+          "Leaving it off on a `required` control with no `defaultValue`. The first option would then be pre-chosen, and a reader who wanted it cannot tell their answer from the control's assumption."
+        ],
+        "conflicts": [],
+        "a11y": "Rendered disabled and empty, so it is announced but cannot be selected — and `required` validation treats it as unanswered rather than as a value."
+      },
+      {
+        "name": "value",
+        "optional": true,
+        "type": "string",
+        "description": "Controls the chosen option from outside.",
+        "declared": true,
+        "summary": "Controls the chosen option from outside.",
+        "use": [
+          "A form library, or one field whose choices depend on another's answer."
+        ],
+        "dont": [
+          "Passing it alongside `defaultValue`. One of them owns the state."
+        ],
+        "conflicts": [
+          "defaultValue"
+        ],
+        "a11y": null
+      },
+      {
+        "name": "defaultValue",
+        "optional": true,
+        "type": "string",
+        "description": "The starting choice when the component owns the state.",
+        "declared": true,
+        "summary": "The starting choice when the component owns the state.",
+        "use": [
+          "A genuine default the reader would usually want, which is different from the first option happening to be selected."
+        ],
+        "dont": [
+          "Pairing it with `placeholder`. The placeholder would never be seen, which makes it a lie in the markup."
+        ],
+        "conflicts": [
+          "value"
+        ],
+        "a11y": null
+      },
+      {
+        "name": "onValueChange",
+        "optional": true,
+        "type": "(value: string) => void",
+        "description": "Fires with the chosen value when it changes.",
+        "declared": true,
+        "summary": "Fires with the chosen value when it changes.",
+        "use": [
+          "Reading the answer without unpacking an event, which is what every other choice component in this system does."
+        ],
+        "dont": [
+          "Expecting it on first render. It fires on change, so an initial value is the caller's to know."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "size",
+        "optional": true,
+        "type": "SelectSize",
+        "description": "Control height and inline padding. Text size does not change with it.",
+        "default": "\"md\"",
+        "values": [
+          "sm",
+          "md",
+          "lg"
+        ],
+        "declared": true,
+        "summary": "Control height and inline padding. Text size does not change with it.",
+        "use": [
+          "Matching whatever the control sits beside — a select and a button in one row should be the same height."
+        ],
+        "dont": [
+          "`sm` to fit more on the page. It is the same text at a smaller target, which costs a reader more than the space is worth."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "labelHidden",
+        "optional": true,
+        "type": "boolean",
+        "description": "Takes the label off screen while leaving it in the accessibility tree.",
+        "declared": true,
+        "summary": "Takes the label off screen while leaving it in the accessibility tree.",
+        "use": [
+          "A control whose meaning is already carried by a heading or column header directly above it."
+        ],
+        "dont": [
+          "Pairing it with a placeholder standing in for the name."
+        ],
+        "conflicts": [],
+        "a11y": "The label element is still rendered and still bound. Only the pixels go."
+      },
+      {
+        "name": "id",
+        "optional": true,
+        "type": "string",
+        "description": "Stable id for the control. Defaults to a generated one.",
+        "declared": true,
+        "summary": "Stable id for the control, when something outside needs to point at it.",
+        "use": [
+          "A form library that addresses fields by id, or an error summary linking to the control it names."
+        ],
+        "dont": [
+          "Reusing one across two fields. Every id under it is derived from this."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "status",
+        "optional": true,
+        "type": "FieldStatus",
+        "description": "Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.",
+        "default": "\"idle\"",
+        "declared": true,
+        "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
+        "use": [
+          "`invalid` with a `message` saying what to do about it."
+        ],
+        "dont": [
+          "`invalid` with no message. The ring says something is wrong; only the message says what."
+        ],
+        "conflicts": [],
+        "a11y": "Field's, unchanged."
+      },
+      {
+        "name": "description",
+        "optional": true,
+        "type": "ReactNode",
+        "description": "Persistent helper text under the control.",
+        "declared": true,
+        "summary": "Persistent helper text under the control.",
+        "use": [
+          "What the choice affects, when that is not obvious from the options themselves."
+        ],
+        "dont": [
+          "Listing the options again in prose."
+        ],
+        "conflicts": [],
+        "a11y": "Joins `aria-describedby` ahead of the message, so a constraint is heard before a failure."
+      },
+      {
+        "name": "message",
+        "optional": true,
+        "type": "ReactNode",
+        "description": "Status-dependent message under the control.",
+        "declared": true,
+        "summary": "Status-dependent message under the control.",
+        "use": [
+          "What to do about an `invalid` status, in the imperative."
+        ],
+        "dont": [
+          "Putting a permanent note here. It leaves the description chain whenever the status returns to idle."
+        ],
+        "conflicts": [],
+        "a11y": "Announced politely rather than as an alert, because it is already in `aria-describedby`."
+      },
+      {
+        "name": "required",
+        "optional": true,
+        "type": "boolean",
+        "description": "Marks the control required to assistive technology and in the label.",
+        "declared": true,
+        "summary": "Marks the control required, in the label and to assistive technology.",
+        "use": [
+          "With a `placeholder`, so there is an unanswered state for the requirement to be about."
+        ],
+        "dont": [
+          "Pairing it with a hand-written asterisk in `label`. Field renders one."
+        ],
+        "conflicts": [],
+        "a11y": "`aria-required` on the control; the rendered marker is `aria-hidden`."
+      },
+      {
+        "name": "disabled",
+        "optional": true,
+        "type": "boolean",
+        "description": "Marks the whole control unavailable.",
+        "declared": true,
+        "summary": "Marks the whole control unavailable while keeping it focusable and announced.",
+        "use": [
+          "A choice that depends on an answer nobody has given yet."
+        ],
+        "dont": [
+          "Disabling it to show a fixed value. A control nobody can change is text — render the text."
+        ],
+        "conflicts": [],
+        "a11y": "`aria-disabled` from Field. Note that unlike a text input, a select has no `readOnly` to fall back on, so the native attribute IS used here to block the change — the contract's one departure from the system rule, because the alternative is a control that looks unavailable and is not."
+      },
+      {
+        "name": "className",
+        "optional": true,
+        "type": "string",
+        "description": "Class for the wrapper. The control itself is styled by the system.",
+        "declared": true,
+        "summary": "Class for the wrapper — the width the form wants, not a restyle.",
+        "use": [
+          "The measure or grid placement the form decides."
+        ],
+        "dont": [
+          "Restyling the chevron or the options. The first is positioned against the control's own padding, and the second the platform draws."
+        ],
+        "conflicts": [],
+        "a11y": null
+      }
+    ],
+    "usage": [
+      {
+        "case": "One choice from a short list",
+        "when": "The commonest case, with nothing chosen until the reader chooses.",
+        "example": "<Select\n  label=\"Environment\"\n  placeholder=\"Select an environment\"\n  options={[\n    { value: \"dev\", label: \"Development\" },\n    { value: \"prod\", label: \"Production\" },\n  ]}\n  required\n/>",
+        "notes": "`placeholder` with `required` is the pairing that makes an unanswered state possible. Without it the first option is pre-chosen and a reader cannot tell their answer from the control's assumption."
+      },
+      {
+        "case": "A list long enough to need grouping",
+        "when": "Enough options that a reader has to hunt rather than scan.",
+        "example": "<Select\n  label=\"Region\"\n  placeholder=\"Select a region\"\n  options={[\n    { label: \"Asia\", options: [{ value: \"lk\", label: \"Sri Lanka\" }] },\n    { label: \"Europe\", options: [{ value: \"pt\", label: \"Portugal\" }] },\n  ]}\n/>",
+        "notes": "A group in place of an option is the whole API. Nothing about a group is styleable, for the same reason nothing about an option is."
+      },
+      {
+        "case": "A choice that failed validation",
+        "when": "Reporting an answer the form cannot accept.",
+        "example": "<Select\n  label=\"Environment\"\n  status=\"invalid\"\n  message=\"Pick an environment you have access to.\"\n  options={[{ value: \"prod\", label: \"Production\" }]}\n/>",
+        "notes": "The ring and the message are Field's, identical to a text field's — which is the point of both being built on it."
+      },
+      {
+        "case": "Reaching for the wrong component",
+        "when": "The options need icons, two lines, or colour.",
+        "example": "<Select\n  label=\"Assignee\"\n  options={[{ value: \"ada\", label: \"Ada Hartley — Engineering\" }]}\n/>",
+        "notes": "Don't fake it with punctuation. An `<option>` is text the operating system draws, so a design that needs more than a string has outgrown this component — that is the listbox version, which is a separate entry with its own primitive, and it does not exist yet. Say so rather than shipping a string that pretends."
+      }
+    ],
+    "behavior": {
+      "summary": "A native `<select>` inside a `Field`. No primitive of its own: `getFieldProps` supplies every id and ARIA attribute, and the platform supplies the rest.",
+      "decisions": [
+        {
+          "decision": "It is a native `<select>`, not a listbox built out of divs",
+          "why": "What the platform gives away here is enormous and expensive to rebuild: the picker a phone shows instead of a dropdown, the full keyboard model including typeahead, the behaviour when the list is longer than the viewport, and an accessibility implementation that is correct by construction rather than by our testing. A built listbox needs a primitive owning roving focus, `aria-activedescendant`, typeahead and popover placement, and it is worse on a phone no matter how well it is written. The cost of choosing native is real and is stated in the next decision — it is not that nobody noticed."
+        },
+        {
+          "decision": "Options cannot be styled, and that is the price",
+          "why": "A `<option>` renders as the operating system draws it. No icon, no second line, no badge, no colour. So this component cannot express an option that is anything more than a string — and when a design needs that, the answer is not to force it here but to build the listbox version, which will be a separate entry with its own primitive and its own contract. Naming the limit is what stops someone discovering it three screens into a build."
+        },
+        {
+          "decision": "An option's `label` is a string, where every other option type in this system takes a ReactNode",
+          "why": "`TabItem`, `SegmentedControlOption` and the rest take a ReactNode because they render into elements this system controls. An `<option>` holds text and nothing else, so a ReactNode here would either be silently flattened or crash on a fragment. The type says what the element can actually hold, which is the only honest thing it can say."
+        },
+        {
+          "decision": "No `multiple`",
+          "why": "The native multi-select is a scrolling box that requires modifier-clicking to use and that readers routinely fail to operate or even recognise as multi-choice. Choosing several things is a different interaction with a different contract — a checkbox group for a short list, a dedicated component for a long one — and a boolean here would quietly turn a well-understood control into a badly-understood one."
+        },
+        {
+          "decision": "`placeholder` renders a disabled empty option rather than a real choice",
+          "why": "A select always has a value, so an unanswered one has to show something. Making that something selectable would let a reader deliberately choose \"Select a country\", which then has to be validated against as though it were a mistake they made rather than one the control invited. Disabled and empty means it can be shown and cannot be chosen — and with `required`, the browser's own validation already treats it as unanswered."
+        },
+        {
+          "decision": "The chevron is drawn by this system, over a control with `appearance: none`",
+          "why": "The platform's arrow cannot be themed, sized or recoloured, so a select next to this system's other controls looked like it came from somewhere else. Drawing our own means reserving the space for it in the control's end padding — reserved whether or not a value is chosen, so picking one does not reflow the text under the reader's eye. The glyph takes `pointer-events: none`, so the whole control including the chevron stays one click target."
+        },
+        {
+          "decision": "`size` exists here where `Textarea` has none",
+          "why": "A select is a single-line control and lines up in a row with buttons and text fields, so it takes the same control scale they do. A textarea's height is a line count and has nothing to line up with, which is why that component has `rows` instead. The prop is on the component whose measurement it actually describes."
+        },
+        {
+          "decision": "Options may be grouped, because the platform does it for free",
+          "why": "`<optgroup>` costs three lines here and is the difference between a usable list of forty and an unusable one. Passing a group in place of an option is the whole API — nothing about a group is styleable either, for the reason above."
+        }
+      ]
+    },
+    "tokens": {
+      "base": {
+        "summary": "The box, matching `.rata-text-field-input` step for step so a select and a text field in one row are indistinguishable in everything but their content. Field owns the label, helper text, message and disabled dimming.",
+        "tokens": {
+          "font-family": "font.family.sans",
+          "font-size": "type.control.size.md — constant across all three sizes, the same constant the button family and the text field use",
+          "line-height": "type.control.line-height.md",
+          "background": "theme.bg.surface",
+          "color": "theme.fg.primary",
+          "border-color": "theme.border.strong",
+          "border-radius": "radius.element",
+          "block-size": "size.control.md — and size.control.sm / size.control.lg at the other sizes",
+          "padding-inline-start": "space.control.padding-inline.md — and the sm / lg steps at the other sizes"
+        }
+      },
+      "chevron-well": {
+        "summary": "Room reserved at the end edge for the chevron, which is drawn rather than inherited: the platform's own arrow cannot be themed, so the control sets appearance to none and this system supplies the glyph.",
+        "tokens": {
+          "padding-inline-end": "space.control.padding-inline.md plus size.icon.text plus space.gap.sm — reserved whether or not a value is chosen, so nothing reflows when one is",
+          "chevron size": "size.icon.text",
+          "chevron colour": "theme.fg.secondary — it is an affordance rather than content, so it sits below the value it points at",
+          "chevron inset": "space.control.padding-inline.md from the end edge"
+        }
+      },
+      "placeholder": {
+        "summary": "The unchosen state. Muted rather than primary, so a control nobody has answered looks unanswered.",
+        "tokens": {
+          "colour": "theme.fg.muted"
+        }
+      },
+      "states": {
+        "summary": "Selected from the primitive's data-status on the Field root, exactly as the text field's are. The rings are inset strokes, never the focus ring, so a control can be focused and invalid at once.",
+        "tokens": {
+          "hover inner band": "theme.bg.muted at border.2 as an inset shadow, idle only — the validation rings occupy the same 2px and box-shadow does not accumulate",
+          "focus border-color": "theme.fg.primary",
+          "focus outline": "focus.ring-width solid theme.fg.primary at space.0 offset — the same deliberate departure the text field documents, so every control in a form focuses alike",
+          "validating ring": "theme.accent-role.ring",
+          "valid ring": "theme.success-role.ring",
+          "invalid ring": "theme.danger-role.ring",
+          "disabled cursor": "not-allowed — the dimming itself is Field's, on the root"
+        }
+      }
+    },
+    "example": "<Select\n          label=\"Environment\"\n          status=\"invalid\"\n          message=\"Pick an environment you have access to.\"\n          defaultValue=\"prod\"\n          options={[\n            { value: \"dev\", label: \"Development\" },\n            { value: \"prod\", label: \"Production\" },\n          ]}\n        />"
+  },
+  {
     "name": "sheet",
     "title": "Sheet",
     "description": "A modal surface anchored to an edge of the viewport — a bottom sheet or a side drawer.",

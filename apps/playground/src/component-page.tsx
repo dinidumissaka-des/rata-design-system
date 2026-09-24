@@ -32,6 +32,7 @@ import {
   MobileNav,
   Search,
   SegmentedControl,
+  Select,
   SideNav,
   Tabs,
   TopNav,
@@ -466,6 +467,61 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     "A layout that cannot take a taller control": () => (
       <div className="pg-block-stack">
         <Textarea label="Internal note" rows={2} resize="none" labelHidden />
+      </div>
+    ),
+  },
+
+  select: {
+    "One choice from a short list": () => (
+      <div className="pg-block-stack">
+        <Select
+          label="Environment"
+          placeholder="Select an environment"
+          required
+          options={[
+            { value: "dev", label: "Development" },
+            { value: "stg", label: "Staging" },
+            { value: "prod", label: "Production" },
+          ]}
+        />
+      </div>
+    ),
+    "A list long enough to need grouping": () => (
+      <div className="pg-block-stack">
+        <Select
+          label="Region"
+          placeholder="Select a region"
+          options={[
+            {
+              label: "Asia",
+              options: [
+                { value: "lk", label: "Sri Lanka" },
+                { value: "sg", label: "Singapore" },
+              ],
+            },
+            {
+              label: "Europe",
+              options: [
+                { value: "pt", label: "Portugal" },
+                { value: "ie", label: "Ireland" },
+              ],
+            },
+          ]}
+        />
+      </div>
+    ),
+    "A choice that failed validation": () => (
+      <div className="pg-block-stack">
+        <Select
+          label="Environment"
+          status="invalid"
+          message="Pick an environment you have access to."
+          defaultValue="prod"
+          options={[
+            { value: "dev", label: "Development" },
+            { value: "prod", label: "Production" },
+          ]}
+        />
       </div>
     ),
   },

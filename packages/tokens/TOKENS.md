@@ -1737,6 +1737,55 @@ The answer, raised out of the track. Marked twice over: the surface is the visua
 | colour | `theme.fg.primary` |
 | elevation | `theme.elevation.raised` |
 
+### select
+
+The box, matching `.rata-text-field-input` step for step so a select and a text field in one row are indistinguishable in everything but their content. Field owns the label, helper text, message and disabled dimming.
+
+| Property | Token |
+|---|---|
+| font-family | `font.family.sans` |
+| font-size | `type.control.size.md` — constant across all three sizes, the same constant the button family and the text field use |
+| line-height | `type.control.line-height.md` |
+| background | `theme.bg.surface` |
+| color | `theme.fg.primary` |
+| border-color | `theme.border.strong` |
+| border-radius | `radius.element` |
+| block-size | `size.control.md` — and `size.control.sm` / `size.control.lg` at the other sizes |
+| padding-inline-start | `space.control.padding-inline.md` — and the sm / lg steps at the other sizes |
+
+### select-chevron-well
+
+Room reserved at the end edge for the chevron, which is drawn rather than inherited: the platform's own arrow cannot be themed, so the control sets appearance to none and this system supplies the glyph.
+
+| Property | Token |
+|---|---|
+| padding-inline-end | `space.control.padding-inline.md` plus `size.icon.text` plus `space.gap.sm` — reserved whether or not a value is chosen, so nothing reflows when one is |
+| chevron size | `size.icon.text` |
+| chevron colour | `theme.fg.secondary` — it is an affordance rather than content, so it sits below the value it points at |
+| chevron inset | `space.control.padding-inline.md` from the end edge |
+
+### select-placeholder
+
+The unchosen state. Muted rather than primary, so a control nobody has answered looks unanswered.
+
+| Property | Token |
+|---|---|
+| colour | `theme.fg.muted` |
+
+### select-states
+
+Selected from the primitive's data-status on the Field root, exactly as the text field's are. The rings are inset strokes, never the focus ring, so a control can be focused and invalid at once.
+
+| Property | Token |
+|---|---|
+| hover inner band | `theme.bg.muted` at `border.2` as an inset shadow, idle only — the validation rings occupy the same 2px and box-shadow does not accumulate |
+| focus border-color | `theme.fg.primary` |
+| focus outline | `focus.ring-width` solid `theme.fg.primary` at `space.0` offset — the same deliberate departure the text field documents, so every control in a form focuses alike |
+| validating ring | `theme.accent-role.ring` |
+| valid ring | `theme.success-role.ring` |
+| invalid ring | `theme.danger-role.ring` |
+| disabled cursor | not-allowed — the dimming itself is Field's, on the root |
+
 ### sheet
 
 A modal surface held against one edge. Unlike Dialog it is flush with that edge, so only the corners that face the page are rounded.

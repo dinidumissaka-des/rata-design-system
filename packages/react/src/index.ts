@@ -18,6 +18,8 @@ export { Switch } from "./switch.js";
 export type { SwitchProps } from "./switch.js";
 export { Field } from "./field.js";
 export type { FieldProps, FieldStatus, FieldControlProps } from "./field.js";
+export { Select } from "./select.js";
+export type { SelectProps, SelectSize, SelectOption, SelectOptionGroup } from "./select.js";
 export { Textarea } from "./textarea.js";
 export type { TextareaProps, TextareaResize } from "./textarea.js";
 export { TextField } from "./text-field.js";

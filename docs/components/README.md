@@ -33,6 +33,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Radio Group](radio-group.md) | `radio-group` | inputs | latest / latest | documented | free |
 | [Search](search.md) | `search` | inputs | latest / latest | documented | free |
 | [SegmentedControl](segmented-control.md) | `segmented-control` | inputs | latest / latest | documented | free |
+| [Select](select.md) | `select` | inputs | latest / latest | documented | free |
 | [Sheet](sheet.md) | `sheet` | overlays | latest / latest | documented | free |
 | [SideNav](side-nav.md) | `side-nav` | navigation | latest / latest | documented | free |
 | [Loading: Spinner](spinner.md) | `spinner` | loading | latest / latest | documented | free |

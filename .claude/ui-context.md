@@ -38,6 +38,7 @@ this path is the honest answer to when it last actually moved.
 | [radio-group](../docs/components/radio-group.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [search](../docs/components/search.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [segmented-control](../docs/components/segmented-control.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [select](../docs/components/select.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [sheet](../docs/components/sheet.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [side-nav](../docs/components/side-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [spinner](../docs/components/spinner.md) | `@rata/react` | loading | latest / latest / future | free |
@@ -620,6 +621,57 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/segmented-control.md](../docs/components/segmented-control.md)
+
+### Select (`@rata/react`)
+
+Extends: `Omit<`
+
+- `label: ReactNode`
+  The control's label. Always required — `labelHidden` hides it, nothing removes it.
+- `options: Array<SelectOption | SelectOptionGroup>`
+  The choices, in the order they are read.
+- `placeholder?: string`
+  Shown while nothing is chosen, as an option that cannot be chosen.
+- `value?: string`
+  Controls the chosen option from outside.
+- `defaultValue?: string`
+  The starting choice when the component owns the state.
+- `onValueChange?: (value: string) => void`
+  Fires with the chosen value when it changes.
+- `size?: SelectSize` — default: `"md"`
+  Control height and inline padding. Text size does not change with it.
+- `labelHidden?: boolean`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the control. Defaults to a generated one.
+- `status?: FieldStatus` — default: `"idle"`
+  Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `message?: ReactNode`
+  Status-dependent message under the control.
+- `required?: boolean`
+  Marks the control required to assistive technology and in the label.
+- `disabled?: boolean`
+  Marks the whole control unavailable.
+- `className?: string`
+  Class for the wrapper. The control itself is styled by the system.
+
+Real usage (from `apps/`):
+```tsx
+<Select
+          label="Environment"
+          status="invalid"
+          message="Pick an environment you have access to."
+          defaultValue="prod"
+          options={[
+            { value: "dev", label: "Development" },
+            { value: "prod", label: "Production" },
+          ]}
+        />
+```
+
+Contract: [docs/components/select.md](../docs/components/select.md)
 
 ### Sheet (`@rata/react`)
 
