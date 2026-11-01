@@ -1,0 +1,248 @@
+{
+  "$schema": "./schema.json",
+  "name": "sign-in",
+  "title": "Sign in",
+  "kind": "block",
+  "surface": [
+    "website",
+    "web-app",
+    "native-app"
+  ],
+  "category": "auth",
+  "description": "Email and password sign-in with an optional passwordless / SSO row, forgot-password link and an error Notice.",
+  "alsoKnownAs": [
+    "login",
+    "log in",
+    "authentication form"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "future"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "centered",
+    "container": "section",
+    "summary": "A single centred column at form width. Not a Card: the auth template decides whether the column sits on a surface; the block itself is just the form."
+  },
+  "regions": [
+    {
+      "name": "header",
+      "element": "div",
+      "purpose": "Heading and one line (\"New here? Create an account\").",
+      "contains": [
+        "heading",
+        "text",
+        "link"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "min(calc(var(--rata-size-control-lg) * 10), 100%)"
+      }
+    },
+    {
+      "name": "providers",
+      "element": "div",
+      "purpose": "SSO / passkey buttons.",
+      "required": false,
+      "contains": [
+        "button",
+        "divider"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "min(calc(var(--rata-size-control-lg) * 10), 100%)"
+      }
+    },
+    {
+      "name": "form",
+      "element": "form",
+      "purpose": "Email, password, remember-me, submit.",
+      "contains": [
+        "notice",
+        "text-field",
+        "checkbox",
+        "button",
+        "link"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "min(calc(var(--rata-size-control-lg) * 10), 100%)"
+      }
+    }
+  ],
+  "components": [
+    {
+      "name": "heading",
+      "for": "\"Sign in\".",
+      "region": "header"
+    },
+    {
+      "name": "text",
+      "for": "Supporting line.",
+      "region": "header"
+    },
+    {
+      "name": "link",
+      "for": "Sign-up and forgot-password destinations.",
+      "region": "form"
+    },
+    {
+      "name": "button",
+      "for": "Submit (primary, `loading` while pending) and provider buttons (secondary).",
+      "region": "form"
+    },
+    {
+      "name": "divider",
+      "for": "\"or\" rule between providers and the form.",
+      "region": "providers",
+      "optional": true
+    },
+    {
+      "name": "notice",
+      "for": "Credential error, variant danger, live=\"assertive\" only on submit failure.",
+      "region": "form"
+    },
+    {
+      "name": "text-field",
+      "for": "Email and password.",
+      "region": "form"
+    },
+    {
+      "name": "checkbox",
+      "for": "Remember me.",
+      "region": "form",
+      "optional": true
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "link",
+      "for": "Forgot-password and sign-up links.",
+      "blocking": true
+    },
+    {
+      "component": "divider",
+      "for": "The labelled \"or\" separator.",
+      "blocking": false,
+      "interim": "Providers region omitted until Divider exists, or the caller renders providers below the form without a separator."
+    }
+  ],
+  "slots": {
+    "headingLevel": {
+      "summary": "The outline level of \"Sign in\" (1 inside the auth template); everything below it steps down from here.",
+      "type": "1 | 2 | 3 | 4 | 5 | 6",
+      "required": true,
+      "use": [
+        "The level the surrounding page gives this block — a template passes it explicitly."
+      ],
+      "dont": [
+        "Choosing a level for its visual size. Size is the Heading component's `role`, a separate decision."
+      ],
+      "a11y": "No default, for the reason Heading's `level` has none: only the caller knows the depth, and a skipped level breaks heading navigation for the whole page."
+    },
+    "onSubmit": {
+      "summary": "Receives credentials; reject with a message to show the error Notice.",
+      "type": "(values: { email: string; password: string; remember: boolean }) => Promise<void>",
+      "required": true
+    },
+    "providers": {
+      "summary": "SSO / passkey options.",
+      "type": "Array<{ label: string; icon?: LucideIcon; onSelect: () => void }>",
+      "required": false
+    },
+    "forgotPasswordHref": {
+      "summary": "Where \"Forgot password?\" goes.",
+      "type": "string",
+      "required": true
+    },
+    "signUpHref": {
+      "summary": "Where \"Create an account\" goes; omit for invite-only products.",
+      "type": "string",
+      "required": false
+    }
+  },
+  "behavior": {
+    "summary": "idle → submitting (submit Button `loading`, which is aria-disabled and stays focusable) → error (Notice above the fields, focus moved to it) or success (caller navigates).",
+    "decisions": [
+      {
+        "decision": "A failed sign-in moves focus to the error Notice",
+        "why": "The reader pressed submit at the bottom of the form; the error is at the top. Without moving focus a screen-reader user hears nothing and a sighted keyboard user sees nothing change near them."
+      },
+      {
+        "decision": "The error never says which field was wrong",
+        "why": "\"Email or password is incorrect\" — naming the field leaks which accounts exist."
+      },
+      {
+        "decision": "Fields are not disabled while submitting",
+        "why": "Only the Button goes `loading`; disabling the fields would drop focus and, with native disabled, remove them from the form data — this system uses aria-disabled everywhere for that reason."
+      },
+      {
+        "decision": "Password reveal is not in this block",
+        "why": "It needs a toggle inside TextField; that is a TextField feature request, not a block decision. Listed as an open question."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "form",
+        "role": "form",
+        "label": "aria-labelledby the \"Sign in\" heading"
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": "base",
+        "content": "Sign in",
+        "region": "header"
+      }
+    ],
+    "obligations": [
+      "autocomplete=\"username\" / \"current-password\" on the fields.",
+      "type=\"email\" on the email field.",
+      "Providers' accessible names include the provider (\"Continue with Google\")."
+    ]
+  },
+  "responsive": {
+    "strategy": "intrinsic",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "Column fills the viewport less space.page.gutter."
+      },
+      {
+        "at": "wide",
+        "change": "Column capped at form width, centred by the template."
+      }
+    ]
+  },
+  "native": {
+    "applies": true,
+    "mapping": "A single scrolling form screen. Fields map to platform text inputs with content-type hints so the OS password manager fills them; providers map to platform sign-in buttons (Sign in with Apple, Credential Manager).",
+    "ios": "textContentType .username / .password; Sign in with Apple required if other social sign-in is offered.",
+    "android": "autofillHints username/password; Credential Manager for passkeys."
+  },
+  "tokens": {
+    "column max-inline-size": "min(calc(var(--rata-size-control-lg) * 10), 100%)",
+    "header → form gap": "space.stack.lg",
+    "field stack": "space.stack.md",
+    "submit full width": "inline-size 100%, size lg",
+    "forgot link placement": "end-aligned under the password field, space.stack.2xs"
+  },
+  "tokenGaps": [],
+  "openQuestions": [
+    "Password show/hide: add to TextField (component change) or leave out?",
+    "Is magic-link / passkey-first a variant of this block or a separate block?"
+  ]
+}

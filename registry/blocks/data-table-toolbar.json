@@ -1,0 +1,260 @@
+{
+  "$schema": "./schema.json",
+  "name": "data-table-toolbar",
+  "title": "Data table toolbar",
+  "kind": "block",
+  "surface": [
+    "web-app"
+  ],
+  "category": "data",
+  "description": "The bar above a Table: search, filters as chips, a view switch, a primary action, and a bulk-action state when rows are selected.",
+  "alsoKnownAs": [
+    "table header",
+    "filter bar",
+    "list toolbar"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "na"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "full-width",
+    "container": "table",
+    "summary": "Sits directly above the Table it controls, edge to edge with it."
+  },
+  "regions": [
+    {
+      "name": "query",
+      "element": "div",
+      "purpose": "Search and filter controls.",
+      "contains": [
+        "search",
+        "menu",
+        "chip",
+        "button"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "1fr (grows)"
+      },
+      "collapse": "Filters move behind a \"Filters\" button that opens a Sheet."
+    },
+    {
+      "name": "actions",
+      "element": "div",
+      "purpose": "View switch, export, primary action.",
+      "contains": [
+        "segmented-control",
+        "button",
+        "menu"
+      ],
+      "budget": {
+        "narrow": "fill, below query",
+        "wide": "auto (hugs)"
+      },
+      "collapse": "Secondary actions collapse into an overflow Menu; the primary action stays."
+    },
+    {
+      "name": "selection",
+      "element": "div",
+      "purpose": "Replaces query+actions while rows are selected: \"3 selected\", bulk actions, clear.",
+      "required": false,
+      "contains": [
+        "text",
+        "button-group",
+        "button"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "fill"
+      }
+    },
+    {
+      "name": "active-filters",
+      "element": "ul",
+      "purpose": "Applied filters as removable chips.",
+      "required": false,
+      "contains": [
+        "chip"
+      ],
+      "budget": {
+        "narrow": "fill, wraps",
+        "wide": "fill, wraps"
+      }
+    }
+  ],
+  "components": [
+    {
+      "name": "search",
+      "for": "Free-text query; landmark false (the table page has one search landmark at most).",
+      "region": "query"
+    },
+    {
+      "name": "menu",
+      "for": "Filter pickers and the overflow of secondary actions.",
+      "region": "query"
+    },
+    {
+      "name": "chip",
+      "for": "Applied filters, each removable.",
+      "region": "active-filters"
+    },
+    {
+      "name": "button",
+      "for": "Primary action, Filters trigger, clear selection.",
+      "region": "actions"
+    },
+    {
+      "name": "segmented-control",
+      "for": "Table / grid view switch.",
+      "region": "actions",
+      "optional": true
+    },
+    {
+      "name": "sheet",
+      "for": "Filters on narrow viewports.",
+      "region": "query"
+    },
+    {
+      "name": "text",
+      "for": "Selection count.",
+      "region": "selection"
+    },
+    {
+      "name": "button-group",
+      "for": "Bulk actions.",
+      "region": "selection"
+    },
+    {
+      "name": "table",
+      "for": "The table this toolbar controls (sibling, not child).",
+      "optional": false
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "table",
+      "for": "The thing the toolbar controls; selection state comes from it.",
+      "blocking": true
+    },
+    {
+      "component": "chip",
+      "for": "Active filter chips.",
+      "blocking": false,
+      "interim": "Applied filters summarised as text with a \"Clear filters\" button."
+    }
+  ],
+  "slots": {
+    "label": {
+      "summary": "Accessible name of the toolbar, naming the table (\"Invoices\").",
+      "type": "string",
+      "required": true
+    },
+    "query": {
+      "summary": "Controlled search value.",
+      "type": "string",
+      "required": false
+    },
+    "onQueryChange": {
+      "summary": "Search change, debounced by the caller.",
+      "type": "(value: string) => void",
+      "required": false
+    },
+    "filters": {
+      "summary": "Filter definitions and applied values.",
+      "type": "Array<{ id: string; label: string; options: Array<{ value: string; label: string }>; value: string[] }>",
+      "required": false
+    },
+    "primaryAction": {
+      "summary": "The page's main action (\"New invoice\").",
+      "type": "ReactNode",
+      "required": false
+    },
+    "selectedCount": {
+      "summary": "Rows selected in the Table; > 0 switches to the selection region.",
+      "type": "number",
+      "default": "0",
+      "required": false
+    },
+    "bulkActions": {
+      "summary": "Actions on the selection.",
+      "type": "ReactNode",
+      "required": false
+    }
+  },
+  "behavior": {
+    "summary": "Not a role=\"toolbar\": a toolbar implies one tab stop with arrow keys between items, and these are unrelated controls each with its own tab stop.",
+    "decisions": [
+      {
+        "decision": "No role=\"toolbar\"",
+        "why": "APG toolbar semantics promise roving focus across homogeneous controls; a search field inside one breaks arrow keys. A labelled group (role=\"group\" with aria-label) names it without the keyboard promise."
+      },
+      {
+        "decision": "Selection replaces the bar rather than adding a second one",
+        "why": "Keeps the table from jumping down a row when the first checkbox is ticked. The change is announced via a polite live region (\"3 selected\")."
+      },
+      {
+        "decision": "Filters become a Sheet when narrow, not a hidden row",
+        "why": "Sheet is the system's modal surface for exactly this; a row that toggles open pushes the table down unpredictably."
+      },
+      {
+        "decision": "Result count is announced",
+        "why": "After a query change a screen-reader user needs to know the table changed: a polite status (\"12 results\")."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "div",
+        "role": "none",
+        "label": "role=\"group\" with aria-label from `label` — not a landmark"
+      }
+    ],
+    "headingOutline": [],
+    "obligations": [
+      "One polite live region for result count and selection count.",
+      "Search's `landmark` stays false unless this is the page's only search.",
+      "Overflow Menu trigger is iconOnly with an aria-label."
+    ]
+  },
+  "responsive": {
+    "strategy": "container-query",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "Search fills the row; Filters button opens a Sheet; secondary actions in an overflow Menu; primary action stays."
+      },
+      {
+        "at": "wide",
+        "change": "Everything inline in one row; active filters wrap below."
+      }
+    ]
+  },
+  "native": {
+    "applies": false,
+    "reason": "Native lists put search in the navigation bar and filters in a sheet or toolbar button; there is no bar above a table. The list-detail template's native mapping covers it."
+  },
+  "tokens": {
+    "row gap": "space.gap.md",
+    "padding-block": "space.padding.sm",
+    "padding-inline": "none — aligns with the table's cell padding",
+    "active filters gap": "space.gap.sm",
+    "toolbar → table gap": "space.stack.sm"
+  },
+  "tokenGaps": [],
+  "openQuestions": [
+    "Is grid/table view switching in scope, or does it belong to a future data-view block?"
+  ]
+}

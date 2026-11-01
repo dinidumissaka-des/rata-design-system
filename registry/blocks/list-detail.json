@@ -1,0 +1,365 @@
+{
+  "$schema": "./schema.json",
+  "name": "list-detail",
+  "title": "List / detail",
+  "kind": "template",
+  "surface": [
+    "web-app",
+    "native-app"
+  ],
+  "category": "page",
+  "description": "Master/detail: a list of items beside the selected item's detail. Collapses to stacked navigation (list screen → detail screen) on narrow viewports and native phones.",
+  "alsoKnownAs": [
+    "master-detail",
+    "split view",
+    "inbox layout",
+    "two-pane"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "future"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "split",
+    "container": "list",
+    "summary": "Header, optional rail, then a list pane (dense rows — CLAUDE.md's list/table case) and a detail pane. Detail may host a Panel for metadata."
+  },
+  "regions": [
+    {
+      "name": "header",
+      "element": "TopNav",
+      "purpose": "Banner.",
+      "contains": [
+        "top-nav",
+        "mobile-nav"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "fill"
+      }
+    },
+    {
+      "name": "list-pane",
+      "element": "section (labelled)",
+      "purpose": "Search/filter toolbar and the item list.",
+      "contains": [
+        "search",
+        "list",
+        "data-table-toolbar",
+        "pagination",
+        "skeleton",
+        "swipe-actions"
+      ],
+      "budget": {
+        "narrow": "fill (list screen)",
+        "medium": "calc(var(--rata-size-control-lg) * 9)",
+        "wide": "calc(var(--rata-size-control-lg) * 10)"
+      },
+      "collapse": "Narrow: the list is the whole screen at /items."
+    },
+    {
+      "name": "detail-pane",
+      "element": "section (labelled) inside main",
+      "purpose": "The selected item.",
+      "contains": [
+        "heading",
+        "breadcrumbs",
+        "button",
+        "menu",
+        "panel",
+        "empty-state-page"
+      ],
+      "budget": {
+        "narrow": "fill (detail screen at /items/:id, list hidden)",
+        "medium": "1fr",
+        "wide": "1fr"
+      },
+      "collapse": "Narrow: replaces the list; a back link returns to it."
+    },
+    {
+      "name": "inspector",
+      "element": "Panel",
+      "purpose": "Optional metadata beside detail.",
+      "required": false,
+      "contains": [
+        "panel",
+        "sheet"
+      ],
+      "budget": {
+        "narrow": "Sheet",
+        "medium": "Sheet",
+        "wide": "calc(var(--rata-size-control-lg) * 6)"
+      },
+      "collapse": "Becomes a Sheet (the playground's Panel → Sheet swap at NARROW)."
+    }
+  ],
+  "components": [
+    {
+      "name": "top-nav",
+      "for": "Banner.",
+      "region": "header"
+    },
+    {
+      "name": "mobile-nav",
+      "for": "Narrow product nav.",
+      "region": "header"
+    },
+    {
+      "name": "search",
+      "for": "Filter the list; landmark false if TopNav has global search.",
+      "region": "list-pane"
+    },
+    {
+      "name": "list",
+      "for": "Selectable item rows with aria-current on the open one.",
+      "region": "list-pane"
+    },
+    {
+      "name": "pagination",
+      "for": "Long lists (or load-more).",
+      "region": "list-pane",
+      "optional": true
+    },
+    {
+      "name": "skeleton",
+      "for": "List loading.",
+      "region": "list-pane",
+      "optional": true
+    },
+    {
+      "name": "swipe-actions",
+      "for": "Row actions on touch / native.",
+      "region": "list-pane",
+      "optional": true
+    },
+    {
+      "name": "heading",
+      "for": "Detail h1? see outline decision.",
+      "region": "detail-pane"
+    },
+    {
+      "name": "breadcrumbs",
+      "for": "Back to the list on narrow.",
+      "region": "detail-pane",
+      "optional": true
+    },
+    {
+      "name": "button",
+      "for": "Detail actions, back button.",
+      "region": "detail-pane"
+    },
+    {
+      "name": "menu",
+      "for": "Detail overflow actions.",
+      "region": "detail-pane",
+      "optional": true
+    },
+    {
+      "name": "panel",
+      "for": "Inspector on wide.",
+      "region": "inspector",
+      "optional": true
+    },
+    {
+      "name": "sheet",
+      "for": "Inspector on narrow.",
+      "region": "inspector",
+      "optional": true
+    },
+    {
+      "name": "visually-hidden",
+      "for": "Skip link.",
+      "region": "header"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "data-table-toolbar",
+      "region": "list-pane",
+      "optional": true
+    },
+    {
+      "name": "empty-state-page",
+      "region": "detail-pane",
+      "optional": true,
+      "headingLevel": 2
+    },
+    {
+      "name": "profile-header",
+      "region": "detail-pane",
+      "optional": true,
+      "headingLevel": 2
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "list",
+      "for": "The item list — the template's core.",
+      "blocking": true
+    },
+    {
+      "component": "pagination",
+      "for": "Long lists.",
+      "blocking": false,
+      "interim": "Load-more Button."
+    },
+    {
+      "component": "skeleton",
+      "for": "Loading rows.",
+      "blocking": false,
+      "interim": "Spinner in the list pane."
+    },
+    {
+      "component": "swipe-actions",
+      "for": "Touch row actions.",
+      "blocking": false,
+      "interim": "Row actions in the detail pane only."
+    }
+  ],
+  "behavior": {
+    "summary": "Selection is a URL (/items/:id). Wide: both panes, list keeps its scroll position. Narrow: one pane at a time, driven by the same URL — the list at /items, the detail at /items/:id.",
+    "decisions": [
+      {
+        "decision": "Selection is navigation, so rows are links with aria-current=\"page\"",
+        "why": "Not a listbox: opening an item changes the URL, works with middle-click and back, and is the same behaviour SideNav rows have. A listbox would need arrow-key roving focus and gives none of that."
+      },
+      {
+        "decision": "One URL scheme for both layouts",
+        "why": "Narrow and wide differ only in which panes render, so resizing or rotating never loses the reader's place, and native deep links map 1:1."
+      },
+      {
+        "decision": "Focus moves to the detail heading on open in narrow mode only",
+        "why": "On narrow the list disappears, so focus must go somewhere; on wide the reader may be scanning the list with arrow/tab and should stay there."
+      },
+      {
+        "decision": "Detail heading is h1 when narrow, h2 when wide",
+        "why": "Open question rather than settled: wide has the list pane's h1 (area name); narrow detail is its own screen. Alternative: always h1 = area name visually hidden on narrow, detail h2."
+      },
+      {
+        "decision": "Empty detail on wide shows an empty-state, not the first item",
+        "why": "Auto-selecting moves the URL without the reader asking and marks something read."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "header (TopNav)",
+        "role": "banner",
+        "label": "implicit"
+      },
+      {
+        "element": "nav (TopNav)",
+        "role": "navigation",
+        "label": "TopNav `label` (\"Main\")"
+      },
+      {
+        "element": "main",
+        "role": "main",
+        "label": "implicit; target of the skip link"
+      },
+      {
+        "element": "section",
+        "role": "region",
+        "label": "\"Invoices\" (list pane, aria-labelledby its heading)",
+        "region": "list-pane"
+      },
+      {
+        "element": "section",
+        "role": "region",
+        "label": "the item's title",
+        "region": "detail-pane"
+      },
+      {
+        "element": "aside (Panel)",
+        "role": "complementary",
+        "label": "Panel title",
+        "region": "inspector"
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": 1,
+        "content": "Area name (\"Invoices\") — list pane"
+      },
+      {
+        "level": 2,
+        "content": "Selected item title — detail pane (h1 on narrow detail screen; see decision)"
+      },
+      {
+        "level": 3,
+        "content": "Detail subsections",
+        "repeats": true
+      }
+    ],
+    "obligations": [
+      "First focusable element is a skip link to <main> — there is no skip-link component, so it is VisuallyHidden content that becomes visible on :focus-visible (open question: promote to a component).",
+      "document.title includes the selected item.",
+      "The list announces result count changes politely after search."
+    ]
+  },
+  "responsive": {
+    "strategy": "media-query",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "Stacked navigation: list screen ↔ detail screen; inspector as Sheet."
+      },
+      {
+        "at": "medium",
+        "change": "List + detail; inspector as Sheet."
+      },
+      {
+        "at": "wide",
+        "change": "List + detail + inspector Panel."
+      }
+    ],
+    "notes": "Three classes is one more than the playground's single NARROW; whether 'medium' earns its place is an open decision."
+  },
+  "native": {
+    "applies": true,
+    "mapping": "Phone: navigation stack — list root, detail pushed, swipe-back. Tablet/foldable: two-column split view with the same selection model.",
+    "ios": "NavigationSplitView (collapses to a stack on compact width automatically).",
+    "android": "ListDetailPaneScaffold (Material 3 adaptive), single pane on compact."
+  },
+  "tokens": {
+    "list pane inline-size": "calc(var(--rata-size-control-lg) * 10) wide / * 9 medium",
+    "pane divider": "theme.border.default at border.1",
+    "list row block-size floor": "size.control.lg",
+    "detail padding": "space.page.block-start space.page.gutter space.page.block-end",
+    "inspector inline-size": "calc(var(--rata-size-control-lg) * 6)"
+  },
+  "tokenGaps": [
+    {
+      "need": "Named breakpoints (narrow/medium/wide) as tokens or documented constants",
+      "interim": "The block is intrinsic (auto-fill grid, flex-wrap) and needs none. Where a step is unavoidable the page owns the query, as the playground owns its single 60rem NARROW query in use-media-query.ts."
+    },
+    {
+      "need": "A pane-width scale for split layouts",
+      "interim": "Derived from size.control.lg multiples (9, 10), matching the system's existing habit; three multipliers in three places is the point at which a token is justified."
+    },
+    {
+      "need": "A skip-link component or recipe",
+      "interim": "Composed from visually-hidden; every template needs one, which is the argument for making it a component."
+    },
+    {
+      "need": "A z-index / layer scale for the sticky header",
+      "interim": "The playground uses z-index: 1 with a comment; templates do the same until a layer token exists."
+    }
+  ],
+  "openQuestions": [
+    "Detail heading level: h1-on-narrow / h2-on-wide, or always h2 under a (possibly visually hidden) area h1?",
+    "Is a 'medium' breakpoint class warranted, or do list+detail and inspector swap at one query?"
+  ]
+}

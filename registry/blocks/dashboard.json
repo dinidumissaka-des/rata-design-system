@@ -1,0 +1,333 @@
+{
+  "$schema": "./schema.json",
+  "name": "dashboard",
+  "title": "Dashboard",
+  "kind": "template",
+  "surface": [
+    "web-app",
+    "native-app"
+  ],
+  "category": "page",
+  "description": "The signed-in home: TopNav, SideNav rail, page header, dashboard-stats, then a primary table or list and secondary widgets.",
+  "alsoKnownAs": [
+    "home",
+    "overview",
+    "admin home"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "future"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "header-sidebar",
+    "container": "card",
+    "summary": "The playground's actual shell: sticky TopNav, sticky SideNav rail at control-lg × 6, main column. Widgets are Cards; the activity list is a table/list."
+  },
+  "regions": [
+    {
+      "name": "header",
+      "element": "TopNav",
+      "purpose": "Brand, search, account menu.",
+      "contains": [
+        "top-nav",
+        "search",
+        "menu",
+        "avatar",
+        "mobile-nav"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "fill"
+      },
+      "collapse": "Rail → MobileNav drawer at the page's narrow query."
+    },
+    {
+      "name": "rail",
+      "element": "aside > SideNav",
+      "purpose": "Product navigation.",
+      "contains": [
+        "side-nav"
+      ],
+      "budget": {
+        "narrow": "hidden (MobileNav)",
+        "medium": "hidden (MobileNav)",
+        "wide": "calc(var(--rata-size-control-lg) * 6)"
+      },
+      "collapse": "Hidden; same sections render in MobileNav."
+    },
+    {
+      "name": "main",
+      "element": "main",
+      "purpose": "Page title, stats, primary data, widgets.",
+      "contains": [
+        "heading",
+        "dashboard-stats",
+        "data-table-toolbar",
+        "table",
+        "card",
+        "empty-state-page"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "1fr, content capped (playground caps its column; no token)"
+      }
+    },
+    {
+      "name": "widgets",
+      "element": "section grid inside main",
+      "purpose": "Secondary Cards (recent activity, tasks).",
+      "required": false,
+      "contains": [
+        "card",
+        "list"
+      ],
+      "budget": {
+        "narrow": "1 column",
+        "wide": "auto-fill"
+      }
+    }
+  ],
+  "components": [
+    {
+      "name": "top-nav",
+      "for": "Banner.",
+      "region": "header"
+    },
+    {
+      "name": "search",
+      "for": "Global search; landmark true — the page's one search landmark.",
+      "region": "header"
+    },
+    {
+      "name": "menu",
+      "for": "Account menu.",
+      "region": "header"
+    },
+    {
+      "name": "avatar",
+      "for": "Account menu trigger content.",
+      "region": "header"
+    },
+    {
+      "name": "side-nav",
+      "for": "Rail.",
+      "region": "rail"
+    },
+    {
+      "name": "mobile-nav",
+      "for": "Narrow nav.",
+      "region": "header"
+    },
+    {
+      "name": "heading",
+      "for": "Page h1.",
+      "region": "main"
+    },
+    {
+      "name": "table",
+      "for": "Primary data.",
+      "region": "main"
+    },
+    {
+      "name": "card",
+      "for": "Widgets.",
+      "region": "widgets"
+    },
+    {
+      "name": "list",
+      "for": "Activity feed inside a widget.",
+      "region": "widgets",
+      "optional": true
+    },
+    {
+      "name": "bottom-nav",
+      "for": "Native phone tab bar in place of the rail.",
+      "optional": true
+    },
+    {
+      "name": "visually-hidden",
+      "for": "Skip link.",
+      "region": "header"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "dashboard-stats",
+      "region": "main",
+      "headingLevel": 2
+    },
+    {
+      "name": "data-table-toolbar",
+      "region": "main",
+      "optional": true
+    },
+    {
+      "name": "empty-state-page",
+      "region": "main",
+      "optional": true,
+      "headingLevel": 2
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "card",
+      "for": "Widgets and stat tiles.",
+      "blocking": true
+    },
+    {
+      "component": "table",
+      "for": "Primary data region.",
+      "blocking": false,
+      "interim": "Main region holds stats and widgets only."
+    },
+    {
+      "component": "list",
+      "for": "Activity widget.",
+      "blocking": false,
+      "interim": "Plain <ul>."
+    },
+    {
+      "component": "bottom-nav",
+      "for": "Native phone navigation.",
+      "blocking": false,
+      "interim": "Native uses MobileNav-equivalent drawer — not idiomatic; native ships after bottom-nav."
+    },
+    {
+      "component": "skeleton",
+      "via": "dashboard-stats",
+      "for": "Loading state.",
+      "blocking": false,
+      "interim": "Spinner."
+    }
+  ],
+  "behavior": {
+    "summary": "The first template with a sidebar, and the one the playground already is. Its shell decisions are the playground's, adopted rather than reinvented.",
+    "decisions": [
+      {
+        "decision": "Adopt the playground shell verbatim",
+        "why": "Sticky header, sticky rail below it at control-lg × 6, main column centred with auto margins — the only precedent, already debugged (the cascade-order bug on the rail's media query is documented in playground.css)."
+      },
+      {
+        "decision": "One breakpoint, owned by the template",
+        "why": "Rail ↔ MobileNav at a single narrow query, as use-media-query.ts argues: two breakpoints in one layout read as a bug."
+      },
+      {
+        "decision": "Two navigation landmarks get distinct names",
+        "why": "TopNav \"Main\" and SideNav named for the area (\"Workspace\"), per SideNav's contract."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "header (TopNav)",
+        "role": "banner",
+        "label": "implicit"
+      },
+      {
+        "element": "nav (TopNav)",
+        "role": "navigation",
+        "label": "TopNav `label` (\"Main\")"
+      },
+      {
+        "element": "search",
+        "role": "search",
+        "label": "Search's label",
+        "region": "header"
+      },
+      {
+        "element": "aside",
+        "role": "complementary",
+        "label": "\"Workspace\" — or no aside, and the SideNav nav alone",
+        "region": "rail"
+      },
+      {
+        "element": "nav (SideNav)",
+        "role": "navigation",
+        "label": "SideNav `label`",
+        "region": "rail"
+      },
+      {
+        "element": "main",
+        "role": "main",
+        "label": "implicit; target of the skip link"
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": 1,
+        "content": "Page title (\"Overview\")"
+      },
+      {
+        "level": 2,
+        "content": "Stats (visually hidden if no visible title)"
+      },
+      {
+        "level": 2,
+        "content": "Each widget",
+        "repeats": true
+      }
+    ],
+    "obligations": [
+      "First focusable element is a skip link to <main> — there is no skip-link component, so it is VisuallyHidden content that becomes visible on :focus-visible (open question: promote to a component).",
+      "document.title matches the h1."
+    ]
+  },
+  "responsive": {
+    "strategy": "media-query",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "Rail hidden; MobileNav trigger in TopNav; widgets one column."
+      },
+      {
+        "at": "wide",
+        "change": "Rail visible and sticky."
+      }
+    ],
+    "notes": "Rail must hide AFTER its base rule in source order — the playground's documented cascade bug."
+  },
+  "native": {
+    "applies": true,
+    "mapping": "Phone: bottom-nav tab bar replaces the rail; each tab is a navigation stack; the dashboard is the first tab's root screen with stats as a 2-column grid. Tablet: sidebar split view.",
+    "ios": "TabView on phone; NavigationSplitView sidebar on iPad.",
+    "android": "NavigationBar on compact, NavigationRail on medium, permanent drawer on expanded window classes."
+  },
+  "tokens": {
+    "rail inline-size": "calc(var(--rata-size-control-lg) * 6)",
+    "rail padding-inline": "space.4 (playground)",
+    "rail border": "theme.border.default at border.1 on the inline end",
+    "main padding": "space.page.block-start space.page.gutter space.page.block-end",
+    "between sections": "space.section",
+    "widget grid gap": "space.gap.lg"
+  },
+  "tokenGaps": [
+    {
+      "need": "A page content max-inline-size (container width) for marketing bands",
+      "interim": "The band's content box is capped at calc(var(--rata-size-control-lg) * 32) and centred with auto inline margins; the playground's own column cap is a literal with a comment saying there is no measure token. Open decision: a size.container.* role via the design-tokens skill, or keep deriving from the control scale."
+    },
+    {
+      "need": "Named breakpoints (narrow/medium/wide) as tokens or documented constants",
+      "interim": "The block is intrinsic (auto-fill grid, flex-wrap) and needs none. Where a step is unavoidable the page owns the query, as the playground owns its single 60rem NARROW query in use-media-query.ts."
+    },
+    {
+      "need": "A skip-link component or recipe",
+      "interim": "Composed from visually-hidden; every template needs one, which is the argument for making it a component."
+    },
+    {
+      "need": "A z-index / layer scale for the sticky header",
+      "interim": "The playground uses z-index: 1 with a comment; templates do the same until a layer token exists."
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "$schema": "./schema.json",
+  "name": "logo-cloud",
+  "title": "Logo cloud",
+  "kind": "block",
+  "surface": [
+    "website"
+  ],
+  "category": "marketing",
+  "description": "A row of customer or partner logos under a short label.",
+  "alsoKnownAs": [
+    "customer logos",
+    "trusted by",
+    "partners"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "na"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "stacked",
+    "container": "list",
+    "summary": "A label above a wrapping <ul> of images."
+  },
+  "regions": [
+    {
+      "name": "label",
+      "element": "p or heading",
+      "purpose": "\"Trusted by teams at…\".",
+      "contains": [
+        "text"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "fill"
+      }
+    },
+    {
+      "name": "logos",
+      "element": "ul",
+      "purpose": "The logos.",
+      "budget": {
+        "narrow": "wrap, centred",
+        "wide": "one row, space-evenly"
+      },
+      "collapse": "flex-wrap; never a horizontally scrolling or marquee strip."
+    }
+  ],
+  "components": [
+    {
+      "name": "text",
+      "for": "The label, role supporting, tone muted.",
+      "region": "label"
+    }
+  ],
+  "dependsOnFuture": [],
+  "slots": {
+    "label": {
+      "summary": "The line above the logos.",
+      "type": "ReactNode",
+      "required": true
+    },
+    "logos": {
+      "summary": "Logo images.",
+      "type": "Array<{ src: string; name: string; href?: string }>",
+      "required": true,
+      "a11y": "Each image's alt is the company name; a logo is content here, not decoration."
+    }
+  },
+  "behavior": {
+    "summary": "Static. The label is text, not a heading, by default.",
+    "decisions": [
+      {
+        "decision": "The label is not a heading by default",
+        "why": "\"Trusted by\" is not a section anyone navigates to; a heading would add noise to the outline between the hero and the next real section."
+      },
+      {
+        "decision": "No marquee animation",
+        "why": "Motion that cannot be paused fails WCAG 2.2.2, and a moving strip is the opposite of scannable."
+      },
+      {
+        "decision": "Logos keep their own colours or are all monochrome — the caller's call, not a CSS filter",
+        "why": "A filter that greys logos changes contrast unpredictably; supplying monochrome assets is the only verifiable route."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "section",
+        "role": "none",
+        "label": "Unnamed section — not a landmark"
+      }
+    ],
+    "headingOutline": [],
+    "obligations": [
+      "alt text is the company name.",
+      "Linked logos need the destination to be the company, not a dead link."
+    ]
+  },
+  "responsive": {
+    "strategy": "intrinsic",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "Logos wrap into rows."
+      }
+    ]
+  },
+  "native": {
+    "applies": false,
+    "reason": "Marketing composition. A native app is reached after install, so there is nothing to persuade or convert; the equivalent content in-app is an onboarding or paywall screen, which is a different block with different obligations."
+  },
+  "tokens": {
+    "band padding-block": "space.section",
+    "label → logos gap": "space.stack.md",
+    "gap between logos": "space.gap.lg",
+    "logo block-size": "size.control.lg"
+  },
+  "tokenGaps": [
+    {
+      "need": "A logo / media height step",
+      "interim": "Logos are capped at block-size var(--rata-size-control-lg), the same derive-from-controls habit as Dialog widths."
+    }
+  ]
+}

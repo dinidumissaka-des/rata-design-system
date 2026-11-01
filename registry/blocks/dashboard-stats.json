@@ -1,0 +1,251 @@
+{
+  "$schema": "./schema.json",
+  "name": "dashboard-stats",
+  "title": "Dashboard stats",
+  "kind": "block",
+  "surface": [
+    "web-app",
+    "native-app"
+  ],
+  "category": "data",
+  "description": "A row of two to six KPI tiles: label, value, change against a previous period, optional sparkline; with loading skeletons.",
+  "alsoKnownAs": [
+    "kpi row",
+    "stat cards",
+    "metrics"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "future"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "stacked",
+    "container": "card",
+    "summary": "KPI tiles are widgets — CLAUDE.md's Card case. An intrinsic grid of Cards."
+  },
+  "regions": [
+    {
+      "name": "header",
+      "element": "div",
+      "purpose": "Optional heading and period Select.",
+      "required": false,
+      "contains": [
+        "heading",
+        "select",
+        "segmented-control"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "fill"
+      }
+    },
+    {
+      "name": "tiles",
+      "element": "ul",
+      "purpose": "One Card per stat.",
+      "contains": [
+        "card",
+        "text",
+        "badge",
+        "icon",
+        "skeleton",
+        "link"
+      ],
+      "budget": {
+        "narrow": "1 column (2 on native phones)",
+        "wide": "auto-fill, track minimum min(calc(var(--rata-size-control-lg) * 9), 100%)"
+      }
+    }
+  ],
+  "components": [
+    {
+      "name": "heading",
+      "for": "Optional heading.",
+      "region": "header",
+      "optional": true
+    },
+    {
+      "name": "select",
+      "for": "Period selector when there are many periods.",
+      "region": "header",
+      "optional": true
+    },
+    {
+      "name": "segmented-control",
+      "for": "Period selector for 2–4 periods (7d / 30d / 90d).",
+      "region": "header",
+      "optional": true
+    },
+    {
+      "name": "card",
+      "for": "Each tile.",
+      "region": "tiles"
+    },
+    {
+      "name": "text",
+      "for": "Label (supporting, muted) and value (as large text).",
+      "region": "tiles"
+    },
+    {
+      "name": "badge",
+      "for": "Change indicator: success / danger / neutral.",
+      "region": "tiles"
+    },
+    {
+      "name": "icon",
+      "for": "Up/down arrow inside the change badge.",
+      "region": "tiles"
+    },
+    {
+      "name": "skeleton",
+      "for": "Loading state of each tile.",
+      "region": "tiles"
+    },
+    {
+      "name": "link",
+      "for": "Tile drill-down.",
+      "region": "tiles",
+      "optional": true
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "card",
+      "for": "Tile container.",
+      "blocking": true
+    },
+    {
+      "component": "skeleton",
+      "for": "Loading state.",
+      "blocking": false,
+      "interim": "Spinner in each tile with an accessible label — heavier but correct."
+    },
+    {
+      "component": "link",
+      "for": "Drill-down.",
+      "blocking": false,
+      "interim": "No drill-down."
+    }
+  ],
+  "slots": {
+    "headingLevel": {
+      "summary": "Required only with `title`.",
+      "type": "1 | 2 | 3 | 4 | 5 | 6",
+      "required": false,
+      "use": [
+        "The level the surrounding page gives this block — a template passes it explicitly."
+      ],
+      "dont": [
+        "Choosing a level for its visual size. Size is the Heading component's `role`, a separate decision."
+      ],
+      "a11y": "No default, for the reason Heading's `level` has none: only the caller knows the depth, and a skipped level breaks heading navigation for the whole page."
+    },
+    "title": {
+      "summary": "Optional heading.",
+      "type": "ReactNode",
+      "required": false
+    },
+    "stats": {
+      "summary": "The tiles.",
+      "type": "Array<{ label: string; value: ReactNode; change?: { value: string; direction: \"up\" | \"down\" | \"flat\"; sentiment: \"positive\" | \"negative\" | \"neutral\" }; href?: string }>",
+      "required": true
+    },
+    "loading": {
+      "summary": "Show skeletons in place of values.",
+      "type": "boolean",
+      "default": "false",
+      "required": false
+    }
+  },
+  "behavior": {
+    "summary": "Static display; loading swaps values for skeletons while keeping labels, so the layout does not shift.",
+    "decisions": [
+      {
+        "decision": "Direction and sentiment are separate",
+        "why": "Churn going down is good. Colouring by arrow direction gets it wrong half the time; the caller states which way is good."
+      },
+      {
+        "decision": "Change is a Badge with text, not colour alone",
+        "why": "WCAG 1.4.1: \"+12% vs last month\" in a success Badge — the subtle-background/fg pairing the token rules require for status text, never the saturated bg."
+      },
+      {
+        "decision": "Tile labels are not headings",
+        "why": "Six h3s of \"Revenue\", \"Users\"… flood the outline; each tile is a list item whose label is read first."
+      },
+      {
+        "decision": "Sparklines are caller content, not a component",
+        "why": "There is no chart component; a sparkline uses color.data.* tokens and must have a text alternative. Flagged as a gap rather than invented."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "section",
+        "role": "region",
+        "label": "aria-labelledby the heading, only when a title is given"
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": "base",
+        "content": "Optional heading",
+        "region": "header"
+      }
+    ],
+    "obligations": [
+      "While loading, the list has aria-busy=\"true\".",
+      "A sparkline needs a text summary (\"rising over 30 days\") or aria-hidden plus the change text."
+    ]
+  },
+  "responsive": {
+    "strategy": "intrinsic",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "One tile per row (two on native phones, where tiles are compact)."
+      },
+      {
+        "at": "wide",
+        "change": "Up to the stat count, typically four per row."
+      }
+    ]
+  },
+  "native": {
+    "applies": true,
+    "mapping": "A horizontally paged or 2-column grid of stat tiles at the top of a home screen.",
+    "ios": "LazyVGrid of two columns.",
+    "android": "LazyVerticalGrid, 2 columns."
+  },
+  "tokens": {
+    "grid gap": "space.gap.lg",
+    "grid track minimum": "min(calc(var(--rata-size-control-lg) * 9), 100%)",
+    "tile padding": "space.padding.md",
+    "label → value gap": "space.stack.xs",
+    "value → change gap": "space.stack.xs",
+    "value type": "Heading role heading-1 sizing on a non-heading element",
+    "change positive": "Badge variant success",
+    "change negative": "Badge variant danger"
+  },
+  "tokenGaps": [
+    {
+      "need": "A grid gutter role (column and row gap between tiles)",
+      "interim": "gap: var(--rata-space-gap-lg) between tiles, var(--rata-space-stack-lg) between rows when they wrap. space.gap.* is documented for inline items, not grid gutters."
+    },
+    {
+      "need": "A chart/sparkline component or recipe",
+      "interim": "Out of scope; color.data.* is the palette for it when one is specified."
+    }
+  ]
+}

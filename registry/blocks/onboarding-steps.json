@@ -1,0 +1,280 @@
+{
+  "$schema": "./schema.json",
+  "name": "onboarding-steps",
+  "title": "Onboarding steps",
+  "kind": "block",
+  "surface": [
+    "web-app",
+    "native-app"
+  ],
+  "category": "onboarding",
+  "description": "A multi-step setup flow: step indicator, the current step's form, back/next/skip, and progress.",
+  "alsoKnownAs": [
+    "wizard",
+    "setup flow",
+    "stepper form",
+    "checklist"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "future"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "centered",
+    "container": "section",
+    "summary": "Centred column; the step indicator above (or beside, when wide) the step content."
+  },
+  "regions": [
+    {
+      "name": "progress",
+      "element": "nav or ol",
+      "purpose": "Where you are: step list or progress bar.",
+      "contains": [
+        "steps",
+        "progress"
+      ],
+      "budget": {
+        "narrow": "fill (compact: \"Step 2 of 4\" + Progress)",
+        "medium": "fill",
+        "wide": "calc(var(--rata-size-control-lg) * 6) beside content, or fill above"
+      },
+      "collapse": "Full step list becomes \"Step n of m\" text with a Progress bar."
+    },
+    {
+      "name": "step",
+      "element": "section",
+      "purpose": "The current step's heading, description and form.",
+      "contains": [
+        "heading",
+        "text",
+        "field",
+        "text-field",
+        "radio-group",
+        "checkbox",
+        "select",
+        "file-upload"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "min(calc(var(--rata-size-control-lg) * 10), 100%)"
+      }
+    },
+    {
+      "name": "controls",
+      "element": "div",
+      "purpose": "Back, Skip, Continue/Finish.",
+      "contains": [
+        "button-group",
+        "button"
+      ],
+      "budget": {
+        "narrow": "fill, sticky to the bottom",
+        "wide": "min(calc(var(--rata-size-control-lg) * 10), 100%)"
+      }
+    }
+  ],
+  "components": [
+    {
+      "name": "steps",
+      "for": "Step indicator (\"steps\" or \"stepper\" — whichever name the component spec settles on).",
+      "region": "progress"
+    },
+    {
+      "name": "progress",
+      "for": "Compact progress bar on narrow viewports.",
+      "region": "progress"
+    },
+    {
+      "name": "heading",
+      "for": "Step title.",
+      "region": "step"
+    },
+    {
+      "name": "text",
+      "for": "Step description.",
+      "region": "step"
+    },
+    {
+      "name": "field",
+      "for": "Step fields.",
+      "region": "step"
+    },
+    {
+      "name": "text-field",
+      "for": "Step fields.",
+      "region": "step",
+      "optional": true
+    },
+    {
+      "name": "radio-group",
+      "for": "Step choices.",
+      "region": "step",
+      "optional": true
+    },
+    {
+      "name": "button",
+      "for": "Back / Skip / Continue.",
+      "region": "controls"
+    },
+    {
+      "name": "button-group",
+      "for": "Controls row.",
+      "region": "controls"
+    },
+    {
+      "name": "notice",
+      "for": "Step-level error.",
+      "region": "step",
+      "optional": true
+    },
+    {
+      "name": "file-upload",
+      "for": "Avatar / logo upload steps.",
+      "region": "step",
+      "optional": true
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "steps",
+      "for": "The step indicator. Name unconfirmed (steps vs stepper).",
+      "blocking": true
+    },
+    {
+      "component": "progress",
+      "for": "Compact progress on narrow viewports.",
+      "blocking": false,
+      "interim": "\"Step 2 of 4\" text only."
+    },
+    {
+      "component": "file-upload",
+      "for": "Avatar/logo upload steps.",
+      "blocking": false,
+      "interim": "Such steps are omitted."
+    }
+  ],
+  "slots": {
+    "headingLevel": {
+      "summary": "The outline level of each step's title (1 when the flow is the whole page); everything below it steps down from here.",
+      "type": "1 | 2 | 3 | 4 | 5 | 6",
+      "required": true,
+      "use": [
+        "The level the surrounding page gives this block — a template passes it explicitly."
+      ],
+      "dont": [
+        "Choosing a level for its visual size. Size is the Heading component's `role`, a separate decision."
+      ],
+      "a11y": "No default, for the reason Heading's `level` has none: only the caller knows the depth, and a skipped level breaks heading navigation for the whole page."
+    },
+    "steps": {
+      "summary": "Step definitions.",
+      "type": "Array<{ id: string; title: string; optional?: boolean; render: () => ReactNode; validate?: () => Promise<boolean> }>",
+      "required": true
+    },
+    "step": {
+      "summary": "Controlled current step id.",
+      "type": "string",
+      "required": false
+    },
+    "onStepChange": {
+      "summary": "Step navigation; the caller syncs it to the URL.",
+      "type": "(id: string) => void",
+      "required": false
+    },
+    "onFinish": {
+      "summary": "Completion.",
+      "type": "() => Promise<void>",
+      "required": true
+    }
+  },
+  "behavior": {
+    "summary": "Linear by default; completed steps are revisitable from the indicator, future steps are not reachable until reached.",
+    "decisions": [
+      {
+        "decision": "Focus moves to the new step's heading on Continue/Back",
+        "why": "Otherwise focus stays on a button that may no longer exist, or the reader hears nothing change. Heading gets tabindex=\"-1\" for this."
+      },
+      {
+        "decision": "Each step is a URL",
+        "why": "Browser back must mean step back; a wizard that loses the reader's place on refresh is the common complaint. The block reports changes; the template routes."
+      },
+      {
+        "decision": "Skip only on steps marked optional",
+        "why": "A skip on a required step is a trap the next step trips over."
+      },
+      {
+        "decision": "Unreached steps are aria-disabled in the indicator, not hidden",
+        "why": "The reader needs to know how long the flow is — this system's aria-disabled rule."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "nav",
+        "role": "navigation",
+        "label": "\"Setup progress\"",
+        "region": "progress"
+      },
+      {
+        "element": "section",
+        "role": "region",
+        "label": "aria-labelledby the block's own heading (the current step's title)"
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": "base",
+        "content": "Current step title",
+        "region": "step"
+      }
+    ],
+    "obligations": [
+      "The step indicator marks the current step with aria-current=\"step\".",
+      "Document title updates per step (\"Step 2 of 4: Invite your team\")."
+    ]
+  },
+  "responsive": {
+    "strategy": "container-query",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "Indicator collapses to \"Step n of m\" + Progress; controls stick to the block end."
+      },
+      {
+        "at": "wide",
+        "change": "Full step list beside or above the step."
+      }
+    ]
+  },
+  "native": {
+    "applies": true,
+    "mapping": "A pushed navigation stack, one screen per step, with the platform back gesture as Back and a progress bar in the navigation bar.",
+    "ios": "NavigationStack; ProgressView in the toolbar.",
+    "android": "Navigation graph per step; LinearProgressIndicator in the top app bar."
+  },
+  "tokens": {
+    "indicator ↔ step gap": "space.section",
+    "step stack": "space.stack.md",
+    "step → controls gap": "space.stack.lg",
+    "sticky controls background": "theme.bg.surface with a top rule theme.border.default",
+    "sticky controls elevation": "theme.elevation.raised"
+  },
+  "tokenGaps": [
+    {
+      "need": "Named breakpoints (narrow/medium/wide) as tokens or documented constants",
+      "interim": "The block is intrinsic (auto-fill grid, flex-wrap) and needs none. Where a step is unavoidable the page owns the query, as the playground owns its single 60rem NARROW query in use-media-query.ts."
+    }
+  ]
+}

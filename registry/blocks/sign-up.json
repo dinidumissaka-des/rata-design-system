@@ -1,0 +1,256 @@
+{
+  "$schema": "./schema.json",
+  "name": "sign-up",
+  "title": "Sign up",
+  "kind": "block",
+  "surface": [
+    "website",
+    "web-app",
+    "native-app"
+  ],
+  "category": "auth",
+  "description": "Account creation: name, email, password with requirements, terms consent, submit; optional providers.",
+  "alsoKnownAs": [
+    "register",
+    "create account",
+    "registration form"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "future"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "centered",
+    "container": "section",
+    "summary": "Same column as sign-in, so switching between the two does not move anything."
+  },
+  "regions": [
+    {
+      "name": "header",
+      "element": "div",
+      "purpose": "Heading, \"Already have an account? Sign in\".",
+      "contains": [
+        "heading",
+        "text",
+        "link"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "min(calc(var(--rata-size-control-lg) * 10), 100%)"
+      }
+    },
+    {
+      "name": "providers",
+      "element": "div",
+      "purpose": "SSO buttons.",
+      "required": false,
+      "contains": [
+        "button",
+        "divider"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "min(calc(var(--rata-size-control-lg) * 10), 100%)"
+      }
+    },
+    {
+      "name": "form",
+      "element": "form",
+      "purpose": "Fields, requirements, consent, submit.",
+      "contains": [
+        "notice",
+        "text-field",
+        "field",
+        "checkbox",
+        "button",
+        "link",
+        "list"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "min(calc(var(--rata-size-control-lg) * 10), 100%)"
+      }
+    }
+  ],
+  "components": [
+    {
+      "name": "heading",
+      "for": "\"Create your account\".",
+      "region": "header"
+    },
+    {
+      "name": "text",
+      "for": "Supporting line.",
+      "region": "header"
+    },
+    {
+      "name": "text-field",
+      "for": "Name, email, password.",
+      "region": "form"
+    },
+    {
+      "name": "field",
+      "for": "Password requirements as the field's description, validation as its message.",
+      "region": "form"
+    },
+    {
+      "name": "list",
+      "for": "Password requirement checklist inside the field description.",
+      "region": "form",
+      "optional": true
+    },
+    {
+      "name": "checkbox",
+      "for": "Terms consent (required) and marketing opt-in (optional).",
+      "region": "form"
+    },
+    {
+      "name": "button",
+      "for": "Submit and providers.",
+      "region": "form"
+    },
+    {
+      "name": "notice",
+      "for": "Server-side error (email taken, etc.).",
+      "region": "form"
+    },
+    {
+      "name": "link",
+      "for": "Sign-in, terms and privacy links.",
+      "region": "header"
+    },
+    {
+      "name": "divider",
+      "for": "\"or\" separator.",
+      "region": "providers",
+      "optional": true
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "link",
+      "for": "Sign-in, terms, privacy links.",
+      "blocking": true
+    },
+    {
+      "component": "list",
+      "for": "Password requirements checklist.",
+      "blocking": false,
+      "interim": "Requirements as one sentence in TextField's description."
+    },
+    {
+      "component": "divider",
+      "for": "\"or\" separator.",
+      "blocking": false,
+      "interim": "Providers below the form, no separator."
+    }
+  ],
+  "slots": {
+    "headingLevel": {
+      "summary": "The outline level of the form heading; everything below it steps down from here.",
+      "type": "1 | 2 | 3 | 4 | 5 | 6",
+      "required": true,
+      "use": [
+        "The level the surrounding page gives this block — a template passes it explicitly."
+      ],
+      "dont": [
+        "Choosing a level for its visual size. Size is the Heading component's `role`, a separate decision."
+      ],
+      "a11y": "No default, for the reason Heading's `level` has none: only the caller knows the depth, and a skipped level breaks heading navigation for the whole page."
+    },
+    "onSubmit": {
+      "summary": "Receives the values; reject with field errors or a form error.",
+      "type": "(values: { name: string; email: string; password: string; marketing: boolean }) => Promise<void>",
+      "required": true
+    },
+    "passwordRules": {
+      "summary": "Requirements shown under the password field and checked as the reader types.",
+      "type": "Array<{ label: string; test: (value: string) => boolean }>",
+      "required": false
+    },
+    "termsHref": {
+      "summary": "Terms of service link inside the consent label.",
+      "type": "string",
+      "required": true
+    },
+    "signInHref": {
+      "summary": "Where \"Sign in\" goes.",
+      "type": "string",
+      "required": true
+    }
+  },
+  "behavior": {
+    "summary": "Validate on blur and on submit, never on every keystroke except the password checklist, which updates silently and is announced only on blur.",
+    "decisions": [
+      {
+        "decision": "Errors on submit move focus to the first invalid field",
+        "why": "WCAG 3.3.1; the field's message is already tied to it by Field's aria-describedby."
+      },
+      {
+        "decision": "Consent is a required Checkbox, never pre-checked",
+        "why": "Pre-checked consent is not consent in most jurisdictions."
+      },
+      {
+        "decision": "The checklist does not use a live region",
+        "why": "Announcing every rule flip while typing is noise; the summary is read on blur as the field's message."
+      },
+      {
+        "decision": "One step, not a wizard",
+        "why": "Splitting three fields over steps adds navigation without reducing effort; onboarding-steps is for what happens after the account exists."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "form",
+        "role": "form",
+        "label": "aria-labelledby the heading"
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": "base",
+        "content": "Create your account",
+        "region": "header"
+      }
+    ],
+    "obligations": [
+      "autocomplete=\"name\" / \"email\" / \"new-password\".",
+      "Required fields marked with Field's `required`, not only an asterisk."
+    ]
+  },
+  "responsive": {
+    "strategy": "intrinsic",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "Column fills the viewport less the gutter."
+      }
+    ]
+  },
+  "native": {
+    "applies": true,
+    "mapping": "A form screen; password requirements under the field; consent row with a link to an in-app web view of the terms.",
+    "ios": "textContentType .newPassword enables strong-password suggestions.",
+    "android": "autofillHints newPassword."
+  },
+  "tokens": {
+    "column max-inline-size": "min(calc(var(--rata-size-control-lg) * 10), 100%)",
+    "header → form gap": "space.stack.lg",
+    "field stack": "space.stack.md",
+    "consent → submit gap": "space.stack.lg"
+  },
+  "tokenGaps": []
+}

@@ -1,0 +1,255 @@
+{
+  "$schema": "./schema.json",
+  "name": "hero",
+  "title": "Hero",
+  "kind": "block",
+  "surface": [
+    "website"
+  ],
+  "category": "marketing",
+  "description": "The opening band of a marketing page: one headline, one supporting paragraph, up to two calls to action, and an optional media slot.",
+  "alsoKnownAs": [
+    "masthead",
+    "jumbotron",
+    "banner"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "na"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "split",
+    "container": "section",
+    "summary": "Copy and media side by side when wide, stacked copy-first when narrow. A plain section: a hero is not a widget, so it is never a Card."
+  },
+  "regions": [
+    {
+      "name": "copy",
+      "element": "div",
+      "purpose": "Eyebrow, headline, lede and the action row.",
+      "contains": [
+        "badge",
+        "heading",
+        "text",
+        "button-group",
+        "button"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "medium": "fill",
+        "wide": "1fr of 2 (content box)"
+      },
+      "collapse": "Stays first in source and visually at every width."
+    },
+    {
+      "name": "media",
+      "element": "figure",
+      "purpose": "A product screenshot or illustration supplied by the caller.",
+      "required": false,
+      "budget": {
+        "narrow": "fill, below copy",
+        "medium": "fill, below copy",
+        "wide": "1fr of 2"
+      },
+      "collapse": "Stacks below the copy; never above it, so the headline is the first thing a reader of either kind meets."
+    }
+  ],
+  "components": [
+    {
+      "name": "badge",
+      "for": "Optional eyebrow, e.g. a release label.",
+      "region": "copy",
+      "optional": true
+    },
+    {
+      "name": "heading",
+      "for": "The headline, at the caller's level with a display role.",
+      "region": "copy"
+    },
+    {
+      "name": "text",
+      "for": "The lede, role=\"large\".",
+      "region": "copy"
+    },
+    {
+      "name": "button-group",
+      "for": "Holds the primary and optional secondary action.",
+      "region": "copy"
+    },
+    {
+      "name": "button",
+      "for": "The calls to action — primary first, then secondary.",
+      "region": "copy"
+    },
+    {
+      "name": "link",
+      "for": "Actions that navigate (most hero CTAs do) should be links styled as buttons.",
+      "region": "copy"
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "link",
+      "for": "CTAs that navigate to another page are links, not buttons; today Button renders a <button>.",
+      "blocking": true
+    }
+  ],
+  "slots": {
+    "headingLevel": {
+      "summary": "The outline level of the headline (1 on a landing page); everything below it steps down from here.",
+      "type": "1 | 2 | 3 | 4 | 5 | 6",
+      "required": true,
+      "use": [
+        "The level the surrounding page gives this block — a template passes it explicitly."
+      ],
+      "dont": [
+        "Choosing a level for its visual size. Size is the Heading component's `role`, a separate decision."
+      ],
+      "a11y": "No default, for the reason Heading's `level` has none: only the caller knows the depth, and a skipped level breaks heading navigation for the whole page."
+    },
+    "eyebrow": {
+      "summary": "A short label above the headline, rendered as a Badge.",
+      "type": "ReactNode",
+      "required": false,
+      "dont": [
+        "A sentence. It is a label; a sentence belongs in the lede."
+      ]
+    },
+    "title": {
+      "summary": "The headline.",
+      "type": "ReactNode",
+      "required": true,
+      "a11y": "Becomes the heading and the section's accessible name."
+    },
+    "lede": {
+      "summary": "One supporting paragraph.",
+      "type": "ReactNode",
+      "required": true,
+      "dont": [
+        "Two paragraphs. A second one is a feature-grid or a section below."
+      ]
+    },
+    "primaryAction": {
+      "summary": "The one thing the page wants the reader to do.",
+      "type": "{ label: string; href: string }",
+      "required": true
+    },
+    "secondaryAction": {
+      "summary": "A lower-commitment alternative (\"See pricing\").",
+      "type": "{ label: string; href: string }",
+      "required": false
+    },
+    "media": {
+      "summary": "An image or illustration, with its own alt text.",
+      "type": "ReactNode",
+      "required": false,
+      "a11y": "Decorative media must carry alt=\"\"; a screenshot that shows the product needs a real description."
+    }
+  },
+  "behavior": {
+    "summary": "Pure composition: no state, no primitive. The only decisions are the outline, the action hierarchy and the stacking order.",
+    "decisions": [
+      {
+        "decision": "At most two actions, primary then secondary",
+        "why": "Three CTAs in a hero is a menu. Two lets the second be a softer path without competing — Button's own contract reserves `lg` for a single prominent call to action on a marketing surface."
+      },
+      {
+        "decision": "headingLevel is required, even though it is usually 1",
+        "why": "A hero is sometimes the second band of a page (a product sub-page under a site hero). Defaulting to 1 would produce two h1s silently; requiring it costs one prop."
+      },
+      {
+        "decision": "Copy is first in source at every width",
+        "why": "Reading order and visual order must agree. A media-first stack on narrow screens puts an image between the reader and the headline."
+      },
+      {
+        "decision": "No background image behind text",
+        "why": "Text over an arbitrary image has no verifiable contrast pairing; the token contracts can only promise text on a theme.bg.* surface."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "section",
+        "role": "region",
+        "label": "aria-labelledby the block's own heading (the headline)"
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": "base",
+        "content": "Headline",
+        "region": "copy"
+      }
+    ],
+    "obligations": [
+      "Navigating CTAs must be links (`href`), not buttons with onClick.",
+      "Media needs alt text, or alt=\"\" when purely decorative."
+    ]
+  },
+  "responsive": {
+    "strategy": "container-query",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "One column: copy, then media. Actions wrap to full-width rows."
+      },
+      {
+        "at": "wide",
+        "change": "Two columns, copy start-aligned, media vertically centred."
+      }
+    ],
+    "notes": "A container query rather than a media query, so the hero behaves the same inside a docs layout with a rail as it does full-bleed."
+  },
+  "native": {
+    "applies": false,
+    "reason": "Marketing composition. A native app is reached after install, so there is nothing to persuade or convert; the equivalent content in-app is an onboarding or paywall screen, which is a different block with different obligations."
+  },
+  "tokens": {
+    "band background": "theme.bg.canvas (or theme.bg.subtle for an alternating band)",
+    "band padding-block": "space.section",
+    "band padding-inline": "space.page.gutter",
+    "gap between columns": "space.section",
+    "gap eyebrow → headline → lede": "space.stack.md",
+    "gap lede → actions": "space.stack.lg",
+    "headline type": "Heading role display-1 or display-2",
+    "lede type": "Text role large, tone secondary",
+    "lede measure": "min(calc(var(--rata-size-control-lg) * 20), 100%)"
+  },
+  "tokenGaps": [
+    {
+      "need": "A page content max-inline-size (container width) for marketing bands",
+      "interim": "The band's content box is capped at calc(var(--rata-size-control-lg) * 32) and centred with auto inline margins; the playground's own column cap is a literal with a comment saying there is no measure token. Open decision: a size.container.* role via the design-tokens skill, or keep deriving from the control scale."
+    },
+    {
+      "need": "A section-band vertical padding step larger than space.section for marketing rhythm",
+      "interim": "padding-block uses var(--rata-space-section) top and bottom. space.section is the only page-rhythm step and was sized for docs pages, not full-bleed marketing bands."
+    },
+    {
+      "need": "A media aspect-ratio / radius convention for marketing imagery",
+      "interim": "radius.container on the figure; aspect-ratio is the caller's image."
+    }
+  ],
+  "usage": [
+    {
+      "case": "Landing page hero",
+      "when": "The first band of the landing-page template.",
+      "example": "<Hero\n  headingLevel={1}\n  eyebrow=\"New in 3.0\"\n  title=\"Invoices that chase themselves\"\n  lede=\"Send, remind and reconcile without a spreadsheet.\"\n  primaryAction={{ label: \"Start free\", href: \"/sign-up\" }}\n  secondaryAction={{ label: \"See pricing\", href: \"/pricing\" }}\n/>",
+      "notes": "Spec only — the API is the thing being approved. Both actions navigate, which is why this block is blocked on Link."
+    }
+  ],
+  "openQuestions": [
+    "Does a hero ever carry a form (email capture)? If so, compose newsletter-signup into the copy region rather than adding a slot."
+  ]
+}

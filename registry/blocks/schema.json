@@ -1,0 +1,347 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DS block / page-template registry entry (PROPOSED — gate 0/1 spec, not yet read by any tooling)",
+  "description": "A block is a composition of registry components with a named layout frame; a template is a full page composed of blocks. Neither introduces a new interactive primitive or a new visual treatment: everything a reader sees comes from a component, and everything between components comes from a --rata-* layout token. Modelled on registry/schema.json — the same written/derived split applies once a block is implemented (see docs/blocks/README.md).",
+  "type": "object",
+  "required": [
+    "name",
+    "title",
+    "kind",
+    "surface",
+    "description",
+    "status",
+    "frame",
+    "regions",
+    "components",
+    "a11y",
+    "responsive",
+    "native"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$",
+      "description": "kebab-case id, doubles as docs slug and CLI arg. Must not collide with a component name in registry/components/ — `rata add <name>` resolves both namespaces."
+    },
+    "title": { "type": "string" },
+    "kind": {
+      "enum": ["block", "template"],
+      "description": "`block`: one region-sized composition placed inside a page (a hero, a sign-in form). `template`: a whole page — it owns the <main>, the single <h1>, the skip link and the shell; it composes blocks and components but never restyles them."
+    },
+    "surface": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "enum": ["website", "web-app", "native-app"] },
+      "description": "Where the block is meant to appear. `website` = public marketing pages; `web-app` = signed-in product UI in a browser; `native-app` = an iOS/Android app. A block listing `native-app` must give a non-trivial `native.mapping`."
+    },
+    "category": {
+      "enum": ["marketing", "auth", "app", "data", "onboarding", "settings", "page"],
+      "description": "Docs IA grouping, the block equivalent of a component's `family`."
+    },
+    "description": { "type": "string" },
+    "alsoKnownAs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Names people search for, so `rata list` and agents find the block under any of them."
+    },
+    "status": {
+      "type": "object",
+      "description": "Per-artifact lifecycle. `layout` is the block's own CSS — layout only (grid, gaps, region widths), never colour or type, which belong to the components inside it.",
+      "required": ["react"],
+      "additionalProperties": false,
+      "properties": {
+        "layout": { "$ref": "#/definitions/artifact" },
+        "react": { "$ref": "#/definitions/artifact" },
+        "figma": { "$ref": "#/definitions/artifact" },
+        "native": { "$ref": "#/definitions/artifact" }
+      }
+    },
+    "precedent": {
+      "type": "string",
+      "description": "The existing page shell this block's frame follows (a path under apps/), or the word `none` with the reason in behavior.decisions. Frame-first: find the precedent before inventing a shell."
+    },
+    "frame": {
+      "type": "object",
+      "description": "The frame-first decision, made before any content: which shell, and which container the content type calls for (CLAUDE.md, Frame-first layout).",
+      "required": ["shell", "container"],
+      "additionalProperties": false,
+      "properties": {
+        "shell": {
+          "enum": ["header", "header-sidebar", "sidebar", "centered", "full-width", "stacked", "split"],
+          "description": "The arrangement of the regions. `stacked` = regions one above the other at every width; `split` = two panes side by side that stack when narrow."
+        },
+        "container": {
+          "enum": ["section", "card", "table", "list"],
+          "description": "Per CLAUDE.md: dense scannable rows → table/list; widgets, galleries, settings groups → card; everything else → plain section. `card` and `table` are future components today and must also appear in dependsOnFuture."
+        },
+        "summary": { "type": "string" }
+      }
+    },
+    "regions": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Named layout regions, in source order. Budgets are stated per breakpoint CLASS (narrow/medium/wide), not per pixel value — the system has no breakpoint tokens, and the values behind the classes are an open decision (docs/blocks/README.md, Token gaps).",
+      "items": {
+        "type": "object",
+        "required": ["name", "element", "purpose", "budget"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+          "element": {
+            "type": "string",
+            "description": "The HTML element or component that renders the region (`section`, `header`, `nav`, `aside`, `ul`, `footer`, `TopNav`, …)."
+          },
+          "purpose": { "type": "string" },
+          "required": { "type": "boolean", "default": true },
+          "contains": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Registry component names (or block names, for a template) rendered inside this region."
+          },
+          "budget": {
+            "type": "object",
+            "description": "Inline-size budget per breakpoint class, written as a token expression (`fill`, `calc(var(--rata-size-control-lg) * 6)`, `1fr of 3`, `hidden`). Never a bare px value.",
+            "additionalProperties": false,
+            "properties": {
+              "narrow": { "type": "string" },
+              "medium": { "type": "string" },
+              "wide": { "type": "string" }
+            }
+          },
+          "collapse": {
+            "type": "string",
+            "description": "What happens to this region as space runs out: stacks, hides behind a trigger, becomes a Sheet, scrolls, etc."
+          }
+        }
+      }
+    },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Every registry component the block renders. Each `name` must exist in registry/components/ (proposed build check). A component whose status.react is `future` must also be listed in dependsOnFuture.",
+      "items": {
+        "type": "object",
+        "required": ["name", "for"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+          "for": { "type": "string", "description": "What this component does in this block." },
+          "region": { "type": "string", "description": "Which region it lives in; must match a regions[].name." },
+          "optional": { "type": "boolean", "default": false }
+        }
+      }
+    },
+    "blocks": {
+      "type": "array",
+      "description": "Templates only: the blocks this template composes, by registry/blocks name, in page order.",
+      "items": {
+        "type": "object",
+        "required": ["name", "region"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string" },
+          "region": { "type": "string" },
+          "optional": { "type": "boolean", "default": false },
+          "headingLevel": { "type": "integer", "minimum": 1, "maximum": 6, "description": "The headingLevel the template passes this block — templates own the outline." }
+        }
+      }
+    },
+    "dependsOnFuture": {
+      "type": "array",
+      "description": "Components this block needs that are `future` (contract approved or proposed, no code). The block cannot leave `future` until every `blocking: true` entry is `latest`.",
+      "items": {
+        "type": "object",
+        "required": ["component", "for", "blocking"],
+        "additionalProperties": false,
+        "properties": {
+          "component": { "type": "string" },
+          "via": {
+            "type": "string",
+            "description": "Templates only: the block (or comma-separated blocks) through which this dependency arrives, when the template does not render the component directly. A template inherits every blocking dependency of its required blocks."
+          },
+          "for": { "type": "string" },
+          "blocking": {
+            "type": "boolean",
+            "description": "true: the block cannot ship without it. false: the block ships without that part and adds it when the component lands."
+          },
+          "interim": {
+            "type": "string",
+            "description": "What the block does until the component ships, when blocking is false. Never a hand-rolled stand-in (no <div className=\"card\">)."
+          }
+        }
+      }
+    },
+    "slots": {
+      "type": "object",
+      "description": "The block's content API — the written contract for each slot, same shape as a component prop entry. Spec mode: type/required are written by hand while status.react is `future`; once implemented they are derived from packages/blocks/src/<name>.tsx and must be deleted here.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["summary"],
+        "additionalProperties": false,
+        "properties": {
+          "summary": { "type": "string" },
+          "use": { "type": "array", "items": { "type": "string" } },
+          "dont": { "type": "array", "items": { "type": "string" } },
+          "a11y": { "type": "string" },
+          "type": { "type": "string" },
+          "required": { "type": "boolean" },
+          "default": { "type": "string" }
+        }
+      }
+    },
+    "behavior": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "summary": { "type": "string" },
+        "decisions": {
+          "type": "array",
+          "description": "Decisions worth defending, each with its reason — the record of what is being approved at gate 1.",
+          "items": {
+            "type": "object",
+            "required": ["decision", "why"],
+            "additionalProperties": false,
+            "properties": {
+              "decision": { "type": "string" },
+              "why": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "a11y": {
+      "type": "object",
+      "required": ["landmarks", "headingOutline"],
+      "additionalProperties": false,
+      "properties": {
+        "landmarks": {
+          "type": "array",
+          "description": "Landmarks the block or template renders. A block renders at most a labelled region (`section` with aria-labelledby) and never a <main>; only a template renders <main>.",
+          "items": {
+            "type": "object",
+            "required": ["element", "role"],
+            "additionalProperties": false,
+            "properties": {
+              "element": { "type": "string" },
+              "role": { "enum": ["banner", "navigation", "main", "complementary", "contentinfo", "region", "search", "form", "none"] },
+              "label": { "type": "string", "description": "How the landmark is named (aria-labelledby target or aria-label text)." },
+              "region": { "type": "string" }
+            }
+          }
+        },
+        "headingOutline": {
+          "type": "array",
+          "description": "The headings the block produces, in order. `level` is relative to the block's required headingLevel slot (`base`, `base+1`) for a block, and absolute (1–6) for a template.",
+          "items": {
+            "type": "object",
+            "required": ["level", "content"],
+            "additionalProperties": false,
+            "properties": {
+              "level": {
+                "oneOf": [
+                  { "type": "integer", "minimum": 1, "maximum": 6 },
+                  { "type": "string", "pattern": "^base(\\+[1-3])?$" }
+                ]
+              },
+              "content": { "type": "string" },
+              "region": { "type": "string" },
+              "repeats": { "type": "boolean", "description": "One per item (a feature, a plan, a question)." }
+            }
+          }
+        },
+        "obligations": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "What the caller must do that the block cannot do for them."
+        }
+      }
+    },
+    "responsive": {
+      "type": "object",
+      "required": ["strategy", "steps"],
+      "additionalProperties": false,
+      "properties": {
+        "strategy": {
+          "enum": ["intrinsic", "container-query", "media-query"],
+          "description": "`intrinsic`: the layout reflows by itself (auto-fill grid with a token-derived minimum, flex-wrap) and needs no breakpoint — the playground gallery's precedent and the preferred answer. `container-query`: reacts to the block's own width, so it behaves the same inside a sidebar layout and full-width. `media-query`: only for templates, which own the viewport."
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["at", "change"],
+            "additionalProperties": false,
+            "properties": {
+              "at": { "enum": ["narrow", "medium", "wide"] },
+              "change": { "type": "string" }
+            }
+          }
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "native": {
+      "type": "object",
+      "required": ["applies"],
+      "additionalProperties": false,
+      "properties": {
+        "applies": { "type": "boolean" },
+        "reason": { "type": "string", "description": "Why it does or does not apply — required when applies is false." },
+        "mapping": { "type": "string", "description": "How the block's regions map to platform structures (navigation stack, grouped list, tab bar, sheet)." },
+        "ios": { "type": "string" },
+        "android": { "type": "string" }
+      }
+    },
+    "tokens": {
+      "type": "object",
+      "description": "The block's LAYOUT recipe only: region gaps, padding, grid minimums, band backgrounds. Every value is a token path or a calc over one. Colour and type of anything inside the block belong to the component that renders it, never here.",
+      "additionalProperties": { "type": "string" }
+    },
+    "tokenGaps": {
+      "type": "array",
+      "description": "Layout values this block needs that no token provides today. Stated as a need, never as an invented token name — a new token goes through the design-tokens skill's Gate 1/2/3.",
+      "items": {
+        "type": "object",
+        "required": ["need", "interim"],
+        "additionalProperties": false,
+        "properties": {
+          "need": { "type": "string" },
+          "interim": { "type": "string", "description": "What the spec does meanwhile (usually a calc over size.control.*, the system's existing derivation habit)." }
+        }
+      }
+    },
+    "usage": {
+      "type": "array",
+      "description": "Worked cases. Examples are linted against the token rules by internal/vibe-tests (proposed: same as component usage).",
+      "items": {
+        "type": "object",
+        "required": ["case"],
+        "additionalProperties": false,
+        "properties": {
+          "case": { "type": "string" },
+          "when": { "type": "string" },
+          "example": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "openQuestions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Decisions the gate-1 reviewer must make before this block can move on."
+    }
+  },
+  "definitions": {
+    "artifact": {
+      "type": "object",
+      "required": ["state"],
+      "properties": {
+        "state": { "enum": ["latest", "in-progress", "future", "deprecated", "na"] },
+        "version": { "type": "string" }
+      }
+    }
+  }
+}

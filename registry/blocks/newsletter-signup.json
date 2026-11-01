@@ -1,0 +1,204 @@
+{
+  "$schema": "./schema.json",
+  "name": "newsletter-signup",
+  "title": "Newsletter sign-up",
+  "kind": "block",
+  "surface": [
+    "website"
+  ],
+  "category": "marketing",
+  "description": "A heading, one sentence, an email TextField and a submit Button, with inline success and error states.",
+  "alsoKnownAs": [
+    "email capture",
+    "subscribe",
+    "mailing list"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "na"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "stacked",
+    "container": "section",
+    "summary": "A small form; field and button share a row when there is room."
+  },
+  "regions": [
+    {
+      "name": "copy",
+      "element": "div",
+      "purpose": "Heading and sentence.",
+      "contains": [
+        "heading",
+        "text"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "min(calc(var(--rata-size-control-lg) * 20), 100%)"
+      }
+    },
+    {
+      "name": "form",
+      "element": "form",
+      "purpose": "Email field, consent checkbox, submit, result notice.",
+      "contains": [
+        "text-field",
+        "checkbox",
+        "button",
+        "notice"
+      ],
+      "budget": {
+        "narrow": "fill, button below field",
+        "wide": "min(calc(var(--rata-size-control-lg) * 10), 100%)"
+      },
+      "collapse": "flex-wrap: the button drops below the field when the row cannot hold both."
+    }
+  ],
+  "components": [
+    {
+      "name": "heading",
+      "for": "Prompt.",
+      "region": "copy"
+    },
+    {
+      "name": "text",
+      "for": "One sentence and the privacy note.",
+      "region": "copy"
+    },
+    {
+      "name": "text-field",
+      "for": "Email; label visible or labelHidden with a visible placeholder-free prompt.",
+      "region": "form"
+    },
+    {
+      "name": "checkbox",
+      "for": "Marketing consent where the law requires opt-in.",
+      "region": "form",
+      "optional": true
+    },
+    {
+      "name": "button",
+      "for": "Submit; `loading` while the request is in flight.",
+      "region": "form"
+    },
+    {
+      "name": "notice",
+      "for": "Success or error after submit, live=\"polite\".",
+      "region": "form"
+    },
+    {
+      "name": "link",
+      "for": "Privacy policy link in the note.",
+      "region": "copy"
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "link",
+      "for": "Privacy-policy link.",
+      "blocking": false,
+      "interim": "Caller passes a plain anchor in the note slot."
+    }
+  ],
+  "slots": {
+    "headingLevel": {
+      "summary": "The outline level of the prompt; everything below it steps down from here.",
+      "type": "1 | 2 | 3 | 4 | 5 | 6",
+      "required": true,
+      "use": [
+        "The level the surrounding page gives this block — a template passes it explicitly."
+      ],
+      "dont": [
+        "Choosing a level for its visual size. Size is the Heading component's `role`, a separate decision."
+      ],
+      "a11y": "No default, for the reason Heading's `level` has none: only the caller knows the depth, and a skipped level breaks heading navigation for the whole page."
+    },
+    "title": {
+      "summary": "Prompt.",
+      "type": "ReactNode",
+      "required": true
+    },
+    "onSubmit": {
+      "summary": "Called with the email; resolve to show success, reject to show the error.",
+      "type": "(email: string) => Promise<void>",
+      "required": true
+    },
+    "consent": {
+      "summary": "Consent checkbox label, when opt-in is required.",
+      "type": "ReactNode",
+      "required": false
+    },
+    "note": {
+      "summary": "Privacy line under the form.",
+      "type": "ReactNode",
+      "required": false
+    }
+  },
+  "behavior": {
+    "summary": "Form state: idle → submitting (Button loading, aria-disabled) → success (Notice replaces nothing; the field stays) or error (TextField status=error with message).",
+    "decisions": [
+      {
+        "decision": "Confirmation is an inline Notice, not a Toast",
+        "why": "A toast disappears; the reader who looked away misses it. The result belongs next to the field they used."
+      },
+      {
+        "decision": "Validation errors go on the TextField, request errors in the Notice",
+        "why": "Field's contract puts status on the field it describes; a network failure is not the field's fault."
+      },
+      {
+        "decision": "The label stays visible",
+        "why": "A placeholder-as-label vanishes on input; TextField's labelHidden still keeps an accessible name, but a visible one is the default here."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "form",
+        "role": "form",
+        "label": "aria-labelledby the prompt heading"
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": "base",
+        "content": "Prompt",
+        "region": "copy"
+      }
+    ],
+    "obligations": [
+      "type=\"email\" and autocomplete=\"email\" on the field.",
+      "Success/error Notice is live=\"polite\"."
+    ]
+  },
+  "responsive": {
+    "strategy": "intrinsic",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "Button below field, full width."
+      }
+    ]
+  },
+  "native": {
+    "applies": false,
+    "reason": "Marketing composition. A native app is reached after install, so there is nothing to persuade or convert; the equivalent content in-app is an onboarding or paywall screen, which is a different block with different obligations."
+  },
+  "tokens": {
+    "copy → form gap": "space.stack.md",
+    "field ↔ button gap": "space.gap.sm",
+    "form → note gap": "space.stack.xs",
+    "form max-inline-size": "min(calc(var(--rata-size-control-lg) * 10), 100%)"
+  },
+  "tokenGaps": []
+}
