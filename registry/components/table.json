@@ -1,0 +1,257 @@
+{
+  "name": "table",
+  "title": "Table",
+  "description": "Rows of records compared column by column, with a caption, optional sorting and a horizontal scroll that keyboard users can reach.",
+  "family": "content",
+  "alsoKnownAs": [
+    "data-table",
+    "data-grid",
+    "datagrid"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "state-layer",
+    "icon",
+    "visually-hidden"
+  ],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "Edge to edge and divided, with no box of its own: a table sits on whatever surface the page gives it, and its rows are separated by rules rather than by stripes or cards. This is the construction the playground's own `.pg-table` already uses, promoted.",
+      "tokens": {
+        "font-size": "type.body.size",
+        "line-height": "type.body.line-height",
+        "color": "theme.fg.primary",
+        "background": "transparent — the table takes the surface it sits on",
+        "row divider": "border.default solid theme.border.default, on each row's block-end edge",
+        "cell padding-block": "space.padding.xs",
+        "cell padding-inline": "space.padding.sm",
+        "numeric cell alignment": "end, with tabular figures so digits line up down the column"
+      }
+    },
+    "header": {
+      "summary": "Column headers set as labels: smaller and quieter than the data, because the reader looks at them once and at the rows many times.",
+      "tokens": {
+        "font-size": "type.label.size",
+        "font-weight": "type.label.weight",
+        "text-transform": "type.label.text-transform",
+        "letter-spacing": "type.label.letter-spacing",
+        "color": "theme.fg.muted — verified at AA-text on canvas, surface and subtle",
+        "divider below the header": "border.default solid theme.border.strong — heavier than a row rule, so the header reads as the boundary of the data"
+      }
+    },
+    "compact": {
+      "summary": "Tighter rows for a dense operational table. Only the block padding moves; type does not shrink, because a compact table is read just as closely.",
+      "tokens": {
+        "cell padding-block": "space.1",
+        "cell padding-inline": "space.padding.xs"
+      }
+    },
+    "sort-control": {
+      "summary": "The button inside a sortable column header. It fills the header cell so the whole label is the target.",
+      "tokens": {
+        "color": "currentColor — the header's own muted label colour",
+        "font": "inherited from the header",
+        "gap between label and indicator": "space.gap.xs",
+        "indicator size": "size.icon.text",
+        "border-radius": "radius.inner",
+        "hover / press": "compose the .rata-state-layer class",
+        "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible"
+      }
+    },
+    "scroll-region": {
+      "summary": "The wrapper that scrolls horizontally when the columns do not fit. It is focusable, so it needs the ring like any other tab stop.",
+      "tokens": {
+        "focus ring": "focus.ring-width solid theme.focus-ring, offset focus.ring-offset, on :focus-visible",
+        "border-radius": "radius.inner — only so the ring has corners"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "A real `<table>` with a `<caption>`, `<thead>`, `<th scope>` headers and `aria-sort` on the sorted column, inside a focusable scroll region. Data-driven — `columns` and `rows` — like Breadcrumbs and SideNav, because hand-assembled `<tr>`/`<td>` markup is where scope, header association and sort state go missing. Proposed primitive: `getTableProps` in `packages/primitives/src/table.ts`, owning the sort cycle and the header and cell attributes; it is a proposal, not yet a commitment.",
+    "decisions": [
+      {
+        "decision": "A Table is for rows compared by column, and nothing else",
+        "why": "The test from Card's contract, from the other side: if the reader's question is \"which of these is larger, older, failing\", the answer lives in a column, and only a table keeps the column. A list of things each read on its own is a list or a gallery of Cards. A layout grid is CSS grid. A `<table>` used for layout is announced as a data table, row and column counts included, which is noise at best."
+      },
+      {
+        "decision": "`caption` is required",
+        "why": "A table's accessible name is how a reader who lands on it — or lists the page's tables — knows which one it is. A `<caption>` is the one naming mechanism every screen reader supports for tables. When the heading above the table already says the same thing, `hideCaption` keeps the name and drops the visible duplicate; the name itself is not optional."
+      },
+      {
+        "decision": "Sorting is controlled and the table never reorders data itself",
+        "why": "The caller is the only one who knows whether sorting happens in memory, on the server, or across pages the table never sees. A table that sorted its own `rows` would be silently wrong the moment the data is paginated. So the table reports the request through `onSortChange` and renders whatever order it is given. The header carries `aria-sort` on the sorted column only — on every column it is noise — and the sort control is a real `<button>` inside the `<th>`, never a clickable header cell."
+      },
+      {
+        "decision": "The sort cycle is ascending, descending, then back to ascending",
+        "why": "A three-state cycle through \"unsorted\" makes the third click on a header undo the reader's choice with no visible reason, and the original order is rarely meaningful — if it is, it deserves a column of its own. Two states, always predictable."
+      },
+      {
+        "decision": "Narrow viewports scroll the table; they do not reflow it into cards",
+        "why": "Reflowing rows into stacked cards on a phone destroys exactly the comparison the table exists for, and WCAG 1.4.10 exempts data tables from reflow for that reason. The table scrolls horizontally inside its own region instead. That region is focusable — `tabindex=\"0\"`, `role=\"region\"`, named by the caption — because a keyboard user has no other way to scroll it. That costs one tab stop, and it is worth it."
+      },
+      {
+        "decision": "Rows are not clickable",
+        "why": "A clickable `<tr>` is not focusable, has no role a screen reader announces as actionable, and steals text selection from a reader trying to copy a value. A row that leads somewhere puts a Link in its row-header cell; a row with actions puts Buttons in a cell of its own. Both are real controls that keyboard and assistive tech already understand."
+      },
+      {
+        "decision": "Out of this version: row selection, sticky headers, column resizing, virtualisation",
+        "why": "Each one is a real need and each changes the table's semantics or its ARIA pattern — selection turns it toward `grid` with roving focus, which is a different keyboard contract entirely. Shipping the static, sortable table first means the common case does not pay for the machinery of the rare one. Each is its own gate 1."
+      },
+      {
+        "decision": "Web and native",
+        "why": "Web: `<table>` with `<caption>`, `<th scope=\"col\">` headers, `<th scope=\"row\">` for the column marked `rowHeader`, and `aria-sort` on the sorted header; the scroll wrapper is `role=\"region\"` labelled by the caption. React Native has no table: there is no core component and the platform screen readers have no table navigation to offer. On native the table renders as a `FlatList` with `accessibilityRole=\"list\"`, one row per item, and each row is a single accessible element whose `accessibilityLabel` reads header and value pairs in column order (\"Invoice, INV-204. Amount, 120.00. Status, Overdue.\") — that is what makes a record usable without column navigation. Sorting is offered on native through a header row of `accessibilityRole=\"button\"` controls carrying `accessibilityState` with `selected`. `hideCaption` and the scroll region are web-only."
+      }
+    ]
+  },
+  "props": {
+    "caption": {
+      "type": "string",
+      "required": true,
+      "summary": "The table's name. Required.",
+      "use": [
+        "A noun phrase naming the data: \"Open invoices\", \"Deploys in the last 24 hours\"."
+      ],
+      "dont": [
+        "Instructions or a summary of the data. Those belong in text above the table, where everyone reads them."
+      ],
+      "a11y": "Rendered as `<caption>`, which names the table and its scroll region. Without it a reader who lands on the table hears only its dimensions."
+    },
+    "hideCaption": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Keeps the caption as the accessible name but hides it visually.",
+      "use": [
+        "A table directly under a heading that already says the same thing."
+      ],
+      "dont": [
+        "Hiding a caption nothing visible repeats. Sighted readers need the name too."
+      ],
+      "a11y": "The caption is visually hidden, not removed, so the table is still named. Web only."
+    },
+    "columns": {
+      "type": "TableColumn<Row>[]",
+      "required": true,
+      "summary": "The columns, in reading order: each with a `key`, a `header`, and optionally a `cell` renderer, `align`, `sortable` and `rowHeader`.",
+      "use": [
+        "`rowHeader: true` on the column that identifies each record — usually the first — so every cell in the row is announced with it.",
+        "`align: \"end\"` on numeric columns, so digits line up.",
+        "`cell` to render a Badge, a Link or a formatted number from the row."
+      ],
+      "dont": [
+        "More than one `rowHeader` column. A row has one identity.",
+        "An empty `header` for an actions column. Name it — \"Actions\" — and hide it visually if it must be; an unnamed column is announced as nothing."
+      ],
+      "a11y": "`header` becomes a `<th scope=\"col\">`; the `rowHeader` column's cells become `<th scope=\"row\">`, which is what lets a screen reader announce \"INV-204, Amount, 120.00\" instead of a bare number."
+    },
+    "rows": {
+      "type": "Row[]",
+      "required": true,
+      "summary": "The records, in the order they are shown.",
+      "use": [
+        "Already sorted to match `sort`. The table renders the order it is given."
+      ],
+      "dont": [
+        "Thousands of rows at once. There is no virtualisation in this version — paginate with Pagination."
+      ]
+    },
+    "getRowKey": {
+      "type": "(row: Row) => string",
+      "required": true,
+      "summary": "A stable identity for each row.",
+      "use": [
+        "The record's own id."
+      ],
+      "dont": [
+        "The array index. Sorting reorders the rows, and an index key reuses the wrong row's DOM — and any focus inside it."
+      ]
+    },
+    "sort": {
+      "type": "{ key: string; direction: \"ascending\" | \"descending\" } | null",
+      "default": "null",
+      "summary": "Which column the rows are currently sorted by, if any.",
+      "use": [
+        "Reflecting the order the caller actually applied — from memory, from the server, from the URL."
+      ],
+      "dont": [
+        "Setting it without sorting `rows`. The header would claim an order the data does not have."
+      ],
+      "a11y": "Becomes `aria-sort` on that column's header, and only that one."
+    },
+    "onSortChange": {
+      "type": "(sort: { key: string; direction: \"ascending\" | \"descending\" }) => void",
+      "summary": "Called when the reader asks to sort by a column. Required for any column marked `sortable` to render a control.",
+      "use": [
+        "Updating `sort` and re-ordering, or re-fetching, the rows."
+      ],
+      "dont": [
+        "Marking columns `sortable` without it. With no handler, no sort buttons are rendered — the header would offer a control that does nothing."
+      ],
+      "a11y": "The sort control is a `<button>` inside the header cell, named by the header text, so it is reachable by Tab and announced as a button."
+    },
+    "density": {
+      "type": "\"comfortable\" | \"compact\"",
+      "default": "\"comfortable\"",
+      "summary": "How tall each row is.",
+      "use": [
+        "`compact` for a dense operational table read by people who live in it."
+      ],
+      "dont": [
+        "`compact` to fit more columns. It changes row height, not width — fewer columns is the fix."
+      ],
+      "a11y": "Visual only. Interactive content in a compact row still needs a target the size of a control."
+    },
+    "empty": {
+      "type": "ReactNode",
+      "summary": "What to show in place of the rows when there are none.",
+      "use": [
+        "An EmptyState saying why there is nothing here and what to do about it."
+      ],
+      "dont": [
+        "Leaving it out on a table that can be empty. A header row over nothing reads as a rendering failure."
+      ],
+      "a11y": "Rendered in a single row spanning every column, so the table's structure stays valid and the message is read as part of it."
+    },
+    "className": {
+      "type": "string",
+      "summary": "Extra classes on the scroll region, for placement.",
+      "use": [
+        "Placing the table in the page's layout."
+      ],
+      "dont": [
+        "Striping rows or boxing the table. Rules separate rows in this system; zebra stripes and a card around the table are both declined."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "A sortable list of records",
+      "when": "The commonest case: records with an identity column, a status and a number, sorted by the caller.",
+      "example": "<Table\n  caption=\"Open invoices\"\n  columns={[\n    { key: \"number\", header: \"Invoice\", rowHeader: true, cell: (inv) => <Link href={inv.url}>{inv.number}</Link> },\n    { key: \"due\", header: \"Due\", sortable: true },\n    { key: \"amount\", header: \"Amount\", align: \"end\", sortable: true },\n    { key: \"status\", header: \"Status\", cell: (inv) => <Badge variant={inv.overdue ? \"danger\" : \"neutral\"}>{inv.status}</Badge> },\n  ]}\n  rows={sortedInvoices}\n  getRowKey={(inv) => inv.id}\n  sort={sort}\n  onSortChange={setSort}\n/>",
+      "notes": "The row leads somewhere through a Link in its row-header cell, not through a clickable row. `sortedInvoices` is sorted by the caller to match `sort` — the table renders order, it does not create it."
+    },
+    {
+      "case": "A table under a heading that already names it",
+      "when": "The section heading and the caption would say the same words.",
+      "example": "<Heading level={2}>Deploys</Heading>\n<Table caption=\"Deploys\" hideCaption columns={columns} rows={deploys} getRowKey={(d) => d.id} empty={<EmptyState title=\"No deploys yet\" />} />",
+      "notes": "The caption stays as the accessible name and only its visible copy goes. `empty` is passed because a deploy list can genuinely be empty, and a header over nothing reads as broken."
+    },
+    {
+      "case": "Reaching for the wrong component",
+      "when": "A set of projects, each with a preview image and a description, chosen between rather than compared.",
+      "example": "<Table caption=\"Projects\" columns={[{ key: \"preview\", header: \"Preview\" }, { key: \"description\", header: \"Description\" }]} rows={projects} getRowKey={(p) => p.id} />",
+      "notes": "Don't. Nobody compares descriptions down a column — each project is read on its own, which is a gallery of Cards. The table is for the question \"which of these is larger, older, failing\"."
+    }
+  ]
+}

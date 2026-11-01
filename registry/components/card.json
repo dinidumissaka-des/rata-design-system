@@ -1,0 +1,152 @@
+{
+  "name": "card",
+  "title": "Card",
+  "description": "A bordered surface holding one self-contained item among several — a widget, a gallery entry, a settings group.",
+  "family": "content",
+  "alsoKnownAs": [
+    "tile",
+    "widget",
+    "surface"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "A surface one step up from the page, outlined rather than shadowed: a card sits in the same plane as its neighbours, and a shadow would claim it floats above them.",
+      "tokens": {
+        "background": "theme.bg.surface",
+        "color": "theme.fg.primary",
+        "border": "border.default solid theme.border.default",
+        "border-radius": "radius.container",
+        "padding": "space.padding.md",
+        "gap between children": "space.stack.sm",
+        "margin": "space.0 — the grid or stack the cards sit in owns the gap between them"
+      }
+    },
+    "media": {
+      "summary": "An image or preview flush with the card's top edge. It bleeds through the padding so the picture meets the border, and the card's own radius clips its corners.",
+      "tokens": {
+        "margin-inline and margin-block-start": "the negative of space.padding.md — the media cancels the card's own padding rather than the card dropping it",
+        "corner clip": "radius.container on the card, with overflow clipped, so the media never needs a radius of its own",
+        "gap below": "space.stack.sm"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "A box with a surface, an outline and padding, rendered as whichever element its content actually is. No primitive: it owns no keyboard interaction and no state. Card exists so that the one container this system has been telling people not to hand-roll — `<div className=\"card\">` — has a governed version, and so that the choice between a card, a table and a plain section is written down once.",
+    "decisions": [
+      {
+        "decision": "Card, Table or a plain `<section>` — the test is how the content is read",
+        "why": "Rows that are scanned and compared column by column are a Table: putting each record in its own card destroys the column, which is the thing the reader came to compare. Several self-contained items that are each read on their own — dashboard widgets, a gallery, groups of settings that are saved or understood separately — are Cards: the outline says \"this is one thing\" and the gap between them says \"and these are separate\". Everything else, which is most of a page, is a plain `<section>` with a heading and no box at all. A single card alone on a page is almost always a section wearing a border, and a card inside a card is always one: if the inner thing needs separating, a Divider or a heading does it without a second outline."
+      },
+      {
+        "decision": "Outlined, not shadowed",
+        "why": "`theme.elevation.raised` is documented for resting cards, and `theme.border.default` is documented for separating two elements in the same plane. A grid of cards IS one plane — nothing in it is above anything else — and a shadow on every card in a dashboard turns the page into a field of competing lifts. The border is the default and the only option in this version. Whether a raised variant is wanted at all is an open question for approval, not a decision taken here."
+      },
+      {
+        "decision": "`as` chooses the element, and the default claims nothing",
+        "why": "What a card IS depends on what is in it. A card in a gallery is a list item, because a gallery is a list and a screen reader announcing \"list, 12 items\" is the most useful thing it can say. A self-contained entry that would make sense lifted out of the page is an `article`. A titled group of settings is a `section`. A component that defaulted to `article` would be wrong for every settings group, so the default is `div` — a box with no semantic claim — and the caller states the claim when there is one."
+      },
+      {
+        "decision": "No `onClick` or `href` on the card in this version",
+        "why": "A whole card wrapped in an `<a>` makes every word inside it the link's accessible name, so a reader tabbing through a gallery hears each card read out in full, and any button inside the card becomes interactive content nested in a link, which is invalid. A card with a `<div onClick>` is unreachable by keyboard. The right construction — a real link in the card's heading whose hit area is stretched over the card, with secondary actions lifted above it — needs Link to exist first and needs its own decision. Until then the card is not a control, and the link inside it is."
+      },
+      {
+        "decision": "No `title` prop and no heading of its own",
+        "why": "Many cards have no title — a gallery thumbnail, a metric widget whose number is its content. The ones that do need a heading at the right outline level, which only the caller knows; Panel solves that with `headingLevel` because a landmark must be named, but a card is not a landmark. A `Heading` inside the card, at whatever level the page needs, gets the outline right without this component guessing."
+      },
+      {
+        "decision": "It carries no margin and no width",
+        "why": "The same bargain Heading and Panel make. Cards live in a grid or a stack, and the gap between them is the grid's — a card that shipped its own margin would double up with the grid's gap and be overridden everywhere. Width is the grid's too: there are no breakpoint tokens, because where a card stops fitting is the page's knowledge."
+      },
+      {
+        "decision": "Web and native",
+        "why": "Web: the element `as` names — `div` by default, or `article`, `section` or `li` — with no role added, because each of those elements already carries the right one. A `section` card should be named by its heading through `aria-labelledby`, or it is not exposed as a region at all. React Native: a `View` with no `accessibilityRole`, because RN has no article, section or listitem role that platforms announce; the list semantics of a gallery belong to the `FlatList` that renders the cards, not to each card. `as` is web-only and is ignored on native. `media` works on both; on native the clip comes from `overflow: \"hidden\"` with the same radius token."
+      }
+    ]
+  },
+  "props": {
+    "children": {
+      "type": "ReactNode",
+      "required": true,
+      "summary": "The card's content.",
+      "use": [
+        "One self-contained item: a heading and its body, a metric and its caption, a group of related settings."
+      ],
+      "dont": [
+        "Another Card. A card inside a card is a section wearing two borders — use a Divider or a heading inside the one card.",
+        "A dense list of records. That is a Table, and a table inside a card is a table that has lost its edge-to-edge alignment for no reason."
+      ],
+      "a11y": "Read in document order. If the card is a `section`, its first heading should name it through `aria-labelledby`."
+    },
+    "as": {
+      "type": "\"div\" | \"article\" | \"section\" | \"li\"",
+      "default": "\"div\"",
+      "summary": "Which element the card is, because that depends on what is in it.",
+      "use": [
+        "`li` for every card in a gallery or a grid of peers, inside a `<ul>` the page renders.",
+        "`article` for an entry that would make sense lifted out of the page on its own — a post, a result.",
+        "`section` for a titled group of settings, named by its heading."
+      ],
+      "dont": [
+        "`section` without a heading. An unnamed section is not exposed as a region, so the element claims structure it does not deliver.",
+        "`li` outside a list. The browser accepts it and the accessibility tree does not."
+      ],
+      "a11y": "Each option is chosen for the role its element already carries, so this prop adds no ARIA. Web only: on React Native the card is a `View` and this prop is ignored."
+    },
+    "media": {
+      "type": "ReactNode",
+      "summary": "An image or preview shown flush with the card's top edge, above the content.",
+      "use": [
+        "A thumbnail in a gallery card, a chart preview in a dashboard widget."
+      ],
+      "dont": [
+        "An icon. An icon sits in the content beside the text it belongs to; this slot is for a picture that fills the card's width.",
+        "Decorative imagery carrying meaning. If the picture says something the text does not, it needs alt text that says it."
+      ],
+      "a11y": "The caller's image owns its own alternative text. A purely decorative preview takes `alt=\"\"` so the card is not read twice."
+    },
+    "className": {
+      "type": "string",
+      "summary": "Extra classes, for placement in a grid — not for restyling the card.",
+      "use": [
+        "Spanning grid columns, or aligning the card inside the page's layout."
+      ],
+      "dont": [
+        "Changing its surface, border or padding. A card that differs per page is a different component wearing this one's name — propose a variant instead."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "A gallery of peer items",
+      "when": "Several things of the same kind, each read on its own and chosen between — templates, projects, themes.",
+      "example": "<ul className=\"template-grid\">\n  {templates.map((t) => (\n    <Card as=\"li\" key={t.id} media={<img src={t.preview} alt=\"\" />}>\n      <Heading level={3}>{t.name}</Heading>\n      <Text tone=\"secondary\">{t.summary}</Text>\n    </Card>\n  ))}\n</ul>",
+      "notes": "`as=\"li\"` inside the page's own `<ul>`, so a screen reader announces how many templates there are. The grid's gap lives on `.template-grid`, not on the cards. The preview is `alt=\"\"` because the heading already names it."
+    },
+    {
+      "case": "A titled group of settings",
+      "when": "A settings page whose groups are understood, and often saved, separately.",
+      "example": "<Card as=\"section\" aria-labelledby=\"billing-heading\">\n  <Heading level={2} id=\"billing-heading\">Billing</Heading>\n  <TextField label=\"Billing email\" />\n</Card>",
+      "notes": "A `section` card is named by its heading, or it is not exposed as a region at all — which is why `section` is not the default."
+    },
+    {
+      "case": "Reaching for the wrong container",
+      "when": "A list of invoices, each with a number, a date, an amount and a status.",
+      "example": "{invoices.map((inv) => (\n  <Card key={inv.id}>{inv.number} · {inv.date} · {inv.amount}</Card>\n))}",
+      "notes": "Don't. Those are rows compared by column — is this amount larger, is that one overdue — and putting each in its own card destroys the column. That is a Table. Equally, a single card holding a whole page's content is a `<section>` with a border; drop the card."
+    }
+  ]
+}

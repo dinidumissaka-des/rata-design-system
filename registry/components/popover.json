@@ -1,0 +1,203 @@
+{
+  "name": "popover",
+  "title": "Popover",
+  "description": "A non-modal, titled surface anchored to a trigger, holding a small piece of interactive content the reader opened on purpose.",
+  "family": "overlays",
+  "alsoKnownAs": [
+    "flyout",
+    "popup",
+    "toggletip"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "Menu's surface with room for content: the same background, outline, shadow and motion, so every anchored overlay in the system reads as one family, and more padding because it holds text and fields rather than one-line rows.",
+      "tokens": {
+        "background": "theme.bg.surface",
+        "color": "theme.fg.primary",
+        "border": "border.default solid theme.border.default",
+        "box-shadow": "theme.elevation.overlay",
+        "border-radius": "radius.container",
+        "padding": "space.padding.sm",
+        "gap between title and body": "space.stack.xs",
+        "font-size": "type.body.size",
+        "line-height": "type.body.line-height",
+        "max-inline-size": "size.control.lg multiplied by 9, or the viewport less space.padding.lg — a stand-in, see Tooltip's measure gap",
+        "gap from the trigger": "space.gap.xs",
+        "enter transition": "motion.overlay.duration with motion.easing.enter",
+        "exit transition": "motion.overlay.duration with motion.easing.exit"
+      }
+    },
+    "title": {
+      "summary": "The popover's name, styled as a label rather than a heading — see the decisions.",
+      "tokens": {
+        "font-size": "type.body.size",
+        "font-weight": "type.label.weight",
+        "color": "theme.fg.primary"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "A non-modal `role=\"dialog\"` carrying `popover=\"auto\"`, positioned against its trigger with CSS anchor positioning — the same top-layer and anchoring machinery as Menu, including the per-instance anchor name. It moves focus in when opened, does not trap it, and returns it to the trigger on Escape. Proposed primitive: `getPopoverProps` in `packages/primitives/src/popover.ts`, sharing Menu's open/close reporting; it is a proposal, not yet a commitment.",
+    "decisions": [
+      {
+        "decision": "Popover, Menu, Dialog and Tooltip are four components because they are four contracts",
+        "why": "A Menu is a list of actions with arrow-key navigation and `role=\"menu\"` — putting a text field in one breaks both. A Dialog is modal: the page goes inert and focus is trapped, which is right for a decision that blocks the task and wrong for a filter you glance at. A Tooltip is never focusable and holds nothing interactive. A Popover is the remaining case: a small, non-modal surface the reader opens on purpose, which may contain anything a short form can — a date range, a colour picker, a share link with a copy button, a help text with a \"Learn more\" link. Each of these differs in focus behaviour, keyboard contract and ARIA role; one component with modes would be four components wearing one name."
+      },
+      {
+        "decision": "Focus moves in on open, is not trapped, and returns to the trigger on Escape",
+        "why": "The reader opened it to use it, so focus goes to the first focusable element, or to `initialFocus` when the first one is the wrong place to start. It is not trapped because the popover is not modal — the page behind it is still live, and Tab past the last control leaves the popover and closes it, the same way Tab leaves a Menu. Escape returns focus to the trigger, because that is where the reader was. Light-dismiss by clicking elsewhere is the exception, as in Menu: the reader chose a new place, and taking focus back would undo it."
+      },
+      {
+        "decision": "`title` is required, and is a styled label rather than a heading",
+        "why": "A `role=\"dialog\"` must be named, and a visible title naming it through `aria-labelledby` is the name sighted readers get too. It is not a heading element because a popover is not modal: the page's outline is still live behind it, and the popover cannot know what level it sits under — the reason Notice gives. Dialog can use `<h2>` only because everything behind a modal is inert."
+      },
+      {
+        "decision": "It is the touch answer for anything a Tooltip cannot do",
+        "why": "A tooltip does not appear on touch, by design. A popover opens on a tap, a click, Enter or Space — the same activation on every input — so supplementary help that must be reachable on a phone, sometimes called a toggletip, is a Popover with a help-icon trigger."
+      },
+      {
+        "decision": "No close button by default, and no scrim",
+        "why": "Escape, clicking elsewhere and tabbing out all close it, and the trigger toggles it — four ways out, all expected for a non-modal overlay. A close button is content the caller can add when the popover holds a form with an explicit Done. A scrim would claim the page is inert, which `theme.scrim`'s contract reserves for modals."
+      },
+      {
+        "decision": "Web and native",
+        "why": "Web: a `role=\"dialog\"` element, not `aria-modal`, with the `popover=\"auto\"` attribute and `aria-labelledby` pointing at its title; the trigger receives `aria-expanded` and `aria-controls` (deliberately not `aria-haspopup=\"dialog\"`, which screen readers announce inconsistently). React Native has no anchored overlay and no top layer, and a small anchored surface is the wrong shape for a phone anyway. On native it renders through the core `Modal` as a sheet from the block-end edge, with `accessibilityViewIsModal` on iOS and the title as `accessibilityRole=\"header\"` — modal on native because the platform offers no non-modal floating surface that screen readers handle. `placement` is web-only."
+      }
+    ]
+  },
+  "props": {
+    "trigger": {
+      "type": "ReactElement",
+      "required": true,
+      "summary": "The control that opens and closes the popover.",
+      "use": [
+        "A `Button` — including an icon-only help button, which is how a toggletip is built."
+      ],
+      "dont": [
+        "A non-interactive element. The trigger must be a real button, or the popover is unreachable by keyboard.",
+        "Putting your own `onClick` on it and expecting to be called. The popover owns that handler; use `onOpenChange`."
+      ],
+      "a11y": "Receives `aria-expanded` and `aria-controls`. Its own text or `aria-label` names the trigger; `title` names the popover."
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "summary": "The popover's name, shown at its top.",
+      "use": [
+        "A noun phrase naming what is inside: \"Date range\", \"Share link\"."
+      ],
+      "dont": [
+        "Repeating the trigger's label word for word when that label is a verb (\"Share\"). Name the thing, not the action."
+      ],
+      "a11y": "Names the `role=\"dialog\"` through `aria-labelledby`. Rendered as a styled paragraph, never a heading — the page's outline is still live behind a non-modal popover."
+    },
+    "children": {
+      "type": "ReactNode",
+      "required": true,
+      "summary": "The content: short text, a link, a few fields.",
+      "use": [
+        "A filter with two or three controls, a help text with a \"Learn more\" link, a copyable link."
+      ],
+      "dont": [
+        "A list of actions. That is a Menu, with arrow-key navigation this component does not have.",
+        "A long form or a decision that blocks the task. That is a Dialog — modal, with a footer."
+      ],
+      "a11y": "Reached by Tab in document order from wherever focus lands on open. Not trapped."
+    },
+    "open": {
+      "type": "boolean",
+      "summary": "Whether the popover is showing. Makes the component controlled.",
+      "use": [
+        "Opening it from somewhere other than the trigger, or closing it after a submit inside it."
+      ],
+      "dont": [
+        "Passing it alongside `defaultOpen`. One of them owns the state."
+      ],
+      "conflicts": [
+        "defaultOpen"
+      ],
+      "a11y": "`aria-expanded` on the trigger follows it."
+    },
+    "defaultOpen": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Starting state for an uncontrolled popover.",
+      "use": [
+        "Almost never. A popover open before the reader asked covers what they came to see."
+      ],
+      "dont": [
+        "Using it to show a message on load. That is a Notice."
+      ],
+      "conflicts": [
+        "open"
+      ]
+    },
+    "onOpenChange": {
+      "type": "(open: boolean) => void",
+      "summary": "Called whenever the popover asks to open or close — trigger, Escape, light-dismiss or Tab out.",
+      "use": [
+        "Keeping `open` in step, or saving a filter's draft when it closes."
+      ],
+      "dont": [
+        "Refusing to close it. A non-modal surface that will not dismiss is a modal without the semantics."
+      ]
+    },
+    "placement": {
+      "type": "\"block-start\" | \"block-end\" | \"inline-start\" | \"inline-end\"",
+      "default": "\"block-end\"",
+      "summary": "Which side of the trigger the popover prefers.",
+      "use": [
+        "`block-start` for a trigger near the bottom of the viewport."
+      ],
+      "dont": [
+        "Using it to keep the popover on screen. Anchor positioning flips it near an edge already."
+      ],
+      "a11y": "Visual only, and logical rather than physical. Web only: on React Native the popover is a sheet from the block-end edge."
+    },
+    "initialFocus": {
+      "type": "RefObject<HTMLElement | null>",
+      "summary": "The element to focus on open, when the first focusable one is the wrong place to start.",
+      "use": [
+        "The input in a popover whose first focusable element is a link in its help text."
+      ],
+      "dont": [
+        "Pointing it outside the popover. Focus would leave, and leaving closes it."
+      ],
+      "a11y": "A ref rather than `autoFocus`, for the reason Dialog's contract gives: React's `autoFocus` runs on mount, before the popover is shown and focusable."
+    }
+  },
+  "usage": [
+    {
+      "case": "A toggletip: help that has to work on touch",
+      "when": "A short explanation beside a field, with a link to more — which a Tooltip cannot hold and would not show on a phone.",
+      "example": "<Popover\n  title=\"Billing email\"\n  trigger={\n    <Button variant=\"tertiary\" iconOnly aria-label=\"About billing email\">\n      <Icon icon={CircleHelp} />\n    </Button>\n  }\n>\n  <Text>Invoices and receipts go here, not to your login email.</Text>\n  <Link href=\"/docs/billing\">Learn more</Link>\n</Popover>",
+      "notes": "Opened by a tap, a click, Enter or Space alike. The link is reachable because focus moves into the popover on open. The trigger's `aria-label` names the button; `title` names the popover."
+    },
+    {
+      "case": "A small filter, controlled",
+      "when": "Two or three controls that refine a list beside them, applied when the popover closes.",
+      "example": "<Popover\n  title=\"Status\"\n  trigger={<Button variant=\"secondary\">Status</Button>}\n  open={filtering}\n  onOpenChange={setFiltering}\n  initialFocus={firstOptionRef}\n>\n  <RadioGroup label=\"Status\" value={status} onValueChange={setStatus}>\n    <Radio ref={firstOptionRef} value=\"open\" label=\"Open\" />\n    <Radio value=\"closed\" label=\"Closed\" />\n  </RadioGroup>\n</Popover>",
+      "notes": "Not a Dialog: the list beside it stays live and visible, which is the point of filtering. Not a Menu: these are fields, not actions."
+    },
+    {
+      "case": "Reaching for the wrong component",
+      "when": "Rename, Duplicate and Delete for a row.",
+      "example": "<Popover title=\"Actions\" trigger={<Button variant=\"tertiary\">More</Button>}>\n  <Button variant=\"tertiary\">Rename</Button>\n  <Button variant=\"tertiary\">Duplicate</Button>\n</Popover>",
+      "notes": "Don't. A list of actions is a Menu — arrow keys, typeahead, focus returned after a choice, `role=\"menu\"`. A popover of buttons is a menu with none of that."
+    }
+  ]
+}

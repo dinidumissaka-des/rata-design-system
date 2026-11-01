@@ -10,6 +10,11 @@
     "status": "latest"
   },
   {
+    "name": "bottom-nav",
+    "title": "Bottom Nav",
+    "status": "future"
+  },
+  {
     "name": "breadcrumbs",
     "title": "Breadcrumbs",
     "status": "latest"
@@ -25,9 +30,29 @@
     "status": "latest"
   },
   {
+    "name": "card",
+    "title": "Card",
+    "status": "future"
+  },
+  {
     "name": "checkbox",
     "title": "Checkbox",
     "status": "latest"
+  },
+  {
+    "name": "chip",
+    "title": "Chip",
+    "status": "future"
+  },
+  {
+    "name": "combobox",
+    "title": "Combobox",
+    "status": "future"
+  },
+  {
+    "name": "date-picker",
+    "title": "Date Picker",
+    "status": "future"
   },
   {
     "name": "dialog",
@@ -40,9 +65,29 @@
     "status": "latest"
   },
   {
+    "name": "divider",
+    "title": "Divider",
+    "status": "future"
+  },
+  {
+    "name": "empty-state",
+    "title": "Empty state",
+    "status": "future"
+  },
+  {
+    "name": "fab",
+    "title": "FAB",
+    "status": "future"
+  },
+  {
     "name": "field",
     "title": "Field",
     "status": "latest"
+  },
+  {
+    "name": "file-upload",
+    "title": "File Upload",
+    "status": "future"
   },
   {
     "name": "heading",
@@ -53,6 +98,21 @@
     "name": "icon",
     "title": "Icon",
     "status": "latest"
+  },
+  {
+    "name": "link",
+    "title": "Link",
+    "status": "future"
+  },
+  {
+    "name": "list",
+    "title": "List",
+    "status": "future"
+  },
+  {
+    "name": "list-item",
+    "title": "List Item",
+    "status": "future"
   },
   {
     "name": "menu",
@@ -75,9 +135,34 @@
     "status": "latest"
   },
   {
+    "name": "number-field",
+    "title": "Number Field",
+    "status": "future"
+  },
+  {
+    "name": "pagination",
+    "title": "Pagination",
+    "status": "future"
+  },
+  {
     "name": "panel",
     "title": "Panel",
     "status": "latest"
+  },
+  {
+    "name": "pin-input",
+    "title": "Pin Input",
+    "status": "future"
+  },
+  {
+    "name": "popover",
+    "title": "Popover",
+    "status": "future"
+  },
+  {
+    "name": "progress",
+    "title": "Progress",
+    "status": "future"
   },
   {
     "name": "radio",
@@ -115,6 +200,16 @@
     "status": "latest"
   },
   {
+    "name": "skeleton",
+    "title": "Skeleton",
+    "status": "future"
+  },
+  {
+    "name": "slider",
+    "title": "Slider",
+    "status": "future"
+  },
+  {
     "name": "spinner",
     "title": "Loading: Spinner",
     "status": "latest"
@@ -125,9 +220,19 @@
     "status": "na"
   },
   {
+    "name": "steps",
+    "title": "Steps",
+    "status": "future"
+  },
+  {
     "name": "switch",
     "title": "Switch",
     "status": "latest"
+  },
+  {
+    "name": "table",
+    "title": "Table",
+    "status": "future"
   },
   {
     "name": "tabs",
@@ -150,6 +255,11 @@
     "status": "latest"
   },
   {
+    "name": "toast",
+    "title": "Toast",
+    "status": "future"
+  },
+  {
     "name": "toggle-button",
     "title": "Toggle Button",
     "status": "latest"
@@ -158,6 +268,11 @@
     "name": "toggle-button-group",
     "title": "Toggle Button Group",
     "status": "latest"
+  },
+  {
+    "name": "tooltip",
+    "title": "Tooltip",
+    "status": "future"
   },
   {
     "name": "top-nav",

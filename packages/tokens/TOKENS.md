@@ -1090,6 +1090,65 @@ Failed, revoked, blocked.
 | gap between dot and text | `space.gap.xs` |
 | dot size | `space.gap.sm` — a dot is a mark, not a glyph, so it takes a spacing step rather than the icon scale |
 
+### bottom-nav
+
+The bar. Separated from the content by a rule rather than a shadow: it is part of the page's frame, in the same plane as the content it sits under, and theme.elevation.raised documents a border as the way to separate two things in one plane.
+
+| Property | Token |
+|---|---|
+| background | `theme.bg.surface` |
+| border-block-start | `border.default` solid `theme.border.default` |
+| box-shadow | none — see the summary |
+| position | sticky, inset-block-end `space.0` — see the decision on sticky rather than fixed |
+| padding-block-end | max(`space.1`, env(safe-area-inset-bottom)) — the home indicator's inset on a notched phone, and a step of air everywhere else |
+| padding-inline | max(`space.0`, env(safe-area-inset-left)) and max(`space.0`, env(safe-area-inset-right)) — a phone in landscape puts the notch on an inline edge |
+| item layout | one row; every item takes an equal share of the inline size, so the targets do not resize with their labels |
+
+### bottom-nav-item
+
+One destination: an icon over a visible label, the whole column the target.
+
+| Property | Token |
+|---|---|
+| color | `theme.fg.secondary` |
+| min-block-size | `size.control.lg` plus `space.1` above and below (44px) — a stand-in for the touch-target minimum this system has no token for; see the token-gap decision |
+| padding-block | `space.1` |
+| gap between icon and label | `space.gap.xs` |
+| icon size | `size.icon.lg` — a standalone glyph at the scale's largest step, the size at which it renders unscaled |
+| label font-size | `type.supporting.size` |
+| label line-height | `type.supporting.line-height` |
+| label font-weight | `type.label.weight` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+
+### bottom-nav-current
+
+The page you are on. Marked by a shape as well as a colour, and announced by aria-current — so no single cue carries it alone.
+
+| Property | Token |
+|---|---|
+| color | `theme.accent-role.fg` — verified against `theme.bg.surface` for text |
+| indicator behind the icon | `theme.accent-role.subtle`, `radius.pill`, padding-inline `space.padding.sm` — the shape is the cue a reader who cannot tell the two foregrounds apart still gets |
+| icon colour inside the indicator | `theme.accent-role.fg` — verified on `theme.accent-role.subtle` |
+| label font-weight | `type.control.weight` |
+
+### bottom-nav-badge
+
+A count or a dot on a destination's icon. A count is text, so it takes the accent fill with its own label token; a dot is a non-text indicator and takes the fill alone.
+
+| Property | Token |
+|---|---|
+| count background | `theme.accent-role.bg` |
+| count color | `theme.fg.on-accent` — the one label token that belongs on `theme.accent-role.bg` |
+| count block-size | `size.icon.sm` |
+| count padding-inline | `space.1` |
+| count font-size | `type.supporting.size` |
+| count font-weight | `type.control.weight` |
+| dot size | `space.gap.sm` — Badge's dot, for the reason Badge gives: a dot is a mark, not a glyph |
+| dot background | `theme.accent-role.bg` |
+| border-radius | `radius.pill` |
+| separation from the icon | a ring of `theme.bg.surface` at `border.2`, so the mark stays legible where it overlaps the glyph |
+
 ### breadcrumbs
 
 A trail of links ending in the current page.
@@ -1171,6 +1230,30 @@ An action that deletes or revokes something.
 | border-radius | `radius.element` |
 | hover/press | compose the .rata-state-layer class |
 
+### card
+
+A surface one step up from the page, outlined rather than shadowed: a card sits in the same plane as its neighbours, and a shadow would claim it floats above them.
+
+| Property | Token |
+|---|---|
+| background | `theme.bg.surface` |
+| color | `theme.fg.primary` |
+| border | `border.default` solid `theme.border.default` |
+| border-radius | `radius.container` |
+| padding | `space.padding.md` |
+| gap between children | `space.stack.sm` |
+| margin | `space.0` — the grid or stack the cards sit in owns the gap between them |
+
+### card-media
+
+An image or preview flush with the card's top edge. It bleeds through the padding so the picture meets the border, and the card's own radius clips its corners.
+
+| Property | Token |
+|---|---|
+| margin-inline and margin-block-start | the negative of `space.padding.md` — the media cancels the card's own padding rather than the card dropping it |
+| corner clip | `radius.container` on the card, with overflow clipped, so the media never needs a radius of its own |
+| gap below | `space.stack.sm` |
+
 ### checkbox
 
 A single on/off choice, with a third appearance for a parent summarising its children.
@@ -1195,6 +1278,202 @@ A single on/off choice, with a third appearance for a parent summarising its chi
 | border-radius | `radius.inner` — a nested square, which is what `radius.inner` names |
 | checked mark | `theme.fg.on-accent` — the only foreground permitted on that fill, and it inverts with the accent in the dark scheme |
 | indeterminate mark | `theme.fg.on-accent` on `theme.accent-role.bg`, drawn as a bar rather than a tick. The fill matches checked because the state is 'partly checked', not a third colour |
+
+### chip
+
+An outlined value, drawn with the secondary role so it reads as something the reader can act on rather than as a status. That is the visible difference from a neutral Badge, which is a filled label that nobody removes.
+
+| Property | Token |
+|---|---|
+| background | `theme.secondary-role.bg` |
+| border | `border.default` solid `theme.secondary-role.border` |
+| color | `theme.secondary-role.fg` — verified on `theme.secondary-role.bg` |
+| block-size | `size.control.sm` |
+| padding-inline-start | `space.control.padding-inline.sm` |
+| padding-inline-end | `space.1` — the remove control sits in the end padding's place |
+| border-radius | `radius.element` — documented as the radius for chips |
+| gap between icon, text and remove control | `space.gap.xs` |
+| font-size | `type.control.size.sm` |
+| font-weight | `type.label.weight` |
+| line-height | `type.control.line-height.sm` |
+| leading icon size | `size.icon.text` |
+| max-inline-size | 100% of its container, with the text truncated by an ellipsis — the full value stays the remove control's name and the chip's title |
+| disabled | `state.disabled-opacity`, on the whole chip |
+
+### chip-remove
+
+The one interactive part. Visibly small, with a hit area stretched to the chip's full block size and past its end.
+
+| Property | Token |
+|---|---|
+| visible inline-size / block-size | `size.icon.md` |
+| glyph size | `size.icon.sm` |
+| glyph colour | `theme.fg.secondary` |
+| border-radius | `radius.pill` |
+| hit area | the chip's full block-size, extended past the chip's end by `space.1` with a pseudo-element — a stand-in for the touch-target minimum this system has no token for; see the token-gap decision |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+
+### combobox
+
+The input's box, matching `.rata-text-field-input` step for step — including its focus treatment, the documented departure from the system ring — so a combobox and a text field in one form are indistinguishable until opened. Field owns the label, helper text, message and disabled dimming.
+
+| Property | Token |
+|---|---|
+| font-family | `font.family.sans` |
+| font-size | `type.control.size.md` — constant across sizes; size changes the box, not the text |
+| line-height | `type.control.line-height.md` |
+| background | `theme.bg.surface` |
+| color | `theme.fg.primary` |
+| placeholder colour | `theme.fg.muted` |
+| border | `border.default` solid `theme.border.strong` |
+| border-radius | `radius.element` |
+| block-size | `size.control.md` — and `size.control.sm` / `size.control.lg` at the other sizes |
+| padding-inline-start | `space.control.padding-inline.md` — and the sm / lg steps at the other sizes |
+| padding-inline-end | `space.control.padding-inline.md` plus `size.control.sm` — reserved for the toggle, so text never runs under it |
+| focus border-color | `theme.fg.primary` |
+| focus outline | `focus.ring-width` solid `theme.fg.primary` at `space.0` offset — the text field's departure, so every text box in a form focuses alike |
+| hover inner band | `theme.bg.muted` at `border.2` as an inset shadow, idle only |
+| validating ring | `theme.accent-role.ring` |
+| valid ring | `theme.success-role.ring` |
+| invalid ring | `theme.danger-role.ring` |
+
+### combobox-toggle
+
+The trailing chevron button. Pointer and touch only — the keyboard has ArrowDown — so it carries no focus ring of its own because it never takes focus.
+
+| Property | Token |
+|---|---|
+| target inline-size / block-size | `size.control.sm` |
+| glyph size | `size.icon.text` |
+| colour | `theme.fg.secondary` |
+| border-radius | `radius.inner` |
+| hover / press | compose the .rata-state-layer class |
+| inset from the end edge | `space.0-5` |
+
+### combobox-popup
+
+The listbox. Menu's surface, so a transient list looks the same whether it holds actions or answers.
+
+| Property | Token |
+|---|---|
+| background | `theme.bg.surface` |
+| border | `border.default` solid `theme.border.default` |
+| border-radius | `radius.container` |
+| box-shadow | `theme.elevation.overlay` |
+| padding | `space.1` |
+| gap from the input | `space.gap.xs` |
+| inline-size | the input's own, from anchor positioning — never narrower than the field it belongs to |
+| max-block-size | `size.control.sm` multiplied by 8, then it scrolls — eight rows is enough to scan and short enough to stay above a phone keyboard |
+| enter transition | `motion.overlay.duration` with `motion.easing.enter` |
+
+### combobox-option
+
+One answer. The highlight is virtual focus — DOM focus never leaves the input — so it has to be drawn rather than left to :focus-visible.
+
+| Property | Token |
+|---|---|
+| min-block-size | `size.control.sm` — a min, so an option with a description grows instead of clipping |
+| padding-inline | `space.control.padding-inline.sm` |
+| border-radius | `radius.inner` |
+| label colour | `theme.fg.primary` |
+| label font-size | `type.control.size.sm` |
+| description colour | `theme.fg.secondary` |
+| description font-size | `type.supporting.size` |
+| hover / press | compose the .rata-state-layer class |
+| highlighted (aria-activedescendant) | `focus.ring-width` solid `theme.focus-ring` as an outline inset by `focus.ring-width` — inset so the listbox's scroll container cannot clip it; the system ring, because this is the keyboard's position |
+| selected background | `theme.accent-role.subtle`, with a check glyph in `theme.accent-role.fg` — the selected menu-item's treatment |
+| disabled | `state.disabled-opacity` |
+| empty / loading row colour | `theme.fg.secondary` |
+
+### date-picker
+
+The input's box, matching the text field step for step, with a well at the end for the calendar button. Field owns the label, helper text, message and disabled dimming.
+
+| Property | Token |
+|---|---|
+| font-family | `font.family.sans` |
+| font-size | `type.control.size.md` |
+| font-variant | tabular-nums, so a typed date does not shift as digits change |
+| background | `theme.bg.surface` |
+| color | `theme.fg.primary` |
+| placeholder colour | `theme.fg.muted` |
+| border | `border.default` solid `theme.border.strong` |
+| border-radius | `radius.element` |
+| block-size | `size.control.md` — and `size.control.sm` / `size.control.lg` at the other sizes |
+| padding-inline-start | `space.control.padding-inline.md` — and the sm / lg steps |
+| padding-inline-end | `space.control.padding-inline.md` plus `size.control.sm`, for the calendar button |
+| focus border-color | `theme.fg.primary` |
+| focus outline | `focus.ring-width` solid `theme.fg.primary` at `space.0` offset — the text field's departure |
+| hover inner band | `theme.bg.muted` at `border.2` as an inset shadow, idle only |
+| validating ring | `theme.accent-role.ring` |
+| valid ring | `theme.success-role.ring` |
+| invalid ring | `theme.danger-role.ring` |
+
+### date-picker-trigger
+
+The calendar button inside the field's end. Unlike the combobox toggle it IS a tab stop — it opens a dialog, which the keyboard has no other way to reach — so it carries the system ring.
+
+| Property | Token |
+|---|---|
+| inline-size / block-size | `size.control.sm`, inset `space.0-5` from the end edge |
+| glyph size | `size.icon.text` |
+| colour | `theme.fg.secondary` |
+| border-radius | `radius.inner` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+
+### date-picker-calendar
+
+The dialog surface on wide screens. Overlay elevation rather than modal, because it is anchored to a field and reads as part of the form — the scrim still applies, since it is modal in behaviour.
+
+| Property | Token |
+|---|---|
+| background | `theme.bg.surface` |
+| border | `border.default` solid `theme.border.default` |
+| border-radius | `radius.container` |
+| box-shadow | `theme.elevation.overlay` |
+| padding | `space.padding.sm` |
+| gap from the field | `space.gap.xs` |
+| backdrop | `theme.scrim` |
+| month title font-size | `type.control.size.md` |
+| month title font-weight | `type.control.weight` |
+| month title colour | `theme.fg.primary` |
+| month navigation buttons | `size.control.sm` square, `radius.inner`, compose the .rata-state-layer class, `theme.focus-ring` on :focus-visible |
+| weekday header colour | `theme.fg.secondary` |
+| weekday header font-size | `type.supporting.size` |
+| gap between header and grid | `space.stack.2xs` |
+| enter transition | `motion.overlay.duration` with `motion.easing.enter` |
+
+### date-picker-calendar-narrow
+
+The same dialog below the breakpoint, at the bottom edge. Sheet-level radius and modal elevation, because here it does take over the screen.
+
+| Property | Token |
+|---|---|
+| border-radius | `radius.page` on the top corners only |
+| box-shadow | `theme.elevation.modal` |
+| padding | `space.padding.lg` |
+| day cell size | `size.control.lg` |
+
+### date-picker-day
+
+One day. A button in a grid cell, so it gets the state layer and the system ring like any other button.
+
+| Property | Token |
+|---|---|
+| inline-size / block-size | `size.control.md` |
+| border-radius | `radius.pill` |
+| font-size | `type.control.size.sm` |
+| font-variant | tabular-nums |
+| colour | `theme.fg.primary` |
+| outside the month | `theme.fg.muted` — shown so the rows are whole weeks, and still choosable |
+| today | `theme.accent-role.fg` at `type.control.weight` — marked by tone and weight rather than a ring, since a ring is the selection and validation stroke |
+| selected background | `theme.accent-role.bg` |
+| selected colour | `theme.fg.on-accent` — the only foreground permitted on that fill |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible — kept even on the selected day, where offset 0 on a filled accent would vanish |
+| unavailable | `state.disabled-opacity` and a line-through, so the state is not carried by dimming alone |
 
 ### dialog
 
@@ -1307,6 +1586,84 @@ The revealed content. Indented to the trigger's own inline padding so the two re
 | colour | inherited — the panel holds whatever the caller puts in it and tints none of it |
 | when closed | display: none via [hidden] — stated rather than left to the UA stylesheet, because a `display` added to this rule later would silently outrank it and start painting an empty box |
 
+### divider
+
+One hairline in the divider colour `theme.border.default` documents. No margin: the stack it sits in owns the space either side.
+
+| Property | Token |
+|---|---|
+| border-block-start | `border.default` solid `theme.border.default` |
+| margin | `space.0` — the parent's gap places it, as with Heading |
+| inline-size | the full width of its container |
+
+### divider-vertical
+
+The same hairline on the other axis, stretching to the height of the row it divides.
+
+| Property | Token |
+|---|---|
+| border-inline-start | `border.default` solid `theme.border.default` |
+| block-size | stretched to the row by the parent's alignment |
+| margin | `space.0` |
+
+### empty-state
+
+Centred text in the space the content would have filled, with no box: an empty state replaces content, so it sits on the content's surface rather than on a card of its own.
+
+| Property | Token |
+|---|---|
+| padding-block | `space.padding.lg` |
+| text-align | center |
+| max-inline-size | `size.control.lg` multiplied by 12 — a stand-in, see the token gap decision |
+| icon size | `size.icon.lg` |
+| icon color | `theme.fg.muted` |
+| gap between icon and title | `space.stack.sm` |
+| title font-size | `type.large.size` |
+| title font-weight | `type.heading.weight` |
+| title line-height | `type.large.line-height` |
+| title color | `theme.fg.primary` |
+| gap between title and description | `space.stack.2xs` |
+| description font-size | `type.body.size` |
+| description color | `theme.fg.secondary` |
+| gap above the action | `space.stack.md` |
+
+### fab
+
+A primary button in shape and colour, held to a corner of the viewport. The fill and its label token are Button's primary pair unchanged, because this is the screen's primary action and nothing about floating changes that.
+
+| Property | Token |
+|---|---|
+| background | `theme.accent-role.bg` |
+| color | `theme.fg.on-accent` — the one label token that belongs on `theme.accent-role.bg` |
+| block-size | `size.control.lg` plus `space.1-5` above and below (48px) — a stand-in for the touch-target minimum this system has no token for; see the token-gap decision |
+| inline-size, label hidden | equal to the block-size, so the hidden-label FAB is a circle |
+| padding-inline, label visible | `space.control.padding-inline.lg` |
+| border-radius | `radius.pill` — one radius that makes the hidden-label FAB a circle and the labelled one a pill, so the two are visibly the same control |
+| box-shadow | `theme.elevation.overlay` — a stand-in; see the token-gap decision |
+| icon size | `size.icon.lg` |
+| gap between icon and label | `space.gap.sm` |
+| font-size | `type.control.size.md` |
+| font-weight | `type.control.weight` |
+| line-height | `type.control.line-height.md` |
+| hover / press | compose the .rata-state-layer class — do not swap the background |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible — never offset 0, because this is a filled accent control |
+| disabled | `state.disabled-opacity`, on aria-disabled |
+| transition-duration | `motion.interactive.duration` |
+| transition-timing-function | `motion.interactive.easing` |
+
+### fab-placement
+
+Where it floats. Measured from the viewport's safe area rather than its edge, and lifted clear of a BottomNav when one is on the page.
+
+| Property | Token |
+|---|---|
+| position | fixed |
+| inset-inline-end | max(`space.padding.md`, env(safe-area-inset-right) plus `space.padding.md`) |
+| inset-block-end | max(`space.padding.md`, env(safe-area-inset-bottom) plus `space.padding.md`) |
+| placement center | inset-inline-start 50% with a translate of half its own inline size, in place of inset-inline-end |
+| clearance above a BottomNav | when `:root:has(.rata-bottom-nav)`, inset-block-end adds the bar's own block size — computed from the same tokens BottomNav's recipe uses, so nothing is measured at runtime |
+| z-index | above page content and below the top layer — a Dialog, Sheet or Menu opened from it must cover it, and they do, because the top layer is above every z-index |
+
 ### field
 
 A column. The gap is the only measurement here, and it is deliberately tighter than it looks it should be.
@@ -1366,6 +1723,57 @@ Dimmed as a whole rather than removed, because the control underneath stays focu
 |---|---|
 | opacity | `state.disabled-opacity`, on the root so the label and helper text dim with the control |
 
+### file-upload-dropzone
+
+The target around the button. A dashed edge says "put something here" without looking like a field that needs typing into.
+
+| Property | Token |
+|---|---|
+| border | `border.2` dashed `theme.border.strong` — strong, so the edge meets the 3:1 WCAG 1.4.11 asks of a control boundary |
+| border-radius | `radius.container` |
+| background | `theme.bg.subtle` |
+| padding | `space.padding.lg` |
+| gap between button and hint | `space.stack.xs` |
+| hint colour | `theme.fg.secondary` |
+| hint font-size | `type.supporting.size` |
+| drag-over background | `theme.accent-role.subtle` |
+| drag-over border-color | `theme.accent-role.bg` |
+| invalid border-color | `theme.danger-role.fg` — the text field's error edge, so a field that refused a file looks like any other invalid field |
+
+### file-upload-list
+
+The chosen files, one row each. Bordered rows rather than a table: there are two facts per file and one action.
+
+| Property | Token |
+|---|---|
+| gap between rows | `space.stack.xs` |
+| gap between dropzone and list | `space.stack.sm` |
+| row min-block-size | `size.control.md` |
+| row padding-inline | `space.padding.sm` |
+| row border | `border.default` solid `theme.border.default` |
+| row border-radius | `radius.element` |
+| row background | `theme.bg.surface` |
+| file name colour | `theme.fg.primary` |
+| file name font-size | `type.control.size.md` |
+| file size colour | `theme.fg.secondary` |
+| file size font-size | `type.supporting.size` |
+| file icon size | `size.icon.text` |
+| file icon colour | `theme.fg.secondary` |
+
+### file-upload-remove
+
+The per-row remove control. Same construction as Search's clear and Dialog's dismiss: currentColor on a transparent background.
+
+| Property | Token |
+|---|---|
+| target inline-size / block-size | `size.control.sm` |
+| glyph size | `size.icon.text` |
+| colour | `theme.fg.secondary` |
+| border-radius | `radius.inner` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+| disabled | `state.disabled-opacity` |
+
 ### heading
 
 One type role, taken whole. Nothing else — a heading has no box of its own.
@@ -1389,6 +1797,121 @@ A glyph sized from the text around it, taking its colour from that text too.
 | height | same step as width; the scale is one number and the glyph is square |
 | stroke | currentColor — the icon inherits the colour of the text it sits in, so it needs no colour token of its own and cannot contradict its label |
 | flex-shrink | 0 — a glyph beside text must not be squeezed by it, which is a layout fact rather than a token |
+
+### link-inline
+
+A link inside a sentence: the accent foreground `theme.accent-role.fg` documents for links, and always underlined, because colour alone does not distinguish it from the text around it.
+
+| Property | Token |
+|---|---|
+| color | `theme.accent-role.fg` — verified at AA-text on `theme.bg.canvas`, `theme.bg.surface` and `theme.accent-role.subtle` |
+| text-decoration-line | underline, at rest and on hover alike |
+| text-decoration-thickness | `border.1` |
+| text-underline-offset | `space.0-5` |
+| font | inherited from the surrounding text |
+| focus ring | `focus.ring-width` solid `theme.focus-ring`, offset `focus.ring-offset`, on :focus-visible, cloned across line breaks |
+| focus ring corners | `radius.inner` |
+
+### link-standalone
+
+A link on its own line or in a row of actions — "View all", "Back to invoices". Not underlined, so it gets a box for the state layer instead.
+
+| Property | Token |
+|---|---|
+| color | `theme.accent-role.fg` |
+| font-size | inherited from where it sits |
+| font-weight | `type.control.weight` |
+| padding-inline | `space.1` |
+| border-radius | `radius.inner` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+
+### link-new-tab
+
+The glyph that says a link opens a new tab, sized from the text so it never outgrows the line.
+
+| Property | Token |
+|---|---|
+| icon size | `size.icon.text` |
+| gap before the icon | `space.gap.xs` |
+
+### list-item
+
+One row. Leading slot, text, trailing slot, in that order along the inline axis; the text column takes the slack.
+
+| Property | Token |
+|---|---|
+| min-block-size | `size.control.lg` plus `space.1-5` above and below (48px) — a stand-in for the touch-target minimum this system has no token for; see the token-gap decision |
+| padding-block | `space.padding.xs` |
+| padding-inline | `space.padding.md` — and max(`space.padding.md`, env(safe-area-inset-left / right)) when the list is edge-to-edge, so a phone in landscape does not put the text under the notch |
+| gap between slots and text | `space.gap.md` |
+| text color | `theme.fg.primary` |
+| text font-size | `type.body.size` |
+| text font-weight | `type.body.weight` |
+| text line-height | `type.body.line-height` |
+| gap between text and description | `space.stack.2xs` |
+| description color | `theme.fg.secondary` |
+| description font-size | `type.supporting.size` |
+| description line-height | `type.supporting.line-height` |
+| leading icon size | `size.icon.md` |
+| leading icon colour | `theme.fg.secondary` |
+| trailing text colour | `theme.fg.secondary` |
+
+### list-item-divider
+
+A rule above every row but the first, drawn by the row so a conditional row never leaves a doubled or orphaned line.
+
+| Property | Token |
+|---|---|
+| border-block-start | `border.default` solid `theme.border.default` |
+| inset | starts at the text column when the row has a leading slot, so the rule does not cut between an avatar and its own text |
+
+### list-item-interactive
+
+A row with `href` or `onClick`. The link or button is stretched over the whole row, so the whole row is the target.
+
+| Property | Token |
+|---|---|
+| hover / press | compose the .rata-state-layer class on the row |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible — drawn around the row, which is the target the reader is about to activate |
+| disclosure chevron | `size.icon.sm`, `theme.fg.muted` — decorative, and shown only for href rows, since it promises a new page |
+| disabled | `state.disabled-opacity`, on aria-disabled |
+
+### list-item-actions
+
+The trailing control that opens a row's secondary actions. Above the stretched link in the stacking order, so pressing it does not also follow the row.
+
+| Property | Token |
+|---|---|
+| target inline-size / block-size | `size.control.md` |
+| glyph size | `size.icon.md` |
+| glyph colour | `theme.fg.secondary` |
+| border-radius | `radius.element` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+
+### list
+
+The list draws almost nothing itself. The rows own their padding, their dividers and their states; the list owns only the surface they sit on and the space they cannot clip into.
+
+| Property | Token |
+|---|---|
+| background | inherited — the list takes the surface it is placed on, which is what lets it sit edge-to-edge in a page or inside a Sheet |
+| margin | `space.0` |
+| padding-inline | `space.0` — rows fill the width, for the reason SideNav's rows do: the whole row is the target |
+| padding-block | `focus.ring-width` plus `focus.ring-offset` — just enough that the first and last rows' focus rings are not clipped when the list is a scroll container, the device Tabs uses for the same problem |
+| list-style | none, with role="list" restored — see the web and native decision |
+
+### list-inset
+
+The grouped look: the list as a rounded surface inside the page's gutter, as in a settings screen.
+
+| Property | Token |
+|---|---|
+| background | `theme.bg.surface` |
+| border | `border.default` solid `theme.border.default` |
+| border-radius | `radius.container` |
+| overflow | clip, so the first and last rows' state layers take the container's corners — with the padding-block above, so the rings still fit inside |
 
 ### menu-item
 
@@ -1562,6 +2085,87 @@ The close button, when `onDismiss` is passed. It takes currentColor so the glyph
 | focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
 | background | transparent — the variant's tint shows through |
 
+### number-field
+
+The text field's box, step for step, with a button well at each end. Field owns the label, helper text, message and disabled dimming.
+
+| Property | Token |
+|---|---|
+| font-family | `font.family.sans` |
+| font-size | `type.control.size.md` |
+| font-variant | tabular-nums, so digits do not shift as the value changes |
+| text-align | end — numbers compare by their last digit, so a column of them aligns on the right |
+| background | `theme.bg.surface` |
+| color | `theme.fg.primary` |
+| placeholder colour | `theme.fg.muted` |
+| border | `border.default` solid `theme.border.strong` |
+| border-radius | `radius.element` |
+| block-size | `size.control.md` — and `size.control.sm` / `size.control.lg` at the other sizes |
+| padding-inline | `space.control.padding-inline.md` plus `size.control.sm` at each end when stepButtons is on — the well each button sits in |
+| focus border-color | `theme.fg.primary` |
+| focus outline | `focus.ring-width` solid `theme.fg.primary` at `space.0` offset — the text field's departure, so every text box in a form focuses alike |
+| hover inner band | `theme.bg.muted` at `border.2` as an inset shadow, idle only |
+| validating ring | `theme.accent-role.ring` |
+| valid ring | `theme.success-role.ring` |
+| invalid ring | `theme.danger-role.ring` |
+
+### number-field-step-button
+
+Decrement and increment, inside the box at either end. Transparent on the field's surface, like Search's clear control.
+
+| Property | Token |
+|---|---|
+| inline-size / block-size | `size.control.sm`, inset `space.0-5` from the box edge |
+| glyph size | `size.icon.text` |
+| colour | `theme.fg.secondary` |
+| border-radius | `radius.inner` |
+| hover / press | compose the .rata-state-layer class |
+| at the limit | `state.disabled-opacity` with aria-disabled — the button stays, so the layout does not shift when the value reaches min or max |
+
+### pagination
+
+A row of control-sized targets. Built from the same parts as a SideNav row — size, type, state layer, current tint — so a page link reads as navigation and not as a button.
+
+| Property | Token |
+|---|---|
+| gap between items | `space.gap.xs` |
+| item min-inline-size | `size.control.md` |
+| item block-size | `size.control.md` |
+| item padding-inline | `space.1` |
+| item font-size | `type.control.size.md` |
+| item font-weight | `type.control.weight` |
+| item color | `theme.fg.secondary` |
+| item border-radius | `radius.element` |
+| numerals | tabular figures, so the row does not shift width as the current page moves |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+| previous / next icon size | `size.icon.text` |
+
+### pagination-current
+
+The page you are on: the same tinted row SideNav uses, plus `aria-current`. The role's subtle step with `theme.fg.primary` on it is a verified text pairing; the saturated fill is not used.
+
+| Property | Token |
+|---|---|
+| background | `theme.accent-role.subtle` |
+| color | `theme.fg.primary` |
+
+### pagination-unavailable
+
+Previous on the first page and Next on the last: still present and announced, not removed, so the row keeps its shape.
+
+| Property | Token |
+|---|---|
+| opacity | `state.disabled-opacity` |
+
+### pagination-ellipsis
+
+The gap in the run of page numbers. Punctuation, not a control.
+
+| Property | Token |
+|---|---|
+| color | `theme.fg.muted` |
+
 ### panel
 
 A bordered surface inside the layout. No elevation and no scrim: it is not floating above anything, and a shadow would claim it is.
@@ -1599,6 +2203,76 @@ The close control. Same construction as Dialog's and Notice's, so a close button
 | border-radius | `radius.inner` |
 | hover / press | compose the .rata-state-layer class |
 | focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset` |
+
+### pin-input
+
+A row of boxes, each the text field's box in miniature. Field owns the label, helper text, message and disabled dimming.
+
+| Property | Token |
+|---|---|
+| gap between boxes | `space.gap.sm` |
+| box inline-size | `size.control.md` at md, `size.control.lg` at lg — a control step used as a width, the way Dialog measures itself in controls |
+| box block-size | `size.control.lg` at md, calc(`size.control.lg` plus `space.2`) at lg |
+| box background | `theme.bg.surface` |
+| box border | `border.default` solid `theme.border.strong` |
+| box border-radius | `radius.element` |
+| character font-family | `font.family.mono` — every character the same width, so a 1 and an 8 sit centred alike |
+| character font-size | `type.control.size.lg` |
+| character colour | `theme.fg.primary` |
+| masked character | a dot of `space.2` in `theme.fg.primary` with `radius.pill` — a spacing step for a mark rather than a glyph, the reasoning Switch's thumb follows |
+| active box | `focus.ring-width` solid `theme.fg.primary` at `space.0` offset, on the box at the caret while the input is focused — the text field's focus departure, so this reads as a text box |
+| caret | `border.2` in `theme.fg.primary`, centred in the active empty box, blinking at `motion.duration.slow` and steady under prefers-reduced-motion |
+| validating ring | `theme.accent-role.ring` on every box |
+| valid ring | `theme.success-role.ring` on every box |
+| invalid ring | `theme.danger-role.ring` on every box — the code is wrong as a whole, not one digit of it |
+
+### popover
+
+Menu's surface with room for content: the same background, outline, shadow and motion, so every anchored overlay in the system reads as one family, and more padding because it holds text and fields rather than one-line rows.
+
+| Property | Token |
+|---|---|
+| background | `theme.bg.surface` |
+| color | `theme.fg.primary` |
+| border | `border.default` solid `theme.border.default` |
+| box-shadow | `theme.elevation.overlay` |
+| border-radius | `radius.container` |
+| padding | `space.padding.sm` |
+| gap between title and body | `space.stack.xs` |
+| font-size | `type.body.size` |
+| line-height | `type.body.line-height` |
+| max-inline-size | `size.control.lg` multiplied by 9, or the viewport less `space.padding.lg` — a stand-in, see Tooltip's measure gap |
+| gap from the trigger | `space.gap.xs` |
+| enter transition | `motion.overlay.duration` with `motion.easing.enter` |
+| exit transition | `motion.overlay.duration` with `motion.easing.exit` |
+
+### popover-title
+
+The popover's name, styled as a label rather than a heading — see the decisions.
+
+| Property | Token |
+|---|---|
+| font-size | `type.body.size` |
+| font-weight | `type.label.weight` |
+| color | `theme.fg.primary` |
+
+### progress
+
+A label above a track, with the filled part in the accent fill. The track is the recessed well `theme.bg.muted` is documented for.
+
+| Property | Token |
+|---|---|
+| track background | `theme.bg.muted` |
+| fill background | `theme.accent-role.bg` — see the pairing gap decision |
+| track block-size | `space.1` — a bar is a mark, not a control, so it takes a spacing step, the way Badge's dot does |
+| track border-radius | `radius.pill` |
+| fill border-radius | `radius.pill` |
+| fill transition | `motion.duration.medium` with `motion.easing.standard`, on inline-size; none under prefers-reduced-motion |
+| label font-size | `type.body.size` |
+| label color | `theme.fg.primary` |
+| value text font-size | `type.supporting.size` |
+| value text color | `theme.fg.secondary` |
+| gap between label row and track | `space.stack.2xs` |
 
 ### radio-group-vertical
 
@@ -1911,6 +2585,132 @@ The page you are on: a tinted row, plus aria-current in the markup. The tint is 
 | background | `theme.accent-role.subtle` |
 | colour | `theme.fg.primary` |
 
+### skeleton
+
+A recessed block — the use `theme.bg.muted` documents for a skeleton — that pulses gently toward the next background step. No gradient sweep: a pulse needs only two existing tokens and degrades to a still block.
+
+| Property | Token |
+|---|---|
+| background | `theme.bg.muted` |
+| pulse to | `theme.bg.subtle` |
+| pulse duration | `motion.duration.slow-max`, alternating, with `motion.easing.standard` |
+| under prefers-reduced-motion | no animation — a still `theme.bg.muted` block |
+
+### skeleton-text
+
+One bar per line, sized from the type it stands in for so the paragraph that replaces it takes the same space.
+
+| Property | Token |
+|---|---|
+| block-size | `type.body.size`, centred in a line box of `type.body.line-height` |
+| border-radius | `radius.inner` |
+| gap between lines | none — the line box already carries the leading |
+| last line inline-size | a shorter fraction of the full width, so the block reads as a paragraph and not a wall |
+
+### skeleton-block
+
+A rectangle standing in for an image, a chart or a card's media.
+
+| Property | Token |
+|---|---|
+| border-radius | `radius.element` |
+
+### skeleton-circle
+
+A circle standing in for an avatar.
+
+| Property | Token |
+|---|---|
+| border-radius | `radius.pill` |
+
+### slider
+
+The track, the fill and the row they sit in. The drawn track is decoration over a transparent native input, so these measurements are what the reader sees, not what they touch.
+
+| Property | Token |
+|---|---|
+| hit area block-size | `size.control.sm` — the transparent input's height, and so the touch target, regardless of the drawn thumb |
+| track block-size | `space.1` — a stand-in for a size step that does not exist yet; see the track-size token gap in the decisions |
+| track border-radius | `radius.pill` |
+| track background | `theme.border.strong` — the boundary tone tuned to the 3:1 WCAG 1.4.11 asks of a control. `theme.bg.muted` is the recessed well, and a slider's empty track is the part of the control that says how far the value can still go, so it has to be seen |
+| fill background | `theme.accent-role.bg` — from min to the thumb, or between the two thumbs of a range |
+| gap between label row and track | `space.stack.2xs` |
+| label colour | `theme.fg.primary` |
+| output colour | `theme.fg.secondary` |
+| output font-size | `type.control.size.sm` |
+| output font-variant | tabular-nums, so the number does not shift width as it changes |
+| opacity (aria-disabled) | `state.disabled-opacity` — Field's, on the root |
+
+### slider-thumb
+
+The drawn handle. Surface-filled with an accent edge, so it reads against both the fill and the empty track it travels between.
+
+| Property | Token |
+|---|---|
+| inline-size / block-size | `size.icon.md` — the checkbox box's size, so a slider and a checkbox in one settings column carry the same visual weight |
+| border-radius | `radius.pill` |
+| background | `theme.bg.surface` |
+| border | `border.2` solid `theme.accent-role.bg` |
+| box-shadow | `theme.elevation.raised` |
+| hover / press | compose the .rata-state-layer class — pending the data-hovered and data-pressed hook proposed in the decisions |
+| focus ring | `focus.ring-width` solid `theme.focus-ring`, offset `focus.ring-offset`, drawn on the thumb when the input matches :focus-visible |
+| movement | transform, not a layout property, with no transition while dragging — a thumb that lags the finger reads as broken |
+
+### steps
+
+The row or column of steps and the connectors between them.
+
+| Property | Token |
+|---|---|
+| gap between marker and label | `space.gap.sm` |
+| gap between label and description | `space.0` — line-height leading already separates them, the reasoning the checkbox recipe gives |
+| connector thickness | `border.2` |
+| connector colour | `theme.border.strong` |
+| connector colour, after a completed step | `theme.accent-role.bg` |
+| connector inset from each marker | `space.gap.xs` |
+| vertical: gap between steps | `space.stack.md` |
+| label font-size | `type.control.size.sm` |
+| label colour | `theme.fg.secondary` |
+| description font-size | `type.supporting.size` |
+| description colour | `theme.fg.secondary` |
+
+### steps-marker
+
+The circle holding the step's number or glyph. Sized from the icon scale, because it holds a glyph — the checkbox precedent.
+
+| Property | Token |
+|---|---|
+| inline-size / block-size | `size.icon.lg` |
+| border-radius | `radius.pill` |
+| number font-size | `type.control.size.sm` |
+| number font-weight | `type.control.weight` |
+| glyph size | `size.icon.xs` |
+| upcoming | `border.default` solid `theme.border.strong` on `theme.bg.surface`, number in `theme.fg.secondary` |
+| current | `border.2` solid `theme.accent-role.bg` on `theme.bg.surface`, number in `theme.accent-role.fg` |
+| complete | `theme.accent-role.bg` fill with a check glyph in `theme.fg.on-accent` — the only foreground permitted on that fill |
+| invalid | `theme.danger-role.bg` fill with an alert glyph in `theme.danger-role.on` — the role's own label token, never on-accent, which inverts in dark while the status fill does not |
+
+### steps-current
+
+The step the reader is on. Marked by the ring on its marker, the label's tone and weight, and aria-current — never by colour alone.
+
+| Property | Token |
+|---|---|
+| label colour | `theme.fg.primary` |
+| label font-weight | `type.control.weight` |
+
+### steps-navigable
+
+A reached step that can be returned to. The whole row — marker and label — is one button.
+
+| Property | Token |
+|---|---|
+| label colour | `theme.fg.primary` |
+| padding | `space.1` |
+| border-radius | `radius.inner` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+
 ### switch
 
 A track the thumb slides along. The track's fill is the state, and the thumb's position says the same thing a second way, so the setting is never carried by colour alone.
@@ -1939,6 +2739,66 @@ A track the thumb slides along. The track's fill is the state, and the thumb's p
 | outline (focus-visible) | `focus.ring-width` solid `theme.focus-ring`, offset `focus.ring-offset` — drawn on the track, and the offset is kept: a pill this small has no room for a flush ring to read as separate from its own edge |
 | opacity (aria-disabled) | `state.disabled-opacity` |
 | transition | `motion.interactive.duration` with `motion.interactive.easing`, on the thumb's transform and the track's fill |
+
+### table
+
+Edge to edge and divided, with no box of its own: a table sits on whatever surface the page gives it, and its rows are separated by rules rather than by stripes or cards. This is the construction the playground's own `.pg-table` already uses, promoted.
+
+| Property | Token |
+|---|---|
+| font-size | `type.body.size` |
+| line-height | `type.body.line-height` |
+| color | `theme.fg.primary` |
+| background | transparent — the table takes the surface it sits on |
+| row divider | `border.default` solid `theme.border.default`, on each row's block-end edge |
+| cell padding-block | `space.padding.xs` |
+| cell padding-inline | `space.padding.sm` |
+| numeric cell alignment | end, with tabular figures so digits line up down the column |
+
+### table-header
+
+Column headers set as labels: smaller and quieter than the data, because the reader looks at them once and at the rows many times.
+
+| Property | Token |
+|---|---|
+| font-size | `type.label.size` |
+| font-weight | `type.label.weight` |
+| text-transform | `type.label.text-transform` |
+| letter-spacing | `type.label.letter-spacing` |
+| color | `theme.fg.muted` — verified at AA-text on canvas, surface and subtle |
+| divider below the header | `border.default` solid `theme.border.strong` — heavier than a row rule, so the header reads as the boundary of the data |
+
+### table-compact
+
+Tighter rows for a dense operational table. Only the block padding moves; type does not shrink, because a compact table is read just as closely.
+
+| Property | Token |
+|---|---|
+| cell padding-block | `space.1` |
+| cell padding-inline | `space.padding.xs` |
+
+### table-sort-control
+
+The button inside a sortable column header. It fills the header cell so the whole label is the target.
+
+| Property | Token |
+|---|---|
+| color | currentColor — the header's own muted label colour |
+| font | inherited from the header |
+| gap between label and indicator | `space.gap.xs` |
+| indicator size | `size.icon.text` |
+| border-radius | `radius.inner` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+
+### table-scroll-region
+
+The wrapper that scrolls horizontally when the columns do not fit. It is focusable, so it needs the ring like any other tab stop.
+
+| Property | Token |
+|---|---|
+| focus ring | `focus.ring-width` solid `theme.focus-ring`, offset `focus.ring-offset`, on :focus-visible |
+| border-radius | `radius.inner` — only so the ring has corners |
 
 ### tabs
 
@@ -2072,6 +2932,73 @@ Selected from the primitive's data-status on the Field root, exactly as the text
 | invalid ring | `theme.danger-role.ring` |
 | disabled cursor | not-allowed — the dimming itself is Field's, on the root |
 
+### toast
+
+Notice's frame on a floating surface. The text, icon and dismiss are built exactly as Notice builds them, so a toast and a notice saying the same thing look like the same message; the difference is the shadow and where it sits.
+
+| Property | Token |
+|---|---|
+| padding | `space.padding.sm` `space.padding.md` |
+| border-radius | `radius.element` |
+| box-shadow | `theme.elevation.overlay` |
+| border | `border.default` solid `theme.border.default` |
+| gap between icon, text and actions | `space.gap.sm` |
+| font-size | `type.body.size` |
+| line-height | `type.body.line-height` |
+| icon size | `size.icon.text` |
+| inline-size | `size.control.lg` multiplied by 10, or the viewport less twice `space.page.gutter` — a stand-in, see Tooltip's measure gap |
+| enter transition | `motion.overlay.duration` with `motion.easing.enter` |
+| exit transition | `motion.overlay.duration` with `motion.easing.exit` |
+
+### toast-neutral
+
+The default, and the commonest: "Saved", "Link copied". A plain surface, because most confirmations say nothing about health.
+
+| Property | Token |
+|---|---|
+| background | `theme.bg.surface` |
+| color | `theme.fg.primary` |
+
+### toast-success
+
+The role's subtle tint with its own foreground — the same pairing Notice uses.
+
+| Property | Token |
+|---|---|
+| background | `theme.success-role.subtle` |
+| color | `theme.success-role.fg` |
+
+### toast-danger
+
+A failure the reader should know about but does not have to act on now. The role's subtle tint with its own foreground; never the saturated fill.
+
+| Property | Token |
+|---|---|
+| background | `theme.danger-role.subtle` |
+| color | `theme.danger-role.fg` |
+
+### toast-region
+
+Where toasts stack. Fixed to the viewport's block-end edge, inset by the page's own gutter.
+
+| Property | Token |
+|---|---|
+| inset from the viewport edges | `space.page.gutter` |
+| gap between toasts | `space.stack.xs` |
+
+### toast-dismiss
+
+Notice's dismiss control, unchanged.
+
+| Property | Token |
+|---|---|
+| color | currentColor — inherited from the variant's own foreground |
+| glyph size | `size.icon.text` |
+| target inline-size / block-size | `size.control.sm` |
+| border-radius | `radius.inner` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+
 ### toggle-button-group-attached
 
 The default, and what a segmented control is: the options are one question, so they close up into one bar and only the outer corners round.
@@ -2188,6 +3115,27 @@ The on state of a borderless toggle: the tint alone separates it from its unpres
 | outline (focus-visible) | `focus.ring-width` solid `theme.focus-ring`, offset `focus.ring-offset` |
 | hover/press | compose the .rata-state-layer class — do not swap the background |
 | opacity (aria-disabled) | `state.disabled-opacity` |
+
+### tooltip
+
+A small transient surface, built like a miniature Menu: the same surface, outline and overlay shadow, so a tooltip and a menu opened from neighbouring controls read as the same kind of thing. Not an inverse (dark-on-light) chip — see the decisions.
+
+| Property | Token |
+|---|---|
+| background | `theme.bg.surface` |
+| color | `theme.fg.primary` |
+| border | `border.default` solid `theme.border.default` |
+| box-shadow | `theme.elevation.overlay` |
+| border-radius | `radius.element` |
+| padding-block | `space.1` |
+| padding-inline | `space.2` |
+| font-size | `type.supporting.size` |
+| line-height | `type.supporting.line-height` |
+| max-inline-size | `size.control.lg` multiplied by 8 — a stand-in, see the token gap decision |
+| gap from the trigger | `space.gap.xs` |
+| enter transition | `motion.overlay.duration` with `motion.easing.enter` |
+| exit transition | `motion.overlay.duration` with `motion.easing.exit` |
+| open delay | `motion.duration.slow-min` — a stand-in, see the token gap decision |
 
 ### top-nav
 

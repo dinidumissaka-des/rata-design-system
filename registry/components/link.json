@@ -1,0 +1,172 @@
+{
+  "name": "link",
+  "title": "Link",
+  "description": "A navigation to another page or place, styled either inside running text or standing on its own.",
+  "family": "navigation",
+  "alsoKnownAs": [
+    "anchor",
+    "hyperlink",
+    "text-link"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "state-layer",
+    "icon",
+    "visually-hidden"
+  ],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "inline": {
+      "summary": "A link inside a sentence: the accent foreground `theme.accent-role.fg` documents for links, and always underlined, because colour alone does not distinguish it from the text around it.",
+      "tokens": {
+        "color": "theme.accent-role.fg — verified at AA-text on theme.bg.canvas, theme.bg.surface and theme.accent-role.subtle",
+        "text-decoration-line": "underline, at rest and on hover alike",
+        "text-decoration-thickness": "border.1",
+        "text-underline-offset": "space.0-5",
+        "font": "inherited from the surrounding text",
+        "focus ring": "focus.ring-width solid theme.focus-ring, offset focus.ring-offset, on :focus-visible, cloned across line breaks",
+        "focus ring corners": "radius.inner"
+      }
+    },
+    "standalone": {
+      "summary": "A link on its own line or in a row of actions — \"View all\", \"Back to invoices\". Not underlined, so it gets a box for the state layer instead.",
+      "tokens": {
+        "color": "theme.accent-role.fg",
+        "font-size": "inherited from where it sits",
+        "font-weight": "type.control.weight",
+        "padding-inline": "space.1",
+        "border-radius": "radius.inner",
+        "hover / press": "compose the .rata-state-layer class",
+        "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible"
+      }
+    },
+    "new-tab": {
+      "summary": "The glyph that says a link opens a new tab, sized from the text so it never outgrows the line.",
+      "tokens": {
+        "icon size": "size.icon.text",
+        "gap before the icon": "space.gap.xs"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "An `<a href>`, always. No primitive: the platform already owns a link's keyboard behaviour, and a router integrates by intercepting `onClick` while `href` stays real — the bargain TopNav and SideNav already make.",
+    "decisions": [
+      {
+        "decision": "A Link goes somewhere; a Button does something",
+        "why": "The reader's expectations differ: a link can be opened in a new tab, copied and bookmarked, and is activated by Enter only; a button performs an action, is activated by Enter or Space, and has no address. Styling one as the other breaks those expectations for keyboard and screen-reader users while looking fine to everyone else. So `href` is required, there is no `onClick`-only Link, and an action styled as text is a tertiary Button."
+      },
+      {
+        "decision": "Inline links are always underlined, and get no hover change",
+        "why": "WCAG 1.4.1: a link in a paragraph must be distinguishable by more than colour, and an underline that appears only on hover fails before the pointer arrives. With the underline always on, a hover change would be a hand-written `:hover` rule, which this system does not write. The state layer is the hover feedback everywhere else, but on inline text it would paint a box behind a phrase that wraps across lines — so inline links have none, and the cursor is enough. Standalone links have a box, so they compose the state layer like any other control."
+      },
+      {
+        "decision": "No `disabled`",
+        "why": "A link with nowhere to go is not a disabled link, it is text. `aria-disabled` on an `<a>` without `href` is a pattern Pagination uses for its Previous and Next, where the row needs its shape; a free-standing link in that state is a puzzle for the reader. Render text, or render the link."
+      },
+      {
+        "decision": "`newTab` exists so the warning cannot be forgotten",
+        "why": "WCAG 3.2.5 asks that a change of context be predictable, and a link that silently opens a new tab breaks Back for the reader who did not expect it. `newTab` sets `target=\"_blank\"` and `rel=\"noopener noreferrer\"` together, and adds a glyph plus visually-hidden \"(opens in a new tab)\" so it is announced. Passing `target=\"_blank\"` by hand gets none of that, which is the reason this is a prop rather than an attribute the caller remembers."
+      },
+      {
+        "decision": "Visited links are not styled differently",
+        "why": "There is no visited token, and in an application most links are repeated navigation — a visited state would turn half of every page purple. Content-heavy sites may want one; whether to add a `theme.*` visited foreground through the design-tokens skill is an open question for approval, not a gap this component should fill with a palette value."
+      },
+      {
+        "decision": "Web and native",
+        "why": "Web: an `<a href>`; `newTab` adds `target` and `rel`, a glyph and a visually-hidden suffix; a router intercepts `onClick` and calls `preventDefault`. React Native has no anchor: the link is a nested `Text` with `accessibilityRole=\"link\"` and `onPress`, so it flows inside a paragraph, and `href` is opened with `Linking.openURL` unless the caller's `onPress` handles it for in-app navigation. `newTab` is web-only. `variant` works on both; the native state-layer equivalent is the `Pressable` pressed style, and the inline underline is `textDecorationLine: \"underline\"`."
+      }
+    ]
+  },
+  "props": {
+    "href": {
+      "type": "string",
+      "required": true,
+      "summary": "Where the link goes.",
+      "use": [
+        "A real URL, even inside a single-page app — the router intercepts `onClick`, and the address stays usable for new tabs and copying."
+      ],
+      "dont": [
+        "`#` or `javascript:` to make a clickable thing. That is a Button."
+      ],
+      "a11y": "A link without an `href` is not a link to the accessibility tree, which is why this is required."
+    },
+    "children": {
+      "type": "ReactNode",
+      "required": true,
+      "summary": "The link text — the name of where it goes.",
+      "use": [
+        "Text that makes sense out of context: \"View invoice INV-204\"."
+      ],
+      "dont": [
+        "\"Click here\" or \"Learn more\" alone. Screen-reader users list a page's links, and a list of ten \"Learn more\"s is useless — name the destination, or extend the name with visually-hidden text."
+      ],
+      "a11y": "Becomes the link's accessible name."
+    },
+    "variant": {
+      "type": "\"inline\" | \"standalone\"",
+      "default": "\"inline\"",
+      "summary": "Whether the link sits inside running text or on its own.",
+      "use": [
+        "`inline` inside a sentence.",
+        "`standalone` for \"View all\" under a list, \"Back to invoices\" above a page, or a link in a row of actions."
+      ],
+      "dont": [
+        "`standalone` inside a sentence. Without its underline it is distinguished from the text by colour alone."
+      ],
+      "a11y": "`inline` is always underlined, which is the non-colour cue WCAG 1.4.1 requires inside text."
+    },
+    "newTab": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Opens the link in a new tab, and says so.",
+      "use": [
+        "A link out of a task the reader must not lose — help docs opened from the middle of a form."
+      ],
+      "dont": [
+        "Every external link, by habit. Opening a new tab takes Back away; the reader can choose a new tab themselves."
+      ],
+      "a11y": "Adds a glyph and visually-hidden \"(opens in a new tab)\", plus `target=\"_blank\"` and `rel=\"noopener noreferrer\"`. Web only."
+    },
+    "className": {
+      "type": "string",
+      "summary": "Extra classes, for placement.",
+      "use": [
+        "Spacing a standalone link in its row."
+      ],
+      "dont": [
+        "Removing the underline from an inline link, or recolouring it. Both undo the reason it is recognisable."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "A link in running text",
+      "when": "A reference to another page, inside a sentence.",
+      "example": "<Text>\n  Contrast is verified per brand — see the <Link href=\"/docs/contrast\">contrast report</Link>.\n</Text>",
+      "notes": "`inline` is the default and is always underlined, so it is distinguishable without its colour."
+    },
+    {
+      "case": "A standalone link with a client-side router",
+      "when": "\"View all\" under a preview list in a single-page app.",
+      "example": "<Link\n  variant=\"standalone\"\n  href=\"/invoices\"\n  onClick={(event) => {\n    event.preventDefault();\n    navigate(\"/invoices\");\n  }}\n>\n  View all invoices\n</Link>",
+      "notes": "`href` stays real, so middle-click and copy-link still work; the router only intercepts the plain click. The text names the destination rather than saying \"View all\" alone."
+    },
+    {
+      "case": "Reaching for the wrong component",
+      "when": "Text that should trigger an action, such as \"Resend code\".",
+      "example": "<Link href=\"#\" onClick={resend}>Resend code</Link>",
+      "notes": "Don't. Nothing is navigated to, so it is a button: `<Button variant=\"tertiary\" onClick={resend}>Resend code</Button>`, activated by Space as well as Enter and announced as what it is."
+    }
+  ]
+}

@@ -1,0 +1,176 @@
+{
+  "name": "empty-state",
+  "title": "Empty state",
+  "description": "What a collection shows when it has nothing in it: why it is empty, and the one thing to do about it.",
+  "family": "feedback",
+  "alsoKnownAs": [
+    "blank-slate",
+    "no-results",
+    "zero-state"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "icon"
+  ],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "Centred text in the space the content would have filled, with no box: an empty state replaces content, so it sits on the content's surface rather than on a card of its own.",
+      "tokens": {
+        "padding-block": "space.padding.lg",
+        "text-align": "center",
+        "max-inline-size": "size.control.lg multiplied by 12 — a stand-in, see the token gap decision",
+        "icon size": "size.icon.lg",
+        "icon color": "theme.fg.muted",
+        "gap between icon and title": "space.stack.sm",
+        "title font-size": "type.large.size",
+        "title font-weight": "type.heading.weight",
+        "title line-height": "type.large.line-height",
+        "title color": "theme.fg.primary",
+        "gap between title and description": "space.stack.2xs",
+        "description font-size": "type.body.size",
+        "description color": "theme.fg.secondary",
+        "gap above the action": "space.stack.md"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "A `div` with a title, an optional description and an optional action, rendered where the empty collection would be. Silent by default; `live` announces it when it appears because of something the reader did, as Notice's `live` does. No primitive: no interaction to own and no state to hold.",
+    "decisions": [
+      {
+        "decision": "Empty is not an error",
+        "why": "\"No invoices yet\" and \"Couldn't load invoices\" look alike and mean opposite things — one is a correct answer, the other is a failure the reader may need to retry or report. A failure is a Notice with the danger variant, in the same place. Keeping them apart stops a failed request from quietly telling the reader they have no data."
+      },
+      {
+        "decision": "Two kinds of empty, and the copy differs, not the component",
+        "why": "First use — nothing has been created yet — wants an invitation and the action that creates the first item. No results — a search or filter matched nothing — wants the query restated and a way to clear it. Both are the same layout with different words; a `kind` prop would be a switch that changes nothing visible. The usage cases below are where the difference is written down."
+      },
+      {
+        "decision": "The title is a styled paragraph, not a heading",
+        "why": "The empty state sits inside a section that already has a heading — the list's own — and cannot know its level, which is the problem Notice solves the same way. A heading here would add an outline entry for content that does not exist. The section's own heading, still visible above it, is what names the area."
+      },
+      {
+        "decision": "`live` is a prop, silent by default",
+        "why": "Notice's reasoning, applied unchanged. An empty state present when the page loads is read in place, and announcing it would interrupt the page being read. One that appears because the reader typed a search that matched nothing must be announced, because their attention is on the search field and the list changed somewhere else. That depends on how the empty state arrived, not on what it says, so the caller states it."
+      },
+      {
+        "decision": "One action, at most",
+        "why": "An empty state exists to get the reader out of it. One action — Create the first one, Clear filters — is the way out; two is a choice the reader did not come here to make. Secondary help belongs in the description as a link."
+      },
+      {
+        "decision": "An icon, never an illustration",
+        "why": "Illustrations are brand, they carry no token, and they push the action below the fold on a phone. A `size.icon.lg` glyph in `theme.fg.muted` marks the area as intentionally empty without competing with the text. It is `aria-hidden`: the title says what it means."
+      },
+      {
+        "decision": "Token gap: `size.measure.*` — needs the design-tokens skill",
+        "why": "The description needs a maximum line length, or centred text runs the full width of a wide table and becomes hard to read. There is no measure token, so the recipe borrows Dialog's derivation from `size.control.lg`. Tooltip and Toast hit the same gap; one scale fixes all three."
+      },
+      {
+        "decision": "Web and native",
+        "why": "Web: a `div`; with `live`, it carries `role=\"status\"` (polite) or `role=\"alert\"` (assertive), as Notice does. The icon is `aria-hidden`. React Native: a `View`; the title is plain `Text`, not `accessibilityRole=\"header\"`, for the outline reason above. `live` maps to `accessibilityLiveRegion` on Android and to `AccessibilityInfo.announceForAccessibility` with the title on iOS. All props work on both."
+      }
+    ]
+  },
+  "props": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "summary": "What is empty, said plainly.",
+      "use": [
+        "First use: \"No invoices yet\".",
+        "No results: \"No tokens match ‘brand-teal’\" — restate the query, so the reader can see what they typed."
+      ],
+      "dont": [
+        "\"Nothing here\" or \"Oops\". Say what is missing.",
+        "Reporting a failure. \"Couldn't load\" is a Notice."
+      ],
+      "a11y": "Read first, and announced on its own when `live` is set."
+    },
+    "description": {
+      "type": "ReactNode",
+      "summary": "One or two sentences on why it is empty or what the action will do.",
+      "use": [
+        "What the first item will be for, or which filter is excluding everything."
+      ],
+      "dont": [
+        "Repeating the title in more words."
+      ]
+    },
+    "action": {
+      "type": "ReactNode",
+      "summary": "The one way out: a Button or a Link.",
+      "use": [
+        "Create the first item; clear the search or filters."
+      ],
+      "dont": [
+        "Two buttons. Put secondary help in the description as a link."
+      ],
+      "a11y": "A real control, reached by Tab in reading order after the text."
+    },
+    "icon": {
+      "type": "LucideIcon | false",
+      "summary": "A glyph marking the area as intentionally empty. Omit for none.",
+      "use": [
+        "An icon for the kind of thing that is missing — a file for documents, a search glyph for no results."
+      ],
+      "dont": [
+        "An illustration or image. This slot is an icon at the icon scale's largest step."
+      ],
+      "a11y": "Always `aria-hidden`; the title carries the meaning."
+    },
+    "live": {
+      "type": "\"off\" | \"polite\" | \"assertive\"",
+      "default": "\"off\"",
+      "summary": "Whether the empty state is announced when it appears.",
+      "use": [
+        "`polite` for no-results after a search or filter the reader just changed."
+      ],
+      "dont": [
+        "`polite` on an empty state present at page load. It interrupts the page being read.",
+        "`assertive`, almost ever. Being empty is not urgent."
+      ],
+      "a11y": "The same contract as Notice's `live`: a live region announces changes, so this matters only when the empty state arrives after the page did."
+    },
+    "className": {
+      "type": "string",
+      "summary": "Extra classes, for placement.",
+      "use": [
+        "Positioning it in the space the content would fill."
+      ],
+      "dont": [
+        "Boxing it in a card. It replaces content; it is not a widget."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "First use",
+      "when": "A collection the reader has not created anything in yet.",
+      "example": "<EmptyState\n  icon={FileText}\n  title=\"No invoices yet\"\n  description=\"Invoices you send will appear here, newest first.\"\n  action={<Button>Create invoice</Button>}\n/>",
+      "notes": "Silent, because it is there when the page loads. One action, the one that ends the empty state."
+    },
+    {
+      "case": "No results after a search",
+      "when": "A filter or search the reader just changed matched nothing.",
+      "example": "<EmptyState\n  live=\"polite\"\n  icon={SearchX}\n  title={`No tokens match ‘${query}’`}\n  action={<Button variant=\"secondary\" onClick={clearSearch}>Clear search</Button>}\n/>",
+      "notes": "`live=\"polite\"` because the reader's focus is in the search field and the list changed somewhere else. The title restates the query, so a typo is visible."
+    },
+    {
+      "case": "Reaching for the wrong component",
+      "when": "The request for the list failed.",
+      "example": "<EmptyState title=\"No invoices\" />",
+      "notes": "Don't. Telling the reader they have no invoices when the request failed is the worst message on the page. That is a Notice with `variant=\"danger\"` and a retry action."
+    }
+  ]
+}
