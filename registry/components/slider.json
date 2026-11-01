@@ -1,0 +1,321 @@
+{
+  "name": "slider",
+  "title": "Slider",
+  "description": "Choose a value, or a range of two, along a bounded track.",
+  "family": "inputs",
+  "alsoKnownAs": [
+    "range",
+    "range-slider",
+    "range-input",
+    "fader"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "field",
+    "state-layer"
+  ],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "The track, the fill and the row they sit in. The drawn track is decoration over a transparent native input, so these measurements are what the reader sees, not what they touch.",
+      "tokens": {
+        "hit area block-size": "size.control.sm — the transparent input's height, and so the touch target, regardless of the drawn thumb",
+        "track block-size": "space.1 — a stand-in for a size step that does not exist yet; see the track-size token gap in the decisions",
+        "track border-radius": "radius.pill",
+        "track background": "theme.border.strong — the boundary tone tuned to the 3:1 WCAG 1.4.11 asks of a control. theme.bg.muted is the recessed well, and a slider's empty track is the part of the control that says how far the value can still go, so it has to be seen",
+        "fill background": "theme.accent-role.bg — from min to the thumb, or between the two thumbs of a range",
+        "gap between label row and track": "space.stack.2xs",
+        "label colour": "theme.fg.primary",
+        "output colour": "theme.fg.secondary",
+        "output font-size": "type.control.size.sm",
+        "output font-variant": "tabular-nums, so the number does not shift width as it changes",
+        "opacity (aria-disabled)": "state.disabled-opacity — Field's, on the root"
+      }
+    },
+    "thumb": {
+      "summary": "The drawn handle. Surface-filled with an accent edge, so it reads against both the fill and the empty track it travels between.",
+      "tokens": {
+        "inline-size / block-size": "size.icon.md — the checkbox box's size, so a slider and a checkbox in one settings column carry the same visual weight",
+        "border-radius": "radius.pill",
+        "background": "theme.bg.surface",
+        "border": "border.2 solid theme.accent-role.bg",
+        "box-shadow": "theme.elevation.raised",
+        "hover / press": "compose the .rata-state-layer class — pending the data-hovered and data-pressed hook proposed in the decisions",
+        "focus ring": "focus.ring-width solid theme.focus-ring, offset focus.ring-offset, drawn on the thumb when the input matches :focus-visible",
+        "movement": "transform, not a layout property, with no transition while dragging — a thumb that lags the finger reads as broken"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "One or two native range inputs over a drawn track, composed with Field for the label and helper text. APG Slider and Multi-Thumb Slider, with the platform supplying the keyboard model and the touch-screen-reader gestures a scripted slider cannot receive.",
+    "decisions": [
+      {
+        "decision": "It is built on native `<input type=\"range\">`, one per thumb, not a `div role=\"slider\"`",
+        "why": "The APG Slider and Multi-Thumb Slider patterns describe `role=\"slider\"` on any element, and both are satisfied by a native range input, which brings things a div cannot: iOS VoiceOver's swipe-to-adjust, which fires no key events and so never reaches a scripted slider; form participation; and the platform's keyboard model including Home, End and PageUp/PageDown. A range is two inputs sharing a track, each its own tab stop with its own name — which is what the multi-thumb pattern asks for anyway."
+      },
+      {
+        "decision": "The native input is the hit surface; the track and thumb are drawn",
+        "why": "A range input's thumb is a pseudo-element, styled differently in every engine and unable to carry a class. So the input is laid over the drawn track at full size and transparent, receiving every pointer, touch and key event, while the visible thumb is a real element positioned from the value. The hit area is the input's block-size, size.control.sm, independent of the drawn thumb's size — 2.5.8's target minimum met without a thumb that looks swollen."
+      },
+      {
+        "decision": "State-layer gap: the thumb needs `.rata-state-layer` and cannot have it as the class is written",
+        "why": "The state layer reacts to `:hover` and `:active` on the element carrying the class. Here the element under the pointer is the transparent input and the element that should show the feedback is the drawn thumb, so the class matches nothing. Writing a `:has(input:hover)` rule would be the hand-rolled hover this system forbids. Proposal, needing its own approval as a state-layer change: let `.rata-state-layer` also respond to `[data-hovered]` and `[data-pressed]`, set by the slider primitive from pointer events on the input. The opacities stay state.hover-opacity and state.press-opacity; only the trigger widens."
+      },
+      {
+        "decision": "Token gap: `size.track` — needs the design-tokens skill",
+        "why": "The track's thickness is a size, not a distance between things, and the size scale has no step for it. The recipe uses space.1 as the closest existing value; a spacing token standing in for a size is exactly the misuse `space`'s own contract warns about, so it is named here rather than shipped quietly. The proposal is `size.track`, with Purpose \"the thickness of a slider or progress track\". The Progress spec takes the opposite view — a bar is a mark, so space.1 is right, the way Badge's dot does it — and the two specs should settle on one answer at approval rather than ship two."
+      },
+      {
+        "decision": "A single pointer can always reach any value without dragging",
+        "why": "WCAG 2.5.7 requires an alternative to dragging. Pressing anywhere on the track moves the nearest thumb there, which the native input already does, and is kept on purpose rather than suppressed for a drag-only feel."
+      },
+      {
+        "decision": "Horizontal only",
+        "why": "A vertical slider on the web is a rotated input with a different keyboard direction, it fights vertical page scroll on touch, and every case seen so far — volume, zoom — is better served horizontally in the layouts this system builds. The track sets `touch-action: pan-y` so a horizontal drag adjusts while a vertical swipe still scrolls the page. Vertical can be added as an `orientation` prop when something needs it; it should not be paid for before."
+      },
+      {
+        "decision": "`onValueCommit` exists beside `onValueChange`",
+        "why": "Change fires on every pointer move, and the commonest bug with sliders is a query per pixel. Commit fires once per interaction — release, keypress or AT adjustment — so the expensive work has a correct place to go that does not require the caller to build a debounce and guess its delay."
+      },
+      {
+        "decision": "No `status`, `message` or `required`",
+        "why": "A slider always holds a value between `min` and `max` on the `step` grid, so there is no invalid state to show and no unanswered one to require. A constraint across two fields belongs to the form, which can report it in a Notice."
+      },
+      {
+        "decision": "No tick marks or labelled stops in this version",
+        "why": "Marks look simple and carry three decisions: whether they snap, how their labels avoid colliding at narrow widths, and whether they are announced. A discrete scale is served meanwhile by `step` plus `formatValue` returning the stop's name, which gets the announcement right — the part that matters most."
+      },
+      {
+        "decision": "Proposed primitive: `getSliderProps`",
+        "why": "No primitive exists yet. The proposal returns the input, drawn-thumb, track and output prop bags for one or two thumbs, keeps two thumbs from crossing (each thumb's `min`/`max` is the other's value), snaps to `step`, implements the disabled guard described under `disabled`, and sets the hover and press data attributes the state-layer proposal needs."
+      },
+      {
+        "decision": "Web and native",
+        "why": "Web: one `<input type=\"range\">` per thumb, with `aria-valuetext` from `formatValue` and `aria-label` from `thumbLabels` on a range, inside a Field; a range is a `role=\"group\"` labelled by `label`. Pointer, touch and keyboard all go through the native input. React Native: core no longer ships a Slider (it moved to a community package), and taking that dependency would make every native consumer install it, so the native component is a `View` driven by the responder system with `accessibilityRole=\"adjustable\"`, `accessibilityValue={{ min, max, now, text }}` — `text` from `formatValue` — and `accessibilityActions` for increment and decrement, which is what VoiceOver's and TalkBack's swipe gestures call. A range is two adjustable views. `onValueCommit` maps to responder release and to each accessibility action. `name` is web-only."
+      }
+    ]
+  },
+  "props": {
+    "label": {
+      "type": "ReactNode",
+      "required": true,
+      "summary": "What the value measures. Always required — `labelHidden` hides it, nothing removes it.",
+      "use": [
+        "The quantity, with its unit when the output does not carry one: \"Volume\", \"Max price (USD)\"."
+      ],
+      "dont": [
+        "A sentence. It is read before every value change a screen reader announces."
+      ],
+      "a11y": "Bound to the input by Field, so it is the slider's accessible name. For a range it names the group, and each thumb is named by `thumbLabels`."
+    },
+    "value": {
+      "type": "number | [number, number]",
+      "summary": "Controls the value from outside. A two-element tuple renders two thumbs.",
+      "use": [
+        "A filter that other controls also write to, or a value persisted elsewhere."
+      ],
+      "dont": [
+        "Passing it alongside `defaultValue`. One of them owns the state.",
+        "Switching between a number and a tuple across renders. The number of thumbs is decided once."
+      ],
+      "conflicts": [
+        "defaultValue"
+      ]
+    },
+    "defaultValue": {
+      "type": "number | [number, number]",
+      "default": "min",
+      "summary": "The starting value when the component owns the state. Its shape decides one thumb or two.",
+      "use": [
+        "`[min, max]` for a range filter that starts unconstrained."
+      ],
+      "dont": [
+        "A value off the `step` grid. It is snapped on the first interaction, which looks like the control jumped by itself."
+      ],
+      "conflicts": [
+        "value"
+      ]
+    },
+    "onValueChange": {
+      "type": "(value: number | [number, number]) => void",
+      "summary": "Fires continuously while the thumb moves.",
+      "use": [
+        "Updating the visible output and anything cheap that should track the thumb."
+      ],
+      "dont": [
+        "A network request. A drag fires this dozens of times a second — that is `onValueCommit`."
+      ]
+    },
+    "onValueCommit": {
+      "type": "(value: number | [number, number]) => void",
+      "summary": "Fires once when an interaction ends: pointer release, a key press, or an assistive-technology adjustment.",
+      "use": [
+        "Re-running a query or saving a preference — anything expensive enough that it should happen once per decision."
+      ],
+      "dont": [
+        "Assuming it follows a drag only. Each arrow-key press is a complete interaction and commits."
+      ]
+    },
+    "min": {
+      "type": "number",
+      "default": "0",
+      "summary": "The lowest value.",
+      "use": [
+        "The real floor of the quantity, not a guess at the usual one."
+      ]
+    },
+    "max": {
+      "type": "number",
+      "default": "100",
+      "summary": "The highest value.",
+      "use": [
+        "The real ceiling. If there is none, this is the wrong control — a slider needs both ends to mean anything; use `NumberField`."
+      ]
+    },
+    "step": {
+      "type": "number",
+      "default": "1",
+      "summary": "The grid values snap to. Arrow keys move one step, PageUp and PageDown ten.",
+      "use": [
+        "A step that makes every reachable value meaningful — a price filter in 5s, not in cents."
+      ],
+      "dont": [
+        "So fine a step that the thumb cannot land on a chosen value by touch. A hundred steps across a phone-width track is about the limit; past it, add a `NumberField` beside the slider."
+      ]
+    },
+    "thumbLabels": {
+      "type": "[string, string]",
+      "summary": "Names for the two thumbs of a range. Required when the value is a tuple.",
+      "use": [
+        "\"Minimum price\" and \"Maximum price\" — each thumb is its own control and needs its own name."
+      ],
+      "dont": [
+        "Setting it on a single-thumb slider. There is one control and `label` already names it."
+      ],
+      "a11y": "Each becomes its thumb's `aria-label`, and the group keeps `label`. Without it a reader hears two identical sliders and cannot tell which end they are moving."
+    },
+    "formatValue": {
+      "type": "(value: number) => string",
+      "summary": "Turns a value into the text shown in the output and announced as `aria-valuetext`.",
+      "use": [
+        "Units and currency: `(v) => `$${v}``, or `Intl.NumberFormat` for the page's locale.",
+        "Named stops on a discrete scale: `(v) => [\"Off\", \"Low\", \"High\"][v]`."
+      ],
+      "dont": [
+        "Rounding away the step. The text announced has to be the value the reader will get."
+      ],
+      "a11y": "Without it a screen reader announces the bare number, which is meaningless for a price, a percentage or a named level."
+    },
+    "showValue": {
+      "type": "boolean",
+      "default": "true",
+      "summary": "Renders the current value as visible text beside the label.",
+      "use": [
+        "Almost always. A slider without a number is a guess, and touch makes it a worse one — the finger covers the thumb."
+      ],
+      "dont": [
+        "Turning it off because the value is shown elsewhere and then not tying the two together. If you hide it, the value has to be visible somewhere the reader is looking."
+      ],
+      "a11y": "Rendered in an `<output>` tied to the input, but not a live region: the input's own `aria-valuetext` is already announced on every change, and a live output would say it twice."
+    },
+    "name": {
+      "type": "string",
+      "summary": "Form field name. A range submits two values under the same name, lower first.",
+      "use": [
+        "A native form post or `FormData`."
+      ]
+    },
+    "labelHidden": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Takes the label off screen while leaving it in the accessibility tree.",
+      "use": [
+        "A control whose meaning is already carried by a heading or column header directly above it."
+      ],
+      "dont": [
+        "Pairing it with a placeholder standing in for the name. The placeholder is gone on the first keystroke."
+      ],
+      "a11y": "Field's, unchanged: the label element is still rendered and still bound. Only the pixels go."
+    },
+    "id": {
+      "type": "string",
+      "summary": "Stable id for the slider, when something outside needs to point at it.",
+      "use": [
+        "A form library that addresses fields by id, or an error summary linking to the field it names."
+      ],
+      "dont": [
+        "Reusing one across two fields. Every id under it — description, message, popup — is derived from this."
+      ]
+    },
+    "description": {
+      "type": "ReactNode",
+      "summary": "Persistent helper text under the control.",
+      "use": [
+        "What the value affects, when the label alone does not say: \"Applies to new uploads only.\""
+      ],
+      "dont": [
+        "Repeating the label in a sentence. It is read out after the name, so a restatement is heard twice."
+      ],
+      "a11y": "Joins `aria-describedby` ahead of the message, so a constraint is heard before a failure."
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Blocks adjustment while keeping the slider focusable, readable and announced.",
+      "use": [
+        "A setting that depends on another being on."
+      ],
+      "dont": [
+        "Assuming the value is withheld. It still submits — the same consequence the text field documents."
+      ],
+      "a11y": "`aria-disabled` on each thumb. A range input has no `readOnly`, so the primitive blocks the change itself: keys and pointer down are refused, and an assistive-technology adjustment that slips past them is reverted to the current value."
+    },
+    "className": {
+      "type": "string",
+      "summary": "Class for the wrapper — the width the layout wants, not a restyle.",
+      "use": [
+        "The inline size of the track, which is the layout's decision."
+      ],
+      "dont": [
+        "Restyling the thumb or track. They are drawn from the recipe, and the thumb's hit area is sized for touch."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "One value with units",
+      "when": "A setting with a real floor and ceiling, where the approximate position matters more than the exact number.",
+      "example": "<Slider\n  label=\"Volume\"\n  defaultValue={40}\n  formatValue={(v) => `${v}%`}\n/>",
+      "notes": "`formatValue` is what makes the announcement \"40%\" rather than \"40\". The visible output uses the same text, so what is heard and what is seen cannot disagree."
+    },
+    {
+      "case": "A price range filter",
+      "when": "Two ends of one interval, adjusted independently.",
+      "example": "<Slider\n  label=\"Price\"\n  defaultValue={[0, 500]}\n  max={500}\n  step={10}\n  thumbLabels={[\"Minimum price\", \"Maximum price\"]}\n  formatValue={(v) => `$${v}`}\n  onValueCommit={applyFilter}\n/>",
+      "notes": "`onValueCommit` re-runs the query once per decision rather than once per pixel. `thumbLabels` is required for a tuple: without it a screen reader hears two identical sliders."
+    },
+    {
+      "case": "A discrete scale with named stops",
+      "when": "A handful of levels with names rather than numbers.",
+      "example": "<Slider\n  label=\"Image quality\"\n  max={2}\n  defaultValue={1}\n  formatValue={(v) => [\"Low\", \"Medium\", \"High\"][v]}\n/>",
+      "notes": "Consider whether this wants to be a `SegmentedControl` instead. Three named options that are all visible at once are easier to choose between than a thumb whose stops are invisible."
+    },
+    {
+      "case": "Reaching for the wrong component",
+      "when": "The reader knows the exact number they want.",
+      "example": "<Slider label=\"Quantity\" max={1000} />",
+      "notes": "Don't. Landing a thumb on 347 out of 1000 by touch is a dexterity test. An exact number is a `NumberField`; if the approximate position also helps, put one beside the other bound to the same value."
+    }
+  ]
+}

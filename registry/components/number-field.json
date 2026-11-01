@@ -1,0 +1,374 @@
+{
+  "name": "number-field",
+  "title": "Number Field",
+  "description": "A labelled input for a numeric quantity, with keyboard and button stepping, locale-aware formatting, and bounds.",
+  "family": "inputs",
+  "alsoKnownAs": [
+    "number-input",
+    "numeric-input",
+    "spinbutton",
+    "quantity-input",
+    "stepper"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "field",
+    "state-layer",
+    "icon",
+    "visually-hidden"
+  ],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "The text field's box, step for step, with a button well at each end. Field owns the label, helper text, message and disabled dimming.",
+      "tokens": {
+        "font-family": "font.family.sans",
+        "font-size": "type.control.size.md",
+        "font-variant": "tabular-nums, so digits do not shift as the value changes",
+        "text-align": "end — numbers compare by their last digit, so a column of them aligns on the right",
+        "background": "theme.bg.surface",
+        "color": "theme.fg.primary",
+        "placeholder colour": "theme.fg.muted",
+        "border": "border.default solid theme.border.strong",
+        "border-radius": "radius.element",
+        "block-size": "size.control.md — and size.control.sm / size.control.lg at the other sizes",
+        "padding-inline": "space.control.padding-inline.md plus size.control.sm at each end when stepButtons is on — the well each button sits in",
+        "focus border-color": "theme.fg.primary",
+        "focus outline": "focus.ring-width solid theme.fg.primary at space.0 offset — the text field's departure, so every text box in a form focuses alike",
+        "hover inner band": "theme.bg.muted at border.2 as an inset shadow, idle only",
+        "validating ring": "theme.accent-role.ring",
+        "valid ring": "theme.success-role.ring",
+        "invalid ring": "theme.danger-role.ring"
+      }
+    },
+    "step-button": {
+      "summary": "Decrement and increment, inside the box at either end. Transparent on the field's surface, like Search's clear control.",
+      "tokens": {
+        "inline-size / block-size": "size.control.sm, inset space.0-5 from the box edge",
+        "glyph size": "size.icon.text",
+        "colour": "theme.fg.secondary",
+        "border-radius": "radius.inner",
+        "hover / press": "compose the .rata-state-layer class",
+        "at the limit": "state.disabled-opacity with aria-disabled — the button stays, so the layout does not shift when the value reaches min or max"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "An APG spinbutton built on a text input, so the value is parsed rather than trusted to `type=\"number\"`. Composed with Field for label, helper text and validation; formatting and parsing follow the page's locale.",
+    "decisions": [
+      {
+        "decision": "It is `<input type=\"text\" inputmode=\"decimal\" role=\"spinbutton\">`, not `type=\"number\"`",
+        "why": "The native number input fails readers in ways that are hard to see in a demo: the scroll wheel changes the value of a focused field while the page scrolls past it; it accepts `e`, so \"1e5\" is valid; its `value` is an empty string both for an empty field and for \"1.2.3\", so a caller cannot tell blank from broken; it does not accept a decimal comma in most locales; and its spin buttons are too small to touch and cannot be styled. A text input with `inputmode` keeps the right on-screen keyboard and gives the primitive the raw text to parse. The APG Spinbutton pattern supplies the ARIA: `aria-valuenow`, `aria-valuemin`, `aria-valuemax`, `aria-valuetext`."
+      },
+      {
+        "decision": "Parse on blur and Enter, not on every keystroke",
+        "why": "\"-\", \"1.\" and \"0.0\" are all on the way to a valid number. Reformatting or clamping while someone types moves the caret and rewrites their input under them. So typing changes the text only; the value, the clamp to `min`/`max` and the formatting all happen when the reader commits."
+      },
+      {
+        "decision": "Locale comes from the page, not from a prop",
+        "why": "Formatting and parsing use the nearest `lang` attribute, so \"1.234,5\" parses in German and \"1,234.5\" in English. A per-field `locale` prop would let one form disagree with itself about what a comma means, which is worse than either answer."
+      },
+      {
+        "decision": "A typed value off the step grid is kept",
+        "why": "`step` is how far a key press moves, not a rule about what can be entered. Rounding 12.37 to 12.4 because step is 0.1 is a value change the reader did not make and may not notice. If the grid is a business rule, it is validation, and Field's `status` and `message` say so where the reader can see it."
+      },
+      {
+        "decision": "The step buttons are pointer and touch targets, not tab stops",
+        "why": "APG puts them at `tabindex=\"-1\"`, and this follows it: keyboard users have the arrow keys and PageUp/PageDown. Pressing and holding a button repeats after a delay, the way a native spinner does. The buttons sit at either end — decrement first, increment last — rather than stacked at the end, because two stacked half-height buttons are a 14px target each."
+      },
+      {
+        "decision": "Not every number is a NumberField",
+        "why": "A postcode, a card number, an account number and a phone number are strings of digits. They have leading zeros, they are never incremented, and formatting them with grouping separators corrupts them. They are a `TextField` with `inputMode=\"numeric\"`; this component is for quantities."
+      },
+      {
+        "decision": "Disabled is `aria-disabled` plus `readOnly`, inherited from Field",
+        "why": "The system rule, and the text field's consequence with it: the value still submits."
+      },
+      {
+        "decision": "Proposed primitive: `getNumberFieldProps`",
+        "why": "No primitive exists yet. The proposal owns parse, clamp, step and format as pure functions over the raw text and the options, and returns the input and button prop bags — including the press-and-hold repeat schedule as data, so the timer lives in the React wrapper rather than in the primitive."
+      },
+      {
+        "decision": "Web and native",
+        "why": "Web: the text input above with `role=\"spinbutton\"` inside a Field, two `<button tabindex=\"-1\">` with `aria-label`, and a hidden input carrying `name`. React Native: a `TextInput` with `keyboardType=\"decimal-pad\"` — or `numbers-and-punctuation` when `min` is below zero, because the iOS decimal pad has no minus key — flanked by two `Pressable` buttons with `accessibilityRole=\"button\"` and the two labels. iOS cannot make one element both editable text and adjustable, so on native the input keeps its text role and the stepping lives on the buttons; `accessibilityValue={{ min, max, now, text }}` is set on the input so the range is still announced. `name` and `size` are web-only."
+      }
+    ]
+  },
+  "props": {
+    "label": {
+      "type": "ReactNode",
+      "required": true,
+      "summary": "The quantity's name. Always required — `labelHidden` hides it, nothing removes it.",
+      "use": [
+        "A noun phrase with the unit when `formatOptions` does not show one: \"Seats\", \"Weight (kg)\"."
+      ],
+      "dont": [
+        "Leaving the unit to the placeholder. It disappears on the first digit."
+      ],
+      "a11y": "Bound to the input by Field, so it is the spinbutton's accessible name."
+    },
+    "value": {
+      "type": "number | null",
+      "summary": "Controls the value from outside. `null` is empty, which is different from zero.",
+      "use": [
+        "A form library, or a quantity another control also writes to."
+      ],
+      "dont": [
+        "Passing it alongside `defaultValue`. One of them owns the state.",
+        "`0` to mean unanswered. Zero is an answer; empty is `null`."
+      ],
+      "conflicts": [
+        "defaultValue"
+      ]
+    },
+    "defaultValue": {
+      "type": "number | null",
+      "default": "null",
+      "summary": "The starting value when the component owns the state.",
+      "use": [
+        "A genuine default — one seat, one unit."
+      ],
+      "conflicts": [
+        "value"
+      ]
+    },
+    "onValueChange": {
+      "type": "(value: number | null) => void",
+      "summary": "Fires with the parsed number when the value changes: a step, or text that parses on blur or Enter.",
+      "use": [
+        "Reading a number without parsing a string, which is the whole point of the component."
+      ],
+      "dont": [
+        "Expecting it on every keystroke. Partial text like \"1.\" or \"-\" is not a number yet, so the value changes when the text resolves to one."
+      ]
+    },
+    "min": {
+      "type": "number",
+      "summary": "The lowest allowed value. Typed values below it are clamped on blur.",
+      "use": [
+        "A real floor: zero items, one seat."
+      ],
+      "dont": [
+        "Leaving it unset on a quantity that cannot be negative. The decrement button would walk straight past zero."
+      ],
+      "a11y": "Becomes `aria-valuemin`. Decrement at the floor is refused and the button is `aria-disabled`, not removed."
+    },
+    "max": {
+      "type": "number",
+      "summary": "The highest allowed value. Typed values above it are clamped on blur.",
+      "use": [
+        "A real ceiling, such as stock on hand."
+      ],
+      "a11y": "Becomes `aria-valuemax`."
+    },
+    "step": {
+      "type": "number",
+      "default": "1",
+      "summary": "How far ArrowUp, ArrowDown and the buttons move. PageUp and PageDown move ten steps.",
+      "use": [
+        "`0.01` for currency, `0.5` for half-units."
+      ],
+      "dont": [
+        "Expecting it to restrict typing. A typed value off the grid is kept — rounding someone's exact entry is a value change they did not make. Validate it with `status` if the grid is a rule."
+      ]
+    },
+    "formatOptions": {
+      "type": "Intl.NumberFormatOptions",
+      "summary": "How the value is displayed when the field is not being edited — currency, percent, units, fraction digits.",
+      "use": [
+        "`{ style: \"currency\", currency: \"EUR\" }` for money, so the reader sees \"€12.50\" and edits \"12.50\"."
+      ],
+      "dont": [
+        "Formatting the value yourself into `value`. It is a number; the format is this prop's job, at the page's locale."
+      ],
+      "a11y": "The formatted text is `aria-valuetext`, so \"12.50 euros\" is what is announced rather than \"12.5\"."
+    },
+    "stepButtons": {
+      "type": "boolean",
+      "default": "true",
+      "summary": "Renders the decrement and increment buttons at either end.",
+      "use": [
+        "Small adjustments a reader makes by touch — quantities in a cart, guests on a booking."
+      ],
+      "dont": [
+        "A value nobody adjusts by one — a postcode, a phone number, a card number. Those are not numbers; they are a `TextField` with `inputMode=\"numeric\"`."
+      ],
+      "a11y": "The buttons are `tabindex=\"-1\"`, as APG's spinbutton pattern specifies: the keyboard already has the arrow keys, and two extra tab stops per field would triple a form's length."
+    },
+    "incrementLabel": {
+      "type": "string",
+      "default": "\"Increase\"",
+      "summary": "Accessible name for the increment button.",
+      "use": [
+        "Translating it."
+      ],
+      "dont": [
+        "An empty string. The button is icon-only, so this is the only name it has for a voice-control or touch screen-reader user."
+      ]
+    },
+    "decrementLabel": {
+      "type": "string",
+      "default": "\"Decrease\"",
+      "summary": "Accessible name for the decrement button.",
+      "use": [
+        "Translating it."
+      ],
+      "dont": [
+        "An empty string, for the same reason."
+      ]
+    },
+    "placeholder": {
+      "type": "string",
+      "summary": "A hint shown while the field is empty.",
+      "use": [
+        "An example in the expected format: \"0.00\"."
+      ],
+      "dont": [
+        "The unit or the label. Both vanish on the first keystroke."
+      ]
+    },
+    "name": {
+      "type": "string",
+      "summary": "Form field name. Submits the unformatted number as a plain decimal string.",
+      "use": [
+        "A native form post, where the server should receive \"1234.5\" and not \"1.234,50 €\"."
+      ],
+      "a11y": "Carried by a hidden input; the visible one holds the formatted text."
+    },
+    "size": {
+      "type": "\"sm\" | \"md\" | \"lg\"",
+      "default": "\"md\"",
+      "summary": "Control height and inline padding. Text size does not change with it.",
+      "use": [
+        "Matching whatever the control sits beside."
+      ],
+      "dont": [
+        "`sm` in a touch-first layout. The step buttons shrink with the box, and they are the main way a phone user changes the value."
+      ]
+    },
+    "labelHidden": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Takes the label off screen while leaving it in the accessibility tree.",
+      "use": [
+        "A control whose meaning is already carried by a heading or column header directly above it."
+      ],
+      "dont": [
+        "Pairing it with a placeholder standing in for the name. The placeholder is gone on the first keystroke."
+      ],
+      "a11y": "Field's, unchanged: the label element is still rendered and still bound. Only the pixels go."
+    },
+    "id": {
+      "type": "string",
+      "summary": "Stable id for the number field, when something outside needs to point at it.",
+      "use": [
+        "A form library that addresses fields by id, or an error summary linking to the field it names."
+      ],
+      "dont": [
+        "Reusing one across two fields. Every id under it — description, message, popup — is derived from this."
+      ]
+    },
+    "status": {
+      "type": "FieldStatus",
+      "default": "\"idle\"",
+      "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
+      "use": [
+        "`invalid` with a `message` saying what to do about it."
+      ],
+      "dont": [
+        "`invalid` with no message. The ring says something is wrong; only the message says what."
+      ],
+      "a11y": "Field's, unchanged."
+    },
+    "description": {
+      "type": "ReactNode",
+      "summary": "Persistent helper text under the control.",
+      "use": [
+        "A constraint the reader needs before they answer."
+      ],
+      "dont": [
+        "Repeating the label in a sentence. It is read out after the name, so a restatement is heard twice."
+      ],
+      "a11y": "Joins `aria-describedby` ahead of the message, so a constraint is heard before a failure."
+    },
+    "message": {
+      "type": "ReactNode",
+      "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
+      "use": [
+        "What to do about an `invalid` status, in the imperative."
+      ],
+      "dont": [
+        "Putting the permanent constraint here. It leaves the description chain whenever the status returns to idle — that is `description`."
+      ],
+      "a11y": "Announced politely rather than as an alert, because it is already in `aria-describedby`."
+    },
+    "required": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Marks the field required, in the label and to assistive technology.",
+      "use": [
+        "Fields that genuinely block submission."
+      ],
+      "dont": [
+        "Pairing it with a hand-written asterisk in `label`. Field renders one."
+      ],
+      "a11y": "`aria-required` on the control; the rendered marker is `aria-hidden`."
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Blocks editing and stepping while keeping the field focusable, readable and announced.",
+      "use": [
+        "A quantity fixed by an earlier choice that should still be readable."
+      ],
+      "dont": [
+        "Assuming the value is withheld. `readOnly` still submits — the text field's consequence, unchanged."
+      ],
+      "a11y": "`aria-disabled` plus `readOnly` from Field. Arrow keys and both buttons are refused; the buttons are `aria-disabled` too."
+    },
+    "className": {
+      "type": "string",
+      "summary": "Class for the wrapper — the width the form wants, not a restyle.",
+      "use": [
+        "A narrow measure. A quantity rarely needs a full-width field, and a short box hints at a short answer."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "A quantity in a cart",
+      "when": "A small whole number adjusted by touch more often than typed.",
+      "example": "<NumberField label=\"Quantity\" defaultValue={1} min={1} max={stock} />",
+      "notes": "`min={1}` makes the decrement button refuse at one rather than reaching zero, which in a cart would mean removal — a different action that deserves its own button."
+    },
+    {
+      "case": "Money",
+      "when": "A decimal amount displayed in a currency.",
+      "example": "<NumberField\n  label=\"Budget\"\n  formatOptions={{ style: \"currency\", currency: \"EUR\" }}\n  step={0.01}\n  stepButtons={false}\n  name=\"budget\"\n/>",
+      "notes": "The reader sees \"€1,250.00\" at rest and edits \"1250.00\"; the form posts \"1250\". Step buttons are off because nobody adds a budget one cent at a time."
+    },
+    {
+      "case": "A value that failed validation",
+      "when": "A number that parses but breaks a rule the field cannot enforce by clamping.",
+      "example": "<NumberField\n  label=\"Team size\"\n  min={1}\n  status=\"invalid\"\n  message=\"Teams on this plan have at most 10 people.\"\n/>",
+      "notes": "The rule lives in the message, not in a silent clamp. `max={10}` would have quietly changed 12 to 10 on blur — use it for a hard limit, not for a plan limit the reader might want to upgrade past."
+    },
+    {
+      "case": "Reaching for the wrong component",
+      "when": "Digits that are an identifier rather than an amount.",
+      "example": "<NumberField label=\"Postcode\" />",
+      "notes": "Don't. A postcode can start with zero, is never incremented, and grouping separators would corrupt it. It is `<TextField label=\"Postcode\" inputMode=\"numeric\" />`."
+    }
+  ]
+}

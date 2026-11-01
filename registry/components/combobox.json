@@ -1,0 +1,425 @@
+{
+  "name": "combobox",
+  "title": "Combobox",
+  "description": "A text input that filters a popup list of options, for choices too many to scan or too rich for a native select.",
+  "family": "inputs",
+  "alsoKnownAs": [
+    "autocomplete",
+    "typeahead",
+    "autosuggest",
+    "searchable-select",
+    "filter-select"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "field",
+    "state-layer",
+    "icon",
+    "spinner",
+    "visually-hidden"
+  ],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "The input's box, matching `.rata-text-field-input` step for step — including its focus treatment, the documented departure from the system ring — so a combobox and a text field in one form are indistinguishable until opened. Field owns the label, helper text, message and disabled dimming.",
+      "tokens": {
+        "font-family": "font.family.sans",
+        "font-size": "type.control.size.md — constant across sizes; size changes the box, not the text",
+        "line-height": "type.control.line-height.md",
+        "background": "theme.bg.surface",
+        "color": "theme.fg.primary",
+        "placeholder colour": "theme.fg.muted",
+        "border": "border.default solid theme.border.strong",
+        "border-radius": "radius.element",
+        "block-size": "size.control.md — and size.control.sm / size.control.lg at the other sizes",
+        "padding-inline-start": "space.control.padding-inline.md — and the sm / lg steps at the other sizes",
+        "padding-inline-end": "space.control.padding-inline.md plus size.control.sm — reserved for the toggle, so text never runs under it",
+        "focus border-color": "theme.fg.primary",
+        "focus outline": "focus.ring-width solid theme.fg.primary at space.0 offset — the text field's departure, so every text box in a form focuses alike",
+        "hover inner band": "theme.bg.muted at border.2 as an inset shadow, idle only",
+        "validating ring": "theme.accent-role.ring",
+        "valid ring": "theme.success-role.ring",
+        "invalid ring": "theme.danger-role.ring"
+      }
+    },
+    "toggle": {
+      "summary": "The trailing chevron button. Pointer and touch only — the keyboard has ArrowDown — so it carries no focus ring of its own because it never takes focus.",
+      "tokens": {
+        "target inline-size / block-size": "size.control.sm",
+        "glyph size": "size.icon.text",
+        "colour": "theme.fg.secondary",
+        "border-radius": "radius.inner",
+        "hover / press": "compose the .rata-state-layer class",
+        "inset from the end edge": "space.0-5"
+      }
+    },
+    "popup": {
+      "summary": "The listbox. Menu's surface, so a transient list looks the same whether it holds actions or answers.",
+      "tokens": {
+        "background": "theme.bg.surface",
+        "border": "border.default solid theme.border.default",
+        "border-radius": "radius.container",
+        "box-shadow": "theme.elevation.overlay",
+        "padding": "space.1",
+        "gap from the input": "space.gap.xs",
+        "inline-size": "the input's own, from anchor positioning — never narrower than the field it belongs to",
+        "max-block-size": "size.control.sm multiplied by 8, then it scrolls — eight rows is enough to scan and short enough to stay above a phone keyboard",
+        "enter transition": "motion.overlay.duration with motion.easing.enter"
+      }
+    },
+    "option": {
+      "summary": "One answer. The highlight is virtual focus — DOM focus never leaves the input — so it has to be drawn rather than left to :focus-visible.",
+      "tokens": {
+        "min-block-size": "size.control.sm — a min, so an option with a description grows instead of clipping",
+        "padding-inline": "space.control.padding-inline.sm",
+        "border-radius": "radius.inner",
+        "label colour": "theme.fg.primary",
+        "label font-size": "type.control.size.sm",
+        "description colour": "theme.fg.secondary",
+        "description font-size": "type.supporting.size",
+        "hover / press": "compose the .rata-state-layer class",
+        "highlighted (aria-activedescendant)": "focus.ring-width solid theme.focus-ring as an outline inset by focus.ring-width — inset so the listbox's scroll container cannot clip it; the system ring, because this is the keyboard's position",
+        "selected background": "theme.accent-role.subtle, with a check glyph in theme.accent-role.fg — the selected menu-item's treatment",
+        "disabled": "state.disabled-opacity",
+        "empty / loading row colour": "theme.fg.secondary"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "An APG combobox: a text input that keeps focus while `aria-activedescendant` walks a popup listbox, composed with Field for its label, helper text and validation. The answer is an option's value; the text is only how the reader finds it.",
+    "decisions": [
+      {
+        "decision": "This is not Select, and the line between them is the native picker",
+        "why": "`Select` is a native `<select>`: the phone's own wheel or sheet, the platform's typeahead, correct accessibility by construction — and options that are strings and nothing else. Reach for Select when the reader can scan the list, which in practice means it fits on a screen and its options are plain text. Reach for Combobox when the reader has to type to find the answer: the list is long, the options come from a server, or each one needs a second line. Combobox costs a popup, a focus model and an announcement policy that Select gets free, so it is the wrong default — it is the component a list grows into, not the one it starts as."
+      },
+      {
+        "decision": "It follows the WAI-ARIA APG combobox pattern with a listbox popup, list autocomplete, manual selection",
+        "why": "The input keeps DOM focus the whole time and `aria-activedescendant` points at the highlighted option. Arrow keys move the highlight; only Enter or a click commits it. Automatic selection — where arrowing onto an option makes it the value — means a reader browsing the list with a screen reader changes the answer as they listen, which is a value change nobody asked for. APG's list-autocomplete variant with manual selection is the one that keeps browsing and choosing separate."
+      },
+      {
+        "decision": "The value and the text are two things, and the text gives way",
+        "why": "The input shows text; the answer is an option's `value`. Typing changes only the text. On blur, text that matches no option reverts to the chosen option's label (or empties, if nothing is chosen) unless `allowCustomValue` is set — otherwise a form would submit a stale value under a label the reader overwrote, which looks right and is wrong. Clearing the text entirely is a deliberate act and does clear the value."
+      },
+      {
+        "decision": "It opens on typing, ArrowDown and the toggle — never on focus",
+        "why": "Opening on focus ambushes a keyboard user tabbing through a form: every combobox they pass throws a popup over the fields below it. The toggle button at the end of the field is `tabindex=\"-1\"`, as APG specifies, because the keyboard already has ArrowDown and Alt+ArrowDown; it exists for pointer and touch."
+      },
+      {
+        "decision": "Escape is consumed only when there is something for it to do",
+        "why": "First press closes an open popup; with the popup closed, a press clears the text if there is any. With neither, the key bubbles — the same rule `Search` follows, and for the same reason: a field that always swallows Escape stops every Dialog, Sheet and Menu it sits inside from closing."
+      },
+      {
+        "decision": "The popup uses Menu's mechanism: the popover attribute, anchor positioning, a per-instance anchor name",
+        "why": "Menu already paid for the lessons here — an anchor name written once in a stylesheet makes every instance position against the last trigger on the page, and `popovertarget` lets the platform toggle the popup without telling React. The difference from Menu is focus: Menu moves focus into its items, a combobox never does, so the popover is `popover=\"manual\"` and light-dismiss is handled by the primitive on blur rather than by the platform."
+      },
+      {
+        "decision": "The result count is announced politely, after filtering settles",
+        "why": "A listbox changing under `aria-activedescendant` is silent in most screen readers, so a reader typing has no idea whether their text matched anything. A polite status region says \"7 results\" or the `emptyMessage`. It waits for `loading` to clear, because announcing zero results for a query still in flight is a false answer."
+      },
+      {
+        "decision": "No multiple selection",
+        "why": "Choosing several values needs chips in the field, a removal model for each chip and a different announcement for each add and remove. That is a tags input — a separate entry with its own contract — not a boolean here that changes what `value` means."
+      },
+      {
+        "decision": "Option labels are text, with one ReactNode slot for a second line",
+        "why": "The label is what the box shows once chosen and what typing matches against, so a ReactNode label would need a second, hidden text version anyway. `description` is the slot for everything Select cannot show — and it is announced after the label as part of the option's name, so it should be short."
+      },
+      {
+        "decision": "Disabled is `aria-disabled` plus `readOnly`, inherited from Field",
+        "why": "The system rule. The popup cannot open, the field stays in the tab order, and — the consequence `text-field` already documents — the hidden input still submits its value."
+      },
+      {
+        "decision": "Proposed primitive: `getComboboxProps`",
+        "why": "No primitive exists yet, so `behavior.primitive` is left unset. The proposal is a pure function over `{ open, inputText, highlightedIndex, value, options, filter }` returning the input, toggle, listbox and option prop bags plus the next state for each key — the same shape as `getMenuProps`, minus roving focus, plus `aria-activedescendant`. It is the thing approved at this gate."
+      },
+      {
+        "decision": "Web and native",
+        "why": "Web: an `<input role=\"combobox\">` with `aria-expanded`, `aria-controls`, `aria-autocomplete=\"list\"` and `aria-activedescendant`, a `<ul role=\"listbox\">` of `<li role=\"option\" aria-selected>` in a manual popover, and a hidden input carrying `name`. Touch works the same as pointer; on a narrow viewport the popup still anchors below the field, sized to stay above the on-screen keyboard. React Native: a `TextInput` with `accessibilityRole=\"combobox\"` and `accessibilityState={{ expanded }}`, with results in a `FlatList` of `Pressable` rows carrying `accessibilityState={{ selected, disabled }}`. There is no `aria-activedescendant` on native — the screen reader moves into the list itself — so the highlight model and the count region are web-only behaviour, and native announces the count with `AccessibilityInfo.announceForAccessibility`. On a phone the results render in a full-screen `Modal` with the input pinned at the top, because an anchored list below a field is under the keyboard. `name` is web-only: there is no form post on native. `size` is web-only; native rows take the platform's minimum touch height."
+      }
+    ]
+  },
+  "props": {
+    "label": {
+      "type": "ReactNode",
+      "required": true,
+      "summary": "The control's name. Always required — `labelHidden` hides it, nothing removes it.",
+      "use": [
+        "A short noun phrase naming what is being chosen: \"Assignee\", not \"Search for an assignee\"."
+      ],
+      "dont": [
+        "Leaving it off because the placeholder says it. The placeholder is gone on the first keystroke, which is exactly when a reader is mid-search."
+      ],
+      "a11y": "Bound to the input by Field, so it is the combobox's accessible name. The popup listbox is labelled by the same element, so the list and the field are announced as one thing."
+    },
+    "options": {
+      "type": "ComboboxOption[]",
+      "required": true,
+      "summary": "The choices, as `{ value, label, description?, disabled? }`, in the order they are read.",
+      "use": [
+        "Every option when the list is local; the current page of results when the server filters (with `filter=\"none\"`).",
+        "`description` for the second line a native `<option>` cannot hold — an email under a name, a region under a city."
+      ],
+      "dont": [
+        "A ReactNode `label`. The label is what the input shows once chosen and what typing is matched against, so it has to be text — the second line is `description`.",
+        "A short list a reader can scan without typing. That is `Select`, and it gets the phone's own picker for free."
+      ],
+      "a11y": "Each becomes a `role=\"option\"` in a `role=\"listbox\"`. A disabled option stays in the list, reachable by arrow keys and announced as unavailable, and cannot be chosen."
+    },
+    "value": {
+      "type": "string | null",
+      "summary": "Controls the chosen option's `value` from outside. `null` means nothing is chosen.",
+      "use": [
+        "A form library, or a field whose options depend on another field's answer."
+      ],
+      "dont": [
+        "Passing it alongside `defaultValue`. One of them owns the state."
+      ],
+      "conflicts": [
+        "defaultValue"
+      ]
+    },
+    "defaultValue": {
+      "type": "string | null",
+      "default": "null",
+      "summary": "The starting choice when the component owns the state.",
+      "use": [
+        "A genuine default the reader usually wants."
+      ],
+      "dont": [
+        "A value missing from `options`. With local options the input would have no label to show; with server options, pass the chosen option in the first page."
+      ],
+      "conflicts": [
+        "value"
+      ]
+    },
+    "onValueChange": {
+      "type": "(value: string | null) => void",
+      "summary": "Fires with the chosen option's value when a choice is committed — Enter, a click, or clearing the text.",
+      "use": [
+        "Reading the answer, which is the option's `value`, never the text in the box."
+      ],
+      "dont": [
+        "Expecting it on every keystroke. Typing changes the text, not the value — that is `onInputChange`."
+      ]
+    },
+    "onInputChange": {
+      "type": "(text: string) => void",
+      "summary": "Fires with the text in the box on every edit.",
+      "use": [
+        "Fetching the next page of options when the server does the filtering — debounce it on your side, the component does not."
+      ],
+      "dont": [
+        "Treating the text as the answer. Unless `allowCustomValue` is set, text that matches no option is discarded on blur."
+      ]
+    },
+    "filter": {
+      "type": "\"contains\" | \"starts-with\" | \"none\"",
+      "default": "\"contains\"",
+      "summary": "How typed text narrows `options` locally.",
+      "use": [
+        "`none` when `options` is already the server's answer to the current text — filtering it again would hide results the server matched on fields the reader cannot see.",
+        "`starts-with` for codes and identifiers, where a match in the middle is noise."
+      ],
+      "dont": [
+        "`none` with a local list. Nothing narrows, and the reader is typing into a field that ignores them."
+      ],
+      "a11y": "Whatever the mode, the result count is announced politely after each change, because a list changing under an `aria-activedescendant` is otherwise silent in most screen readers."
+    },
+    "allowCustomValue": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Accepts text that matches no option as the answer.",
+      "use": [
+        "Suggestions over an open answer: a tag that may not exist yet, a city the list does not know."
+      ],
+      "dont": [
+        "A choice that must be one of the options. Leave it off and unmatched text reverts to the last chosen label on blur.",
+        "A search box that proposes completions and then runs a query. That is still `Search` until something needs completions; then it is this, with this prop on."
+      ],
+      "a11y": "With it on, the value reported is the text itself, so `onValueChange` receives a string that may not be any option's value — the caller has to expect that."
+    },
+    "loading": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Options are being fetched. The popup shows a spinner row and the field is busy.",
+      "use": [
+        "Between an `onInputChange` that went to the network and its answer."
+      ],
+      "dont": [
+        "Leaving it on while the previous results are still useful. Show them; the spinner row sits after them."
+      ],
+      "a11y": "Sets `aria-busy` on the listbox. The count announcement waits for it to clear, so a reader does not hear \"0 results\" for a search that has not answered yet."
+    },
+    "emptyMessage": {
+      "type": "ReactNode",
+      "default": "\"No matches\"",
+      "summary": "What the popup says when nothing matches.",
+      "use": [
+        "Translating it, or saying what to try: \"No people match — check the spelling or invite them.\""
+      ],
+      "dont": [
+        "An empty string. An open popup with nothing in it reads as broken, and the reader gets no answer at all."
+      ],
+      "a11y": "Rendered as a plain row outside the listbox's options, so it is announced by the count region rather than being arrowed onto as if it were a choice."
+    },
+    "placeholder": {
+      "type": "string",
+      "summary": "A hint shown while the box is empty.",
+      "use": [
+        "Naming the act: \"Type a name\"."
+      ],
+      "dont": [
+        "Using it as the label, for the reason `label` gives."
+      ]
+    },
+    "name": {
+      "type": "string",
+      "summary": "Form field name. The submitted value is the chosen option's `value`, not the text in the box.",
+      "use": [
+        "A native form post, where the server needs the id rather than the display label."
+      ],
+      "dont": [
+        "Reading the visible input in a form handler. It holds the label; the value lives in the hidden input this name is on."
+      ],
+      "a11y": "Carried by a hidden input, which is not in the tab order and is not announced."
+    },
+    "size": {
+      "type": "\"sm\" | \"md\" | \"lg\"",
+      "default": "\"md\"",
+      "summary": "Control height and inline padding. Text size does not change with it.",
+      "use": [
+        "Matching whatever the control sits beside — a combobox and a button in one row should be the same height."
+      ],
+      "dont": [
+        "`sm` to fit more on the page. It is the same text at a smaller target."
+      ]
+    },
+    "labelHidden": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Takes the label off screen while leaving it in the accessibility tree.",
+      "use": [
+        "A control whose meaning is already carried by a heading or column header directly above it."
+      ],
+      "dont": [
+        "Pairing it with a placeholder standing in for the name. The placeholder is gone on the first keystroke."
+      ],
+      "a11y": "Field's, unchanged: the label element is still rendered and still bound. Only the pixels go."
+    },
+    "id": {
+      "type": "string",
+      "summary": "Stable id for the combobox, when something outside needs to point at it.",
+      "use": [
+        "A form library that addresses fields by id, or an error summary linking to the field it names."
+      ],
+      "dont": [
+        "Reusing one across two fields. Every id under it — description, message, popup — is derived from this."
+      ]
+    },
+    "status": {
+      "type": "FieldStatus",
+      "default": "\"idle\"",
+      "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
+      "use": [
+        "`invalid` with a `message` saying what to do about it."
+      ],
+      "dont": [
+        "`invalid` with no message. The ring says something is wrong; only the message says what."
+      ],
+      "a11y": "Field's, unchanged."
+    },
+    "description": {
+      "type": "ReactNode",
+      "summary": "Persistent helper text under the control.",
+      "use": [
+        "A constraint the reader needs before they answer."
+      ],
+      "dont": [
+        "Repeating the label in a sentence. It is read out after the name, so a restatement is heard twice."
+      ],
+      "a11y": "Joins `aria-describedby` ahead of the message, so a constraint is heard before a failure."
+    },
+    "message": {
+      "type": "ReactNode",
+      "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
+      "use": [
+        "What to do about an `invalid` status, in the imperative."
+      ],
+      "dont": [
+        "Putting the permanent constraint here. It leaves the description chain whenever the status returns to idle — that is `description`."
+      ],
+      "a11y": "Announced politely rather than as an alert, because it is already in `aria-describedby`."
+    },
+    "required": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Marks the field required, in the label and to assistive technology.",
+      "use": [
+        "Fields that genuinely block submission."
+      ],
+      "dont": [
+        "Pairing it with a hand-written asterisk in `label`. Field renders one."
+      ],
+      "a11y": "`aria-required` on the control; the rendered marker is `aria-hidden`."
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Blocks choosing while keeping the field focusable, readable and announced.",
+      "use": [
+        "A choice that depends on an answer nobody has given yet."
+      ],
+      "dont": [
+        "Assuming the value is withheld. The hidden input still submits — if the value must not reach the server, do not render the field."
+      ],
+      "a11y": "`aria-disabled` plus `readOnly` on the input, from Field. The popup never opens, so arrow keys and the toggle do nothing, and the field stays in the tab order."
+    },
+    "className": {
+      "type": "string",
+      "summary": "Class for the wrapper — the width the form wants, not a restyle.",
+      "use": [
+        "The measure or grid placement the form decides."
+      ],
+      "dont": [
+        "Restyling the popup. It is positioned against the input's own box and inherits its width."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "Choosing one of many from a local list",
+      "when": "The list is too long to scan and every option is known up front.",
+      "example": "<Combobox\n  label=\"Time zone\"\n  placeholder=\"Type a city\"\n  options={timeZones}\n  name=\"tz\"\n  required\n/>",
+      "notes": "Filtering is `contains` by default, so \"york\" finds New York. The form posts the option's `value` — the zone id — not the label in the box."
+    },
+    {
+      "case": "Options fetched as the reader types",
+      "when": "The server owns the matching, typically a people or product search.",
+      "example": "<Combobox\n  label=\"Assignee\"\n  options={people}\n  filter=\"none\"\n  loading={pending}\n  onInputChange={fetchPeople}\n  onValueChange={setAssignee}\n/>",
+      "notes": "`filter=\"none\"` is the important part: the server may have matched on an email the reader cannot see, and filtering its answer again would hide it. Debounce `fetchPeople` yourself."
+    },
+    {
+      "case": "Suggestions over an open answer",
+      "when": "The list helps, but the answer does not have to be on it.",
+      "example": "<Combobox\n  label=\"Tag\"\n  options={existingTags}\n  allowCustomValue\n  onValueChange={addTag}\n/>",
+      "notes": "`onValueChange` now receives text that may match no option. Without `allowCustomValue`, that text would be discarded on blur."
+    },
+    {
+      "case": "Reaching for the wrong component",
+      "when": "Five environments, plain labels, nothing to type.",
+      "example": "<Combobox\n  label=\"Environment\"\n  options={[\n    { value: \"dev\", label: \"Development\" },\n    { value: \"prod\", label: \"Production\" },\n  ]}\n/>",
+      "notes": "Don't. A reader can see all of these at once, and `Select` gives them the platform's own picker, which on a phone is better than any popup this component can draw."
+    }
+  ]
+}

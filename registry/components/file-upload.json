@@ -1,0 +1,356 @@
+{
+  "name": "file-upload",
+  "title": "File Upload",
+  "description": "Choose files with a button or drop them in, see what was chosen, and remove what was not meant.",
+  "family": "inputs",
+  "alsoKnownAs": [
+    "file-input",
+    "file-picker",
+    "dropzone",
+    "uploader",
+    "attachment-input"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "field",
+    "button",
+    "state-layer",
+    "icon",
+    "visually-hidden"
+  ],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "dropzone": {
+      "summary": "The target around the button. A dashed edge says \"put something here\" without looking like a field that needs typing into.",
+      "tokens": {
+        "border": "border.2 dashed theme.border.strong — strong, so the edge meets the 3:1 WCAG 1.4.11 asks of a control boundary",
+        "border-radius": "radius.container",
+        "background": "theme.bg.subtle",
+        "padding": "space.padding.lg",
+        "gap between button and hint": "space.stack.xs",
+        "hint colour": "theme.fg.secondary",
+        "hint font-size": "type.supporting.size",
+        "drag-over background": "theme.accent-role.subtle",
+        "drag-over border-color": "theme.accent-role.bg",
+        "invalid border-color": "theme.danger-role.fg — the text field's error edge, so a field that refused a file looks like any other invalid field"
+      }
+    },
+    "list": {
+      "summary": "The chosen files, one row each. Bordered rows rather than a table: there are two facts per file and one action.",
+      "tokens": {
+        "gap between rows": "space.stack.xs",
+        "gap between dropzone and list": "space.stack.sm",
+        "row min-block-size": "size.control.md",
+        "row padding-inline": "space.padding.sm",
+        "row border": "border.default solid theme.border.default",
+        "row border-radius": "radius.element",
+        "row background": "theme.bg.surface",
+        "file name colour": "theme.fg.primary",
+        "file name font-size": "type.control.size.md",
+        "file size colour": "theme.fg.secondary",
+        "file size font-size": "type.supporting.size",
+        "file icon size": "size.icon.text",
+        "file icon colour": "theme.fg.secondary"
+      }
+    },
+    "remove": {
+      "summary": "The per-row remove control. Same construction as Search's clear and Dialog's dismiss: currentColor on a transparent background.",
+      "tokens": {
+        "target inline-size / block-size": "size.control.sm",
+        "glyph size": "size.icon.text",
+        "colour": "theme.fg.secondary",
+        "border-radius": "radius.inner",
+        "hover / press": "compose the .rata-state-layer class",
+        "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible",
+        "disabled": "state.disabled-opacity"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "A visually hidden native file input opened by a Button, an optional drop zone around it, and a list of the chosen files with a remove control each — composed with Field. It validates and holds a selection; it does not upload.",
+    "decisions": [
+      {
+        "decision": "A native `<input type=\"file\">` is the control; a Button opens it",
+        "why": "The native input owns things nothing else can: the OS file dialog, the camera option on phones, and form submission. Its own rendering cannot be styled and its text cannot be translated, so it is visually hidden and out of the tab order, and the system's Button calls it. A `<label>` styled as a button is the other common approach and is worse: a label is not focusable, so the keyboard cannot reach it."
+      },
+      {
+        "decision": "The drop zone is an enhancement, never the way in",
+        "why": "Drag and drop is a pointer-only gesture, and phones have no files to drag. So the zone has no role and no tab stop, its \"or drag files here\" text is shown only under `(pointer: fine)`, and the button inside it is always present — the alternative to dragging that WCAG 2.5.7 asks for."
+      },
+      {
+        "decision": "The component re-validates everything it is given",
+        "why": "`accept` filters the OS dialog only as a suggestion, and drag and drop bypasses it entirely, so a `.exe` dropped onto an image field arrives like any other file. Every file is checked against `accept`, `maxSize` and `maxFiles` before it enters the list, and refusals go to `onReject` with a reason. The caller writes the message, because Field's `message` is the one place a field reports a failure."
+      },
+      {
+        "decision": "The list and the submission cannot disagree",
+        "why": "A file input's selection replaces itself on every pick, and it cannot be edited — removing one file from it is not possible through its API. So the component keeps the list, and writes it back into the input through a `DataTransfer` after every change. A native form post therefore submits exactly the files the reader can see, including after a removal."
+      },
+      {
+        "decision": "Removing a file moves focus somewhere that exists",
+        "why": "The remove button the reader pressed is gone, and focus on a removed node falls to the body — back to the top of the page for a keyboard user. Focus moves to the next file's remove button, or the previous one at the end, or the choose button when the list empties. A polite status region says \"report.pdf removed\" and \"2 files added\"."
+      },
+      {
+        "decision": "It chooses files; it does not upload them",
+        "why": "Uploading is a network policy — chunking, retries, auth, progress, cancellation — that belongs to the caller, and baking one in would make this component wrong for every backend but one. The open question is whether the list should accept a per-file progress and error state from the caller so the rows can show it; that is deliberately not in this spec and needs a decision."
+      },
+      {
+        "decision": "No image previews in this version",
+        "why": "A preview means an object URL per file and revoking each one when the file leaves the list, or a memory leak per photo; and a thumbnail needs alt text the reader did not write. It is a separate pass, not a boolean here."
+      },
+      {
+        "decision": "Disabled is `aria-disabled` with a click guard, not the native attribute",
+        "why": "The system rule, applied to the choose and remove buttons. And the text field's consequence, applied to files: whatever is already chosen still submits."
+      },
+      {
+        "decision": "Proposed primitive: `getFileUploadProps`",
+        "why": "No primitive exists yet. The proposal validates candidate files against the constraints, returns the accepted list and the rejections, computes where focus goes after a removal, and produces the announcement strings — all pure. The `DataTransfer` write-back and the drag events are the React wrapper's, since both are DOM acts."
+      },
+      {
+        "decision": "Web and native",
+        "why": "Web: a visually hidden `<input type=\"file\">` carrying `name`, `accept` and `multiple`; the system Button; a drop zone `<div>` with no role; and the file list as a `<ul>` with one remove button per row, all inside a `role=\"group\"` labelled by `label`. React Native has no file input. The native component is a `Pressable` with `accessibilityRole=\"button\"` opening the OS document picker — which is not in core, so it is a community-package dependency every native consumer installs, and photos from the library are a second picker with its own permission prompt. That costs three things: `dropzone` is web-only; `accept` extensions such as `.pdf` are web-only, because native pickers filter by type (MIME on Android, translated to UTIs on iOS), which is why `accept` should lead with MIME types; and `name` is web-only, since there is no form post. `PickedFile` is the same shape on both — `{ name, size, type }` — with `file: File` on web and `uri` on native, so validation code is shared."
+      }
+    ]
+  },
+  "props": {
+    "label": {
+      "type": "ReactNode",
+      "required": true,
+      "summary": "What the files are for. Always required — `labelHidden` hides it, nothing removes it.",
+      "use": [
+        "The document being asked for: \"Proof of address\", \"Attachments\"."
+      ],
+      "dont": [
+        "\"Upload\". That is the act, and the button already says it."
+      ],
+      "a11y": "Labels the group: the choose button, the drop zone and the file list are announced as belonging to it."
+    },
+    "accept": {
+      "type": "string",
+      "summary": "Which files are allowed, as MIME types and extensions: \"image/*,.pdf\".",
+      "use": [
+        "MIME types first — they are the part that works on every platform, including native."
+      ],
+      "dont": [
+        "Treating it as enforcement. The OS dialog's filter is a hint the reader can override, and drag and drop ignores it entirely; the component re-checks every file and reports the misses through `onReject`."
+      ],
+      "a11y": "Restated in the description chain in words — \"PDF or image\" — because a reader who cannot see a file dialog's filter never learns it."
+    },
+    "multiple": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Accepts more than one file.",
+      "use": [
+        "Attachments, a photo set."
+      ],
+      "dont": [
+        "Leaving it on for a single document. The button then says \"Choose files\" and a reader may send two when the form wanted one."
+      ]
+    },
+    "maxFiles": {
+      "type": "number",
+      "summary": "The most files the list may hold. Only meaningful with `multiple`.",
+      "use": [
+        "A real limit on the receiving side."
+      ],
+      "dont": [
+        "Setting it without saying it in `description`. A rejection is a worse place to learn a limit than the field's own helper text."
+      ]
+    },
+    "maxSize": {
+      "type": "number",
+      "summary": "The largest file allowed, in bytes.",
+      "use": [
+        "The server's real limit, so a reader learns it before a long upload fails."
+      ],
+      "dont": [
+        "Stating it only here. Put it in `description` in human units — \"Up to 10 MB\"."
+      ]
+    },
+    "value": {
+      "type": "PickedFile[]",
+      "summary": "Controls the chosen files from outside. Each is `{ name, size, type }` plus the platform's handle — `file` on web, `uri` on native.",
+      "use": [
+        "A form library, or restoring a selection after a validation round-trip."
+      ],
+      "dont": [
+        "Expecting it to hold uploaded files. It holds chosen ones; uploading is the caller's."
+      ]
+    },
+    "onValueChange": {
+      "type": "(files: PickedFile[]) => void",
+      "summary": "Fires with the whole accepted list whenever a file is added or removed.",
+      "use": [
+        "Starting an upload per file, or enabling a submit button."
+      ],
+      "dont": [
+        "Assuming it fires for rejected files. They never enter the list — that is `onReject`."
+      ]
+    },
+    "onReject": {
+      "type": "(rejections: FileRejection[]) => void",
+      "summary": "Fires with the files that were refused and why: `{ file, reason: \"type\" | \"size\" | \"count\" }`.",
+      "use": [
+        "Setting `status=\"invalid\"` and a `message` that names the file and the rule it broke."
+      ],
+      "dont": [
+        "Ignoring it. Without it a dropped file that was refused simply does not appear, and the reader has no idea why."
+      ],
+      "a11y": "The component announces nothing about rejections itself; the message you set from this is what joins the description chain, which keeps one announcement policy for every field."
+    },
+    "dropzone": {
+      "type": "boolean",
+      "default": "true",
+      "summary": "Draws a drop target around the button, for dragging files in from the desktop.",
+      "use": [
+        "Turning it off in a compact row — a reply box's attachment control — where a large target would dominate."
+      ],
+      "dont": [
+        "Removing the button in its favour. The drop zone is an addition; the button is the control."
+      ],
+      "a11y": "The zone has no role and no tab stop. Dragging is not available to keyboard, switch or most screen-reader users, so it is never the only way in — WCAG 2.5.7."
+    },
+    "buttonLabel": {
+      "type": "string",
+      "default": "\"Choose file\" — \"Choose files\" with `multiple`",
+      "summary": "The choose button's text.",
+      "use": [
+        "Naming the kind of file: \"Choose photos\"."
+      ],
+      "dont": [
+        "\"Browse\". It describes the OS dialog, which is not what the reader wants to do."
+      ]
+    },
+    "name": {
+      "type": "string",
+      "summary": "Form field name. A native form post submits exactly the listed files.",
+      "use": [
+        "A plain `multipart/form-data` form."
+      ],
+      "a11y": "Carried by the native file input, which is visually hidden and out of the tab order — the button stands in for it."
+    },
+    "labelHidden": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Takes the label off screen while leaving it in the accessibility tree.",
+      "use": [
+        "A control whose meaning is already carried by a heading or column header directly above it."
+      ],
+      "dont": [
+        "Pairing it with a placeholder standing in for the name. The placeholder is gone on the first keystroke."
+      ],
+      "a11y": "Field's, unchanged: the label element is still rendered and still bound. Only the pixels go."
+    },
+    "id": {
+      "type": "string",
+      "summary": "Stable id for the file field, when something outside needs to point at it.",
+      "use": [
+        "A form library that addresses fields by id, or an error summary linking to the field it names."
+      ],
+      "dont": [
+        "Reusing one across two fields. Every id under it — description, message, popup — is derived from this."
+      ]
+    },
+    "status": {
+      "type": "FieldStatus",
+      "default": "\"idle\"",
+      "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
+      "use": [
+        "`invalid` with a `message` saying what to do about it."
+      ],
+      "dont": [
+        "`invalid` with no message. The ring says something is wrong; only the message says what."
+      ],
+      "a11y": "Field's, unchanged."
+    },
+    "description": {
+      "type": "ReactNode",
+      "summary": "Persistent helper text under the control.",
+      "use": [
+        "The limits, in words, before the reader picks: \"PDF or JPEG, up to 10 MB.\""
+      ],
+      "dont": [
+        "Repeating the label in a sentence. It is read out after the name, so a restatement is heard twice."
+      ],
+      "a11y": "Joins `aria-describedby` ahead of the message, so a constraint is heard before a failure."
+    },
+    "message": {
+      "type": "ReactNode",
+      "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
+      "use": [
+        "What to do about an `invalid` status, in the imperative."
+      ],
+      "dont": [
+        "Putting the permanent constraint here. It leaves the description chain whenever the status returns to idle — that is `description`."
+      ],
+      "a11y": "Announced politely rather than as an alert, because it is already in `aria-describedby`."
+    },
+    "required": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Marks the field required, in the label and to assistive technology.",
+      "use": [
+        "Fields that genuinely block submission."
+      ],
+      "dont": [
+        "Pairing it with a hand-written asterisk in `label`. Field renders one."
+      ],
+      "a11y": "`aria-required` on the control; the rendered marker is `aria-hidden`."
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Blocks choosing, dropping and removing while keeping the controls focusable and announced.",
+      "use": [
+        "While uploads are in flight, if the form cannot accept changes to the set."
+      ],
+      "dont": [
+        "Assuming the chosen files are withheld. They are still in the input and still submit — the text field's consequence, applied to files."
+      ],
+      "a11y": "`aria-disabled` on the choose button and every remove button, each with a click guard; drops are ignored."
+    },
+    "className": {
+      "type": "string",
+      "summary": "Class for the wrapper — the width the form wants, not a restyle.",
+      "use": [
+        "The measure the form decides."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "One required document",
+      "when": "A form that needs exactly one file of a known kind.",
+      "example": "<FileUpload\n  label=\"Proof of address\"\n  description=\"PDF or photo, up to 10 MB.\"\n  accept=\"application/pdf,image/*\"\n  maxSize={10_000_000}\n  name=\"proof\"\n  required\n/>",
+      "notes": "The limits are said in `description` as well as enforced by `accept` and `maxSize`. A reader should learn a rule before they break it."
+    },
+    {
+      "case": "A refused file",
+      "when": "Something was dropped or picked that the field cannot take.",
+      "example": "<FileUpload\n  label=\"Photos\"\n  multiple\n  accept=\"image/*\"\n  onReject={(r) => setError(`${r[0].file.name} is not an image.`)}\n  status={error ? \"invalid\" : \"idle\"}\n  message={error}\n/>",
+      "notes": "Refused files never enter the list, so without `onReject` they vanish silently. Name the file and the rule in the message."
+    },
+    {
+      "case": "A compact attachment control",
+      "when": "A reply box or a chat composer, where a drop zone would dwarf the field it serves.",
+      "example": "<FileUpload\n  label=\"Attachments\"\n  labelHidden\n  multiple\n  dropzone={false}\n  buttonLabel=\"Attach files\"\n/>",
+      "notes": "The button alone is the full control. The drop zone only ever added a pointer shortcut."
+    },
+    {
+      "case": "Reaching for the wrong component",
+      "when": "Choosing an avatar, where the reader wants to see and crop the image.",
+      "example": "<FileUpload label=\"Profile photo\" accept=\"image/*\" />",
+      "notes": "This will take the file, but shows its name, not the picture, and offers no crop. An avatar editor is a different component with previews and their alt-text and memory decisions; it does not exist yet."
+    }
+  ]
+}
