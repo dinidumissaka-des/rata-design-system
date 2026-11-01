@@ -1,0 +1,228 @@
+{
+  "name": "fab",
+  "title": "FAB",
+  "description": "The one primary action of a screen, floating over its content at the bottom inline-end corner.",
+  "family": "buttons",
+  "alsoKnownAs": [
+    "floating-action-button",
+    "floating-button",
+    "extended-fab"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "button",
+    "state-layer",
+    "spinner",
+    "icon"
+  ],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "A primary button in shape and colour, held to a corner of the viewport. The fill and its label token are Button's primary pair unchanged, because this is the screen's primary action and nothing about floating changes that.",
+      "tokens": {
+        "background": "theme.accent-role.bg",
+        "color": "theme.fg.on-accent — the one label token that belongs on theme.accent-role.bg",
+        "block-size": "size.control.lg plus space.1-5 above and below (48px) — a stand-in for the touch-target minimum this system has no token for; see the token-gap decision",
+        "inline-size, label hidden": "equal to the block-size, so the hidden-label FAB is a circle",
+        "padding-inline, label visible": "space.control.padding-inline.lg",
+        "border-radius": "radius.pill — one radius that makes the hidden-label FAB a circle and the labelled one a pill, so the two are visibly the same control",
+        "box-shadow": "theme.elevation.overlay — a stand-in; see the token-gap decision",
+        "icon size": "size.icon.lg",
+        "gap between icon and label": "space.gap.sm",
+        "font-size": "type.control.size.md",
+        "font-weight": "type.control.weight",
+        "line-height": "type.control.line-height.md",
+        "hover / press": "compose the .rata-state-layer class — do not swap the background",
+        "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible — never offset 0, because this is a filled accent control",
+        "disabled": "state.disabled-opacity, on aria-disabled",
+        "transition-duration": "motion.interactive.duration",
+        "transition-timing-function": "motion.interactive.easing"
+      }
+    },
+    "placement": {
+      "summary": "Where it floats. Measured from the viewport's safe area rather than its edge, and lifted clear of a BottomNav when one is on the page.",
+      "tokens": {
+        "position": "fixed",
+        "inset-inline-end": "max(space.padding.md, env(safe-area-inset-right) plus space.padding.md)",
+        "inset-block-end": "max(space.padding.md, env(safe-area-inset-bottom) plus space.padding.md)",
+        "placement center": "inset-inline-start 50% with a translate of half its own inline size, in place of inset-inline-end",
+        "clearance above a BottomNav": "when `:root:has(.rata-bottom-nav)`, inset-block-end adds the bar's own block size — computed from the same tokens BottomNav's recipe uses, so nothing is measured at runtime",
+        "z-index": "above page content and below the top layer — a Dialog, Sheet or Menu opened from it must cover it, and they do, because the top layer is above every z-index"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "A `<button type=\"button\">` fixed to a corner of the viewport, with Button's activation, loading and disabled behaviour. No primitive of its own: it composes `getButtonProps`, because activation is identical and a second implementation of it is a second place for the aria-disabled guard to go wrong.",
+    "decisions": [
+      {
+        "decision": "It is a component, not a Button with a className",
+        "why": "This system's test for a new component is a difference in semantics, and a FAB has none: it is announced as a button and activated as one. What it adds is a placement that every consumer would otherwise hand-write — fixed to a corner, offset by the safe-area inset, lifted clear of a BottomNav — and that is exactly the kind of value that ends up as `bottom: 72px` in a stylesheet and wrong on the next phone. It composes Button's primitive rather than restating it, so the only new thing is the geometry."
+      },
+      {
+        "decision": "One per screen, and always the primary fill — so there is no `variant`",
+        "why": "A FAB says 'this is what this screen is for'. Two of them say nothing, and a secondary-styled one is a primary action that has been told to look unimportant while still floating over everything. The fill is Button's primary pair because it is the primary action; a destructive action never floats, because the one control that is always under the thumb is the last one that should delete something."
+      },
+      {
+        "decision": "`label` is required and shown by default",
+        "why": "A floating glyph is the least explained control on a screen: it is detached from any content that could give it context. So the label is visible unless `labelHidden` is set, the same default and the same prop name as Switch. When it is hidden it becomes the `aria-label`, and it is still required, because an icon-only button with no name is announced as 'button' — this is Button's `iconOnly` obligation, enforced by the type instead of the contract."
+      },
+      {
+        "decision": "It does not shrink or hide on scroll",
+        "why": "Collapsing a labelled FAB to its icon on scroll, or sliding it off-screen, is common and has the problem BottomNav's contract names: it moves a target out from under a thumb that was about to use it. It also changes the accessible name's visibility mid-gesture. The vertical space it saves is one control's worth in one corner."
+      },
+      {
+        "decision": "Reading order follows the DOM, so where it is rendered matters more than where it floats",
+        "why": "Fixed positioning moves the paint and not the tab order. Rendered after a long list, the FAB is reached by keyboard only after every row in it; rendered at the start of `<main>`, it is reached first, which matches its importance. The contract cannot choose this for the caller, so it says it: render it before the content it acts on."
+      },
+      {
+        "decision": "It covers content, and the page reserves space for that",
+        "why": "A fixed control sits over whatever scrolls beneath it, so the last row of a list ends behind it. BottomNav avoids this by being sticky; a FAB cannot, because it floats in a corner rather than spanning an edge. The page's scrolling content needs `padding-block-end` of at least the FAB's block size plus its offset — the recipe states both in tokens, so the reservation is a sum of the same tokens rather than a measured number."
+      },
+      {
+        "decision": "A speed dial is a Menu, not a mode of this",
+        "why": "A FAB that fans out into three smaller actions is a trigger and a transient list of actions, which is precisely Menu — focus moves into it, Escape returns to the trigger, the arrow keys move between items. `<Menu trigger={<Fab … />}>` gets all of that from a component that already owns it; a `speedDial` prop here would be a second, unreviewed menu."
+      },
+      {
+        "decision": "`loading` and `disabled` behave exactly as they do on Button",
+        "why": "Both are aria-disabled: the FAB stays focusable and discoverable and activation is blocked in the primitive. `loading` shows a Spinner in place of the icon and keeps the label, so the FAB does not change size while an action is pending. They are mutually exclusive for Button's reason — a control cannot be both busy and unavailable."
+      },
+      {
+        "decision": "Token gap: size.target.min — needs the design-tokens skill",
+        "why": "A FAB is a thumb target and should be at least 48px; the size scale stops at `size.control.lg`, 36px. The recipe composes `size.control.lg` plus `space.1-5` on each side as a stand-in, which lands on 48px by arithmetic rather than by rule. The same gap is flagged in BottomNav, ListItem and Chip; one `size.target.min` token would close all four."
+      },
+      {
+        "decision": "Token gap: theme.elevation.floating — needs the design-tokens skill",
+        "why": "The elevation roles are named by situation and none is this one. `raised` is a resting card that is part of the page; `overlay` is a transient surface anchored to a trigger; `modal` takes over the screen. A FAB is persistent, like `raised`, and floats over moving content, which `raised`'s shadow is too soft to read against. The recipe uses `overlay` as the closest that is visible over scrolling content, which is a misuse by its own documentation — a `theme.elevation.floating` role with its own dark-scheme `-strong` twin would say what this actually is."
+      },
+      {
+        "decision": "Web and native",
+        "why": "On the web it renders `<button type=\"button\">`, position fixed, with `aria-label={label}` only when `labelHidden` is set — otherwise the visible text is the name, and the icon is `aria-hidden`. While `loading` it carries `aria-disabled=\"true\"` and `aria-busy=\"true\"`. On React Native it renders a `Pressable` with `accessibilityRole=\"button\"`, `accessibilityLabel={label}`, and `accessibilityState={{ disabled, busy: loading }}`, absolutely positioned inside the screen and offset by `useSafeAreaInsets()`. Web-only: `className`, and the BottomNav clearance, which is a CSS `:has()` rule — a native screen knows its tab bar's height from the navigator and offsets by that instead. No prop is native-only. There is no gesture."
+      }
+    ]
+  },
+  "props": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "summary": "What the action does, as a verb phrase — shown beside the icon, or used as the accessible name when hidden.",
+      "use": [
+        "A short imperative: 'Compose', 'New invoice', 'Add photo'."
+      ],
+      "dont": [
+        "A noun alone ('Invoice'), which says what the screen is about rather than what the button does."
+      ],
+      "a11y": "The accessible name in both states. Visible text when shown; `aria-label` when `labelHidden` is set."
+    },
+    "icon": {
+      "type": "LucideIcon",
+      "required": true,
+      "summary": "The glyph, which is always shown.",
+      "use": [
+        "A glyph that means the action on its own — a plus for create, a pencil for compose."
+      ],
+      "dont": [
+        "A brand mark or an illustration. Above `size.icon.lg` a graphic is no longer an icon, and the FAB's size is fixed."
+      ],
+      "a11y": "Decorative: `aria-hidden`, because `label` is the name."
+    },
+    "labelHidden": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Shows the icon alone, as a circle, with `label` as the accessible name.",
+      "use": [
+        "An action so conventional on its screen that the glyph explains it — the plus on a list of notes."
+      ],
+      "dont": [
+        "Saving space on a screen where the action is not obvious. The label is what explains a floating control, and a circle with a glyph in it saves one word's width."
+      ],
+      "a11y": "The name does not change; only whether it is visible."
+    },
+    "placement": {
+      "type": "\"end\" | \"center\"",
+      "default": "\"end\"",
+      "summary": "Which bottom corner it floats at — inline-end, or centred.",
+      "use": [
+        "`center` when the screen's content is symmetrical and the action belongs to all of it, such as a camera's shutter."
+      ],
+      "dont": [
+        "`center` above a BottomNav. It lands over the middle destination's label and reads as a sixth item."
+      ],
+      "a11y": "Visual only; reading order follows the DOM, not the corner."
+    },
+    "loading": {
+      "type": "boolean",
+      "summary": "Shows a Spinner in place of the icon and blocks activation, while staying focusable.",
+      "use": [
+        "The action's request is in flight and a second press would send it twice."
+      ],
+      "dont": [
+        "As a page-loading indicator. The FAB is busy only with its own action."
+      ],
+      "conflicts": [
+        "disabled"
+      ],
+      "a11y": "`aria-disabled=\"true\"` and `aria-busy=\"true\"`, as on Button. The label stays, so the name does not change while it is pending."
+    },
+    "disabled": {
+      "type": "boolean",
+      "summary": "Blocks activation while keeping it focusable and announced.",
+      "use": [
+        "The action exists on this screen but cannot run yet, and the reader should be able to find out it exists."
+      ],
+      "dont": [
+        "Permanently. A FAB that can never be pressed on a screen should not be rendered there — a disabled control floating over everything is the most prominent thing on the screen, and it does nothing."
+      ],
+      "conflicts": [
+        "loading"
+      ],
+      "a11y": "`aria-disabled`, not the `disabled` attribute, so it stays in the tab order and screen readers announce it as unavailable rather than skipping it."
+    },
+    "className": {
+      "type": "string",
+      "summary": "Extra classes, for placement adjustments — not for restyling it.",
+      "use": [
+        "Hiding it at widths where the action lives in a toolbar instead."
+      ],
+      "dont": [
+        "A hand-written `bottom` offset. The placement is computed from the safe area and the BottomNav; a fixed number is wrong on the next device."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "Creating the thing a list is a list of",
+      "when": "A screen that is mostly one collection, where adding to it is the reason the screen exists.",
+      "example": "<Fab label=\"New note\" icon={Plus} onClick={createNote} />",
+      "notes": "Rendered at the start of `<main>`, before the list, so a keyboard reaches it first. The list reserves `padding-block-end` so its last row is not left under the FAB."
+    },
+    {
+      "case": "A conventional glyph with the label hidden",
+      "when": "The action is the one every reader of this screen expects, and the glyph is its well-known mark.",
+      "example": "<Fab label=\"Compose\" icon={Pencil} labelHidden onClick={compose} />",
+      "notes": "`label` is still required: it becomes the `aria-label`. Hiding it is the exception, not the default, because nothing near a floating control explains it."
+    },
+    {
+      "case": "Several creation actions behind one FAB",
+      "when": "A screen where the primary action is 'add', and there are two or three kinds of thing to add.",
+      "example": "<Menu label=\"Add\" trigger={<Fab label=\"Add\" icon={Plus} />}>\n  <MenuItem onSelect={addPhoto}>Photo</MenuItem>\n  <MenuItem onSelect={addNote}>Note</MenuItem>\n</Menu>",
+      "notes": "This is the speed dial, and it is Menu's job: focus moves into the list, Escape returns to the FAB, arrow keys move between items."
+    },
+    {
+      "case": "Reaching for the wrong component: two floating actions",
+      "when": "A screen with a primary action and a secondary one, both wanting to float.",
+      "example": "<Fab label=\"Save\" icon={Check} />\n<Fab label=\"Discard\" icon={X} />",
+      "notes": "Don't. Two FABs is no primary action. Discard is not something to keep under the thumb at all — it belongs in a footer or a Menu, as a Button or a destructive MenuItem."
+    }
+  ]
+}

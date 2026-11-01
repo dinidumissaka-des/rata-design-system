@@ -1,0 +1,200 @@
+{
+  "name": "chip",
+  "title": "Chip",
+  "description": "A value the reader has added — a recipient, a selected filter, a tag on a record — shown with a control to remove it.",
+  "family": "inputs",
+  "alsoKnownAs": [
+    "input-chip",
+    "removable-chip",
+    "token",
+    "removable-tag"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "state-layer",
+    "icon"
+  ],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "An outlined value, drawn with the secondary role so it reads as something the reader can act on rather than as a status. That is the visible difference from a neutral Badge, which is a filled label that nobody removes.",
+      "tokens": {
+        "background": "theme.secondary-role.bg",
+        "border": "border.default solid theme.secondary-role.border",
+        "color": "theme.secondary-role.fg — verified on theme.secondary-role.bg",
+        "block-size": "size.control.sm",
+        "padding-inline-start": "space.control.padding-inline.sm",
+        "padding-inline-end": "space.1 — the remove control sits in the end padding's place",
+        "border-radius": "radius.element — documented as the radius for chips",
+        "gap between icon, text and remove control": "space.gap.xs",
+        "font-size": "type.control.size.sm",
+        "font-weight": "type.label.weight",
+        "line-height": "type.control.line-height.sm",
+        "leading icon size": "size.icon.text",
+        "max-inline-size": "100% of its container, with the text truncated by an ellipsis — the full value stays the remove control's name and the chip's title",
+        "disabled": "state.disabled-opacity, on the whole chip"
+      }
+    },
+    "remove": {
+      "summary": "The one interactive part. Visibly small, with a hit area stretched to the chip's full block size and past its end.",
+      "tokens": {
+        "visible inline-size / block-size": "size.icon.md",
+        "glyph size": "size.icon.sm",
+        "glyph colour": "theme.fg.secondary",
+        "border-radius": "radius.pill",
+        "hit area": "the chip's full block-size, extended past the chip's end by space.1 with a pseudo-element — a stand-in for the touch-target minimum this system has no token for; see the token-gap decision",
+        "hover / press": "compose the .rata-state-layer class",
+        "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "A `<span>` holding the value's text and a `<button type=\"button\">` that removes it. No primitive: the only behaviour is one button, and Button's activation already owns it.",
+    "decisions": [
+      {
+        "decision": "One component, and it is the input chip — the other four chips are already here",
+        "why": "'Chip' names five things that share a pill shape and differ in semantics, which is this system's test for splitting. A filter chip is a pressed toggle — a row of them is ToggleButtonGroup with `selectionMode=\"multiple\"` and `attached={false}`, announced with `aria-pressed`. A choice chip is one answer from a few — SegmentedControl, or ToggleButtonGroup in single mode, announced as a radio group. A static tag is a label nobody acts on — Badge. An assist or suggestion chip is an action — a small secondary Button. The one thing left is a value the reader added and can take away, which is text plus a removal command, and no existing component is that. Shipping a `Chip` with a `kind` prop over all five would put a radiogroup, a toggle, a label, a button and a removable value behind one name, and the prop would be choosing the ARIA pattern — exactly the mistake Tabs and SegmentedControl were split to avoid."
+      },
+      {
+        "decision": "`onRemove` is required",
+        "why": "A chip that cannot be removed is a Badge. Making the handler optional would make this a second way to draw a static label, and the two would drift; requiring it means reaching for this component is itself the statement that the value is removable."
+      },
+      {
+        "decision": "The chip is not focusable — its remove button is",
+        "why": "There is one thing to do with a chip, so there is one tab stop: the button. A focusable chip around a focusable button would be two stops for one action, and a focusable chip with no button would need a keyboard command nobody could discover. The button's name is the full phrase, so focusing it says both what the value is and what will happen."
+      },
+      {
+        "decision": "The remove button is named after the value",
+        "why": "Five buttons called 'Remove' tell a screen-reader user nothing about which recipient each one removes. The default name is 'Remove' followed by the chip's text — 'Remove Ada Lovelace' — and `removeLabel` replaces the whole phrase, rather than a prefix, so a translation can put the words in its own order."
+      },
+      {
+        "decision": "Backspace and Delete on the focused remove button also remove",
+        "why": "Enter and Space activate it because it is a button. Backspace and Delete are what a reader expects to remove a selected value in every token field they have used, and on native platforms 'delete' is the standard accessibility action for exactly this. Accepting them costs nothing and removes a moment of 'how do I get rid of this'."
+      },
+      {
+        "decision": "Focus after removal is the caller's, until a multi-value field exists",
+        "why": "Removing the chip removes the focused button, and a browser whose focused element disappears sends focus to `<body>` — a keyboard user is thrown to the top of the page. This component cannot fix that alone: only something that holds all the chips knows that the next one, or the input they were typed into, is where focus should go. So the obligation is stated on `onRemove`: move focus before or as you remove. The real fix is a multi-value field — a text input with its chips, roving focus between them, and Backspace in an empty input removing the last one — which this system does not have and which needs its own gate 1."
+      },
+      {
+        "decision": "Long values truncate, and the full value stays reachable",
+        "why": "An email address can be wider than a phone. The text truncates with an ellipsis at the container's width, which is the one place truncation is acceptable: the full value is still the remove button's name and the chip's `title`, so a screen reader and a long-press both have it. Text's contract declined line clamping in general precisely because truncated text needs that second path, and here it already exists."
+      },
+      {
+        "decision": "Token gap: size.target.min — needs the design-tokens skill",
+        "why": "The chip is `size.control.sm`, 28px tall, which clears WCAG 2.5.8's 24px AA minimum for the remove button's hit area but not the 44px (Apple) or 48px (Material) a thumb needs. The visible circle stays small so the chip stays a chip; the hit area is stretched with a pseudo-element to the chip's block size and past its end. A `size.target.min` token — the same one BottomNav, FAB and ListItem flag — would let the hit area reach the floor by rule, and the chip's own spacing in a group (`space.gap.sm` at least) is what keeps neighbouring hit areas from overlapping."
+      },
+      {
+        "decision": "Web and native",
+        "why": "On the web it renders `<span>` with the text and `<button type=\"button\" aria-label=\"Remove …\">` holding an `aria-hidden` glyph, with `aria-disabled` on the button when disabled. A set of chips is the caller's `<ul role=\"list\">` with one per `<li>`, so the count is announced. On React Native it renders a `View` with `accessible`, `accessibilityLabel` set to the value, and `accessibilityActions={[{ name: \"delete\", label: removeLabel }]}` handled by `onAccessibilityAction` — one focus stop with the platform's own delete action, which is the native idiom and the reason the web needs a separate button and native does not. The visible remove `Pressable` is then `importantForAccessibility=\"no-hide-descendants\"` / `accessibilityElementsHidden`, so it is a touch target and not a second stop. `className` is web-only; no prop is native-only. There is no gesture: removal is always a press."
+      }
+    ]
+  },
+  "props": {
+    "children": {
+      "type": "string",
+      "required": true,
+      "summary": "The value, as text.",
+      "use": [
+        "A recipient's name or address, a filter's value, a tag."
+      ],
+      "dont": [
+        "Markup. The text is reused in the remove button's name and the `title`, so it is a string rather than a ReactNode."
+      ],
+      "a11y": "Read as plain text, and appended to the remove button's default name."
+    },
+    "onRemove": {
+      "type": "() => void",
+      "required": true,
+      "summary": "Called when the reader removes the value — by pressing the button, or by Backspace or Delete while it has focus.",
+      "use": [
+        "Removing the value from the caller's state, and moving focus in the same handler: to the next chip's remove button, or to the field the chips belong to."
+      ],
+      "dont": [
+        "Leaving focus where it was. The focused element is about to be removed, and focus falls to `<body>`.",
+        "Asking for confirmation. Removing a chip is undone by adding the value back; a dialog for that is friction with no safety in it."
+      ],
+      "a11y": "The caller owns where focus goes next — see the decision on focus after removal."
+    },
+    "removeLabel": {
+      "type": "string",
+      "default": "\"Remove \" + children",
+      "summary": "The remove button's full accessible name.",
+      "use": [
+        "A translated phrase, in whatever word order the language needs: `removeLabel={t(\"remove\", { name })}`."
+      ],
+      "dont": [
+        "A bare 'Remove' or '×'. It must name the value, or every chip's button sounds the same."
+      ],
+      "a11y": "Becomes the button's `aria-label`, and on native the label of the `delete` accessibility action."
+    },
+    "icon": {
+      "type": "LucideIcon",
+      "summary": "A glyph before the text that says what kind of value it is.",
+      "use": [
+        "A mail glyph on an address that is not a known contact, beside chips that are."
+      ],
+      "dont": [
+        "The same glyph on every chip in a set. If it does not distinguish anything it is noise."
+      ],
+      "a11y": "Decorative — `aria-hidden`. If the kind of value matters, say it in the text."
+    },
+    "disabled": {
+      "type": "boolean",
+      "summary": "Blocks removal while keeping the button focusable and announced.",
+      "use": [
+        "A value the reader cannot remove right now — a required recipient, a filter locked by a permission."
+      ],
+      "dont": [
+        "A value that can never be removed. That is a Badge."
+      ],
+      "a11y": "`aria-disabled` on the remove button, not the `disabled` attribute, so it stays in the tab order and is announced as unavailable."
+    },
+    "className": {
+      "type": "string",
+      "summary": "Extra classes, for placement — not for restyling it.",
+      "use": [
+        "Rare. A set of chips gets its gap from the list that holds them."
+      ],
+      "dont": [
+        "A status colour to mark an invalid value. Invalid input is a Field's message, and a red chip with no words says only 'something is wrong'."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "Recipients added to a message",
+      "when": "A set of values the reader built up and may trim.",
+      "example": "<ul role=\"list\" aria-label=\"Recipients\">\n  {recipients.map((person, i) => (\n    <li key={person.id}>\n      <Chip onRemove={() => removeRecipient(i)}>{person.name}</Chip>\n    </li>\n  ))}\n</ul>",
+      "notes": "Each button is named 'Remove <name>'. `removeRecipient` must move focus to the next chip's button, or to the To field when the last chip goes — the component cannot, because it does not know what comes after it."
+    },
+    {
+      "case": "The active filters above a result list",
+      "when": "Filters chosen elsewhere — in a Sheet of options — shown as a summary the reader can clear one by one.",
+      "example": "<Chip onRemove={() => clearFilter(\"colour\")} removeLabel=\"Clear colour filter: Blue\">Blue</Chip>",
+      "notes": "This is the removable summary of a filter, not the filter control. The control that sets it — a row of toggles — is ToggleButtonGroup with `selectionMode=\"multiple\"`."
+    },
+    {
+      "case": "Reaching for the wrong component: a filter toggle",
+      "when": "A row of options above a list, each turning a filter on or off in place.",
+      "example": "<Chip onRemove={() => {}}>Unread</Chip>",
+      "notes": "Don't. A filter that toggles in place is pressed or not pressed, and that is ToggleButtonGroup with `selectionMode=\"multiple\"` and `attached={false}`, which announces `aria-pressed`. An empty `onRemove` is the giveaway — there is nothing to remove."
+    },
+    {
+      "case": "Reaching for the wrong component: a status label",
+      "when": "A label on a record that says what state it is in.",
+      "example": "<Chip onRemove={noop}>Paid</Chip>",
+      "notes": "Don't. Nobody removes 'Paid' from an invoice by pressing an ×. That is a Badge, with `variant=\"success\"`."
+    }
+  ]
+}
