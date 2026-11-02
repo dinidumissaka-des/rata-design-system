@@ -1367,48 +1367,48 @@ An action that deletes or revokes something.
 
 ### card
 
-A surface one step up from the page. The default `outlined` variant draws its edge with a border rather than a shadow: a card sits in the same plane as its neighbours, and a shadow would claim it floats above them.
+The outlined card, at rest (C1).
 
 | Property | Token |
 |---|---|
-| background | `theme.bg.surface` |
-| color | `theme.fg.primary` |
-| border | `border.default` solid `theme.border.default` |
-| border-radius | `radius.container` |
-| padding | `space.padding.md` |
-| gap between children | `space.stack.sm` |
-| margin | `space.0` — the grid or stack the cards sit in owns the gap between them |
+| background | `theme.bg.surface` (C1) |
+| color | `theme.fg.primary` — verified AA-text on `theme.bg.surface` (C1) |
+| border | `border.default` solid `theme.border.default` (C1) |
+| border-radius | `radius.container` (C1) |
+| padding | `space.padding.md` (C1) |
+| gap between children | `space.stack.sm` (C1) |
+| margin | `space.0` — the grid or stack the cards sit in owns the gap between them, via `space.grid.gap` (C1) |
 
 ### card-raised
 
-The one alternative to the outline: the resting-card shadow `theme.elevation.raised` is documented for. Everything else in the base recipe is unchanged.
+The raised variant (C2).
 
 | Property | Token |
 |---|---|
-| box-shadow | `theme.elevation.raised` |
-| border | `border.default` solid `theme.border.default` — kept, so a raised card is the same size as an outlined one and its edge does not depend on a shadow alone, which is faint on a dark canvas |
+| box-shadow | `theme.elevation.raised` (C2) |
+| border | `border.default` solid `theme.border.default` — kept, so a raised card is the same size as an outlined one and its edge does not depend on a shadow alone, which is faint on a dark canvas (C2) |
 
 ### card-media
 
-An image or preview flush with the card's top edge. It bleeds through the padding so the picture meets the border, and the card's own radius clips its corners.
+The media slot, full bleed (C3).
 
 | Property | Token |
 |---|---|
-| margin-inline and margin-block-start | the negative of `space.padding.md` — the media cancels the card's own padding rather than the card dropping it |
-| corner clip | `radius.container` on the card, with overflow clipped, so the media never needs a radius of its own |
-| gap below | `space.stack.sm` |
+| margin-inline and margin-block-start | the negative of `space.padding.md` — the media cancels the card's padding rather than the card dropping it (C3) |
+| corner clip | `radius.container` on the card, overflow clipped, so the media needs no radius of its own (C3) |
+| gap below | `space.stack.sm` (C3) |
 
 ### card-linked
 
-A card whose heading holds a link. The link's hit area is stretched over the whole card, and the card shows the feedback the link would.
+A whole-card link through a stretched heading link (C4–C6).
 
 | Property | Token |
 |---|---|
-| card position | relative, so the link's stretched pseudo-element is bounded by the card |
-| stretched hit area | a ::after on the heading's link, inset `space.0` on every side of the card |
-| hover / press | compose the .rata-state-layer class on the card, driven by the link's hover and press |
-| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, drawn around the card when the link matches :focus-visible |
-| secondary actions | position relative and later in source order than the heading, so they paint above the stretched area without a z-index |
+| card position | relative, so the link's stretched pseudo-element is bounded by the card (C4) |
+| stretched hit area | a ::after on the heading's link, inset `space.0` on every side of the card. The card's own ::after belongs to the state layer — the two pseudo-elements sit on different elements, so they never collide (C4) |
+| hover / press | compose the .rata-state-layer class on the card, driven by :has() on the link's :hover and :active (C4) |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, drawn around the card while the link matches :focus-visible; the link's own outline is suppressed only inside a card that draws it, so a browser without :has() keeps the link's ring (C5) |
+| secondary actions | position: relative and later in source order than the heading, so they paint above the stretched area without a z-index and stay separately clickable and focusable (C6) |
 
 ### checkbox
 

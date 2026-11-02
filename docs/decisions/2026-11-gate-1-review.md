@@ -88,3 +88,14 @@ Follow-ups, each its own change: point the playground's `use-media-query.ts` at 
 | L5 | standalone · rest | `theme.accent-role.fg`, no underline, `type.control.weight`, `space.1` inline padding, `radius.inner`. |
 | L6 | standalone · hover/press | Compose `.rata-state-layer`. |
 | L7 | standalone · focus | Same ring as L3. |
+
+### Card (approved state by state)
+
+| # | State | Mapping |
+|---|---|---|
+| C1 | outlined · rest | `theme.bg.surface`, `theme.fg.primary`, `border.default` `theme.border.default`, `radius.container`, `space.padding.md`, `space.stack.sm` between children, no margin. |
+| C2 | raised | C1 + `theme.elevation.raised`; border kept. |
+| C3 | media | Full bleed: negative `space.padding.md`, clipped by the card's `radius.container`, `space.stack.sm` below. |
+| C4 | linked · hover/press | Heading link's `::after` stretches over the card; card composes `.rata-state-layer` via `:has()`. |
+| C5 | linked · focus | Ring around the card while the link is `:focus-visible`; link outline suppressed only there. |
+| C6 | secondary actions | `position: relative`, after the heading in source order; no z-index. |
