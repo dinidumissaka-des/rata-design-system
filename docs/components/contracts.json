@@ -443,7 +443,7 @@
       "decisions": [
         {
           "decision": "It is navigation, not tabs — on the web",
-          "why": "iOS calls this a tab bar and that name is why `tab-bar` resolves ambiguously here. But on the web each destination is a page with an address: following one changes the URL, the back button undoes it, and it can be opened in a new tab. That is a link, and a row of links is a `<nav>`. `role=\"tablist\"` would promise a panel on the same page and arrow-key movement between tabs, neither of which exists — the same mistake TopNav's contract names for `role=\"menu\"`. If choosing an item reveals a panel rather than loading a page, it is Tabs, which can be drawn at the bottom of the screen and is still a tablist."
+          "why": "iOS calls this a tab bar and that name is why `tab-bar` resolves ambiguously here. But on the web each destination is a page with an address: following one changes the URL, the back button undoes it, and it can be opened in a new tab. That is a link, and a row of links is a `<nav>`. `role=\"tablist\"` would promise a panel on the same page and arrow-key movement between tabs, neither of which exists — the same mistake TopNav's contract names for `role=\"menu\"`. If choosing an item reveals a panel rather than loading a page, it is Tabs, which can be drawn at the bottom of the screen and is still a tablist. `tab-bar` stays an alias of both BottomNav and Tabs, so the lookup commands report it as ambiguous and refuse to guess (decision C12, docs/decisions/2026-11-gate-1-review.md)."
         },
         {
           "decision": "Three to five items, and no 'More' overflow item",
@@ -483,7 +483,7 @@
         },
         {
           "decision": "Web and native",
-          "why": "On the web it renders `<nav aria-label={label}>` holding a `<ul role=\"list\">` of `<li>`, each with an `<a href>` that carries `aria-current=\"page\"` when current. (`role=\"list\"` is explicit because Safari drops list semantics from a list styled `list-style: none`.) On React Native there is no address bar and no link, and the platform convention is the one VoiceOver and TalkBack announce for UITabBar and BottomNavigationView: a `View` with `accessibilityRole=\"tablist\"` holding a `Pressable` per item with `accessibilityRole=\"tab\"` and `accessibilityState={{ selected: current }}`, so it is read 'Inbox, tab, 1 of 4, selected'. That divergence is deliberate — each platform gets the role its readers already know. Web-only: `href`, `onClick` (a DOM `MouseEvent`), and `className`. Native-only, when that package exists: `onPress` on the item in place of `href`, and the safe-area inset read from `useSafeAreaInsets()` rather than `env()`. There is no gesture in this component, so nothing needs a non-gesture equivalent."
+          "why": "On the web it renders `<nav aria-label={label}>` holding a `<ul role=\"list\">` of `<li>`, each with an `<a href>` that carries `aria-current=\"page\"` when current. (`role=\"list\"` is explicit because Safari drops list semantics from a list styled `list-style: none`.) On React Native there is no address bar and no link, and the platform convention is the one VoiceOver and TalkBack announce for UITabBar and BottomNavigationView: a `View` with `accessibilityRole=\"tablist\"` holding a `Pressable` per item with `accessibilityRole=\"tab\"` and `accessibilityState={{ selected: current }}`, so it is read 'Inbox, tab, 1 of 4, selected'. That divergence is deliberate — each platform gets the role its readers already know. Web-only: `href`, `onClick` (a DOM `MouseEvent`), and `className`. Native-only, when that package exists: `onPress` on the item in place of `href`, and the safe-area inset read from `useSafeAreaInsets()` rather than `env()`. There is no gesture in this component, so nothing needs a non-gesture equivalent. Rata-drawn, not the OS tab bar (decision N5): `UITabBar` and `BottomNavigationView` belong to a navigator, and `@rata/native` does not couple to one (decision N3), so the bar is a drawn `View` driven by each item's `onPress` and `current`, carrying the tab roles those OS bars announce. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -1078,7 +1078,7 @@
           "A dense list of records. That is a Table, and a table inside a card is a table that has lost its edge-to-edge alignment for no reason."
         ],
         "conflicts": [],
-        "a11y": "Read in document order. If the card is a `section`, its first heading should name it through `aria-labelledby`."
+        "a11y": "Read in document order. If the card is a `section`, its first heading should name it through `aria-labelledby`. A Link inside the card's heading is stretched over the whole card, so put the card's one destination there and nowhere else."
       },
       {
         "name": "as",
@@ -1105,6 +1105,29 @@
         ],
         "conflicts": [],
         "a11y": "Each option is chosen for the role its element already carries, so this prop adds no ARIA. Web only: on React Native the card is a `View` and this prop is ignored."
+      },
+      {
+        "name": "variant",
+        "type": "\"outlined\" | \"raised\"",
+        "values": [
+          "outlined",
+          "raised"
+        ],
+        "optional": true,
+        "default": "\"outlined\"",
+        "description": null,
+        "declared": false,
+        "summary": "How the card's edge is drawn: a border, or the resting-card shadow.",
+        "use": [
+          "`outlined` for cards that are peers in one plane — a gallery, a dashboard, a settings page. Almost always.",
+          "`raised` for a card that sits above its surroundings: one featured card on a plain section, or cards over an image or a tinted band."
+        ],
+        "dont": [
+          "`raised` on every card in a grid. A field of shadows says everything is lifted, which is the same as saying nothing is.",
+          "`raised` to show that a card is clickable. A stretched heading link already gives the card hover, press and focus feedback; a shadow is not an affordance."
+        ],
+        "conflicts": [],
+        "a11y": "Visual only. Neither variant changes the element, its role or its name."
       },
       {
         "name": "media",
@@ -1148,6 +1171,12 @@
         "notes": "`as=\"li\"` inside the page's own `<ul>`, so a screen reader announces how many templates there are. The grid's gap lives on `.template-grid`, not on the cards. The preview is `alt=\"\"` because the heading already names it."
       },
       {
+        "case": "A whole card that goes somewhere",
+        "when": "A gallery where each card opens its own page, and pressing anywhere on the card should open it.",
+        "example": "<ul className=\"project-grid\">\n  {projects.map((p) => (\n    <Card as=\"li\" key={p.id} media={<img src={p.preview} alt=\"\" />}>\n      <Heading level={3}>\n        <Link variant=\"standalone\" href={`/projects/${p.id}`}>{p.name}</Link>\n      </Heading>\n      <Text tone=\"secondary\">{p.summary}</Text>\n    </Card>\n  ))}\n</ul>",
+        "notes": "No `href` or `onClick` on the Card: the Link in the heading is the control, and the card stretches its hit area over the whole card and shows its hover and focus. The link's name is the project's name, not every word in the card, and each card is one tab stop. A secondary action — a Menu button, say — placed after the heading sits above the stretched area, so pressing it does not also open the project."
+      },
+      {
         "case": "A titled group of settings",
         "when": "A settings page whose groups are understood, and often saved, separately.",
         "example": "<Card as=\"section\" aria-labelledby=\"billing-heading\">\n  <Heading level={2} id=\"billing-heading\">Billing</Heading>\n  <TextField label=\"Billing email\" />\n</Card>",
@@ -1161,23 +1190,23 @@
       }
     ],
     "behavior": {
-      "summary": "A box with a surface, an outline and padding, rendered as whichever element its content actually is. No primitive: it owns no keyboard interaction and no state. Card exists so that the one container this system has been telling people not to hand-roll — `<div className=\"card\">` — has a governed version, and so that the choice between a card, a table and a plain section is written down once.",
+      "summary": "A box with a surface, an edge and padding, rendered as whichever element its content actually is. No primitive: it owns no keyboard interaction and no state — when a whole card is clickable, the link in its heading is the control, not the card. Card exists so that the one container this system has been telling people not to hand-roll — `<div className=\"card\">` — has a governed version, and so that the choice between a card, a table and a plain section is written down once.",
       "decisions": [
         {
           "decision": "Card, Table or a plain `<section>` — the test is how the content is read",
           "why": "Rows that are scanned and compared column by column are a Table: putting each record in its own card destroys the column, which is the thing the reader came to compare. Several self-contained items that are each read on their own — dashboard widgets, a gallery, groups of settings that are saved or understood separately — are Cards: the outline says \"this is one thing\" and the gap between them says \"and these are separate\". Everything else, which is most of a page, is a plain `<section>` with a heading and no box at all. A single card alone on a page is almost always a section wearing a border, and a card inside a card is always one: if the inner thing needs separating, a Divider or a heading does it without a second outline."
         },
         {
-          "decision": "Outlined, not shadowed",
-          "why": "`theme.elevation.raised` is documented for resting cards, and `theme.border.default` is documented for separating two elements in the same plane. A grid of cards IS one plane — nothing in it is above anything else — and a shadow on every card in a dashboard turns the page into a field of competing lifts. The border is the default and the only option in this version. Whether a raised variant is wanted at all is an open question for approval, not a decision taken here."
+          "decision": "Outlined by default; `raised` is the one alternative",
+          "why": "Approved at gate 1 (decision C1, docs/decisions/2026-11-gate-1-review.md). `theme.border.default` is documented for separating two elements in the same plane, and a grid of cards IS one plane — nothing in it is above anything else — so a shadow on every card in a dashboard turns the page into a field of competing lifts. That is why `outlined` is the default. `raised` uses `theme.elevation.raised`, which is documented for resting cards, for the case where a card genuinely sits above its surroundings: one featured card on a plain section, or cards over an image or a tinted band. Two variants and no more: a third elevation on a resting surface would compete with the overlay and modal shadows that mean something."
         },
         {
           "decision": "`as` chooses the element, and the default claims nothing",
           "why": "What a card IS depends on what is in it. A card in a gallery is a list item, because a gallery is a list and a screen reader announcing \"list, 12 items\" is the most useful thing it can say. A self-contained entry that would make sense lifted out of the page is an `article`. A titled group of settings is a `section`. A component that defaulted to `article` would be wrong for every settings group, so the default is `div` — a box with no semantic claim — and the caller states the claim when there is one."
         },
         {
-          "decision": "No `onClick` or `href` on the card in this version",
-          "why": "A whole card wrapped in an `<a>` makes every word inside it the link's accessible name, so a reader tabbing through a gallery hears each card read out in full, and any button inside the card becomes interactive content nested in a link, which is invalid. A card with a `<div onClick>` is unreachable by keyboard. The right construction — a real link in the card's heading whose hit area is stretched over the card, with secondary actions lifted above it — needs Link to exist first and needs its own decision. Until then the card is not a control, and the link inside it is."
+          "decision": "Whole-card click is a stretched heading link; Card takes no `href` or `onClick`",
+          "why": "Approved at gate 1 (decision C2, docs/decisions/2026-11-gate-1-review.md). A whole card wrapped in an `<a>` makes every word inside it the link's accessible name, so a reader tabbing through a gallery hears each card read out in full, and any button inside the card becomes interactive content nested in a link, which is invalid. A card with a `<div onClick>` is unreachable by keyboard. So the card is never the control: a real Link inside the card's heading is, and its hit area is stretched over the card with a pseudo-element — the construction ListItem uses for a row. The accessible name stays the heading's text, the card is one tab stop, and secondary actions sit above the stretched area so pressing them does not also follow the link. Card styles a heading link this way when it finds one; it needs no prop to do it, and a card with no link in its heading is not clickable at all."
         },
         {
           "decision": "No `title` prop and no heading of its own",
@@ -1189,13 +1218,13 @@
         },
         {
           "decision": "Web and native",
-          "why": "Web: the element `as` names — `div` by default, or `article`, `section` or `li` — with no role added, because each of those elements already carries the right one. A `section` card should be named by its heading through `aria-labelledby`, or it is not exposed as a region at all. React Native: a `View` with no `accessibilityRole`, because RN has no article, section or listitem role that platforms announce; the list semantics of a gallery belong to the `FlatList` that renders the cards, not to each card. `as` is web-only and is ignored on native. `media` works on both; on native the clip comes from `overflow: \"hidden\"` with the same radius token."
+          "why": "Web: the element `as` names — `div` by default, or `article`, `section` or `li` — with no role added, because each of those elements already carries the right one. A `section` card should be named by its heading through `aria-labelledby`, or it is not exposed as a region at all. React Native: a `View` with no `accessibilityRole`, because RN has no article, section or listitem role that platforms announce; the list semantics of a gallery belong to the `FlatList` that renders the cards, not to each card. `as` is web-only and is ignored on native. `media` works on both; on native the clip comes from `overflow: \"hidden\"` with the same radius token. No OS control (decision N5): the card is Rata-drawn on both platforms, from the same recipe. On native, `raised` is the platform shadow (`elevation` on Android) taken from the same token. The stretched link is web-only — a nested `Text` link cannot be stretched — so on native the heading's Link is the target, and a list of whole-row targets is ListItem's job. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
     "tokens": {
       "base": {
-        "summary": "A surface one step up from the page, outlined rather than shadowed: a card sits in the same plane as its neighbours, and a shadow would claim it floats above them.",
+        "summary": "A surface one step up from the page. The default `outlined` variant draws its edge with a border rather than a shadow: a card sits in the same plane as its neighbours, and a shadow would claim it floats above them.",
         "tokens": {
           "background": "theme.bg.surface",
           "color": "theme.fg.primary",
@@ -1206,12 +1235,29 @@
           "margin": "space.0 — the grid or stack the cards sit in owns the gap between them"
         }
       },
+      "raised": {
+        "summary": "The one alternative to the outline: the resting-card shadow `theme.elevation.raised` is documented for. Everything else in the base recipe is unchanged.",
+        "tokens": {
+          "box-shadow": "theme.elevation.raised",
+          "border": "border.default solid theme.border.default — kept, so a raised card is the same size as an outlined one and its edge does not depend on a shadow alone, which is faint on a dark canvas"
+        }
+      },
       "media": {
         "summary": "An image or preview flush with the card's top edge. It bleeds through the padding so the picture meets the border, and the card's own radius clips its corners.",
         "tokens": {
           "margin-inline and margin-block-start": "the negative of space.padding.md — the media cancels the card's own padding rather than the card dropping it",
           "corner clip": "radius.container on the card, with overflow clipped, so the media never needs a radius of its own",
           "gap below": "space.stack.sm"
+        }
+      },
+      "linked": {
+        "summary": "A card whose heading holds a link. The link's hit area is stretched over the whole card, and the card shows the feedback the link would.",
+        "tokens": {
+          "card position": "relative, so the link's stretched pseudo-element is bounded by the card",
+          "stretched hit area": "a ::after on the heading's link, inset space.0 on every side of the card",
+          "hover / press": "compose the .rata-state-layer class on the card, driven by the link's hover and press",
+          "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, drawn around the card when the link matches :focus-visible",
+          "secondary actions": "position relative and later in source order than the heading, so they paint above the stretched area without a z-index"
         }
       }
     },
@@ -1685,7 +1731,7 @@
         },
         {
           "decision": "Web and native",
-          "why": "On the web it renders `<span>` with the text and `<button type=\"button\" aria-label=\"Remove …\">` holding an `aria-hidden` glyph, with `aria-disabled` on the button when disabled. A set of chips is the caller's `<ul role=\"list\">` with one per `<li>`, so the count is announced. On React Native it renders a `View` with `accessible`, `accessibilityLabel` set to the value, and `accessibilityActions={[{ name: \"delete\", label: removeLabel }]}` handled by `onAccessibilityAction` — one focus stop with the platform's own delete action, which is the native idiom and the reason the web needs a separate button and native does not. The visible remove `Pressable` is then `importantForAccessibility=\"no-hide-descendants\"` / `accessibilityElementsHidden`, so it is a touch target and not a second stop. `className` is web-only; no prop is native-only. There is no gesture: removal is always a press."
+          "why": "On the web it renders `<span>` with the text and `<button type=\"button\" aria-label=\"Remove …\">` holding an `aria-hidden` glyph, with `aria-disabled` on the button when disabled. A set of chips is the caller's `<ul role=\"list\">` with one per `<li>`, so the count is announced. On React Native it renders a `View` with `accessible`, `accessibilityLabel` set to the value, and `accessibilityActions={[{ name: \"delete\", label: removeLabel }]}` handled by `onAccessibilityAction` — one focus stop with the platform's own delete action, which is the native idiom and the reason the web needs a separate button and native does not. The visible remove `Pressable` is then `importantForAccessibility=\"no-hide-descendants\"` / `accessibilityElementsHidden`, so it is a touch target and not a second stop. `className` is web-only; no prop is native-only. There is no gesture: removal is always a press. Rata-drawn (decision N5): neither platform's OS controls include an input chip, so it is drawn from the same recipe; the delete action is the OS accessibility action. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -1746,7 +1792,8 @@
       "state-layer",
       "icon",
       "spinner",
-      "visually-hidden"
+      "visually-hidden",
+      "popover"
     ],
     "importPath": "@rata/react",
     "mode": "spec",
@@ -2149,7 +2196,7 @@
       "decisions": [
         {
           "decision": "This is not Select, and the line between them is the native picker",
-          "why": "`Select` is a native `<select>`: the phone's own wheel or sheet, the platform's typeahead, correct accessibility by construction — and options that are strings and nothing else. Reach for Select when the reader can scan the list, which in practice means it fits on a screen and its options are plain text. Reach for Combobox when the reader has to type to find the answer: the list is long, the options come from a server, or each one needs a second line. Combobox costs a popup, a focus model and an announcement policy that Select gets free, so it is the wrong default — it is the component a list grows into, not the one it starts as."
+          "why": "`Select` is a native `<select>`: the phone's own wheel or sheet, the platform's typeahead, correct accessibility by construction — and options that are strings and nothing else. Reach for Select when the reader can scan the list, which in practice means it fits on a screen and its options are plain text. Reach for Combobox when the reader has to type to find the answer: the list is long, the options come from a server, or each one needs a second line. Combobox costs a popup, a focus model and an announcement policy that Select gets free, so it is the wrong default — it is the component a list grows into, not the one it starts as. The alias `combo` points here, not at Select: someone who says \"combo box\" means a field they can type into, which a native `<select>` is not (decision C7, docs/decisions/2026-11-gate-1-review.md)."
         },
         {
           "decision": "It follows the WAI-ARIA APG combobox pattern with a listbox popup, list autocomplete, manual selection",
@@ -2168,8 +2215,8 @@
           "why": "First press closes an open popup; with the popup closed, a press clears the text if there is any. With neither, the key bubbles — the same rule `Search` follows, and for the same reason: a field that always swallows Escape stops every Dialog, Sheet and Menu it sits inside from closing."
         },
         {
-          "decision": "The popup uses Menu's mechanism: the popover attribute, anchor positioning, a per-instance anchor name",
-          "why": "Menu already paid for the lessons here — an anchor name written once in a stylesheet makes every instance position against the last trigger on the page, and `popovertarget` lets the platform toggle the popup without telling React. The difference from Menu is focus: Menu moves focus into its items, a combobox never does, so the popover is `popover=\"manual\"` and light-dismiss is handled by the primitive on blur rather than by the platform."
+          "decision": "The popup reuses Popover's positioning and dismissal, not Menu's, and Popover ships first",
+          "why": "Popover is the component that owns an anchored, non-modal surface: the top layer, CSS anchor positioning with a per-instance anchor name — an anchor name written once in a stylesheet makes every instance position against the last trigger on the page — and the dismissal rules of Escape, a press elsewhere and focus leaving. Combobox takes both from it rather than from Menu, because Menu's mechanism is bound to a list of actions that receives focus. The one difference is focus: Popover moves focus in, a combobox never does, so the popup is `popover=\"manual\"` and Popover's dismissal rules are run by the shared primitive with the input counted as inside the surface. Popover is still a spec, so the combobox cannot be built until it ships; that order is the decision, not an accident of scheduling (decision C6, docs/decisions/2026-11-gate-1-review.md)."
         },
         {
           "decision": "The result count is announced politely, after filtering settles",
@@ -2193,7 +2240,7 @@
         },
         {
           "decision": "Web and native",
-          "why": "Web: an `<input role=\"combobox\">` with `aria-expanded`, `aria-controls`, `aria-autocomplete=\"list\"` and `aria-activedescendant`, a `<ul role=\"listbox\">` of `<li role=\"option\" aria-selected>` in a manual popover, and a hidden input carrying `name`. Touch works the same as pointer; on a narrow viewport the popup still anchors below the field, sized to stay above the on-screen keyboard. React Native: a `TextInput` with `accessibilityRole=\"combobox\"` and `accessibilityState={{ expanded }}`, with results in a `FlatList` of `Pressable` rows carrying `accessibilityState={{ selected, disabled }}`. There is no `aria-activedescendant` on native — the screen reader moves into the list itself — so the highlight model and the count region are web-only behaviour, and native announces the count with `AccessibilityInfo.announceForAccessibility`. On a phone the results render in a full-screen `Modal` with the input pinned at the top, because an anchored list below a field is under the keyboard. `name` is web-only: there is no form post on native. `size` is web-only; native rows take the platform's minimum touch height."
+          "why": "Web: an `<input role=\"combobox\">` with `aria-expanded`, `aria-controls`, `aria-autocomplete=\"list\"` and `aria-activedescendant`, a `<ul role=\"listbox\">` of `<li role=\"option\" aria-selected>` in a manual popover, and a hidden input carrying `name`. Touch works the same as pointer; on a narrow viewport the popup still anchors below the field, sized to stay above the on-screen keyboard. React Native: a `TextInput` with `accessibilityRole=\"combobox\"` and `accessibilityState={{ expanded }}`, with results in a `FlatList` of `Pressable` rows carrying `accessibilityState={{ selected, disabled }}`. There is no `aria-activedescendant` on native — the screen reader moves into the list itself — so the highlight model and the count region are web-only behaviour, and native announces the count with `AccessibilityInfo.announceForAccessibility`. On a phone the results render in a full-screen `Modal` with the input pinned at the top, because an anchored list below a field is under the keyboard. `name` is web-only: there is no form post on native. `size` is web-only; native rows take the platform's minimum touch height. Rata-drawn (decision N5): neither platform has an OS combobox, so the field is the platform `TextInput` and the results list is drawn by Rata from the same recipe. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -2643,7 +2690,7 @@
         "case": "Reaching for the wrong component",
         "when": "A stay with a check-in and a check-out.",
         "example": "<DatePicker label=\"Check-in\" />\n<DatePicker label=\"Check-out\" />",
-        "notes": "Workable, but it is not a range: the second calendar cannot show the stay, and each end validates alone. A range is a date-range picker, which does not exist yet — say so rather than wiring two of these together and calling it one."
+        "notes": "Workable, but it is not a range: the second calendar cannot show the stay, and each end validates alone. A range is DateRangePicker, which is a spec with no code behind it yet (decision C10) — say so rather than wiring two of these together and calling it one."
       }
     ],
     "behavior": {
@@ -2675,7 +2722,7 @@
         },
         {
           "decision": "No ranges and no times in this component",
-          "why": "A range needs two values, a hover preview between them, and an announcement for each end — that is a date-range picker with its own contract. A time is a different value type (`\"14:30\"`) with its own input. Both can be built on the same calendar-grid primitive, which is why that is proposed separately below."
+          "why": "A range needs two values, a preview between them, and an announcement for each end — that is DateRangePicker, which has its own contract (decision C10, docs/decisions/2026-11-gate-1-review.md). A time is a different value type (`\"14:30\"`) with its own input. Both are built on the same calendar-grid primitive, which is why that is proposed separately below."
         },
         {
           "decision": "Disabled is `aria-disabled` plus `readOnly`, inherited from Field",
@@ -2687,7 +2734,7 @@
         },
         {
           "decision": "Web and native",
-          "why": "Web: a text input inside a Field, a calendar `<button>` with a click guard, a hidden input carrying `name`, and a modal `<dialog>` holding a `<table role=\"grid\">` whose day cells are buttons with `aria-selected`, `aria-current=\"date\"` on today, and `aria-disabled` on unavailable days. Touch, pointer and keyboard share it; only placement changes with width. React Native: no typed entry and no drawn calendar — the field is a `Pressable` with `accessibilityRole=\"button\"`, the label as its name and the formatted date as `accessibilityValue={{ text }}`, opening the OS picker (UIDatePicker on iOS, the Material date dialog on Android). That is the right picker on a phone and it is accessible by construction, but it costs three things: it is not in core, so it is a community-package dependency; it cannot be styled; and Android's picker supports `min` and `max` but not individual unavailable days, so on native `isDateUnavailable` is enforced after the choice, as an `invalid` status with a message, rather than in the picker. `firstDayOfWeek` is honoured on Android only. `isDateUnavailable` as an in-grid affordance, `placeholder`, `name` and `size` are web-only."
+          "why": "Web: a text input inside a Field, a calendar `<button>` with a click guard, a hidden input carrying `name`, and a modal `<dialog>` holding a `<table role=\"grid\">` whose day cells are buttons with `aria-selected`, `aria-current=\"date\"` on today, and `aria-disabled` on unavailable days. Touch, pointer and keyboard share it; only placement changes with width. React Native: no typed entry and no drawn calendar — the field is a `Pressable` with `accessibilityRole=\"button\"`, the label as its name and the formatted date as `accessibilityValue={{ text }}`, opening the OS picker (UIDatePicker on iOS, the Material date dialog on Android). That is the right picker on a phone and it is accessible by construction, but it costs three things: it is not in core, so it is a community-package dependency; it cannot be styled; and Android's picker supports `min` and `max` but not individual unavailable days, so on native `isDateUnavailable` is enforced after the choice, as an `invalid` status with a message, rather than in the picker. `firstDayOfWeek` is honoured on Android only. `isDateUnavailable` as an in-grid affordance, `placeholder`, `name` and `size` are web-only. The OS control on native, not a Rata-drawn calendar (decision N5): the system picker is the one a phone's readers already know, and it is accessible by construction; the web keeps the Rata-drawn calendar for the reasons above. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -2769,6 +2816,569 @@
           "hover / press": "compose the .rata-state-layer class",
           "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible — kept even on the selected day, where offset 0 on a filled accent would vanish",
           "unavailable": "state.disabled-opacity and a line-through, so the state is not carried by dimming alone"
+        }
+      }
+    },
+    "example": null
+  },
+  {
+    "name": "date-range-picker",
+    "title": "Date Range Picker",
+    "description": "A labelled field for a start and an end date: each typed in the page's locale, or both chosen on one calendar grid.",
+    "family": "inputs",
+    "tier": "free",
+    "status": {
+      "css": {
+        "state": "future"
+      },
+      "react": {
+        "state": "future"
+      },
+      "figma": {
+        "state": "future"
+      }
+    },
+    "dependencies": [
+      "field",
+      "state-layer",
+      "icon",
+      "visually-hidden"
+    ],
+    "importPath": "@rata/react",
+    "mode": "spec",
+    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "extends": null,
+    "props": [
+      {
+        "name": "label",
+        "type": "ReactNode",
+        "optional": false,
+        "description": null,
+        "declared": false,
+        "summary": "What the range is. Always required — `labelHidden` hides it, nothing removes it.",
+        "use": [
+          "The thing the dates bound: \"Stay\", \"Reporting period\"."
+        ],
+        "dont": [
+          "\"Dates\". Every range picker holds dates; the label says which."
+        ],
+        "conflicts": [],
+        "a11y": "Labels the group, so each input is announced as \"Stay, Check-in\". The calendar dialog is labelled by it too, with the visible month as its description."
+      },
+      {
+        "name": "startLabel",
+        "type": "string",
+        "optional": true,
+        "default": "\"Start date\"",
+        "description": null,
+        "declared": false,
+        "summary": "The visible label on the start input.",
+        "use": [
+          "Naming the end in the domain's words: \"Check-in\", \"From\"."
+        ],
+        "dont": [
+          "An empty string. Each input needs its own name, or both are announced as the group's."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "endLabel",
+        "type": "string",
+        "optional": true,
+        "default": "\"End date\"",
+        "description": null,
+        "declared": false,
+        "summary": "The visible label on the end input.",
+        "use": [
+          "\"Check-out\", \"To\"."
+        ],
+        "dont": [],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "value",
+        "type": "DateRange",
+        "optional": true,
+        "description": null,
+        "declared": false,
+        "summary": "Controls the range from outside: `{ start, end }`, each an ISO calendar date or `null`.",
+        "use": [
+          "A form library, or a search whose range is in the URL."
+        ],
+        "dont": [
+          "Passing `Date`s or timestamps. A calendar date is not an instant.",
+          "Passing it alongside `defaultValue`. One of them owns the state."
+        ],
+        "conflicts": [
+          "defaultValue"
+        ],
+        "a11y": null
+      },
+      {
+        "name": "defaultValue",
+        "type": "DateRange",
+        "optional": true,
+        "default": "{ start: null, end: null }",
+        "description": null,
+        "declared": false,
+        "summary": "The starting range when the component owns the state.",
+        "use": [
+          "A genuine default, such as the current month for a report."
+        ],
+        "dont": [],
+        "conflicts": [
+          "value"
+        ],
+        "a11y": null
+      },
+      {
+        "name": "onValueChange",
+        "type": "(value: DateRange) => void",
+        "optional": true,
+        "description": null,
+        "declared": false,
+        "summary": "Fires with both ends whenever either changes: a day chosen in the calendar, or typed text that parses on blur or Enter.",
+        "use": [
+          "Validating the pair — an end before the start, a range too long — and setting `status`."
+        ],
+        "dont": [
+          "Expecting both ends to be set. A reader fills one before the other; `null` is how the half-filled state arrives."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "min",
+        "type": "string",
+        "optional": true,
+        "description": null,
+        "declared": false,
+        "summary": "The earliest choosable date for either end, as ISO.",
+        "use": [
+          "A booking that cannot start in the past: today's date."
+        ],
+        "dont": [],
+        "conflicts": [],
+        "a11y": "Days before it stay in the grid, focusable, `aria-disabled` and announced as unavailable — the system's disabled rule, applied to a day."
+      },
+      {
+        "name": "max",
+        "type": "string",
+        "optional": true,
+        "description": null,
+        "declared": false,
+        "summary": "The latest choosable date for either end, as ISO.",
+        "use": [
+          "A report that cannot run past today."
+        ],
+        "dont": [],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "isDateUnavailable",
+        "type": "(date: string) => boolean",
+        "optional": true,
+        "description": null,
+        "declared": false,
+        "summary": "Marks individual dates unchoosable — weekends, holidays, fully booked days.",
+        "use": [
+          "Availability that `min` and `max` cannot express."
+        ],
+        "dont": [
+          "A slow function. It runs for every visible day on every render of the grid; precompute a set.",
+          "Relying on it alone. Typed entry can still reach an unavailable date, which the component reports through `status` and `message` rather than silently accepting."
+        ],
+        "conflicts": [],
+        "a11y": "Unavailable days are `aria-disabled` and say so in their accessible name, and keep their place in the grid. Once a start is chosen, days past the next unavailable one are unavailable as an end too."
+      },
+      {
+        "name": "firstDayOfWeek",
+        "type": "0 | 1 | 2 | 3 | 4 | 5 | 6",
+        "optional": true,
+        "description": null,
+        "declared": false,
+        "summary": "Which weekday starts each row of the calendar, 0 being Sunday. Defaults to the page locale's.",
+        "use": [
+          "A product whose week is a business rule rather than a locale convention."
+        ],
+        "dont": [
+          "Setting it to match your own locale. The default already reads the reader's."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "calendarLabel",
+        "type": "string",
+        "optional": true,
+        "default": "\"Choose dates\"",
+        "description": null,
+        "declared": false,
+        "summary": "Accessible name for the button that opens the calendar.",
+        "use": [
+          "Translating it."
+        ],
+        "dont": [
+          "An empty string. The button is icon-only."
+        ],
+        "conflicts": [],
+        "a11y": "Once a range is chosen, the primitive appends it: \"Choose dates, 1 to 7 November 2026\", so the button says what it will change."
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "optional": true,
+        "description": null,
+        "declared": false,
+        "summary": "Shown in each empty input. Defaults to the expected format for the page locale.",
+        "use": [
+          "Leaving the default. It is generated from the same format the parser accepts, so the hint cannot disagree with the parser."
+        ],
+        "dont": [
+          "The label, or an example date that is not in the accepted format."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "startName",
+        "type": "string",
+        "optional": true,
+        "description": null,
+        "declared": false,
+        "summary": "Form field name for the start. Submits the ISO date, not the displayed text.",
+        "use": [
+          "A native form post: `startName=\"checkin\"`."
+        ],
+        "dont": [],
+        "conflicts": [],
+        "a11y": "Carried by a hidden input; the visible one holds the formatted text."
+      },
+      {
+        "name": "endName",
+        "type": "string",
+        "optional": true,
+        "description": null,
+        "declared": false,
+        "summary": "Form field name for the end. Submits the ISO date.",
+        "use": [
+          "`endName=\"checkout\"`, beside `startName`."
+        ],
+        "dont": [],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "size",
+        "type": "\"sm\" | \"md\" | \"lg\"",
+        "values": [
+          "sm",
+          "md",
+          "lg"
+        ],
+        "optional": true,
+        "default": "\"md\"",
+        "description": null,
+        "declared": false,
+        "summary": "Control height and inline padding. Text size does not change with it.",
+        "use": [
+          "Matching whatever the control sits beside."
+        ],
+        "dont": [],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "labelHidden",
+        "type": "boolean",
+        "optional": true,
+        "default": "false",
+        "description": null,
+        "declared": false,
+        "summary": "Takes the label off screen while leaving it in the accessibility tree.",
+        "use": [
+          "A control whose meaning is already carried by a heading or column header directly above it."
+        ],
+        "dont": [
+          "Pairing it with a placeholder standing in for the name. The placeholder is gone on the first keystroke."
+        ],
+        "conflicts": [],
+        "a11y": "Field's, unchanged: the group label is still rendered and still bound. `startLabel` and `endLabel` stay visible."
+      },
+      {
+        "name": "id",
+        "type": "string",
+        "optional": true,
+        "description": null,
+        "declared": false,
+        "summary": "Stable id for the range field, when something outside needs to point at it.",
+        "use": [
+          "A form library that addresses fields by id, or an error summary linking to the field it names."
+        ],
+        "dont": [
+          "Reusing one across two fields. Every id under it — description, message, popup — is derived from this."
+        ],
+        "conflicts": [],
+        "a11y": null
+      },
+      {
+        "name": "status",
+        "type": "FieldStatus",
+        "optional": true,
+        "default": "\"idle\"",
+        "description": null,
+        "declared": false,
+        "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
+        "use": [
+          "`invalid` with a `message` saying what to do about it."
+        ],
+        "dont": [
+          "`invalid` with no message. The ring says something is wrong; only the message says what."
+        ],
+        "conflicts": [],
+        "a11y": "Field's, unchanged."
+      },
+      {
+        "name": "description",
+        "type": "ReactNode",
+        "optional": true,
+        "description": null,
+        "declared": false,
+        "summary": "Persistent helper text under the control.",
+        "use": [
+          "The rule before the reader picks: \"Up to 14 nights.\""
+        ],
+        "dont": [
+          "Repeating the label in a sentence. It is read out after the name, so a restatement is heard twice."
+        ],
+        "conflicts": [],
+        "a11y": "Joins `aria-describedby` ahead of the message, so a constraint is heard before a failure."
+      },
+      {
+        "name": "message",
+        "type": "ReactNode",
+        "optional": true,
+        "description": null,
+        "declared": false,
+        "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
+        "use": [
+          "What to do about an `invalid` status, in the imperative."
+        ],
+        "dont": [
+          "Putting the permanent constraint here. It leaves the description chain whenever the status returns to idle — that is `description`."
+        ],
+        "conflicts": [],
+        "a11y": "Announced politely rather than as an alert, because it is already in `aria-describedby`."
+      },
+      {
+        "name": "required",
+        "type": "boolean",
+        "optional": true,
+        "default": "false",
+        "description": null,
+        "declared": false,
+        "summary": "Marks both ends required, in the label and to assistive technology.",
+        "use": [
+          "Fields that genuinely block submission."
+        ],
+        "dont": [
+          "Pairing it with a hand-written asterisk in `label`. Field renders one."
+        ],
+        "conflicts": [],
+        "a11y": "`aria-required` on the control; the rendered marker is `aria-hidden`."
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "optional": true,
+        "default": "false",
+        "description": null,
+        "declared": false,
+        "summary": "Blocks typing and opening the calendar while keeping both inputs focusable, readable and announced.",
+        "use": [
+          "A range fixed by an earlier choice that should still be readable."
+        ],
+        "dont": [
+          "Assuming the values are withheld. Both hidden inputs still submit."
+        ],
+        "conflicts": [],
+        "a11y": "`aria-disabled` plus `readOnly` on both inputs from Field, and `aria-disabled` on the calendar button, whose click guard refuses to open."
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "optional": true,
+        "description": null,
+        "declared": false,
+        "summary": "Class for the wrapper — the width the form wants, not a restyle.",
+        "use": [
+          "A measure that fits two formatted dates and the separator."
+        ],
+        "dont": [],
+        "conflicts": [],
+        "a11y": null
+      }
+    ],
+    "usage": [
+      {
+        "case": "A stay",
+        "when": "A booking with a check-in and a check-out.",
+        "example": "<DateRangePicker\n  label=\"Stay\"\n  startLabel=\"Check-in\"\n  endLabel=\"Check-out\"\n  min={today}\n  isDateUnavailable={(d) => booked.has(d)}\n  startName=\"checkin\"\n  endName=\"checkout\"\n  required\n/>",
+        "notes": "Once a check-in is chosen, no check-out past the next booked night can be picked, and those days are announced as unavailable."
+      },
+      {
+        "case": "A reporting period",
+        "when": "A filter over past data.",
+        "example": "<DateRangePicker\n  label=\"Period\"\n  startLabel=\"From\"\n  endLabel=\"To\"\n  max={today}\n  value={range}\n  onValueChange={setRange}\n/>",
+        "notes": "Readers will often type these. `range` arrives with one end `null` while the other is being filled."
+      },
+      {
+        "case": "An end before the start",
+        "when": "Typed entry produced a range that runs backwards.",
+        "example": "<DateRangePicker\n  label=\"Stay\"\n  value={range}\n  onValueChange={setRange}\n  status=\"invalid\"\n  message=\"Check-out must be after check-in.\"\n/>",
+        "notes": "The component passes typed values through rather than swapping them, so the caller says what is wrong."
+      },
+      {
+        "case": "Reaching for the wrong component",
+        "when": "One date, such as a delivery day.",
+        "example": "<DateRangePicker label=\"Delivery\" />",
+        "notes": "A single date is DatePicker. A range picker with equal ends is a valid value, but asking for two inputs to get one date is the wrong question."
+      }
+    ],
+    "behavior": {
+      "summary": "Two text inputs — start and end — inside one Field, beside one button opening the same modal calendar dialog DatePicker uses, where the first day chosen is the start and the second the end. Its own contract rather than a mode of DatePicker (decision C10, docs/decisions/2026-11-gate-1-review.md), built on the same calendar-grid primitive. The value is a pair of ISO calendar dates.",
+      "decisions": [
+        {
+          "decision": "Its own component, not a `range` prop on DatePicker",
+          "why": "A range changes the value's type, adds a second input with its own name, a preview between the ends, a rule about what an end before the start means, and an announcement for each end. A boolean on DatePicker would change what `value` is depending on another prop — the shape this system refuses everywhere else. The two share the calendar-grid primitive instead, so the date arithmetic, keyboard model and `aria-disabled` handling exist once (decision C10, docs/decisions/2026-11-gate-1-review.md)."
+        },
+        {
+          "decision": "The value is `{ start, end }`, each an ISO calendar date or `null`",
+          "why": "DatePicker's reason for ISO strings applies twice over: a stay stored as two `Date`s can lose a night when a server and a browser disagree about the zone. Each end can be `null` on its own, because a reader fills one end before the other and a form needs to see that state to say what is missing. A one-day range — start equal to end — is valid."
+        },
+        {
+          "decision": "Two inputs, each labelled, typing first",
+          "why": "Someone reading dates off a booking types them faster than they can page a calendar. So each end is its own text input with its own visible label (`startLabel`, `endLabel`), parsing the page locale's numeric format on blur and Enter as DatePicker does, and the group is labelled by `label`. One input holding \"1/11/2026 – 7/11/2026\" would need a parser for the separator and announce as one value nobody can edit half of."
+        },
+        {
+          "decision": "In the calendar, the first choice is the start and the second the end",
+          "why": "Choosing a day with no start, or with both ends set, starts a new range and clears the end; the next choice sets the end and closes the dialog. Choosing a day before the start makes that day the new start rather than an end — reordering behind the reader's back would put the cursor's meaning in the wrong place. After the start is chosen, moving focus or the pointer previews the range up to that day, and the dialog's live hint says \"Choose end date\"."
+        },
+        {
+          "decision": "Typed ends are passed through, never silently reordered",
+          "why": "An end typed before the start is reported as typed: `onValueChange` fires with both values, and the caller's validation reports it through `status` and `message` — the same path a typed unavailable date takes in DatePicker. Swapping them would change a value the reader can see they did not enter."
+        },
+        {
+          "decision": "A range cannot span an unavailable day",
+          "why": "Once a start is chosen, every day after the next unavailable one is unavailable as an end, because a booking across a booked night is not a booking. Those days stay focusable and are announced as unavailable, so the grid's geometry does not lie — DatePicker's rule, unchanged."
+        },
+        {
+          "decision": "Each day's name says where it sits in the range",
+          "why": "Fill and tint are invisible to a screen reader, so the start, the end and the days between append \"start date\", \"end date\" and \"in range\" to their accessible name, and the chosen ends use `aria-selected`. The days between are not `aria-selected`: they were not chosen, and announcing six selected days for one choice of two ends misstates what the reader did."
+        },
+        {
+          "decision": "Disabled is `aria-disabled` plus `readOnly`, inherited from Field",
+          "why": "The system rule, on both inputs and the calendar button. And the text field's consequence with it: both values still submit."
+        },
+        {
+          "decision": "Proposed primitive: `getDateRangePickerProps`, over the shared `getCalendarGridProps`",
+          "why": "Neither exists yet. The range primitive adds what the grid lacks — which end the next choice sets, the preview span, the unavailable-span rule and the range-position names — and delegates date arithmetic, the keyboard model and locale handling to the grid DatePicker proposes. Both work on ISO strings only."
+        },
+        {
+          "decision": "Web and native",
+          "why": "Web: a `role=\"group\"` labelled by `label`, holding two text inputs with their own labels, a calendar `<button>` with a click guard, two hidden inputs carrying `startName` and `endName`, and a modal `<dialog>` holding a `<table role=\"grid\">` whose day cells are buttons with `aria-selected` on the ends, `aria-current=\"date\"` on today and `aria-disabled` on unavailable days. Touch, pointer and keyboard share it; only placement changes with width. React Native: the two ends are `Pressable` fields with `accessibilityRole=\"button\"` and the formatted date as `accessibilityValue={{ text }}`, opening one calendar through the core `Modal` as a sheet. Rata-drawn, not the OS control (decision N5): iOS's date picker has no range mode and Android's range picker belongs to the Material library rather than the OS, so native draws the calendar from the same grid primitive and recipe as the web — which is also why the grid is a primitive. Typed entry, `placeholder`, `startName`, `endName` and `size` are web-only. The native implementation ships in the pro tier (decision N6)."
+        }
+      ]
+    },
+    "tokens": {
+      "base": {
+        "summary": "Two date inputs in one box, matching the date picker's step for step, with a separator between them and the calendar button's well at the end. Field owns the label, helper text, message and disabled dimming.",
+        "tokens": {
+          "font-family": "font.family.sans",
+          "font-size": "type.control.size.md",
+          "font-variant": "tabular-nums, so a typed date does not shift as digits change",
+          "background": "theme.bg.surface",
+          "color": "theme.fg.primary",
+          "placeholder colour": "theme.fg.muted",
+          "border": "border.default solid theme.border.strong",
+          "border-radius": "radius.element",
+          "block-size": "size.control.md — and size.control.sm / size.control.lg at the other sizes",
+          "padding-inline-start": "space.control.padding-inline.md — and the sm / lg steps",
+          "padding-inline-end": "space.control.padding-inline.md plus size.control.sm, for the calendar button",
+          "focus border-color": "theme.fg.primary",
+          "focus outline": "focus.ring-width solid theme.fg.primary at space.0 offset — the text field's departure",
+          "hover inner band": "theme.bg.muted at border.2 as an inset shadow, idle only",
+          "validating ring": "theme.accent-role.ring",
+          "valid ring": "theme.success-role.ring",
+          "invalid ring": "theme.danger-role.ring",
+          "separator colour": "theme.fg.secondary — an en dash, aria-hidden; the two inputs' own labels carry the meaning",
+          "gap around the separator": "space.gap.xs"
+        }
+      },
+      "trigger": {
+        "summary": "The one calendar button at the field's end, opening the calendar on whichever end is empty — the start if both are. A tab stop with the system ring, as in DatePicker, because it opens a dialog the keyboard has no other way to reach.",
+        "tokens": {
+          "inline-size / block-size": "size.control.sm, inset space.0-5 from the end edge",
+          "glyph size": "size.icon.text",
+          "colour": "theme.fg.secondary",
+          "border-radius": "radius.inner",
+          "hover / press": "compose the .rata-state-layer class",
+          "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible"
+        }
+      },
+      "calendar": {
+        "summary": "The dialog surface on wide screens, DatePicker's unchanged. One month at a time — two side by side would need a second grid and a second focus model, and a range across a month boundary is reached with PageDown.",
+        "tokens": {
+          "background": "theme.bg.surface",
+          "border": "border.default solid theme.border.default",
+          "border-radius": "radius.container",
+          "box-shadow": "theme.elevation.overlay",
+          "padding": "space.padding.sm",
+          "gap from the field": "space.gap.xs",
+          "backdrop": "theme.scrim",
+          "month title font-size": "type.control.size.md",
+          "month title font-weight": "type.control.weight",
+          "month title colour": "theme.fg.primary",
+          "month navigation buttons": "size.control.sm square, radius.inner, compose the .rata-state-layer class, theme.focus-ring on :focus-visible",
+          "weekday header colour": "theme.fg.secondary",
+          "weekday header font-size": "type.supporting.size",
+          "gap between header and grid": "space.stack.2xs",
+          "enter transition": "motion.overlay.duration with motion.easing.enter",
+          "selection hint colour": "theme.fg.secondary",
+          "selection hint font-size": "type.supporting.size"
+        }
+      },
+      "calendar-narrow": {
+        "summary": "The same dialog below the breakpoint, at the bottom edge. Sheet-level radius and modal elevation, because here it does take over the screen.",
+        "tokens": {
+          "border-radius": "radius.page on the top corners only",
+          "box-shadow": "theme.elevation.modal",
+          "padding": "space.padding.lg",
+          "day cell size": "size.control.lg"
+        }
+      },
+      "day": {
+        "summary": "One day, DatePicker's, plus the three range states. The ends are the filled accent; the days between are a continuous tint, so the stay reads as one band.",
+        "tokens": {
+          "inline-size / block-size": "size.control.md",
+          "border-radius": "radius.pill",
+          "font-size": "type.control.size.sm",
+          "font-variant": "tabular-nums",
+          "colour": "theme.fg.primary",
+          "outside the month": "theme.fg.muted — shown so the rows are whole weeks, and still choosable",
+          "today": "theme.accent-role.fg at type.control.weight — marked by tone and weight rather than a ring, since a ring is the selection and validation stroke",
+          "hover / press": "compose the .rata-state-layer class",
+          "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible — kept on the ends, where offset 0 on a filled accent would vanish",
+          "unavailable": "state.disabled-opacity and a line-through, so the state is not carried by dimming alone",
+          "start / end background": "theme.accent-role.bg",
+          "start / end colour": "theme.fg.on-accent — the only foreground permitted on that fill",
+          "in-range background": "theme.accent-role.subtle",
+          "in-range colour": "theme.fg.primary — verified at AA-text on theme.accent-role.subtle",
+          "in-range border-radius": "radius.none, so consecutive days join into one band; the start and end keep radius.pill on their outer side",
+          "preview (start chosen, end not yet)": "theme.accent-role.ring at border.default as an inset stroke from the start to the focused or hovered day — a selection stroke, distinct from the focus ring"
         }
       }
     },
@@ -3532,7 +4142,7 @@
         },
         {
           "decision": "Web and native",
-          "why": "Web: `<hr>` horizontally; `<div role=\"separator\" aria-orientation=\"vertical\">` vertically; with `decorative`, the same element with `aria-hidden=\"true\"` (and `role=\"none\"` on the `<hr>`). React Native has no separator role: a hairline `View` that is always hidden from assistive tech with `importantForAccessibility=\"no\"` and `accessibilityElementsHidden`, whatever `decorative` says — the topic change is carried by the heading that follows it, which is the only structure native screen readers navigate by. `decorative` therefore has an effect on web only."
+          "why": "Web: `<hr>` horizontally; `<div role=\"separator\" aria-orientation=\"vertical\">` vertically; with `decorative`, the same element with `aria-hidden=\"true\"` (and `role=\"none\"` on the `<hr>`). React Native has no separator role: a hairline `View` that is always hidden from assistive tech with `importantForAccessibility=\"no\"` and `accessibilityElementsHidden`, whatever `decorative` says — the topic change is carried by the heading that follows it, which is the only structure native screen readers navigate by. `decorative` therefore has an effect on web only. Rata-drawn (decision N5): there is no OS separator control. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -3740,7 +4350,7 @@
         },
         {
           "decision": "Web and native",
-          "why": "Web: a `div`; with `live`, it carries `role=\"status\"` (polite) or `role=\"alert\"` (assertive), as Notice does. The icon is `aria-hidden`. React Native: a `View`; the title is plain `Text`, not `accessibilityRole=\"header\"`, for the outline reason above. `live` maps to `accessibilityLiveRegion` on Android and to `AccessibilityInfo.announceForAccessibility` with the title on iOS. All props work on both."
+          "why": "Web: a `div`; with `live`, it carries `role=\"status\"` (polite) or `role=\"alert\"` (assertive), as Notice does. The icon is `aria-hidden`. React Native: a `View`; the title is plain `Text`, not `accessibilityRole=\"header\"`, for the outline reason above. `live` maps to `accessibilityLiveRegion` on Android and to `AccessibilityInfo.announceForAccessibility` with the title on iOS. All props work on both. Rata-drawn (decision N5): React Native exposes no OS empty-state view, so it is drawn from the same recipe as the web. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -3989,7 +4599,7 @@
         },
         {
           "decision": "Web and native",
-          "why": "On the web it renders `<button type=\"button\">`, position fixed, with `aria-label={label}` only when `labelHidden` is set — otherwise the visible text is the name, and the icon is `aria-hidden`. While `loading` it carries `aria-disabled=\"true\"` and `aria-busy=\"true\"`. On React Native it renders a `Pressable` with `accessibilityRole=\"button\"`, `accessibilityLabel={label}`, and `accessibilityState={{ disabled, busy: loading }}`, absolutely positioned inside the screen and offset by `useSafeAreaInsets()`. Web-only: `className`, and the BottomNav clearance, which is a CSS `:has()` rule — a native screen knows its tab bar's height from the navigator and offsets by that instead. No prop is native-only. There is no gesture."
+          "why": "On the web it renders `<button type=\"button\">`, position fixed, with `aria-label={label}` only when `labelHidden` is set — otherwise the visible text is the name, and the icon is `aria-hidden`. While `loading` it carries `aria-disabled=\"true\"` and `aria-busy=\"true\"`. On React Native it renders a `Pressable` with `accessibilityRole=\"button\"`, `accessibilityLabel={label}`, and `accessibilityState={{ disabled, busy: loading }}`, absolutely positioned inside the screen and offset by `useSafeAreaInsets()`. Web-only: `className`, and the BottomNav clearance, which is a CSS `:has()` rule — a native screen knows its tab bar's height from the navigator and offsets by that instead. No prop is native-only. There is no gesture. Rata-drawn (decision N5): iOS has no floating action button and Android's is a Material library component rather than an OS control, so it is a drawn `Pressable` from the same recipe on both. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -4454,12 +5064,14 @@
         "optional": true,
         "description": null,
         "declared": false,
-        "summary": "Controls the chosen files from outside. Each is `{ name, size, type }` plus the platform's handle — `file` on web, `uri` on native.",
+        "summary": "Controls the chosen files from outside. Each is `{ name, size, type }` plus the platform's handle — `file` on web, `uri` on native — and, optionally, `progress` (0–100) and `error`, which the caller's uploader sets and the row displays.",
         "use": [
-          "A form library, or restoring a selection after a validation round-trip."
+          "A form library, or restoring a selection after a validation round-trip.",
+          "Passing each file back with `progress` while it uploads, and `error` if it fails — the rows show both."
         ],
         "dont": [
-          "Expecting it to hold uploaded files. It holds chosen ones; uploading is the caller's."
+          "Expecting it to hold uploaded files. It holds chosen ones; uploading is the caller's.",
+          "Expecting the component to set `progress` or `error`. It only displays them; uploading is the app's."
         ],
         "conflicts": [],
         "a11y": null
@@ -4689,6 +5301,12 @@
         "notes": "Refused files never enter the list, so without `onReject` they vanish silently. Name the file and the rule in the message."
       },
       {
+        "case": "Uploads in flight",
+        "when": "The app uploads each file as it is chosen and wants the rows to show how far each one got.",
+        "example": "<FileUpload\n  label=\"Attachments\"\n  multiple\n  value={files}\n  onValueChange={startUploads}\n/>",
+        "notes": "`startUploads` uploads the new files and updates `files`, setting `progress` (0–100) on each while it runs and `error` on any that fail. The component draws both and uploads nothing (decision C11)."
+      },
+      {
         "case": "A compact attachment control",
         "when": "A reply box or a chat composer, where a drop zone would dwarf the field it serves.",
         "example": "<FileUpload\n  label=\"Attachments\"\n  labelHidden\n  multiple\n  dropzone={false}\n  buttonLabel=\"Attach files\"\n/>",
@@ -4726,7 +5344,11 @@
         },
         {
           "decision": "It chooses files; it does not upload them",
-          "why": "Uploading is a network policy — chunking, retries, auth, progress, cancellation — that belongs to the caller, and baking one in would make this component wrong for every backend but one. The open question is whether the list should accept a per-file progress and error state from the caller so the rows can show it; that is deliberately not in this spec and needs a decision."
+          "why": "Uploading is a network policy — chunking, retries, auth, progress, cancellation — that belongs to the caller, and baking one in would make this component wrong for every backend but one. The app does the uploading; this component chooses, validates and lists. What the list does take from the caller is each file's state: see the next decision (decision C11, docs/decisions/2026-11-gate-1-review.md)."
+        },
+        {
+          "decision": "Rows show per-file `progress` and `error` that the caller supplies on the file items",
+          "why": "A `PickedFile` may carry `progress` (0–100) and `error` (a string), and a row renders what it is given: a bar while `progress` is set, the error line under the name when `error` is. The caller's uploader writes them back into `value`, so showing progress means using the component controlled. The component never sets either itself and never infers success from 100 — completion is whatever the caller says it is. The bar in a row is a `role=\"progressbar\"` named by the file name, and it is not announced on every change; the component's polite region announces when a file's `error` appears, and the error text joins the remove button's `aria-describedby` so it is heard with the file it belongs to. This keeps the network out of the component while the rows can still say what happened to each file (decision C11, docs/decisions/2026-11-gate-1-review.md)."
         },
         {
           "decision": "No image previews in this version",
@@ -4742,7 +5364,7 @@
         },
         {
           "decision": "Web and native",
-          "why": "Web: a visually hidden `<input type=\"file\">` carrying `name`, `accept` and `multiple`; the system Button; a drop zone `<div>` with no role; and the file list as a `<ul>` with one remove button per row, all inside a `role=\"group\"` labelled by `label`. React Native has no file input. The native component is a `Pressable` with `accessibilityRole=\"button\"` opening the OS document picker — which is not in core, so it is a community-package dependency every native consumer installs, and photos from the library are a second picker with its own permission prompt. That costs three things: `dropzone` is web-only; `accept` extensions such as `.pdf` are web-only, because native pickers filter by type (MIME on Android, translated to UTIs on iOS), which is why `accept` should lead with MIME types; and `name` is web-only, since there is no form post. `PickedFile` is the same shape on both — `{ name, size, type }` — with `file: File` on web and `uri` on native, so validation code is shared."
+          "why": "Web: a visually hidden `<input type=\"file\">` carrying `name`, `accept` and `multiple`; the system Button; a drop zone `<div>` with no role; and the file list as a `<ul>` with one remove button per row, all inside a `role=\"group\"` labelled by `label`. React Native has no file input. The native component is a `Pressable` with `accessibilityRole=\"button\"` opening the OS document picker — which is not in core, so it is a community-package dependency every native consumer installs, and photos from the library are a second picker with its own permission prompt. That costs three things: `dropzone` is web-only; `accept` extensions such as `.pdf` are web-only, because native pickers filter by type (MIME on Android, translated to UTIs on iOS), which is why `accept` should lead with MIME types; and `name` is web-only, since there is no form post. `PickedFile` is the same shape on both — `{ name, size, type }` — with `file: File` on web and `uri` on native, so validation code is shared. The OS control, not a Rata-drawn one (decision N5): choosing goes through the OS document picker on native and the OS file dialog on web, because no drawn control can reach the file system; the button and the file list around it are Rata-drawn from the same recipe. On native a row's bar is a `View` with `accessibilityRole=\"progressbar\"` and `accessibilityValue={{ min: 0, max: 100, now: progress }}`. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -4777,7 +5399,14 @@
           "file size colour": "theme.fg.secondary",
           "file size font-size": "type.supporting.size",
           "file icon size": "size.icon.text",
-          "file icon colour": "theme.fg.secondary"
+          "file icon colour": "theme.fg.secondary",
+          "row progress track background": "theme.bg.muted — Progress's status track (decision C8), because this bar reports and cannot be adjusted",
+          "row progress fill background": "theme.accent-role.bg — Progress's fill, with its pairing gap",
+          "row progress block-size": "space.1 — Progress's placeholder, until the shared track-thickness token (decision C8)",
+          "row progress border-radius": "radius.pill",
+          "row error colour": "theme.danger-role.fg — the role's text colour on the row's theme.bg.surface, never its saturated bg",
+          "row error font-size": "type.supporting.size",
+          "row error border-color": "theme.danger-role.fg — the field's error edge, on the failed row only"
         }
       },
       "remove": {
@@ -5250,12 +5879,12 @@
           "why": "WCAG 3.2.5 asks that a change of context be predictable, and a link that silently opens a new tab breaks Back for the reader who did not expect it. `newTab` sets `target=\"_blank\"` and `rel=\"noopener noreferrer\"` together, and adds a glyph plus visually-hidden \"(opens in a new tab)\" so it is announced. Passing `target=\"_blank\"` by hand gets none of that, which is the reason this is a prop rather than an attribute the caller remembers."
         },
         {
-          "decision": "Visited links are not styled differently",
-          "why": "There is no visited token, and in an application most links are repeated navigation — a visited state would turn half of every page purple. Content-heavy sites may want one; whether to add a `theme.*` visited foreground through the design-tokens skill is an open question for approval, not a gap this component should fill with a palette value."
+          "decision": "No visited colour",
+          "why": "Approved at gate 1 (decision C4, docs/decisions/2026-11-gate-1-review.md). In an application most links are repeated navigation — the same invoices, the same settings — so a visited state would recolour half of every page and tell the reader nothing. A link is recognised by its underline, not its colour, so a visited colour would add no cue the reader needs. And it would be one more foreground to verify for contrast against every surface, in both schemes and every brand, while browsers deliberately limit what `:visited` can style for privacy. There is no visited token, none is to be proposed, and `:visited` gets no rule."
         },
         {
           "decision": "Web and native",
-          "why": "Web: an `<a href>`; `newTab` adds `target` and `rel`, a glyph and a visually-hidden suffix; a router intercepts `onClick` and calls `preventDefault`. React Native has no anchor: the link is a nested `Text` with `accessibilityRole=\"link\"` and `onPress`, so it flows inside a paragraph, and `href` is opened with `Linking.openURL` unless the caller's `onPress` handles it for in-app navigation. `newTab` is web-only. `variant` works on both; the native state-layer equivalent is the `Pressable` pressed style, and the inline underline is `textDecorationLine: \"underline\"`."
+          "why": "Web: an `<a href>`; `newTab` adds `target` and `rel`, a glyph and a visually-hidden suffix; a router intercepts `onClick` and calls `preventDefault`. React Native has no anchor: the link is a nested `Text` with `accessibilityRole=\"link\"` and `onPress`, so it flows inside a paragraph, and `href` is opened with `Linking.openURL` unless the caller's `onPress` handles it for in-app navigation. `newTab` is web-only. `variant` works on both; the native state-layer equivalent is the `Pressable` pressed style, and the inline underline is `textDecorationLine: \"underline\"`. The OS's own text and link handling, not a Rata-drawn control (decision N5): the platform `Text` carries the link and `Linking` opens it; Rata supplies only the colour and underline. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -5479,7 +6108,7 @@
         },
         {
           "decision": "Web and native",
-          "why": "On the web it renders `<ul role=\"list\">`, named by `aria-label` or `aria-labelledby` when given one. The explicit role is load-bearing: Safari removes list semantics from a list styled `list-style: none`, which is every list here, and without it VoiceOver stops announcing 'list, 12 items'. On React Native it renders a `View` with `accessibilityRole=\"list\"` for short static lists. A long native list should be a `FlatList` — virtualization is not optional at a few hundred rows on a phone — so the native package is expected to take `data` and `renderItem` where the web takes `children`; that divergence is an open question for the native package's own gate 1. `className` is web-only. Swipe actions live on ListItem, and this component has no gesture of its own."
+          "why": "On the web it renders `<ul role=\"list\">`, named by `aria-label` or `aria-labelledby` when given one. The explicit role is load-bearing: Safari removes list semantics from a list styled `list-style: none`, which is every list here, and without it VoiceOver stops announcing 'list, 12 items'. On React Native it renders a `View` with `accessibilityRole=\"list\"` for short static lists. A long native list should be a `FlatList` — virtualization is not optional at a few hundred rows on a phone — so the native package is expected to take `data` and `renderItem` where the web takes `children`; that divergence is an open question for the native package's own gate 1. `className` is web-only. Swipe actions live on ListItem, and this component has no gesture of its own. Rata-drawn rows inside the core list views (decision N5): `View` or `FlatList` supplies the scrolling and the list semantics, and no OS table or list styling (UITableView, RecyclerView) is used. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -5773,7 +6402,7 @@
         },
         {
           "decision": "Web and native",
-          "why": "On the web it renders `<li>`, with an `<a href>` or `<button type=\"button\">` over the text when interactive, `aria-describedby` to the description, and `aria-disabled` when disabled. The actions trigger is an icon-only Button with `aria-haspopup=\"menu\"` opening a Menu. On React Native it renders a `View` (or a `Pressable` with `accessibilityRole=\"link\"` or `\"button\"` when interactive), `accessibilityHint` from the description, and `accessibilityState={{ disabled }}`. `actions` become the row's `accessibilityActions`, with `onAccessibilityAction` dispatching to each `onSelect` — so VoiceOver's actions rotor and TalkBack's actions menu reach them from the row itself — and the visible trailing button remains for touch. A future swipe reveals the same array on both platforms. Web-only: `href`, `onClick` (a DOM `MouseEvent`) and `className`; the native package takes `onPress` in their place. No prop is native-only."
+          "why": "On the web it renders `<li>`, with an `<a href>` or `<button type=\"button\">` over the text when interactive, `aria-describedby` to the description, and `aria-disabled` when disabled. The actions trigger is an icon-only Button with `aria-haspopup=\"menu\"` opening a Menu. On React Native it renders a `View` (or a `Pressable` with `accessibilityRole=\"link\"` or `\"button\"` when interactive), `accessibilityHint` from the description, and `accessibilityState={{ disabled }}`. `actions` become the row's `accessibilityActions`, with `onAccessibilityAction` dispatching to each `onSelect` — so VoiceOver's actions rotor and TalkBack's actions menu reach them from the row itself — and the visible trailing button remains for touch. A future swipe reveals the same array on both platforms. Web-only: `href`, `onClick` (a DOM `MouseEvent`) and `className`; the native package takes `onPress` in their place. No prop is native-only. Rata-drawn (decision N5): the row is a drawn `View` or `Pressable` from the same recipe, not an OS table cell. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -7307,7 +7936,7 @@
         },
         {
           "decision": "Web and native",
-          "why": "Web: the text input above with `role=\"spinbutton\"` inside a Field, two `<button tabindex=\"-1\">` with `aria-label`, and a hidden input carrying `name`. React Native: a `TextInput` with `keyboardType=\"decimal-pad\"` — or `numbers-and-punctuation` when `min` is below zero, because the iOS decimal pad has no minus key — flanked by two `Pressable` buttons with `accessibilityRole=\"button\"` and the two labels. iOS cannot make one element both editable text and adjustable, so on native the input keeps its text role and the stepping lives on the buttons; `accessibilityValue={{ min, max, now, text }}` is set on the input so the range is still announced. `name` and `size` are web-only."
+          "why": "Web: the text input above with `role=\"spinbutton\"` inside a Field, two `<button tabindex=\"-1\">` with `aria-label`, and a hidden input carrying `name`. React Native: a `TextInput` with `keyboardType=\"decimal-pad\"` — or `numbers-and-punctuation` when `min` is below zero, because the iOS decimal pad has no minus key — flanked by two `Pressable` buttons with `accessibilityRole=\"button\"` and the two labels. iOS cannot make one element both editable text and adjustable, so on native the input keeps its text role and the stepping lives on the buttons; `accessibilityValue={{ min, max, now, text }}` is set on the input so the range is still announced. `name` and `size` are web-only. Rata-drawn around the OS text input (decision N5): the `TextInput` is the platform's own and the step buttons are drawn from the recipe — not `UIStepper`, which has no text entry and no Android counterpart. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -7517,7 +8146,7 @@
         },
         {
           "decision": "Web and native",
-          "why": "Web: `<nav aria-label>` around a `<ul>` of `<a>` elements, `aria-current=\"page\"` on the current one, `aria-disabled` on an unavailable Previous or Next. React Native has no URLs to link to, so `href` is web-only and `onPageChange` is what drives navigation; it is required there. Each item is a `Pressable` with `accessibilityRole=\"button\"` — on native, changing a page is an action rather than a link — with `accessibilityLabel` \"Page 4\" and `accessibilityState` carrying `selected` for the current page and `disabled` for an unavailable Previous or Next. The row wraps in a `View` with `accessibilityLabel` set from `label`."
+          "why": "Web: `<nav aria-label>` around a `<ul>` of `<a>` elements, `aria-current=\"page\"` on the current one, `aria-disabled` on an unavailable Previous or Next. React Native has no URLs to link to, so `href` is web-only and `onPageChange` is what drives navigation; it is required there. Each item is a `Pressable` with `accessibilityRole=\"button\"` — on native, changing a page is an action rather than a link — with `accessibilityLabel` \"Page 4\" and `accessibilityState` carrying `selected` for the current page and `disabled` for an unavailable Previous or Next. The row wraps in a `View` with `accessibilityLabel` set from `label`. Rata-drawn (decision N5): there is no OS page-selector control, so each item is a drawn `Pressable`. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -8196,7 +8825,7 @@
         },
         {
           "decision": "Web and native",
-          "why": "Web: one `<input>` with `inputmode=\"numeric\"` (or `text` for alphanumeric), `autocomplete=\"one-time-code\"` or `off`, `type=\"password\"` for `pin`, `maxLength`, inside a Field; the boxes are `aria-hidden` and the input lies over them, transparent, so taps anywhere land in it. React Native: one `TextInput` with `keyboardType=\"number-pad\"`, `textContentType=\"oneTimeCode\"` on iOS and `autoComplete=\"sms-otp\"` on Android — the two platforms' SMS autofill hooks — and `secureTextEntry` for `pin`; the boxes are `View`s with `accessibilityElementsHidden` and `importantForAccessibility=\"no-hide-descendants\"`, so only the input is announced. `name` is web-only."
+          "why": "Web: one `<input>` with `inputmode=\"numeric\"` (or `text` for alphanumeric), `autocomplete=\"one-time-code\"` or `off`, `type=\"password\"` for `pin`, `maxLength`, inside a Field; the boxes are `aria-hidden` and the input lies over them, transparent, so taps anywhere land in it. React Native: one `TextInput` with `keyboardType=\"number-pad\"`, `textContentType=\"oneTimeCode\"` on iOS and `autoComplete=\"sms-otp\"` on Android — the two platforms' SMS autofill hooks — and `secureTextEntry` for `pin`; the boxes are `View`s with `accessibilityElementsHidden` and `importantForAccessibility=\"no-hide-descendants\"`, so only the input is announced. `name` is web-only. Rata-drawn around the OS text input (decision N5): the single `TextInput` is the platform's, so SMS autofill, paste and deletion are too; the boxes are drawn from the recipe. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -8435,7 +9064,7 @@
         },
         {
           "decision": "Web and native",
-          "why": "Web: a `role=\"dialog\"` element, not `aria-modal`, with the `popover=\"auto\"` attribute and `aria-labelledby` pointing at its title; the trigger receives `aria-expanded` and `aria-controls` (deliberately not `aria-haspopup=\"dialog\"`, which screen readers announce inconsistently). React Native has no anchored overlay and no top layer, and a small anchored surface is the wrong shape for a phone anyway. On native it renders through the core `Modal` as a sheet from the block-end edge, with `accessibilityViewIsModal` on iOS and the title as `accessibilityRole=\"header\"` — modal on native because the platform offers no non-modal floating surface that screen readers handle. `placement` is web-only."
+          "why": "Web: a `role=\"dialog\"` element, not `aria-modal`, with the `popover=\"auto\"` attribute and `aria-labelledby` pointing at its title; the trigger receives `aria-expanded` and `aria-controls` (deliberately not `aria-haspopup=\"dialog\"`, which screen readers announce inconsistently). React Native has no anchored overlay and no top layer, and a small anchored surface is the wrong shape for a phone anyway. On native it renders through the core `Modal` as a sheet from the block-end edge, with `accessibilityViewIsModal` on iOS and the title as `accessibilityRole=\"header\"` — modal on native because the platform offers no non-modal floating surface that screen readers handle. `placement` is web-only. Rata-drawn content inside the OS's own modal presentation (decision N5): the core `Modal` supplies the presentation and its screen-reader behaviour, and Rata draws the sheet; no platform popover or action sheet is used. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -8612,22 +9241,30 @@
           "why": "A progress bar updating every 200ms as a live region would read a number every time the screen reader paused. The role is enough for a reader who navigates to it to hear the current value. What does need announcing is completion — and that is the caller's message, usually a Toast or a Notice, because only the caller knows what \"done\" means."
         },
         {
+          "decision": "The track is `theme.bg.muted`, not Slider's `theme.border.strong`",
+          "why": "Approved at gate 1 (decision C8, docs/decisions/2026-11-gate-1-review.md). Slider and Progress look alike and are split by role. A slider's empty track is part of a control — it shows how far the value can still go — so it takes the boundary tone tuned to the 3:1 WCAG 1.4.11 asks of a control. A progress bar takes no input, and its empty track carries no information on its own: what the reader needs is the fill against it, which the pairing decision below covers. So the track is the recessed well `theme.bg.muted` is documented for, and a progress bar beside a slider does not read as something to drag."
+        },
+        {
+          "decision": "Token gap: track thickness, shared with Slider — needs the design-tokens skill",
+          "why": "Decision C8 settles the disagreement the two specs had. The thickness of a track is a size, not a distance between things, and Slider and Progress take the same new track-thickness token — the one Slider's spec proposes — rather than one spacing step each. Until the design-tokens interview approves it, the recipe uses `space.1` as a stand-in, which is the misuse `space`'s own contract warns about and is named here so it does not ship quietly."
+        },
+        {
           "decision": "Pairing gap: `theme.accent-role.bg` on `theme.bg.muted` at AA-nontext is not a documented pairing",
           "why": "WCAG 1.4.11 asks a fill to reach 3:1 against what it sits on when it conveys information, and the filled part of a bar is exactly that. The pairing is very likely to hold in the base theme but is not in the verified list, so nothing re-measures it per brand. It should be added to the token contracts' pairings — no new token, just a promise the build will check — before gate 2 approves this mapping."
         },
         {
           "decision": "Web and native",
-          "why": "Web: a `div` with `role=\"progressbar\"`, `aria-valuenow`, `aria-valuemin=\"0\"`, `aria-valuemax`, `aria-valuetext` when `valueText` is passed, and `aria-labelledby` pointing at the visible label. In forced-colors mode the fill takes the system `Highlight` colour so it stays visible. React Native: a `View` with `accessibilityRole=\"progressbar\"` and `accessibilityValue={{ min: 0, max, now: value, text: valueText }}`, labelled by `accessibilityLabel`. All props work on both; the fill transition is skipped on native when the OS reduce-motion setting is on."
+          "why": "Web: a `div` with `role=\"progressbar\"`, `aria-valuenow`, `aria-valuemin=\"0\"`, `aria-valuemax`, `aria-valuetext` when `valueText` is passed, and `aria-labelledby` pointing at the visible label. In forced-colors mode the fill takes the system `Highlight` colour so it stays visible. React Native: a `View` with `accessibilityRole=\"progressbar\"` and `accessibilityValue={{ min: 0, max, now: value, text: valueText }}`, labelled by `accessibilityLabel`. All props work on both; the fill transition is skipped on native when the OS reduce-motion setting is on. Rata-drawn, not the OS progress control (decision N5): React Native core no longer ships one on either platform, and a drawn `View` takes the same tokens as the web bar. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
     "tokens": {
       "base": {
-        "summary": "A label above a track, with the filled part in the accent fill. The track is the recessed well `theme.bg.muted` is documented for.",
+        "summary": "A label above a track, with the filled part in the accent fill. The track is the recessed well `theme.bg.muted` is documented for, because a progress bar reports status and is not a control.",
         "tokens": {
-          "track background": "theme.bg.muted",
+          "track background": "theme.bg.muted — status, not interactive, so not Slider's theme.border.strong; see the track decision",
           "fill background": "theme.accent-role.bg — see the pairing gap decision",
-          "track block-size": "space.1 — a bar is a mark, not a control, so it takes a spacing step, the way Badge's dot does",
+          "track block-size": "space.1 — a stand-in for the track-thickness token shared with Slider; see the token gap decision",
           "track border-radius": "radius.pill",
           "fill border-radius": "radius.pill",
           "fill transition": "motion.duration.medium with motion.easing.standard, on inline-size; none under prefers-reduced-motion",
@@ -10713,7 +11350,7 @@
         },
         {
           "decision": "Web and native",
-          "why": "Web: a `span` (so it can sit inside text or inline layout) with `aria-hidden=\"true\"`; the loading container carries `aria-busy`. React Native: a `View` with `importantForAccessibility=\"no-hide-descendants\"` and `accessibilityElementsHidden`, animated with the core `Animated` API and skipped when `AccessibilityInfo.isReduceMotionEnabled()` is true. The container's loading state is `accessibilityState={{ busy: true }}`. All props work on both."
+          "why": "Web: a `span` (so it can sit inside text or inline layout) with `aria-hidden=\"true\"`; the loading container carries `aria-busy`. React Native: a `View` with `importantForAccessibility=\"no-hide-descendants\"` and `accessibilityElementsHidden`, animated with the core `Animated` API and skipped when `AccessibilityInfo.isReduceMotionEnabled()` is true. The container's loading state is `accessibilityState={{ busy: true }}`. All props work on both. Rata-drawn (decision N5): there is no OS placeholder control. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -11095,12 +11732,12 @@
           "why": "A range input's thumb is a pseudo-element, styled differently in every engine and unable to carry a class. So the input is laid over the drawn track at full size and transparent, receiving every pointer, touch and key event, while the visible thumb is a real element positioned from the value. The hit area is the input's block-size, size.control.sm, independent of the drawn thumb's size — 2.5.8's target minimum met without a thumb that looks swollen."
         },
         {
-          "decision": "State-layer gap: the thumb needs `.rata-state-layer` and cannot have it as the class is written",
-          "why": "The state layer reacts to `:hover` and `:active` on the element carrying the class. Here the element under the pointer is the transparent input and the element that should show the feedback is the drawn thumb, so the class matches nothing. Writing a `:has(input:hover)` rule would be the hand-rolled hover this system forbids. Proposal, needing its own approval as a state-layer change: let `.rata-state-layer` also respond to `[data-hovered]` and `[data-pressed]`, set by the slider primitive from pointer events on the input. The opacities stay state.hover-opacity and state.press-opacity; only the trigger widens."
+          "decision": "The thumb composes `.rata-state-layer`, which will also respond to `[data-hovered]` and `[data-pressed]`",
+          "why": "The state layer reacts to `:hover` and `:active` on the element carrying the class, but here the element under the pointer is the transparent input and the element that shows the feedback is the drawn thumb. A `:has(input:hover)` rule would be the hand-rolled hover this system forbids. So `.rata-state-layer` is to be extended to respond to `[data-hovered]` and `[data-pressed]` as well, set by the slider primitive from pointer events on the input, and the thumb composes the class like any other control — identical feedback, with state.hover-opacity and state.press-opacity unchanged; only the trigger widens. That extension is a state-layer change in its own gated step, not part of this contract, and the slider cannot ship before it does (decision C9, docs/decisions/2026-11-gate-1-review.md)."
         },
         {
-          "decision": "Token gap: `size.track` — needs the design-tokens skill",
-          "why": "The track's thickness is a size, not a distance between things, and the size scale has no step for it. The recipe uses space.1 as the closest existing value; a spacing token standing in for a size is exactly the misuse `space`'s own contract warns about, so it is named here rather than shipped quietly. The proposal is `size.track`, with Purpose \"the thickness of a slider or progress track\". The Progress spec takes the opposite view — a bar is a mark, so space.1 is right, the way Badge's dot does it — and the two specs should settle on one answer at approval rather than ship two."
+          "decision": "Track tone is split from Progress by role; track thickness is one shared token, still to be proposed",
+          "why": "A slider's track belongs to an interactive control, so it takes theme.border.strong, which meets the 3:1 WCAG 1.4.11 asks of a control's boundary. Progress's track is a status mark, the recessed well theme.bg.muted is documented for, and keeps that tone. The two contracts had disagreed about thickness too; they now share one track-thickness token, proposed through the design-tokens interview (Purpose / Use when / Don't use for / Pairs with) rather than written ad hoc. Until it is approved the recipe holds space.1 as a placeholder, named as one so it is not shipped quietly (decision C8, docs/decisions/2026-11-gate-1-review.md)."
         },
         {
           "decision": "A single pointer can always reach any value without dragging",
@@ -11124,11 +11761,11 @@
         },
         {
           "decision": "Proposed primitive: `getSliderProps`",
-          "why": "No primitive exists yet. The proposal returns the input, drawn-thumb, track and output prop bags for one or two thumbs, keeps two thumbs from crossing (each thumb's `min`/`max` is the other's value), snaps to `step`, implements the disabled guard described under `disabled`, and sets the hover and press data attributes the state-layer proposal needs."
+          "why": "No primitive exists yet. The proposal returns the input, drawn-thumb, track and output prop bags for one or two thumbs, keeps two thumbs from crossing (each thumb's `min`/`max` is the other's value), snaps to `step`, implements the disabled guard described under `disabled`, and sets the `data-hovered` and `data-pressed` attributes the extended state layer responds to (decision C9)."
         },
         {
           "decision": "Web and native",
-          "why": "Web: one `<input type=\"range\">` per thumb, with `aria-valuetext` from `formatValue` and `aria-label` from `thumbLabels` on a range, inside a Field; a range is a `role=\"group\"` labelled by `label`. Pointer, touch and keyboard all go through the native input. React Native: core no longer ships a Slider (it moved to a community package), and taking that dependency would make every native consumer install it, so the native component is a `View` driven by the responder system with `accessibilityRole=\"adjustable\"`, `accessibilityValue={{ min, max, now, text }}` — `text` from `formatValue` — and `accessibilityActions` for increment and decrement, which is what VoiceOver's and TalkBack's swipe gestures call. A range is two adjustable views. `onValueCommit` maps to responder release and to each accessibility action. `name` is web-only."
+          "why": "Web: one `<input type=\"range\">` per thumb, with `aria-valuetext` from `formatValue` and `aria-label` from `thumbLabels` on a range, inside a Field; a range is a `role=\"group\"` labelled by `label`. Pointer, touch and keyboard all go through the native input. React Native: core no longer ships a Slider (it moved to a community package), and taking that dependency would make every native consumer install it, so the native component is a `View` driven by the responder system with `accessibilityRole=\"adjustable\"`, `accessibilityValue={{ min, max, now, text }}` — `text` from `formatValue` — and `accessibilityActions` for increment and decrement, which is what VoiceOver's and TalkBack's swipe gestures call. A range is two adjustable views. `onValueCommit` maps to responder release and to each accessibility action. `name` is web-only. Rata-drawn (decision N5): React Native core has no slider any more and the community one cannot be styled to the recipe, so native draws the track and thumb itself rather than using an OS control. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -11137,9 +11774,9 @@
         "summary": "The track, the fill and the row they sit in. The drawn track is decoration over a transparent native input, so these measurements are what the reader sees, not what they touch.",
         "tokens": {
           "hit area block-size": "size.control.sm — the transparent input's height, and so the touch target, regardless of the drawn thumb",
-          "track block-size": "space.1 — a stand-in for a size step that does not exist yet; see the track-size token gap in the decisions",
+          "track block-size": "space.1 — a placeholder for the one track-thickness token Slider and Progress will share (decision C8), which goes to the design-tokens interview; a spacing step standing in for a size is not the answer",
           "track border-radius": "radius.pill",
-          "track background": "theme.border.strong — the boundary tone tuned to the 3:1 WCAG 1.4.11 asks of a control. theme.bg.muted is the recessed well, and a slider's empty track is the part of the control that says how far the value can still go, so it has to be seen",
+          "track background": "theme.border.strong — the boundary tone tuned to the 3:1 WCAG 1.4.11 asks of a control (decision C8). Progress's track is theme.bg.muted because a progress bar reports status; a slider's empty track is part of an interactive control and says how far the value can still go, so it has to be seen",
           "fill background": "theme.accent-role.bg — from min to the thumb, or between the two thumbs of a range",
           "gap between label row and track": "space.stack.2xs",
           "label colour": "theme.fg.primary",
@@ -11157,7 +11794,7 @@
           "background": "theme.bg.surface",
           "border": "border.2 solid theme.accent-role.bg",
           "box-shadow": "theme.elevation.raised",
-          "hover / press": "compose the .rata-state-layer class — pending the data-hovered and data-pressed hook proposed in the decisions",
+          "hover / press": "compose the .rata-state-layer class, triggered by the data-hovered and data-pressed attributes the primitive sets (decision C9)",
           "focus ring": "focus.ring-width solid theme.focus-ring, offset focus.ring-offset, drawn on the thumb when the input matches :focus-visible",
           "movement": "transform, not a layout property, with no transition while dragging — a thumb that lags the finger reads as broken"
         }
@@ -11454,7 +12091,7 @@
         },
         {
           "decision": "Web and native",
-          "why": "Web: a `<nav aria-label>` (only when navigable) around an `<ol aria-label>` of `<li>`, with `aria-current=\"step\"` on the current item and a system Button-styled `<button>` inside each navigable one; markers and connectors are `aria-hidden`. Pointer, touch and keyboard all reach the same buttons. React Native: a `View` with `accessibilityRole=\"list\"`, each step a `View` — or a `Pressable` with `accessibilityRole=\"button\"` when navigable — whose `accessibilityLabel` is the same derived name, and `accessibilityState={{ selected: true }}` on the current step, since native has no `aria-current`. The container query has no native equivalent, so the native package chooses the compact form from the window width instead. No prop is platform-specific."
+          "why": "Web: a `<nav aria-label>` (only when navigable) around an `<ol aria-label>` of `<li>`, with `aria-current=\"step\"` on the current item and a system Button-styled `<button>` inside each navigable one; markers and connectors are `aria-hidden`. Pointer, touch and keyboard all reach the same buttons. React Native: a `View` with `accessibilityRole=\"list\"`, each step a `View` — or a `Pressable` with `accessibilityRole=\"button\"` when navigable — whose `accessibilityLabel` is the same derived name, and `accessibilityState={{ selected: true }}` on the current step, since native has no `aria-current`. The container query has no native equivalent, so the native package chooses the compact form from the window width instead. No prop is platform-specific. Rata-drawn (decision N5): neither platform has an OS step indicator, so it is drawn from the same recipe as the web. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -12013,7 +12650,7 @@
         },
         {
           "decision": "Web and native",
-          "why": "Web: `<table>` with `<caption>`, `<th scope=\"col\">` headers, `<th scope=\"row\">` for the column marked `rowHeader`, and `aria-sort` on the sorted header; the scroll wrapper is `role=\"region\"` labelled by the caption. React Native has no table: there is no core component and the platform screen readers have no table navigation to offer. On native the table renders as a `FlatList` with `accessibilityRole=\"list\"`, one row per item, and each row is a single accessible element whose `accessibilityLabel` reads header and value pairs in column order (\"Invoice, INV-204. Amount, 120.00. Status, Overdue.\") — that is what makes a record usable without column navigation. Sorting is offered on native through a header row of `accessibilityRole=\"button\"` controls carrying `accessibilityState` with `selected`. `hideCaption` and the scroll region are web-only."
+          "why": "Web: `<table>` with `<caption>`, `<th scope=\"col\">` headers, `<th scope=\"row\">` for the column marked `rowHeader`, and `aria-sort` on the sorted header; the scroll wrapper is `role=\"region\"` labelled by the caption. React Native has no table: there is no core component and the platform screen readers have no table navigation to offer. On native the table renders as a `FlatList` with `accessibilityRole=\"list\"`, one row per item, and each row is a single accessible element whose `accessibilityLabel` reads header and value pairs in column order (\"Invoice, INV-204. Amount, 120.00. Status, Overdue.\") — that is what makes a record usable without column navigation. Sorting is offered on native through a header row of `accessibilityRole=\"button\"` controls carrying `accessibilityState` with `selected`. `hideCaption` and the scroll region are web-only. Rata-drawn (decision N5): neither platform has a table control in React Native, so the rows are drawn inside the core `FlatList`. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -13306,7 +13943,7 @@
         "case": "A confirmation that can safely be missed",
         "when": "The reader did something whose result is not otherwise visible where they are.",
         "example": "const toast = useToast();\n\n<Button onClick={() => { copy(path); toast.show(<Toast>Token path copied</Toast>); }}>\n  Copy path\n</Button>",
-        "notes": "Neutral, default duration, no action. Focus stays on the button, and the message is announced politely after the button's own feedback."
+        "notes": "Neutral, default duration, no action. `show` hands the toast to the `ToastRegion` mounted once at the app root. Focus stays on the button, and the message is announced politely after the button's own feedback."
       },
       {
         "case": "Undo for something reversible",
@@ -13322,7 +13959,7 @@
       }
     ],
     "behavior": {
-      "summary": "A message rendered into one app-level toast region, announced politely, never taking focus, and removed after `duration` unless the reader is hovering it, focused inside it, or away from the tab. The region is a proposed companion — `ToastRegion`, mounted once near the app root, with a `useToast()` hook that shows a Toast from an event handler — and is part of what this gate is asking to approve.",
+      "summary": "A message rendered into one app-level toast region, announced politely, never taking focus, and removed after `duration` unless the reader is hovering it, focused inside it, or away from the tab. The region is `ToastRegion`, mounted once near the app root, and a Toast is shown from an event handler with the `useToast()` hook — both approved at gate 1.",
       "decisions": [
         {
           "decision": "Toast confirms; Notice informs; Dialog interrupts",
@@ -13341,12 +13978,16 @@
           "why": "WCAG 2.2.1 requires timed content to be adjustable. The countdown pauses while the pointer is over the toast, while focus is inside it, and while the tab is hidden, so a reader who is reading it, or reaching for its action, or who switched away, does not lose it. An action in a toast — Undo, View — must also be reachable somewhere else in the interface, because the toast will eventually leave; a toast whose action is the only path to something must pass `duration={null}` and stay until dismissed."
         },
         {
+          "decision": "`ToastRegion` and `useToast()` are part of the API",
+          "why": "Approved at gate 1 (decision C5, docs/decisions/2026-11-gate-1-review.md). A toast is raised from an event handler — a save that finished, a path that was copied — far from where it is drawn, so rendering `<Toast>` in place would put it in whatever stacking context the handler's component happens to live in. `ToastRegion` is the one place every toast lands, mounted once near the app root; `useToast()` returns `show`, which hands a Toast to that region from anywhere below it. Toast itself stays a plain component with the props below, so the region owns the stack, the timers and the live region, and the message owns only what it says."
+        },
+        {
           "decision": "One region per app, in the top layer, stacking at most three",
           "why": "Toasts from anywhere in the app have to land in one place, or two of them overlap and a screen reader hears neither cleanly. The region is a single `popover=\"manual\"` element so it sits in the top layer without a z-index — there are no z-index tokens in this system and the top layer is why none are needed. More than three visible at once is a log, not a confirmation; the oldest leaves early to make room."
         },
         {
           "decision": "Web and native",
-          "why": "Web: each toast is a `div` inside one `role=\"status\"` region, named \"Notifications\" with `aria-label` so it can be found by landmark navigation; the region carries `popover=\"manual\"`. Icons are `aria-hidden`, as in Notice. React Native has no top layer: the region is an absolutely positioned `View` mounted once at the root, above the navigation container. Each toast sets `accessibilityLiveRegion=\"polite\"` on Android and is announced with `AccessibilityInfo.announceForAccessibility` on iOS, where live regions do not exist; the action is `accessibilityRole=\"button\"`. Swipe-to-dismiss is native-only, and always backed by the dismiss button, because a gesture is not discoverable by a screen reader. The pause-on-hover half of the timer rule is web-only; on native the timer pauses while a screen reader is running."
+          "why": "Web: each toast is a `div` inside one `role=\"status\"` region, named \"Notifications\" with `aria-label` so it can be found by landmark navigation; the region carries `popover=\"manual\"`. Icons are `aria-hidden`, as in Notice. React Native has no top layer: the region is an absolutely positioned `View` mounted once at the root, above the navigation container. Each toast sets `accessibilityLiveRegion=\"polite\"` on Android and is announced with `AccessibilityInfo.announceForAccessibility` on iOS, where live regions do not exist; the action is `accessibilityRole=\"button\"`. Swipe-to-dismiss is native-only, and always backed by the dismiss button, because a gesture is not discoverable by a screen reader. The pause-on-hover half of the timer rule is web-only; on native the timer pauses while a screen reader is running. Rata-drawn on both platforms, not the OS's own toast (decision N5): Android's system Toast cannot carry an action or a dismiss button, and iOS has none, so one drawn component behaves the same everywhere. The native implementation ships in the pro tier (decision N6)."
         },
         {
           "decision": "Open question for approval: toasts while a modal Dialog is open",
@@ -14216,8 +14857,12 @@
           "why": "A natively disabled button receives no pointer or focus events, so the most useful tooltip there is — \"why can't I press this?\" — cannot be shown on it. Because disabled controls here stay focusable and hoverable, the tooltip appears on them like any other control, and `relationship=\"description\"` is how the reason gets announced."
         },
         {
-          "decision": "Same surface as Menu, not an inverse chip",
-          "why": "A dark tooltip on a light page needs an inverse background and a foreground verified against it, and the token set has neither — inventing one for a single component would be a pairing nobody else can rely on. The surface-and-outline construction is already verified (`theme.fg.primary` on `theme.bg.surface`) and keeps tooltips and menus visibly related. If an inverse surface is wanted, that is a new theme role through the design-tokens skill, not a hex in this recipe."
+          "decision": "An inverse surface, not Menu's",
+          "why": "Approved at gate 1 (decision C3, docs/decisions/2026-11-gate-1-review.md). A tooltip is the one overlay that never holds a control and is never opened on purpose, and an inverse chip says so at a glance: it cannot be mistaken for a Menu or a Popover opened from the neighbouring control, both of which are surfaces the reader acts in. The cost is a new pairing — an inverse background and a foreground verified against it in both schemes and in every brand — which is why it goes through the design-tokens skill rather than into this recipe as a palette value."
+        },
+        {
+          "decision": "Token gap: the inverse surface and its foreground — needs the design-tokens skill",
+          "why": "The token set has no inverse surface and no foreground verified against one, and inventing either for a single component would be a pairing nobody else can rely on. The pair goes to the design-tokens interview (Purpose / Use when / Don't use for / Pairs with), with its contrast promise added to the token contracts so `npm run themes:check` re-measures it per brand. Until it exists the recipe uses `theme.bg.surface`, `theme.fg.primary` and `theme.border.default` — already verified together — as stand-ins, and gate 2 does not approve the colour lines until the pair is real."
         },
         {
           "decision": "Token gap: `motion.delay.hint` — needs the design-tokens skill",
@@ -14229,17 +14874,17 @@
         },
         {
           "decision": "Web and native",
-          "why": "Web: the trigger is the caller's element, cloned to receive `aria-labelledby` or `aria-describedby`; the tooltip is a `role=\"tooltip\"` element carrying the `popover` attribute (`hint` where supported, `manual` otherwise) so it renders in the top layer without a portal. React Native has no hover and no tooltip core component, so nothing is drawn: with `relationship=\"label\"` the text becomes the trigger's `accessibilityLabel`, and with `relationship=\"description\"` it becomes its `accessibilityHint` — which is what both platform screen readers read after the name. `placement` is web-only. The native behaviour is the touch behaviour above, followed through: the information still reaches assistive tech, and nothing is drawn that a finger cannot dismiss."
+          "why": "Web: the trigger is the caller's element, cloned to receive `aria-labelledby` or `aria-describedby`; the tooltip is a `role=\"tooltip\"` element carrying the `popover` attribute (`hint` where supported, `manual` otherwise) so it renders in the top layer without a portal. React Native has no hover and no tooltip core component, so nothing is drawn: with `relationship=\"label\"` the text becomes the trigger's `accessibilityLabel`, and with `relationship=\"description\"` it becomes its `accessibilityHint` — which is what both platform screen readers read after the name. `placement` is web-only. The native behaviour is the touch behaviour above, followed through: the information still reaches assistive tech, and nothing is drawn that a finger cannot dismiss. Neither OS control nor Rata-drawn (decision N5): nothing is drawn on native, and the platform screen reader is what delivers the text. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
     "tokens": {
       "base": {
-        "summary": "A small transient surface, built like a miniature Menu: the same surface, outline and overlay shadow, so a tooltip and a menu opened from neighbouring controls read as the same kind of thing. Not an inverse (dark-on-light) chip — see the decisions.",
+        "summary": "A small transient chip on an inverse surface, so it reads as a passing hint rather than as a menu or a popover. The inverse surface and its foreground do not exist yet, so the colour lines below are the closest existing tokens and are stand-ins; the measurements, shadow and motion are final.",
         "tokens": {
-          "background": "theme.bg.surface",
-          "color": "theme.fg.primary",
-          "border": "border.default solid theme.border.default",
+          "background": "theme.bg.surface — a stand-in until the inverse surface pair exists; see the token gap decision",
+          "color": "theme.fg.primary — a stand-in until the inverse surface pair exists; see the token gap decision",
+          "border": "border.default solid theme.border.default — a stand-in until the inverse surface pair exists; see the token gap decision; an inverse chip needs no outline",
           "box-shadow": "theme.elevation.overlay",
           "border-radius": "radius.element",
           "padding-block": "space.1",

@@ -61,7 +61,14 @@
         "file size colour": "theme.fg.secondary",
         "file size font-size": "type.supporting.size",
         "file icon size": "size.icon.text",
-        "file icon colour": "theme.fg.secondary"
+        "file icon colour": "theme.fg.secondary",
+        "row progress track background": "theme.bg.muted — Progress's status track (decision C8), because this bar reports and cannot be adjusted",
+        "row progress fill background": "theme.accent-role.bg — Progress's fill, with its pairing gap",
+        "row progress block-size": "space.1 — Progress's placeholder, until the shared track-thickness token (decision C8)",
+        "row progress border-radius": "radius.pill",
+        "row error colour": "theme.danger-role.fg — the role's text colour on the row's theme.bg.surface, never its saturated bg",
+        "row error font-size": "type.supporting.size",
+        "row error border-color": "theme.danger-role.fg — the field's error edge, on the failed row only"
       }
     },
     "remove": {
@@ -102,7 +109,11 @@
       },
       {
         "decision": "It chooses files; it does not upload them",
-        "why": "Uploading is a network policy — chunking, retries, auth, progress, cancellation — that belongs to the caller, and baking one in would make this component wrong for every backend but one. The open question is whether the list should accept a per-file progress and error state from the caller so the rows can show it; that is deliberately not in this spec and needs a decision."
+        "why": "Uploading is a network policy — chunking, retries, auth, progress, cancellation — that belongs to the caller, and baking one in would make this component wrong for every backend but one. The app does the uploading; this component chooses, validates and lists. What the list does take from the caller is each file's state: see the next decision (decision C11, docs/decisions/2026-11-gate-1-review.md)."
+      },
+      {
+        "decision": "Rows show per-file `progress` and `error` that the caller supplies on the file items",
+        "why": "A `PickedFile` may carry `progress` (0–100) and `error` (a string), and a row renders what it is given: a bar while `progress` is set, the error line under the name when `error` is. The caller's uploader writes them back into `value`, so showing progress means using the component controlled. The component never sets either itself and never infers success from 100 — completion is whatever the caller says it is. The bar in a row is a `role=\"progressbar\"` named by the file name, and it is not announced on every change; the component's polite region announces when a file's `error` appears, and the error text joins the remove button's `aria-describedby` so it is heard with the file it belongs to. This keeps the network out of the component while the rows can still say what happened to each file (decision C11, docs/decisions/2026-11-gate-1-review.md)."
       },
       {
         "decision": "No image previews in this version",
@@ -118,7 +129,7 @@
       },
       {
         "decision": "Web and native",
-        "why": "Web: a visually hidden `<input type=\"file\">` carrying `name`, `accept` and `multiple`; the system Button; a drop zone `<div>` with no role; and the file list as a `<ul>` with one remove button per row, all inside a `role=\"group\"` labelled by `label`. React Native has no file input. The native component is a `Pressable` with `accessibilityRole=\"button\"` opening the OS document picker — which is not in core, so it is a community-package dependency every native consumer installs, and photos from the library are a second picker with its own permission prompt. That costs three things: `dropzone` is web-only; `accept` extensions such as `.pdf` are web-only, because native pickers filter by type (MIME on Android, translated to UTIs on iOS), which is why `accept` should lead with MIME types; and `name` is web-only, since there is no form post. `PickedFile` is the same shape on both — `{ name, size, type }` — with `file: File` on web and `uri` on native, so validation code is shared."
+        "why": "Web: a visually hidden `<input type=\"file\">` carrying `name`, `accept` and `multiple`; the system Button; a drop zone `<div>` with no role; and the file list as a `<ul>` with one remove button per row, all inside a `role=\"group\"` labelled by `label`. React Native has no file input. The native component is a `Pressable` with `accessibilityRole=\"button\"` opening the OS document picker — which is not in core, so it is a community-package dependency every native consumer installs, and photos from the library are a second picker with its own permission prompt. That costs three things: `dropzone` is web-only; `accept` extensions such as `.pdf` are web-only, because native pickers filter by type (MIME on Android, translated to UTIs on iOS), which is why `accept` should lead with MIME types; and `name` is web-only, since there is no form post. `PickedFile` is the same shape on both — `{ name, size, type }` — with `file: File` on web and `uri` on native, so validation code is shared. The OS control, not a Rata-drawn one (decision N5): choosing goes through the OS document picker on native and the OS file dialog on web, because no drawn control can reach the file system; the button and the file list around it are Rata-drawn from the same recipe. On native a row's bar is a `View` with `accessibilityRole=\"progressbar\"` and `accessibilityValue={{ min: 0, max: 100, now: progress }}`. The native implementation ships in the pro tier (decision N6)."
       }
     ]
   },
@@ -179,12 +190,14 @@
     },
     "value": {
       "type": "PickedFile[]",
-      "summary": "Controls the chosen files from outside. Each is `{ name, size, type }` plus the platform's handle — `file` on web, `uri` on native.",
+      "summary": "Controls the chosen files from outside. Each is `{ name, size, type }` plus the platform's handle — `file` on web, `uri` on native — and, optionally, `progress` (0–100) and `error`, which the caller's uploader sets and the row displays.",
       "use": [
-        "A form library, or restoring a selection after a validation round-trip."
+        "A form library, or restoring a selection after a validation round-trip.",
+        "Passing each file back with `progress` while it uploads, and `error` if it fails — the rows show both."
       ],
       "dont": [
-        "Expecting it to hold uploaded files. It holds chosen ones; uploading is the caller's."
+        "Expecting it to hold uploaded files. It holds chosen ones; uploading is the caller's.",
+        "Expecting the component to set `progress` or `error`. It only displays them; uploading is the app's."
       ]
     },
     "onValueChange": {
@@ -339,6 +352,12 @@
       "when": "Something was dropped or picked that the field cannot take.",
       "example": "<FileUpload\n  label=\"Photos\"\n  multiple\n  accept=\"image/*\"\n  onReject={(r) => setError(`${r[0].file.name} is not an image.`)}\n  status={error ? \"invalid\" : \"idle\"}\n  message={error}\n/>",
       "notes": "Refused files never enter the list, so without `onReject` they vanish silently. Name the file and the rule in the message."
+    },
+    {
+      "case": "Uploads in flight",
+      "when": "The app uploads each file as it is chosen and wants the rows to show how far each one got.",
+      "example": "<FileUpload\n  label=\"Attachments\"\n  multiple\n  value={files}\n  onValueChange={startUploads}\n/>",
+      "notes": "`startUploads` uploads the new files and updates `files`, setting `progress` (0–100) on each while it runs and `error` on any that fail. The component draws both and uploads nothing (decision C11)."
     },
     {
       "case": "A compact attachment control",

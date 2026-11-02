@@ -17,15 +17,15 @@ A bordered surface holding one self-contained item among several — a widget, a
 
 ## Behavior
 
-A box with a surface, an outline and padding, rendered as whichever element its content actually is. No primitive: it owns no keyboard interaction and no state. Card exists so that the one container this system has been telling people not to hand-roll — `<div className="card">` — has a governed version, and so that the choice between a card, a table and a plain section is written down once.
+A box with a surface, an edge and padding, rendered as whichever element its content actually is. No primitive: it owns no keyboard interaction and no state — when a whole card is clickable, the link in its heading is the control, not the card. Card exists so that the one container this system has been telling people not to hand-roll — `<div className="card">` — has a governed version, and so that the choice between a card, a table and a plain section is written down once.
 
 - **Card, Table or a plain `<section>` — the test is how the content is read** — Rows that are scanned and compared column by column are a Table: putting each record in its own card destroys the column, which is the thing the reader came to compare. Several self-contained items that are each read on their own — dashboard widgets, a gallery, groups of settings that are saved or understood separately — are Cards: the outline says "this is one thing" and the gap between them says "and these are separate". Everything else, which is most of a page, is a plain `<section>` with a heading and no box at all. A single card alone on a page is almost always a section wearing a border, and a card inside a card is always one: if the inner thing needs separating, a Divider or a heading does it without a second outline.
-- **Outlined, not shadowed** — `theme.elevation.raised` is documented for resting cards, and `theme.border.default` is documented for separating two elements in the same plane. A grid of cards IS one plane — nothing in it is above anything else — and a shadow on every card in a dashboard turns the page into a field of competing lifts. The border is the default and the only option in this version. Whether a raised variant is wanted at all is an open question for approval, not a decision taken here.
+- **Outlined by default; `raised` is the one alternative** — Approved at gate 1 (decision C1, docs/decisions/2026-11-gate-1-review.md). `theme.border.default` is documented for separating two elements in the same plane, and a grid of cards IS one plane — nothing in it is above anything else — so a shadow on every card in a dashboard turns the page into a field of competing lifts. That is why `outlined` is the default. `raised` uses `theme.elevation.raised`, which is documented for resting cards, for the case where a card genuinely sits above its surroundings: one featured card on a plain section, or cards over an image or a tinted band. Two variants and no more: a third elevation on a resting surface would compete with the overlay and modal shadows that mean something.
 - **`as` chooses the element, and the default claims nothing** — What a card IS depends on what is in it. A card in a gallery is a list item, because a gallery is a list and a screen reader announcing "list, 12 items" is the most useful thing it can say. A self-contained entry that would make sense lifted out of the page is an `article`. A titled group of settings is a `section`. A component that defaulted to `article` would be wrong for every settings group, so the default is `div` — a box with no semantic claim — and the caller states the claim when there is one.
-- **No `onClick` or `href` on the card in this version** — A whole card wrapped in an `<a>` makes every word inside it the link's accessible name, so a reader tabbing through a gallery hears each card read out in full, and any button inside the card becomes interactive content nested in a link, which is invalid. A card with a `<div onClick>` is unreachable by keyboard. The right construction — a real link in the card's heading whose hit area is stretched over the card, with secondary actions lifted above it — needs Link to exist first and needs its own decision. Until then the card is not a control, and the link inside it is.
+- **Whole-card click is a stretched heading link; Card takes no `href` or `onClick`** — Approved at gate 1 (decision C2, docs/decisions/2026-11-gate-1-review.md). A whole card wrapped in an `<a>` makes every word inside it the link's accessible name, so a reader tabbing through a gallery hears each card read out in full, and any button inside the card becomes interactive content nested in a link, which is invalid. A card with a `<div onClick>` is unreachable by keyboard. So the card is never the control: a real Link inside the card's heading is, and its hit area is stretched over the card with a pseudo-element — the construction ListItem uses for a row. The accessible name stays the heading's text, the card is one tab stop, and secondary actions sit above the stretched area so pressing them does not also follow the link. Card styles a heading link this way when it finds one; it needs no prop to do it, and a card with no link in its heading is not clickable at all.
 - **No `title` prop and no heading of its own** — Many cards have no title — a gallery thumbnail, a metric widget whose number is its content. The ones that do need a heading at the right outline level, which only the caller knows; Panel solves that with `headingLevel` because a landmark must be named, but a card is not a landmark. A `Heading` inside the card, at whatever level the page needs, gets the outline right without this component guessing.
 - **It carries no margin and no width** — The same bargain Heading and Panel make. Cards live in a grid or a stack, and the gap between them is the grid's — a card that shipped its own margin would double up with the grid's gap and be overridden everywhere. Width is the grid's too: there are no breakpoint tokens, because where a card stops fitting is the page's knowledge.
-- **Web and native** — Web: the element `as` names — `div` by default, or `article`, `section` or `li` — with no role added, because each of those elements already carries the right one. A `section` card should be named by its heading through `aria-labelledby`, or it is not exposed as a region at all. React Native: a `View` with no `accessibilityRole`, because RN has no article, section or listitem role that platforms announce; the list semantics of a gallery belong to the `FlatList` that renders the cards, not to each card. `as` is web-only and is ignored on native. `media` works on both; on native the clip comes from `overflow: "hidden"` with the same radius token.
+- **Web and native** — Web: the element `as` names — `div` by default, or `article`, `section` or `li` — with no role added, because each of those elements already carries the right one. A `section` card should be named by its heading through `aria-labelledby`, or it is not exposed as a region at all. React Native: a `View` with no `accessibilityRole`, because RN has no article, section or listitem role that platforms announce; the list semantics of a gallery belong to the `FlatList` that renders the cards, not to each card. `as` is web-only and is ignored on native. `media` works on both; on native the clip comes from `overflow: "hidden"` with the same radius token. No OS control (decision N5): the card is Rata-drawn on both platforms, from the same recipe. On native, `raised` is the platform shadow (`elevation` on Android) taken from the same token. The stretched link is web-only — a nested `Text` link cannot be stretched — so on native the heading's Link is the target, and a list of whole-row targets is ListItem's job. The native implementation ships in the pro tier (decision N6).
 
 ## Props
 
@@ -33,6 +33,7 @@ A box with a surface, an outline and padding, rendered as whichever element its 
 |---|---|---|---|
 | `children` | `ReactNode` | — | The card's content. |
 | `as?` | `"div" \| "article" \| "section" \| "li"` | `"div"` | Which element the card is, because that depends on what is in it. |
+| `variant?` | `"outlined" \| "raised"` | `"outlined"` | How the card's edge is drawn: a border, or the resting-card shadow. |
 | `media?` | `ReactNode` | — | An image or preview shown flush with the card's top edge, above the content. |
 | `className?` | `string` | — | Extra classes, for placement in a grid — not for restyling the card. |
 
@@ -53,7 +54,7 @@ The card's content.
 - Another Card. A card inside a card is a section wearing two borders — use a Divider or a heading inside the one card.
 - A dense list of records. That is a Table, and a table inside a card is a table that has lost its edge-to-edge alignment for no reason.
 
-**Accessibility** Read in document order. If the card is a `section`, its first heading should name it through `aria-labelledby`.
+**Accessibility** Read in document order. If the card is a `section`, its first heading should name it through `aria-labelledby`. A Link inside the card's heading is stretched over the whole card, so put the card's one destination there and nowhere else.
 
 ### `as`
 
@@ -75,6 +76,26 @@ Which element the card is, because that depends on what is in it.
 - `li` outside a list. The browser accepts it and the accessibility tree does not.
 
 **Accessibility** Each option is chosen for the role its element already carries, so this prop adds no ARIA. Web only: on React Native the card is a `View` and this prop is ignored.
+
+### `variant`
+
+```ts
+variant?: "outlined" | "raised" = "outlined"
+```
+
+How the card's edge is drawn: a border, or the resting-card shadow.
+
+**Use when**
+
+- `outlined` for cards that are peers in one plane — a gallery, a dashboard, a settings page. Almost always.
+- `raised` for a card that sits above its surroundings: one featured card on a plain section, or cards over an image or a tinted band.
+
+**Don't use for**
+
+- `raised` on every card in a grid. A field of shadows says everything is lifted, which is the same as saying nothing is.
+- `raised` to show that a card is clickable. A stretched heading link already gives the card hover, press and focus feedback; a shadow is not an affordance.
+
+**Accessibility** Visual only. Neither variant changes the element, its role or its name.
 
 ### `media`
 
@@ -130,6 +151,25 @@ Several things of the same kind, each read on its own and chosen between — tem
 
 `as="li"` inside the page's own `<ul>`, so a screen reader announces how many templates there are. The grid's gap lives on `.template-grid`, not on the cards. The preview is `alt=""` because the heading already names it.
 
+### A whole card that goes somewhere
+
+A gallery where each card opens its own page, and pressing anywhere on the card should open it.
+
+```tsx
+<ul className="project-grid">
+  {projects.map((p) => (
+    <Card as="li" key={p.id} media={<img src={p.preview} alt="" />}>
+      <Heading level={3}>
+        <Link variant="standalone" href={`/projects/${p.id}`}>{p.name}</Link>
+      </Heading>
+      <Text tone="secondary">{p.summary}</Text>
+    </Card>
+  ))}
+</ul>
+```
+
+No `href` or `onClick` on the Card: the Link in the heading is the control, and the card stretches its hit area over the whole card and shows its hover and focus. The link's name is the project's name, not every word in the card, and each card is one tab stop. A secondary action — a Menu button, say — placed after the heading sits above the stretched area, so pressing it does not also open the project.
+
 ### A titled group of settings
 
 A settings page whose groups are understood, and often saved, separately.
@@ -159,7 +199,7 @@ Don't. Those are rows compared by column — is this amount larger, is that one 
 
 ### base
 
-A surface one step up from the page, outlined rather than shadowed: a card sits in the same plane as its neighbours, and a shadow would claim it floats above them.
+A surface one step up from the page. The default `outlined` variant draws its edge with a border rather than a shadow: a card sits in the same plane as its neighbours, and a shadow would claim it floats above them.
 
 | Property | Token |
 |---|---|
@@ -171,6 +211,15 @@ A surface one step up from the page, outlined rather than shadowed: a card sits 
 | gap between children | `space.stack.sm` |
 | margin | `space.0 — the grid or stack the cards sit in owns the gap between them` |
 
+### raised
+
+The one alternative to the outline: the resting-card shadow `theme.elevation.raised` is documented for. Everything else in the base recipe is unchanged.
+
+| Property | Token |
+|---|---|
+| box-shadow | `theme.elevation.raised` |
+| border | `border.default solid theme.border.default — kept, so a raised card is the same size as an outlined one and its edge does not depend on a shadow alone, which is faint on a dark canvas` |
+
 ### media
 
 An image or preview flush with the card's top edge. It bleeds through the padding so the picture meets the border, and the card's own radius clips its corners.
@@ -180,3 +229,15 @@ An image or preview flush with the card's top edge. It bleeds through the paddin
 | margin-inline and margin-block-start | `the negative of space.padding.md — the media cancels the card's own padding rather than the card dropping it` |
 | corner clip | `radius.container on the card, with overflow clipped, so the media never needs a radius of its own` |
 | gap below | `space.stack.sm` |
+
+### linked
+
+A card whose heading holds a link. The link's hit area is stretched over the whole card, and the card shows the feedback the link would.
+
+| Property | Token |
+|---|---|
+| card position | `relative, so the link's stretched pseudo-element is bounded by the card` |
+| stretched hit area | `a ::after on the heading's link, inset space.0 on every side of the card` |
+| hover / press | `compose the .rata-state-layer class on the card, driven by the link's hover and press` |
+| focus ring | `theme.focus-ring at focus.ring-width, offset focus.ring-offset, drawn around the card when the link matches :focus-visible` |
+| secondary actions | `position relative and later in source order than the heading, so they paint above the stretched area without a z-index` |

@@ -1232,7 +1232,7 @@ An action that deletes or revokes something.
 
 ### card
 
-A surface one step up from the page, outlined rather than shadowed: a card sits in the same plane as its neighbours, and a shadow would claim it floats above them.
+A surface one step up from the page. The default `outlined` variant draws its edge with a border rather than a shadow: a card sits in the same plane as its neighbours, and a shadow would claim it floats above them.
 
 | Property | Token |
 |---|---|
@@ -1244,6 +1244,15 @@ A surface one step up from the page, outlined rather than shadowed: a card sits 
 | gap between children | `space.stack.sm` |
 | margin | `space.0` — the grid or stack the cards sit in owns the gap between them |
 
+### card-raised
+
+The one alternative to the outline: the resting-card shadow `theme.elevation.raised` is documented for. Everything else in the base recipe is unchanged.
+
+| Property | Token |
+|---|---|
+| box-shadow | `theme.elevation.raised` |
+| border | `border.default` solid `theme.border.default` — kept, so a raised card is the same size as an outlined one and its edge does not depend on a shadow alone, which is faint on a dark canvas |
+
 ### card-media
 
 An image or preview flush with the card's top edge. It bleeds through the padding so the picture meets the border, and the card's own radius clips its corners.
@@ -1253,6 +1262,18 @@ An image or preview flush with the card's top edge. It bleeds through the paddin
 | margin-inline and margin-block-start | the negative of `space.padding.md` — the media cancels the card's own padding rather than the card dropping it |
 | corner clip | `radius.container` on the card, with overflow clipped, so the media never needs a radius of its own |
 | gap below | `space.stack.sm` |
+
+### card-linked
+
+A card whose heading holds a link. The link's hit area is stretched over the whole card, and the card shows the feedback the link would.
+
+| Property | Token |
+|---|---|
+| card position | relative, so the link's stretched pseudo-element is bounded by the card |
+| stretched hit area | a ::after on the heading's link, inset `space.0` on every side of the card |
+| hover / press | compose the .rata-state-layer class on the card, driven by the link's hover and press |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, drawn around the card when the link matches :focus-visible |
+| secondary actions | position relative and later in source order than the heading, so they paint above the stretched area without a z-index |
 
 ### checkbox
 
@@ -1474,6 +1495,103 @@ One day. A button in a grid cell, so it gets the state layer and the system ring
 | hover / press | compose the .rata-state-layer class |
 | focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible — kept even on the selected day, where offset 0 on a filled accent would vanish |
 | unavailable | `state.disabled-opacity` and a line-through, so the state is not carried by dimming alone |
+
+### date-range-picker
+
+Two date inputs in one box, matching the date picker's step for step, with a separator between them and the calendar button's well at the end. Field owns the label, helper text, message and disabled dimming.
+
+| Property | Token |
+|---|---|
+| font-family | `font.family.sans` |
+| font-size | `type.control.size.md` |
+| font-variant | tabular-nums, so a typed date does not shift as digits change |
+| background | `theme.bg.surface` |
+| color | `theme.fg.primary` |
+| placeholder colour | `theme.fg.muted` |
+| border | `border.default` solid `theme.border.strong` |
+| border-radius | `radius.element` |
+| block-size | `size.control.md` — and `size.control.sm` / `size.control.lg` at the other sizes |
+| padding-inline-start | `space.control.padding-inline.md` — and the sm / lg steps |
+| padding-inline-end | `space.control.padding-inline.md` plus `size.control.sm`, for the calendar button |
+| focus border-color | `theme.fg.primary` |
+| focus outline | `focus.ring-width` solid `theme.fg.primary` at `space.0` offset — the text field's departure |
+| hover inner band | `theme.bg.muted` at `border.2` as an inset shadow, idle only |
+| validating ring | `theme.accent-role.ring` |
+| valid ring | `theme.success-role.ring` |
+| invalid ring | `theme.danger-role.ring` |
+| separator colour | `theme.fg.secondary` — an en dash, aria-hidden; the two inputs' own labels carry the meaning |
+| gap around the separator | `space.gap.xs` |
+
+### date-range-picker-trigger
+
+The one calendar button at the field's end, opening the calendar on whichever end is empty — the start if both are. A tab stop with the system ring, as in DatePicker, because it opens a dialog the keyboard has no other way to reach.
+
+| Property | Token |
+|---|---|
+| inline-size / block-size | `size.control.sm`, inset `space.0-5` from the end edge |
+| glyph size | `size.icon.text` |
+| colour | `theme.fg.secondary` |
+| border-radius | `radius.inner` |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
+
+### date-range-picker-calendar
+
+The dialog surface on wide screens, DatePicker's unchanged. One month at a time — two side by side would need a second grid and a second focus model, and a range across a month boundary is reached with PageDown.
+
+| Property | Token |
+|---|---|
+| background | `theme.bg.surface` |
+| border | `border.default` solid `theme.border.default` |
+| border-radius | `radius.container` |
+| box-shadow | `theme.elevation.overlay` |
+| padding | `space.padding.sm` |
+| gap from the field | `space.gap.xs` |
+| backdrop | `theme.scrim` |
+| month title font-size | `type.control.size.md` |
+| month title font-weight | `type.control.weight` |
+| month title colour | `theme.fg.primary` |
+| month navigation buttons | `size.control.sm` square, `radius.inner`, compose the .rata-state-layer class, `theme.focus-ring` on :focus-visible |
+| weekday header colour | `theme.fg.secondary` |
+| weekday header font-size | `type.supporting.size` |
+| gap between header and grid | `space.stack.2xs` |
+| enter transition | `motion.overlay.duration` with `motion.easing.enter` |
+| selection hint colour | `theme.fg.secondary` |
+| selection hint font-size | `type.supporting.size` |
+
+### date-range-picker-calendar-narrow
+
+The same dialog below the breakpoint, at the bottom edge. Sheet-level radius and modal elevation, because here it does take over the screen.
+
+| Property | Token |
+|---|---|
+| border-radius | `radius.page` on the top corners only |
+| box-shadow | `theme.elevation.modal` |
+| padding | `space.padding.lg` |
+| day cell size | `size.control.lg` |
+
+### date-range-picker-day
+
+One day, DatePicker's, plus the three range states. The ends are the filled accent; the days between are a continuous tint, so the stay reads as one band.
+
+| Property | Token |
+|---|---|
+| inline-size / block-size | `size.control.md` |
+| border-radius | `radius.pill` |
+| font-size | `type.control.size.sm` |
+| font-variant | tabular-nums |
+| colour | `theme.fg.primary` |
+| outside the month | `theme.fg.muted` — shown so the rows are whole weeks, and still choosable |
+| today | `theme.accent-role.fg` at `type.control.weight` — marked by tone and weight rather than a ring, since a ring is the selection and validation stroke |
+| hover / press | compose the .rata-state-layer class |
+| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible — kept on the ends, where offset 0 on a filled accent would vanish |
+| unavailable | `state.disabled-opacity` and a line-through, so the state is not carried by dimming alone |
+| start / end background | `theme.accent-role.bg` |
+| start / end colour | `theme.fg.on-accent` — the only foreground permitted on that fill |
+| in-range background | `theme.accent-role.subtle` |
+| in-range colour | `theme.fg.primary` — verified at AA-text on `theme.accent-role.subtle` |
+| in-range border-radius | `radius.none`, so consecutive days join into one band; the start and end keep `radius.pill` on their outer side |
+| preview (start chosen, end not yet) | `theme.accent-role.ring` at `border.default` as an inset stroke from the start to the focused or hovered day — a selection stroke, distinct from the focus ring |
 
 ### dialog
 
@@ -1759,6 +1877,13 @@ The chosen files, one row each. Bordered rows rather than a table: there are two
 | file size font-size | `type.supporting.size` |
 | file icon size | `size.icon.text` |
 | file icon colour | `theme.fg.secondary` |
+| row progress track background | `theme.bg.muted` — Progress's status track (decision C8), because this bar reports and cannot be adjusted |
+| row progress fill background | `theme.accent-role.bg` — Progress's fill, with its pairing gap |
+| row progress block-size | `space.1` — Progress's placeholder, until the shared track-thickness token (decision C8) |
+| row progress border-radius | `radius.pill` |
+| row error colour | `theme.danger-role.fg` — the role's text colour on the row's `theme.bg.surface`, never its saturated bg |
+| row error font-size | `type.supporting.size` |
+| row error border-color | `theme.danger-role.fg` — the field's error edge, on the failed row only |
 
 ### file-upload-remove
 
@@ -2258,13 +2383,13 @@ The popover's name, styled as a label rather than a heading — see the decision
 
 ### progress
 
-A label above a track, with the filled part in the accent fill. The track is the recessed well `theme.bg.muted` is documented for.
+A label above a track, with the filled part in the accent fill. The track is the recessed well `theme.bg.muted` is documented for, because a progress bar reports status and is not a control.
 
 | Property | Token |
 |---|---|
-| track background | `theme.bg.muted` |
+| track background | `theme.bg.muted` — status, not interactive, so not Slider's `theme.border.strong`; see the track decision |
 | fill background | `theme.accent-role.bg` — see the pairing gap decision |
-| track block-size | `space.1` — a bar is a mark, not a control, so it takes a spacing step, the way Badge's dot does |
+| track block-size | `space.1` — a stand-in for the track-thickness token shared with Slider; see the token gap decision |
 | track border-radius | `radius.pill` |
 | fill border-radius | `radius.pill` |
 | fill transition | `motion.duration.medium` with `motion.easing.standard`, on inline-size; none under prefers-reduced-motion |
@@ -2630,9 +2755,9 @@ The track, the fill and the row they sit in. The drawn track is decoration over 
 | Property | Token |
 |---|---|
 | hit area block-size | `size.control.sm` — the transparent input's height, and so the touch target, regardless of the drawn thumb |
-| track block-size | `space.1` — a stand-in for a size step that does not exist yet; see the track-size token gap in the decisions |
+| track block-size | `space.1` — a placeholder for the one track-thickness token Slider and Progress will share (decision C8), which goes to the design-tokens interview; a spacing step standing in for a size is not the answer |
 | track border-radius | `radius.pill` |
-| track background | `theme.border.strong` — the boundary tone tuned to the 3:1 WCAG 1.4.11 asks of a control. `theme.bg.muted` is the recessed well, and a slider's empty track is the part of the control that says how far the value can still go, so it has to be seen |
+| track background | `theme.border.strong` — the boundary tone tuned to the 3:1 WCAG 1.4.11 asks of a control (decision C8). Progress's track is `theme.bg.muted` because a progress bar reports status; a slider's empty track is part of an interactive control and says how far the value can still go, so it has to be seen |
 | fill background | `theme.accent-role.bg` — from min to the thumb, or between the two thumbs of a range |
 | gap between label row and track | `space.stack.2xs` |
 | label colour | `theme.fg.primary` |
@@ -2652,7 +2777,7 @@ The drawn handle. Surface-filled with an accent edge, so it reads against both t
 | background | `theme.bg.surface` |
 | border | `border.2` solid `theme.accent-role.bg` |
 | box-shadow | `theme.elevation.raised` |
-| hover / press | compose the .rata-state-layer class — pending the data-hovered and data-pressed hook proposed in the decisions |
+| hover / press | compose the .rata-state-layer class, triggered by the data-hovered and data-pressed attributes the primitive sets (decision C9) |
 | focus ring | `focus.ring-width` solid `theme.focus-ring`, offset `focus.ring-offset`, drawn on the thumb when the input matches :focus-visible |
 | movement | transform, not a layout property, with no transition while dragging — a thumb that lags the finger reads as broken |
 
@@ -3118,13 +3243,13 @@ The on state of a borderless toggle: the tint alone separates it from its unpres
 
 ### tooltip
 
-A small transient surface, built like a miniature Menu: the same surface, outline and overlay shadow, so a tooltip and a menu opened from neighbouring controls read as the same kind of thing. Not an inverse (dark-on-light) chip — see the decisions.
+A small transient chip on an inverse surface, so it reads as a passing hint rather than as a menu or a popover. The inverse surface and its foreground do not exist yet, so the colour lines below are the closest existing tokens and are stand-ins; the measurements, shadow and motion are final.
 
 | Property | Token |
 |---|---|
-| background | `theme.bg.surface` |
-| color | `theme.fg.primary` |
-| border | `border.default` solid `theme.border.default` |
+| background | `theme.bg.surface` — a stand-in until the inverse surface pair exists; see the token gap decision |
+| color | `theme.fg.primary` — a stand-in until the inverse surface pair exists; see the token gap decision |
+| border | `border.default` solid `theme.border.default` — a stand-in until the inverse surface pair exists; see the token gap decision; an inverse chip needs no outline |
 | box-shadow | `theme.elevation.overlay` |
 | border-radius | `radius.element` |
 | padding-block | `space.1` |

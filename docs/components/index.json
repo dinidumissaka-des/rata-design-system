@@ -55,6 +55,11 @@
     "status": "future"
   },
   {
+    "name": "date-range-picker",
+    "title": "Date Range Picker",
+    "status": "future"
+  },
+  {
     "name": "dialog",
     "title": "Dialog",
     "status": "latest"

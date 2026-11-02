@@ -24,8 +24,10 @@ A `role="progressbar"` element with `aria-valuenow`, `aria-valuemin`, `aria-valu
 - **A `div` with `role="progressbar"`, not the native `<progress>` element** — `<progress>` is styled through vendor pseudo-elements that differ between engines and cannot carry a transition on the fill, and it has no `aria-valuetext` equivalent of its own. The ARIA role is fully supported, and it lets `valueText` say "3 of 7 files" instead of "43 percent".
 - **The label is required and visible** — A bar with no label is a decoration: the reader sees motion and cannot tell what is moving. The visible label is also the accessible name, through `aria-labelledby`, so sighted and screen-reader users are told the same thing.
 - **It does not announce every change** — A progress bar updating every 200ms as a live region would read a number every time the screen reader paused. The role is enough for a reader who navigates to it to hear the current value. What does need announcing is completion — and that is the caller's message, usually a Toast or a Notice, because only the caller knows what "done" means.
+- **The track is `theme.bg.muted`, not Slider's `theme.border.strong`** — Approved at gate 1 (decision C8, docs/decisions/2026-11-gate-1-review.md). Slider and Progress look alike and are split by role. A slider's empty track is part of a control — it shows how far the value can still go — so it takes the boundary tone tuned to the 3:1 WCAG 1.4.11 asks of a control. A progress bar takes no input, and its empty track carries no information on its own: what the reader needs is the fill against it, which the pairing decision below covers. So the track is the recessed well `theme.bg.muted` is documented for, and a progress bar beside a slider does not read as something to drag.
+- **Token gap: track thickness, shared with Slider — needs the design-tokens skill** — Decision C8 settles the disagreement the two specs had. The thickness of a track is a size, not a distance between things, and Slider and Progress take the same new track-thickness token — the one Slider's spec proposes — rather than one spacing step each. Until the design-tokens interview approves it, the recipe uses `space.1` as a stand-in, which is the misuse `space`'s own contract warns about and is named here so it does not ship quietly.
 - **Pairing gap: `theme.accent-role.bg` on `theme.bg.muted` at AA-nontext is not a documented pairing** — WCAG 1.4.11 asks a fill to reach 3:1 against what it sits on when it conveys information, and the filled part of a bar is exactly that. The pairing is very likely to hold in the base theme but is not in the verified list, so nothing re-measures it per brand. It should be added to the token contracts' pairings — no new token, just a promise the build will check — before gate 2 approves this mapping.
-- **Web and native** — Web: a `div` with `role="progressbar"`, `aria-valuenow`, `aria-valuemin="0"`, `aria-valuemax`, `aria-valuetext` when `valueText` is passed, and `aria-labelledby` pointing at the visible label. In forced-colors mode the fill takes the system `Highlight` colour so it stays visible. React Native: a `View` with `accessibilityRole="progressbar"` and `accessibilityValue={{ min: 0, max, now: value, text: valueText }}`, labelled by `accessibilityLabel`. All props work on both; the fill transition is skipped on native when the OS reduce-motion setting is on.
+- **Web and native** — Web: a `div` with `role="progressbar"`, `aria-valuenow`, `aria-valuemin="0"`, `aria-valuemax`, `aria-valuetext` when `valueText` is passed, and `aria-labelledby` pointing at the visible label. In forced-colors mode the fill takes the system `Highlight` colour so it stays visible. React Native: a `View` with `accessibilityRole="progressbar"` and `accessibilityValue={{ min: 0, max, now: value, text: valueText }}`, labelled by `accessibilityLabel`. All props work on both; the fill transition is skipped on native when the OS reduce-motion setting is on. Rata-drawn, not the OS progress control (decision N5): React Native core no longer ships one on either platform, and a drawn `View` takes the same tokens as the web bar. The native implementation ships in the pro tier (decision N6).
 
 ## Props
 
@@ -151,13 +153,13 @@ Don't. A value that is not real is a spinner pretending to know something — us
 
 ### base
 
-A label above a track, with the filled part in the accent fill. The track is the recessed well `theme.bg.muted` is documented for.
+A label above a track, with the filled part in the accent fill. The track is the recessed well `theme.bg.muted` is documented for, because a progress bar reports status and is not a control.
 
 | Property | Token |
 |---|---|
-| track background | `theme.bg.muted` |
+| track background | `theme.bg.muted — status, not interactive, so not Slider's theme.border.strong; see the track decision` |
 | fill background | `theme.accent-role.bg — see the pairing gap decision` |
-| track block-size | `space.1 — a bar is a mark, not a control, so it takes a spacing step, the way Badge's dot does` |
+| track block-size | `space.1 — a stand-in for the track-thickness token shared with Slider; see the token gap decision` |
 | track border-radius | `radius.pill` |
 | fill border-radius | `radius.pill` |
 | fill transition | `motion.duration.medium with motion.easing.standard, on inline-size; none under prefers-reduced-motion` |

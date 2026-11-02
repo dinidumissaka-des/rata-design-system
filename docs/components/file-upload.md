@@ -24,11 +24,12 @@ A visually hidden native file input opened by a Button, an optional drop zone ar
 - **The component re-validates everything it is given** — `accept` filters the OS dialog only as a suggestion, and drag and drop bypasses it entirely, so a `.exe` dropped onto an image field arrives like any other file. Every file is checked against `accept`, `maxSize` and `maxFiles` before it enters the list, and refusals go to `onReject` with a reason. The caller writes the message, because Field's `message` is the one place a field reports a failure.
 - **The list and the submission cannot disagree** — A file input's selection replaces itself on every pick, and it cannot be edited — removing one file from it is not possible through its API. So the component keeps the list, and writes it back into the input through a `DataTransfer` after every change. A native form post therefore submits exactly the files the reader can see, including after a removal.
 - **Removing a file moves focus somewhere that exists** — The remove button the reader pressed is gone, and focus on a removed node falls to the body — back to the top of the page for a keyboard user. Focus moves to the next file's remove button, or the previous one at the end, or the choose button when the list empties. A polite status region says "report.pdf removed" and "2 files added".
-- **It chooses files; it does not upload them** — Uploading is a network policy — chunking, retries, auth, progress, cancellation — that belongs to the caller, and baking one in would make this component wrong for every backend but one. The open question is whether the list should accept a per-file progress and error state from the caller so the rows can show it; that is deliberately not in this spec and needs a decision.
+- **It chooses files; it does not upload them** — Uploading is a network policy — chunking, retries, auth, progress, cancellation — that belongs to the caller, and baking one in would make this component wrong for every backend but one. The app does the uploading; this component chooses, validates and lists. What the list does take from the caller is each file's state: see the next decision (decision C11, docs/decisions/2026-11-gate-1-review.md).
+- **Rows show per-file `progress` and `error` that the caller supplies on the file items** — A `PickedFile` may carry `progress` (0–100) and `error` (a string), and a row renders what it is given: a bar while `progress` is set, the error line under the name when `error` is. The caller's uploader writes them back into `value`, so showing progress means using the component controlled. The component never sets either itself and never infers success from 100 — completion is whatever the caller says it is. The bar in a row is a `role="progressbar"` named by the file name, and it is not announced on every change; the component's polite region announces when a file's `error` appears, and the error text joins the remove button's `aria-describedby` so it is heard with the file it belongs to. This keeps the network out of the component while the rows can still say what happened to each file (decision C11, docs/decisions/2026-11-gate-1-review.md).
 - **No image previews in this version** — A preview means an object URL per file and revoking each one when the file leaves the list, or a memory leak per photo; and a thumbnail needs alt text the reader did not write. It is a separate pass, not a boolean here.
 - **Disabled is `aria-disabled` with a click guard, not the native attribute** — The system rule, applied to the choose and remove buttons. And the text field's consequence, applied to files: whatever is already chosen still submits.
 - **Proposed primitive: `getFileUploadProps`** — No primitive exists yet. The proposal validates candidate files against the constraints, returns the accepted list and the rejections, computes where focus goes after a removal, and produces the announcement strings — all pure. The `DataTransfer` write-back and the drag events are the React wrapper's, since both are DOM acts.
-- **Web and native** — Web: a visually hidden `<input type="file">` carrying `name`, `accept` and `multiple`; the system Button; a drop zone `<div>` with no role; and the file list as a `<ul>` with one remove button per row, all inside a `role="group"` labelled by `label`. React Native has no file input. The native component is a `Pressable` with `accessibilityRole="button"` opening the OS document picker — which is not in core, so it is a community-package dependency every native consumer installs, and photos from the library are a second picker with its own permission prompt. That costs three things: `dropzone` is web-only; `accept` extensions such as `.pdf` are web-only, because native pickers filter by type (MIME on Android, translated to UTIs on iOS), which is why `accept` should lead with MIME types; and `name` is web-only, since there is no form post. `PickedFile` is the same shape on both — `{ name, size, type }` — with `file: File` on web and `uri` on native, so validation code is shared.
+- **Web and native** — Web: a visually hidden `<input type="file">` carrying `name`, `accept` and `multiple`; the system Button; a drop zone `<div>` with no role; and the file list as a `<ul>` with one remove button per row, all inside a `role="group"` labelled by `label`. React Native has no file input. The native component is a `Pressable` with `accessibilityRole="button"` opening the OS document picker — which is not in core, so it is a community-package dependency every native consumer installs, and photos from the library are a second picker with its own permission prompt. That costs three things: `dropzone` is web-only; `accept` extensions such as `.pdf` are web-only, because native pickers filter by type (MIME on Android, translated to UTIs on iOS), which is why `accept` should lead with MIME types; and `name` is web-only, since there is no form post. `PickedFile` is the same shape on both — `{ name, size, type }` — with `file: File` on web and `uri` on native, so validation code is shared. The OS control, not a Rata-drawn one (decision N5): choosing goes through the OS document picker on native and the OS file dialog on web, because no drawn control can reach the file system; the button and the file list around it are Rata-drawn from the same recipe. On native a row's bar is a `View` with `accessibilityRole="progressbar"` and `accessibilityValue={{ min: 0, max: 100, now: progress }}`. The native implementation ships in the pro tier (decision N6).
 
 ## Props
 
@@ -39,7 +40,7 @@ A visually hidden native file input opened by a Button, an optional drop zone ar
 | `multiple?` | `boolean` | `false` | Accepts more than one file. |
 | `maxFiles?` | `number` | — | The most files the list may hold. Only meaningful with `multiple`. |
 | `maxSize?` | `number` | — | The largest file allowed, in bytes. |
-| `value?` | `PickedFile[]` | — | Controls the chosen files from outside. Each is `{ name, size, type }` plus the platform's handle — `file` on web, `uri` on native. |
+| `value?` | `PickedFile[]` | — | Controls the chosen files from outside. Each is `{ name, size, type }` plus the platform's handle — `file` on web, `uri` on native — and, optionally, `progress` (0–100) and `error`, which the caller's uploader sets and the row displays. |
 | `onValueChange?` | `(files: PickedFile[]) => void` | — | Fires with the whole accepted list whenever a file is added or removed. |
 | `onReject?` | `(rejections: FileRejection[]) => void` | — | Fires with the files that were refused and why: `{ file, reason: "type" \| "size" \| "count" }`. |
 | `dropzone?` | `boolean` | `true` | Draws a drop target around the button, for dragging files in from the desktop. |
@@ -144,15 +145,17 @@ The largest file allowed, in bytes.
 value?: PickedFile[]
 ```
 
-Controls the chosen files from outside. Each is `{ name, size, type }` plus the platform's handle — `file` on web, `uri` on native.
+Controls the chosen files from outside. Each is `{ name, size, type }` plus the platform's handle — `file` on web, `uri` on native — and, optionally, `progress` (0–100) and `error`, which the caller's uploader sets and the row displays.
 
 **Use when**
 
 - A form library, or restoring a selection after a validation round-trip.
+- Passing each file back with `progress` while it uploads, and `error` if it fails — the rows show both.
 
 **Don't use for**
 
 - Expecting it to hold uploaded files. It holds chosen ones; uploading is the caller's.
+- Expecting the component to set `progress` or `error`. It only displays them; uploading is the app's.
 
 ### `onValueChange`
 
@@ -408,6 +411,21 @@ Something was dropped or picked that the field cannot take.
 
 Refused files never enter the list, so without `onReject` they vanish silently. Name the file and the rule in the message.
 
+### Uploads in flight
+
+The app uploads each file as it is chosen and wants the rows to show how far each one got.
+
+```tsx
+<FileUpload
+  label="Attachments"
+  multiple
+  value={files}
+  onValueChange={startUploads}
+/>
+```
+
+`startUploads` uploads the new files and updates `files`, setting `progress` (0–100) on each while it runs and `error` on any that fail. The component draws both and uploads nothing (decision C11).
+
 ### A compact attachment control
 
 A reply box or a chat composer, where a drop zone would dwarf the field it serves.
@@ -472,6 +490,13 @@ The chosen files, one row each. Bordered rows rather than a table: there are two
 | file size font-size | `type.supporting.size` |
 | file icon size | `size.icon.text` |
 | file icon colour | `theme.fg.secondary` |
+| row progress track background | `theme.bg.muted — Progress's status track (decision C8), because this bar reports and cannot be adjusted` |
+| row progress fill background | `theme.accent-role.bg — Progress's fill, with its pairing gap` |
+| row progress block-size | `space.1 — Progress's placeholder, until the shared track-thickness token (decision C8)` |
+| row progress border-radius | `radius.pill` |
+| row error colour | `theme.danger-role.fg — the role's text colour on the row's theme.bg.surface, never its saturated bg` |
+| row error font-size | `type.supporting.size` |
+| row error border-color | `theme.danger-role.fg — the field's error edge, on the failed row only` |
 
 ### remove
 

@@ -82,7 +82,7 @@
       },
       {
         "decision": "Web and native",
-        "why": "Web: one `<input>` with `inputmode=\"numeric\"` (or `text` for alphanumeric), `autocomplete=\"one-time-code\"` or `off`, `type=\"password\"` for `pin`, `maxLength`, inside a Field; the boxes are `aria-hidden` and the input lies over them, transparent, so taps anywhere land in it. React Native: one `TextInput` with `keyboardType=\"number-pad\"`, `textContentType=\"oneTimeCode\"` on iOS and `autoComplete=\"sms-otp\"` on Android — the two platforms' SMS autofill hooks — and `secureTextEntry` for `pin`; the boxes are `View`s with `accessibilityElementsHidden` and `importantForAccessibility=\"no-hide-descendants\"`, so only the input is announced. `name` is web-only."
+        "why": "Web: one `<input>` with `inputmode=\"numeric\"` (or `text` for alphanumeric), `autocomplete=\"one-time-code\"` or `off`, `type=\"password\"` for `pin`, `maxLength`, inside a Field; the boxes are `aria-hidden` and the input lies over them, transparent, so taps anywhere land in it. React Native: one `TextInput` with `keyboardType=\"number-pad\"`, `textContentType=\"oneTimeCode\"` on iOS and `autoComplete=\"sms-otp\"` on Android — the two platforms' SMS autofill hooks — and `secureTextEntry` for `pin`; the boxes are `View`s with `accessibilityElementsHidden` and `importantForAccessibility=\"no-hide-descendants\"`, so only the input is announced. `name` is web-only. Rata-drawn around the OS text input (decision N5): the single `TextInput` is the platform's, so SMS autofill, paste and deletion are too; the boxes are drawn from the recipe. The native implementation ships in the pro tier (decision N6)."
       }
     ]
   },

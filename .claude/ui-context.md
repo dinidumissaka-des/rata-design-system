@@ -29,6 +29,7 @@ this path is the honest answer to when it last actually moved.
 | [chip](../docs/components/chip.md) | `@rata/react` | inputs | future / future / future | free |
 | [combobox](../docs/components/combobox.md) | `@rata/react` | inputs | future / future / future | free |
 | [date-picker](../docs/components/date-picker.md) | `@rata/react` | inputs | future / future / future | free |
+| [date-range-picker](../docs/components/date-range-picker.md) | `@rata/react` | inputs | future / future / future | free |
 | [dialog](../docs/components/dialog.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [disclosure](../docs/components/disclosure.md) | `@rata/react` | content | latest / latest / future | free |
 | [divider](../docs/components/divider.md) | `@rata/react` | content | future / future / future | free |
@@ -244,6 +245,12 @@ Contract: [docs/components/combobox.md](../docs/components/combobox.md)
 No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
 
 Contract: [docs/components/date-picker.md](../docs/components/date-picker.md)
+
+### Date Range Picker
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/date-range-picker.md](../docs/components/date-range-picker.md)
 
 ### Dialog (`@rata/react`)
 

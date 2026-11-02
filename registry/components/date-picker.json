@@ -138,7 +138,7 @@
       },
       {
         "decision": "No ranges and no times in this component",
-        "why": "A range needs two values, a hover preview between them, and an announcement for each end — that is a date-range picker with its own contract. A time is a different value type (`\"14:30\"`) with its own input. Both can be built on the same calendar-grid primitive, which is why that is proposed separately below."
+        "why": "A range needs two values, a preview between them, and an announcement for each end — that is DateRangePicker, which has its own contract (decision C10, docs/decisions/2026-11-gate-1-review.md). A time is a different value type (`\"14:30\"`) with its own input. Both are built on the same calendar-grid primitive, which is why that is proposed separately below."
       },
       {
         "decision": "Disabled is `aria-disabled` plus `readOnly`, inherited from Field",
@@ -150,7 +150,7 @@
       },
       {
         "decision": "Web and native",
-        "why": "Web: a text input inside a Field, a calendar `<button>` with a click guard, a hidden input carrying `name`, and a modal `<dialog>` holding a `<table role=\"grid\">` whose day cells are buttons with `aria-selected`, `aria-current=\"date\"` on today, and `aria-disabled` on unavailable days. Touch, pointer and keyboard share it; only placement changes with width. React Native: no typed entry and no drawn calendar — the field is a `Pressable` with `accessibilityRole=\"button\"`, the label as its name and the formatted date as `accessibilityValue={{ text }}`, opening the OS picker (UIDatePicker on iOS, the Material date dialog on Android). That is the right picker on a phone and it is accessible by construction, but it costs three things: it is not in core, so it is a community-package dependency; it cannot be styled; and Android's picker supports `min` and `max` but not individual unavailable days, so on native `isDateUnavailable` is enforced after the choice, as an `invalid` status with a message, rather than in the picker. `firstDayOfWeek` is honoured on Android only. `isDateUnavailable` as an in-grid affordance, `placeholder`, `name` and `size` are web-only."
+        "why": "Web: a text input inside a Field, a calendar `<button>` with a click guard, a hidden input carrying `name`, and a modal `<dialog>` holding a `<table role=\"grid\">` whose day cells are buttons with `aria-selected`, `aria-current=\"date\"` on today, and `aria-disabled` on unavailable days. Touch, pointer and keyboard share it; only placement changes with width. React Native: no typed entry and no drawn calendar — the field is a `Pressable` with `accessibilityRole=\"button\"`, the label as its name and the formatted date as `accessibilityValue={{ text }}`, opening the OS picker (UIDatePicker on iOS, the Material date dialog on Android). That is the right picker on a phone and it is accessible by construction, but it costs three things: it is not in core, so it is a community-package dependency; it cannot be styled; and Android's picker supports `min` and `max` but not individual unavailable days, so on native `isDateUnavailable` is enforced after the choice, as an `invalid` status with a message, rather than in the picker. `firstDayOfWeek` is honoured on Android only. `isDateUnavailable` as an in-grid affordance, `placeholder`, `name` and `size` are web-only. The OS control on native, not a Rata-drawn calendar (decision N5): the system picker is the one a phone's readers already know, and it is accessible by construction; the web keeps the Rata-drawn calendar for the reasons above. The native implementation ships in the pro tier (decision N6)."
       }
     ]
   },
@@ -388,7 +388,7 @@
       "case": "Reaching for the wrong component",
       "when": "A stay with a check-in and a check-out.",
       "example": "<DatePicker label=\"Check-in\" />\n<DatePicker label=\"Check-out\" />",
-      "notes": "Workable, but it is not a range: the second calendar cannot show the stay, and each end validates alone. A range is a date-range picker, which does not exist yet — say so rather than wiring two of these together and calling it one."
+      "notes": "Workable, but it is not a range: the second calendar cannot show the stay, and each end validates alone. A range is DateRangePicker, which is a spec with no code behind it yet (decision C10) — say so rather than wiring two of these together and calling it one."
     }
   ]
 }

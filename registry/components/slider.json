@@ -31,9 +31,9 @@
       "summary": "The track, the fill and the row they sit in. The drawn track is decoration over a transparent native input, so these measurements are what the reader sees, not what they touch.",
       "tokens": {
         "hit area block-size": "size.control.sm — the transparent input's height, and so the touch target, regardless of the drawn thumb",
-        "track block-size": "space.1 — a stand-in for a size step that does not exist yet; see the track-size token gap in the decisions",
+        "track block-size": "space.1 — a placeholder for the one track-thickness token Slider and Progress will share (decision C8), which goes to the design-tokens interview; a spacing step standing in for a size is not the answer",
         "track border-radius": "radius.pill",
-        "track background": "theme.border.strong — the boundary tone tuned to the 3:1 WCAG 1.4.11 asks of a control. theme.bg.muted is the recessed well, and a slider's empty track is the part of the control that says how far the value can still go, so it has to be seen",
+        "track background": "theme.border.strong — the boundary tone tuned to the 3:1 WCAG 1.4.11 asks of a control (decision C8). Progress's track is theme.bg.muted because a progress bar reports status; a slider's empty track is part of an interactive control and says how far the value can still go, so it has to be seen",
         "fill background": "theme.accent-role.bg — from min to the thumb, or between the two thumbs of a range",
         "gap between label row and track": "space.stack.2xs",
         "label colour": "theme.fg.primary",
@@ -51,7 +51,7 @@
         "background": "theme.bg.surface",
         "border": "border.2 solid theme.accent-role.bg",
         "box-shadow": "theme.elevation.raised",
-        "hover / press": "compose the .rata-state-layer class — pending the data-hovered and data-pressed hook proposed in the decisions",
+        "hover / press": "compose the .rata-state-layer class, triggered by the data-hovered and data-pressed attributes the primitive sets (decision C9)",
         "focus ring": "focus.ring-width solid theme.focus-ring, offset focus.ring-offset, drawn on the thumb when the input matches :focus-visible",
         "movement": "transform, not a layout property, with no transition while dragging — a thumb that lags the finger reads as broken"
       }
@@ -69,12 +69,12 @@
         "why": "A range input's thumb is a pseudo-element, styled differently in every engine and unable to carry a class. So the input is laid over the drawn track at full size and transparent, receiving every pointer, touch and key event, while the visible thumb is a real element positioned from the value. The hit area is the input's block-size, size.control.sm, independent of the drawn thumb's size — 2.5.8's target minimum met without a thumb that looks swollen."
       },
       {
-        "decision": "State-layer gap: the thumb needs `.rata-state-layer` and cannot have it as the class is written",
-        "why": "The state layer reacts to `:hover` and `:active` on the element carrying the class. Here the element under the pointer is the transparent input and the element that should show the feedback is the drawn thumb, so the class matches nothing. Writing a `:has(input:hover)` rule would be the hand-rolled hover this system forbids. Proposal, needing its own approval as a state-layer change: let `.rata-state-layer` also respond to `[data-hovered]` and `[data-pressed]`, set by the slider primitive from pointer events on the input. The opacities stay state.hover-opacity and state.press-opacity; only the trigger widens."
+        "decision": "The thumb composes `.rata-state-layer`, which will also respond to `[data-hovered]` and `[data-pressed]`",
+        "why": "The state layer reacts to `:hover` and `:active` on the element carrying the class, but here the element under the pointer is the transparent input and the element that shows the feedback is the drawn thumb. A `:has(input:hover)` rule would be the hand-rolled hover this system forbids. So `.rata-state-layer` is to be extended to respond to `[data-hovered]` and `[data-pressed]` as well, set by the slider primitive from pointer events on the input, and the thumb composes the class like any other control — identical feedback, with state.hover-opacity and state.press-opacity unchanged; only the trigger widens. That extension is a state-layer change in its own gated step, not part of this contract, and the slider cannot ship before it does (decision C9, docs/decisions/2026-11-gate-1-review.md)."
       },
       {
-        "decision": "Token gap: `size.track` — needs the design-tokens skill",
-        "why": "The track's thickness is a size, not a distance between things, and the size scale has no step for it. The recipe uses space.1 as the closest existing value; a spacing token standing in for a size is exactly the misuse `space`'s own contract warns about, so it is named here rather than shipped quietly. The proposal is `size.track`, with Purpose \"the thickness of a slider or progress track\". The Progress spec takes the opposite view — a bar is a mark, so space.1 is right, the way Badge's dot does it — and the two specs should settle on one answer at approval rather than ship two."
+        "decision": "Track tone is split from Progress by role; track thickness is one shared token, still to be proposed",
+        "why": "A slider's track belongs to an interactive control, so it takes theme.border.strong, which meets the 3:1 WCAG 1.4.11 asks of a control's boundary. Progress's track is a status mark, the recessed well theme.bg.muted is documented for, and keeps that tone. The two contracts had disagreed about thickness too; they now share one track-thickness token, proposed through the design-tokens interview (Purpose / Use when / Don't use for / Pairs with) rather than written ad hoc. Until it is approved the recipe holds space.1 as a placeholder, named as one so it is not shipped quietly (decision C8, docs/decisions/2026-11-gate-1-review.md)."
       },
       {
         "decision": "A single pointer can always reach any value without dragging",
@@ -98,11 +98,11 @@
       },
       {
         "decision": "Proposed primitive: `getSliderProps`",
-        "why": "No primitive exists yet. The proposal returns the input, drawn-thumb, track and output prop bags for one or two thumbs, keeps two thumbs from crossing (each thumb's `min`/`max` is the other's value), snaps to `step`, implements the disabled guard described under `disabled`, and sets the hover and press data attributes the state-layer proposal needs."
+        "why": "No primitive exists yet. The proposal returns the input, drawn-thumb, track and output prop bags for one or two thumbs, keeps two thumbs from crossing (each thumb's `min`/`max` is the other's value), snaps to `step`, implements the disabled guard described under `disabled`, and sets the `data-hovered` and `data-pressed` attributes the extended state layer responds to (decision C9)."
       },
       {
         "decision": "Web and native",
-        "why": "Web: one `<input type=\"range\">` per thumb, with `aria-valuetext` from `formatValue` and `aria-label` from `thumbLabels` on a range, inside a Field; a range is a `role=\"group\"` labelled by `label`. Pointer, touch and keyboard all go through the native input. React Native: core no longer ships a Slider (it moved to a community package), and taking that dependency would make every native consumer install it, so the native component is a `View` driven by the responder system with `accessibilityRole=\"adjustable\"`, `accessibilityValue={{ min, max, now, text }}` — `text` from `formatValue` — and `accessibilityActions` for increment and decrement, which is what VoiceOver's and TalkBack's swipe gestures call. A range is two adjustable views. `onValueCommit` maps to responder release and to each accessibility action. `name` is web-only."
+        "why": "Web: one `<input type=\"range\">` per thumb, with `aria-valuetext` from `formatValue` and `aria-label` from `thumbLabels` on a range, inside a Field; a range is a `role=\"group\"` labelled by `label`. Pointer, touch and keyboard all go through the native input. React Native: core no longer ships a Slider (it moved to a community package), and taking that dependency would make every native consumer install it, so the native component is a `View` driven by the responder system with `accessibilityRole=\"adjustable\"`, `accessibilityValue={{ min, max, now, text }}` — `text` from `formatValue` — and `accessibilityActions` for increment and decrement, which is what VoiceOver's and TalkBack's swipe gestures call. A range is two adjustable views. `onValueCommit` maps to responder release and to each accessibility action. `name` is web-only. Rata-drawn (decision N5): React Native core has no slider any more and the community one cannot be styled to the recipe, so native draws the track and thumb itself rather than using an OS control. The native implementation ships in the pro tier (decision N6)."
       }
     ]
   },

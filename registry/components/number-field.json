@@ -101,7 +101,7 @@
       },
       {
         "decision": "Web and native",
-        "why": "Web: the text input above with `role=\"spinbutton\"` inside a Field, two `<button tabindex=\"-1\">` with `aria-label`, and a hidden input carrying `name`. React Native: a `TextInput` with `keyboardType=\"decimal-pad\"` — or `numbers-and-punctuation` when `min` is below zero, because the iOS decimal pad has no minus key — flanked by two `Pressable` buttons with `accessibilityRole=\"button\"` and the two labels. iOS cannot make one element both editable text and adjustable, so on native the input keeps its text role and the stepping lives on the buttons; `accessibilityValue={{ min, max, now, text }}` is set on the input so the range is still announced. `name` and `size` are web-only."
+        "why": "Web: the text input above with `role=\"spinbutton\"` inside a Field, two `<button tabindex=\"-1\">` with `aria-label`, and a hidden input carrying `name`. React Native: a `TextInput` with `keyboardType=\"decimal-pad\"` — or `numbers-and-punctuation` when `min` is below zero, because the iOS decimal pad has no minus key — flanked by two `Pressable` buttons with `accessibilityRole=\"button\"` and the two labels. iOS cannot make one element both editable text and adjustable, so on native the input keeps its text role and the stepping lives on the buttons; `accessibilityValue={{ min, max, now, text }}` is set on the input so the range is still announced. `name` and `size` are web-only. Rata-drawn around the OS text input (decision N5): the `TextInput` is the platform's own and the step buttons are drawn from the recipe — not `UIStepper`, which has no text entry and no Android counterpart. The native implementation ships in the pro tier (decision N6)."
       }
     ]
   },
