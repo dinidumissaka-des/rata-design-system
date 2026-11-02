@@ -33,7 +33,7 @@
     "base": {
       "summary": "One row. Leading slot, text, trailing slot, in that order along the inline axis; the text column takes the slack.",
       "tokens": {
-        "min-block-size": "size.control.lg plus space.1-5 above and below (48px) — a stand-in for the touch-target minimum this system has no token for; see the token-gap decision",
+        "min-block-size": "size.target.min",
         "padding-block": "space.padding.xs",
         "padding-inline": "space.padding.md — and max(space.padding.md, env(safe-area-inset-left / right)) when the list is edge-to-edge, so a phone in landscape does not put the text under the notch",
         "gap between slots and text": "space.gap.md",
@@ -114,8 +114,8 @@
         "why": "`disabled` puts `aria-disabled` on the row's link or button and on the actions trigger, and the click guard blocks both; neither leaves the tab order, so a reader can still find out the row exists and why it cannot be used. A row disabled while its actions still work is a row whose most important command is unavailable and whose secondary ones are not, which is a state worth not being able to express."
       },
       {
-        "decision": "Token gap: size.target.min — needs the design-tokens skill",
-        "why": "A row is a thumb target on a phone and should be at least 44–48px tall. The recipe composes `size.control.lg` plus `space.1-5` on each side as a stand-in, because the size scale stops at 36px and the 48px step that exists, `space.12`, is spacing. One `size.target.min` token closes this here, in BottomNav, in FAB and in Chip."
+        "decision": "Touch target: size.target.min",
+        "why": "The hit area is size.target.min, 48px, on every platform — Material's minimum, which also clears Apple's 44pt and WCAG 2.5.5. It sizes where the control can be tapped, never the drawn box. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md)."
       },
       {
         "decision": "Open: the focus ring at a list's inline edges",

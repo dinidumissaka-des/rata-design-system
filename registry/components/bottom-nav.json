@@ -44,7 +44,7 @@
       "summary": "One destination: an icon over a visible label, the whole column the target.",
       "tokens": {
         "color": "theme.fg.secondary",
-        "min-block-size": "size.control.lg plus space.1 above and below (44px) — a stand-in for the touch-target minimum this system has no token for; see the token-gap decision",
+        "min-block-size": "size.target.min",
         "padding-block": "space.1",
         "gap between icon and label": "space.gap.xs",
         "icon size": "size.icon.lg — a standalone glyph at the scale's largest step, the size at which it renders unscaled",
@@ -116,8 +116,8 @@
         "why": "`env(safe-area-inset-bottom)` is a measurement of the device — where the home indicator is — not a design decision, so there is no value a token could hold and nothing a theme could change. What IS a decision is the minimum air when the inset is zero, and that is `space.1`, through `max()`. The page owes one thing in return: `<meta name=\"viewport\" content=\"…, viewport-fit=cover\">`, without which every inset reads as zero and the bar sits under the home indicator's gesture area on a notched phone."
       },
       {
-        "decision": "Token gap: size.target.min — needs the design-tokens skill",
-        "why": "An item's target should be at least 44px tall (Apple's minimum; Material's is 48px, and WCAG 2.5.8's AA floor is 24px). The size scale stops at `size.control.lg`, 36px, because it describes control heights on a desktop-first page, and the 44px and 48px steps that exist are `space.11` and `space.12` — spacing, which TOKENS.md forbids using for the size of a thing. The recipe composes `size.control.lg` plus `space.1` on each side as a stand-in, which is a sum that happens to land on 44px rather than a statement that 44px is the floor. A `size.target.min` token, through the design-tokens skill, would make the floor a named rule that FAB, ListItem and Chip's remove control share."
+        "decision": "Touch target: size.target.min",
+        "why": "The hit area is size.target.min, 48px, on every platform — Material's minimum, which also clears Apple's 44pt and WCAG 2.5.5. It sizes where the control can be tapped, never the drawn box. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md)."
       },
       {
         "decision": "A badge carries its own words",

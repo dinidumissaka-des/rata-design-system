@@ -55,3 +55,10 @@ All proposed gaps go to the interview (Purpose / Use when / Don't use for / Pair
 
 Tokens first, then gate-2 token mappings for Link, Card and Popover — the
 three components that unblock the most blocks — each paused for approval.
+
+## Token interview — results
+
+| # | Token | Layer | Value | Decision | Rejected alternative |
+|---|---|---|---|---|---|
+| T1 | `size.target.min` | primitive (`size.json`) | `48px`, every platform | Minimum hit area for any touch-operable control; never the drawn size. | 44px web/iOS + 48dp Android — one value so touch behaviour can't differ by platform. |
+| T2 | `theme.elevation.floating` | semantic | `elevation.med` / `elevation.med-strong` | Persistent controls over scrolling content (FAB, bottom-nav, sticky action bar). | Reusing `overlay` — would tie the FAB's shadow to menus. |

@@ -1351,6 +1351,7 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-size-icon-sm`: `16px`
 - `--rata-size-icon-text`: `1.15em`
 - `--rata-size-icon-xs`: `12px`
+- `--rata-size-target-min`: `48px`
 - `--rata-space-0`: `0px`
 - `--rata-space-0-5`: `2px`
 - `--rata-space-1`: `4px`
@@ -1419,6 +1420,7 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-theme-danger-role-on`: `#ffffff`
 - `--rata-theme-danger-role-ring`: `inset 0px 0px 0px 2px rgb(227 25 59 / 0.3)`
 - `--rata-theme-danger-role-subtle`: `#fef2f2`
+- `--rata-theme-elevation-floating`: `0px 1px 2px rgb(0 0 0 / 0.1), 0px 2px 12px rgb(0 0 0 / 0.1)`
 - `--rata-theme-elevation-modal`: `0px 2px 2px rgb(0 0 0 / 0.1), 0px 8px 24px rgb(0 0 0 / 0.1)`
 - `--rata-theme-elevation-overlay`: `0px 1px 2px rgb(0 0 0 / 0.1), 0px 2px 12px rgb(0 0 0 / 0.1)`
 - `--rata-theme-elevation-raised`: `0px 1px 1px rgb(0 0 0 / 0.1), 0px 2px 8px rgb(0 0 0 / 0.1)`

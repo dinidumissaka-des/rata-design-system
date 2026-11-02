@@ -25,6 +25,19 @@
       "use": [
         "Dialogs, drawers, sheets."
       ]
+    },
+    "theme.elevation.floating": {
+      "layer": "semantic",
+      "summary": "Shadow for a persistent control that floats above scrolling content.",
+      "use": [
+        "The FAB.",
+        "Bottom-nav, or a sticky action bar, while content scrolls beneath it."
+      ],
+      "instead": {
+        "A transient surface anchored to a trigger — a menu opened from the FAB included": "theme.elevation.overlay",
+        "A resting card or panel that is part of the page": "theme.elevation.raised",
+        "A surface that takes over the screen": "theme.elevation.modal"
+      }
     }
   }
 }

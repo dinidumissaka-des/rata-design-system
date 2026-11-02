@@ -274,6 +274,25 @@ Shadow for a surface that takes over the screen.
 
 - Dialogs, drawers, sheets.
 
+### `theme.elevation.floating`
+
+`var(--rata-theme-elevation-floating)` · light `0px 1px 2px rgb(0 0 0 / 0.1), 0px 2px 12px rgb(0 0 0 / 0.1)` · dark `0px 1px 2px rgb(0 0 0 / 0.2), 0px 2px 12px rgb(0 0 0 / 0.2)`
+
+Shadow for a persistent control that floats above scrolling content.
+
+**Use for**
+
+- The FAB.
+- Bottom-nav, or a sticky action bar, while content scrolls beneath it.
+
+**Use instead**
+
+| Instead of reaching for this | Use |
+|---|---|
+| A transient surface anchored to a trigger — a menu opened from the FAB included | `theme.elevation.overlay` |
+| A resting card or panel that is part of the page | `theme.elevation.raised` |
+| A surface that takes over the screen | `theme.elevation.modal` |
+
 ### `theme.fg.primary`
 
 `var(--rata-theme-fg-primary)` · light `#151D1A` · dark `#DAE5E0`
@@ -769,22 +788,26 @@ Control heights, and icon sizes — one relative step that follows text, plus fi
 | `icon.sm` | `var(--rata-size-icon-sm)` | `16px` | Fixed 16px — what icon.text resolves to at the default control text. |
 | `icon.md` | `var(--rata-size-icon-md)` | `20px` | Fixed 20px, for a standalone icon-only control. |
 | `icon.lg` | `var(--rata-size-icon-lg)` | `24px` | Fixed 24px. Lucide's native size, so it renders unscaled. |
+| `target.min` | `var(--rata-size-target-min)` | `48px` | The smallest hit area a touch-operable control may have — 48px on every platform. Size the hit area to at least this (min-block-size / min-inline-size, or a ::before extension), never the drawn control: a 28px size.control.sm button keeps its look and grows only where it can be tapped. Bottom-nav items, the FAB, a chip's remove button, list rows, a slider thumb, pagination on touch. |
 
 **Use for**
 
 - height (and usually min-width) of buttons, inputs, and other controls, via size.control.*.
 - width and height of an icon that sits with text, via size.icon.text — it follows whatever font-size it lands in, so it needs no per-control choice.
 - width and height of a standalone glyph with no text to size from, via size.icon.xs / .sm / .md / .lg.
+- The minimum hit area of anything operable by touch, via size.target.min — the larger of it and the control's own size.control.* step.
 
 **Do not use for**
 
 - Container, avatar or media dimensions — the fixed icon steps stop at 24px because that is the largest an icon gets; past it a graphic is illustration, not iconography.
 - Spacing of any kind. Distance between things is space.*; this scale is the size of the things.
 - A fixed step for an icon that has text beside it — it will stop matching the moment that text changes size. That is what size.icon.text is for.
+- size.target.min as a visible dimension or as spacing. It is a floor on where a control can be tapped; the drawn box stays size.control.*, and the distance between targets is space.*.
 
 > size.icon.text is 1.15em: an icon reads at the same visual weight as the text beside it at about 1.15x its font-size, because a glyph fills less of its box than a letterform does. At this system's control text (14px) it computes to 16.1px, effectively the size.icon.sm step — so the relative and fixed scales agree at the default and diverge only where the text does.
 > Control size and text size are independent here: size.control.* changes the box, while a control's text stays at type.control.size.md across all three. So an icon inside a control does not change size with the control either — it follows the text, which did not move.
 > The fixed steps are a 4px arithmetic scale, 12 through 24, for a glyph with no text context to inherit from: a status dot in a table cell, an icon-only control whose label is an aria-label rather than text.
+> size.target.min is 48px everywhere — Material's 48dp minimum, which also clears Apple's 44pt and WCAG 2.5.5 (44px, AAA). One value on every platform was chosen over 44px web/iOS + 48dp Android so a component's touch behaviour cannot differ by platform. It is a stated platform constant rather than a seeded step, which is why it sits beside size.control.* and not in the generated scales.
 
 ### `space`
 
@@ -1111,7 +1134,7 @@ One destination: an icon over a visible label, the whole column the target.
 | Property | Token |
 |---|---|
 | color | `theme.fg.secondary` |
-| min-block-size | `size.control.lg` plus `space.1` above and below (44px) — a stand-in for the touch-target minimum this system has no token for; see the token-gap decision |
+| min-block-size | `size.target.min` |
 | padding-block | `space.1` |
 | gap between icon and label | `space.gap.xs` |
 | icon size | `size.icon.lg` — a standalone glyph at the scale's largest step, the size at which it renders unscaled |
@@ -1331,7 +1354,7 @@ The one interactive part. Visibly small, with a hit area stretched to the chip's
 | glyph size | `size.icon.sm` |
 | glyph colour | `theme.fg.secondary` |
 | border-radius | `radius.pill` |
-| hit area | the chip's full block-size, extended past the chip's end by `space.1` with a pseudo-element — a stand-in for the touch-target minimum this system has no token for; see the token-gap decision |
+| hit area | `size.target.min` in both dimensions, centred on the visible remove circle with a pseudo-element; the circle itself stays small so the chip stays a chip |
 | hover / press | compose the .rata-state-layer class |
 | focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible |
 
@@ -1753,11 +1776,11 @@ A primary button in shape and colour, held to a corner of the viewport. The fill
 |---|---|
 | background | `theme.accent-role.bg` |
 | color | `theme.fg.on-accent` — the one label token that belongs on `theme.accent-role.bg` |
-| block-size | `size.control.lg` plus `space.1-5` above and below (48px) — a stand-in for the touch-target minimum this system has no token for; see the token-gap decision |
+| block-size | `size.target.min` |
 | inline-size, label hidden | equal to the block-size, so the hidden-label FAB is a circle |
 | padding-inline, label visible | `space.control.padding-inline.lg` |
 | border-radius | `radius.pill` — one radius that makes the hidden-label FAB a circle and the labelled one a pill, so the two are visibly the same control |
-| box-shadow | `theme.elevation.overlay` — a stand-in; see the token-gap decision |
+| box-shadow | `theme.elevation.floating` |
 | icon size | `size.icon.lg` |
 | gap between icon and label | `space.gap.sm` |
 | font-size | `type.control.size.md` |
@@ -1966,7 +1989,7 @@ One row. Leading slot, text, trailing slot, in that order along the inline axis;
 
 | Property | Token |
 |---|---|
-| min-block-size | `size.control.lg` plus `space.1-5` above and below (48px) — a stand-in for the touch-target minimum this system has no token for; see the token-gap decision |
+| min-block-size | `size.target.min` |
 | padding-block | `space.padding.xs` |
 | padding-inline | `space.padding.md` — and max(`space.padding.md`, env(safe-area-inset-left / right)) when the list is edge-to-edge, so a phone in landscape does not put the text under the notch |
 | gap between slots and text | `space.gap.md` |
