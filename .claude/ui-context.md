@@ -1160,6 +1160,8 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-border-2`: `2px`
 - `--rata-border-3`: `3px`
 - `--rata-border-default`: `1px`
+- `--rata-breakpoint-medium`: `40rem`
+- `--rata-breakpoint-wide`: `60rem`
 - `--rata-color-accent-100`: `#E3EBDF`
 - `--rata-color-accent-200`: `#CEDDC9`
 - `--rata-color-accent-300`: `#AFC8A8`
@@ -1307,6 +1309,10 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-font-weight-medium`: `500`
 - `--rata-font-weight-regular`: `400`
 - `--rata-font-weight-semibold`: `600`
+- `--rata-layer-floating`: `200`
+- `--rata-layer-overlay`: `300`
+- `--rata-layer-sticky`: `100`
+- `--rata-layer-toast`: `400`
 - `--rata-motion-delay-hint`: `280ms`
 - `--rata-motion-duration-fast`: `130ms`
 - `--rata-motion-duration-fast-max`: `175ms`
@@ -1344,6 +1350,7 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-ring-neutral-strong`: `inset 0px 0px 0px 2px rgb(223 226 229 / 0.2)`
 - `--rata-ring-success`: `inset 0px 0px 0px 2px rgb(38 167 86 / 0.3)`
 - `--rata-ring-warning`: `inset 0px 0px 0px 2px rgb(226 164 0 / 0.3)`
+- `--rata-size-container-max`: `75rem`
 - `--rata-size-control-lg`: `36px`
 - `--rata-size-control-md`: `32px`
 - `--rata-size-control-sm`: `28px`
@@ -1355,6 +1362,9 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-size-measure-compact`: `45ch`
 - `--rata-size-measure-prose`: `65ch`
 - `--rata-size-measure-tight`: `32ch`
+- `--rata-size-pane-lg`: `25rem`
+- `--rata-size-pane-md`: `20rem`
+- `--rata-size-pane-sm`: `15rem`
 - `--rata-size-target-min`: `48px`
 - `--rata-size-track`: `4px`
 - `--rata-space-0`: `0px`
@@ -1364,7 +1374,9 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-space-10`: `40px`
 - `--rata-space-11`: `44px`
 - `--rata-space-12`: `48px`
+- `--rata-space-16`: `64px`
 - `--rata-space-2`: `8px`
+- `--rata-space-24`: `96px`
 - `--rata-space-3`: `12px`
 - `--rata-space-4`: `16px`
 - `--rata-space-5`: `20px`
@@ -1372,6 +1384,8 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-space-7`: `28px`
 - `--rata-space-8`: `32px`
 - `--rata-space-9`: `36px`
+- `--rata-space-band-lg`: `96px`
+- `--rata-space-band-sm`: `64px`
 - `--rata-space-control-padding-inline-lg`: `20px`
 - `--rata-space-control-padding-inline-md`: `16px`
 - `--rata-space-control-padding-inline-sm`: `12px`
@@ -1379,6 +1393,7 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-space-gap-md`: `12px`
 - `--rata-space-gap-sm`: `8px`
 - `--rata-space-gap-xs`: `4px`
+- `--rata-space-grid-gap`: `24px`
 - `--rata-space-padding-lg`: `24px`
 - `--rata-space-padding-md`: `16px`
 - `--rata-space-padding-sm`: `12px`
@@ -1394,7 +1409,9 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-space-size-10`: `40px`
 - `--rata-space-size-11`: `44px`
 - `--rata-space-size-12`: `48px`
+- `--rata-space-size-16`: `64px`
 - `--rata-space-size-2`: `8px`
+- `--rata-space-size-24`: `96px`
 - `--rata-space-size-3`: `12px`
 - `--rata-space-size-4`: `16px`
 - `--rata-space-size-5`: `20px`

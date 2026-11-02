@@ -602,6 +602,28 @@ Border widths — a raw px scale, plus a semantic default step.
 
 - border-width, or a component's default border shorthand via border.default.
 
+### `breakpoint`
+
+The viewport widths where a page or template changes layout: narrow below breakpoint.medium, medium from it, wide from breakpoint.wide.
+
+| Step | CSS variable | Value | Use for |
+|---|---|---|---|
+| `medium` | `var(--rata-breakpoint-medium)` | `40rem` | 40rem (640px). Below it is narrow: one column, drawers instead of rails, bottom-nav on app surfaces. |
+| `wide` | `var(--rata-breakpoint-wide)` | `60rem` | 60rem (960px). The breakpoint the playground already used, now named. Panes sit beside the content from here. |
+
+**Use for**
+
+- A page or template's region budget — when a rail becomes a drawer, when list-detail stops stacking.
+- JavaScript media queries (useMediaQuery) and the native build, which read the value directly.
+- CSS through the @custom-media names (--rata-medium, --rata-wide), expanded at build time — var() cannot appear inside @media.
+
+**Do not use for**
+
+- A component's internal layout. A component can sit in a sidebar as well as full width, so it responds to its own width with a container query, not to the viewport.
+- Hand-written rem or px in a media query — every layout breakpoint is one of these two.
+
+> Two tokens for three classes: narrow is the default, so it has no threshold of its own. wide is medium × 1.5. Values are in rem so a reader who enlarges their root font size gets the narrower layout their text now needs.
+
 ### `color.data`
 
 Data-visualization palette — a categorical set for series identity, plus five-step sequential ramps per hue. The one palette group meant for direct use.
@@ -712,6 +734,28 @@ Typography primitives. Sizes are generated from the theme's {base, ratio} seed; 
 | Instead of reaching for this | Use |
 |---|---|
 | Any text sizing decision | `font.size.base, type.body.size, type.heading.size, type.label.size, or type.control.size.md` |
+
+### `layer`
+
+z-index for page-level surfaces that are not in the browser's top layer, in the order they stack.
+
+| Step | CSS variable | Value | Use for |
+|---|---|---|---|
+| `sticky` | `var(--rata-layer-sticky)` | `100` | 100. Sticky headers and toolbars that stay put while the page scrolls. |
+| `floating` | `var(--rata-layer-floating)` | `200` | 200. Persistent controls over content — the FAB, bottom-nav. Pairs with theme.elevation.floating. |
+| `overlay` | `var(--rata-layer-overlay)` | `300` | 300. Transient surfaces anchored to a trigger, where the Popover API's top layer is unavailable. |
+| `toast` | `var(--rata-layer-toast)` | `400` | 400. The toast region — above everything on the page so a status message is never covered, below the top layer so a modal dialog still owns the screen. |
+
+**Use for**
+
+- z-index of a sticky header or toolbar (layer.sticky), a FAB or bottom-nav (layer.floating), a non-modal overlay that cannot use the Popover API (layer.overlay), the toast region (layer.toast).
+
+**Do not use for**
+
+- Lifting a focused or hovered item over its siblings inside one component — keep the local z-index: 1 for that; it is not a page-level decision.
+- Dialog or Sheet. Both open with showModal() into the browser's top layer, which paints above every z-index, so they need none — giving them one is a sign they were rendered with the open attribute instead.
+
+> Steps are ordinal × 100, leaving room between them without inviting a 101. Native renders in tree order and ignores these; the native build emits them for Android's elevation ordering only.
 
 ### `motion`
 
@@ -831,6 +875,10 @@ Control heights, and icon sizes — one relative step that follows text, plus fi
 | `measure.tight` | `var(--rata-size-measure-tight)` | `32ch` | 32ch. The longest line a tooltip may set — a hint, not a paragraph. |
 | `measure.compact` | `var(--rata-size-measure-compact)` | `45ch` | 45ch. The longest line in a toast, popover or empty-state description — the bottom of typography's readable 45–75ch band. |
 | `measure.prose` | `var(--rata-size-measure-prose)` | `65ch` | 65ch. The longest line of running text in a block or template. The scale stops here: past 75ch a line is too long to track back from. |
+| `container.max` | `var(--rata-size-container-max)` | `75rem` | 75rem. The widest a page's content column gets — breakpoint.wide × 1.25. Prose inside it is still bounded by size.measure.prose. |
+| `pane.sm` | `var(--rata-size-pane-sm)` | `15rem` | 15rem. A navigation rail beside the content. |
+| `pane.md` | `var(--rata-size-pane-md)` | `20rem` | 20rem. The list pane of a list-detail layout. |
+| `pane.lg` | `var(--rata-size-pane-lg)` | `25rem` | 25rem. An inspector or details panel. |
 
 **Use for**
 
@@ -840,6 +888,7 @@ Control heights, and icon sizes — one relative step that follows text, plus fi
 - The minimum hit area of anything operable by touch, via size.target.min — the larger of it and the control's own size.control.* step.
 - Thickness of a slider or progress bar, via size.track.
 - max-inline-size of a component's text box, via size.measure.* — it is in ch, so it follows the font rather than the viewport.
+- max-inline-size of a page's content column, via size.container.max; the inline-size of a fixed pane in a split layout, via size.pane.*.
 
 **Do not use for**
 
@@ -849,12 +898,14 @@ Control heights, and icon sizes — one relative step that follows text, plus fi
 - size.target.min as a visible dimension or as spacing. It is a floor on where a control can be tapped; the drawn box stays size.control.*, and the distance between targets is space.*.
 - size.measure.* for a container, pane or page width. A measure bounds a line of text; layout widths are a separate decision about regions.
 - size.track for a border or a divider — those are border.width.*.
+- size.pane.* for a dialog or sheet width, or size.container.max for a line of text — dialogs keep their own widths, and text length is size.measure.*.
 
 > size.icon.text is 1.15em: an icon reads at the same visual weight as the text beside it at about 1.15x its font-size, because a glyph fills less of its box than a letterform does. At this system's control text (14px) it computes to 16.1px, effectively the size.icon.sm step — so the relative and fixed scales agree at the default and diverge only where the text does.
 > Control size and text size are independent here: size.control.* changes the box, while a control's text stays at type.control.size.md across all three. So an icon inside a control does not change size with the control either — it follows the text, which did not move.
 > The fixed steps are a 4px arithmetic scale, 12 through 24, for a glyph with no text context to inherit from: a status dot in a table cell, an icon-only control whose label is an aria-label rather than text.
 > size.target.min is 48px everywhere — Material's 48dp minimum, which also clears Apple's 44pt and WCAG 2.5.5 (44px, AAA). One value on every platform was chosen over 44px web/iOS + 48dp Android so a component's touch behaviour cannot differ by platform. It is a stated platform constant rather than a seeded step, which is why it sits beside size.control.* and not in the generated scales.
 > size.track and size.measure.* are stated values, not seeded: a track is one 4px step (a thick 6px step was rejected because nothing needs it), and the measure scale is three points across the 45–75 character band, measured in ch so it scales with whatever font the text is set in.
+> size.container.max and size.pane.* are stated layout widths in rem, so they follow the reader's root font size. Panes step linearly by 5rem; the container is breakpoint.wide × 1.25, so a wide-screen page has room for a pane beside a full-measure text column. SideNav and Panel keep their current control-size multiples until each is migrated in its own change.
 
 ### `space`
 
@@ -875,6 +926,8 @@ The spacing scale, plus rolled-up roles (gap/stack/padding/control/page/section)
 | `10` | `var(--rata-space-10)` | `40px` | 40px. |
 | `11` | `var(--rata-space-11)` | `44px` | 44px. |
 | `12` | `var(--rata-space-12)` | `48px` | 48px. |
+| `16` | `var(--rata-space-16)` | `64px` | 64px. Extends the 4px scale by its own rule (step n = n × 4px) for the gap between page bands; not a component spacing step. |
+| `24` | `var(--rata-space-24)` | `96px` | 96px. The scale stops here — the widest gap a page needs, between bands on a wide screen. |
 | `0-5` | `var(--rata-space-0-5)` | `2px` | hairline spacing. |
 | `1-5` | `var(--rata-space-1-5)` | `6px` | 6px. |
 | `gap.xs` | `var(--rata-space-gap-xs)` | `4px` | Tightest inline gap, e.g. an icon and its label. |
@@ -897,6 +950,9 @@ The spacing scale, plus rolled-up roles (gap/stack/padding/control/page/section)
 | `page.gutter` | `var(--rata-space-page-gutter)` | `24px` | The page's left/right edge padding. |
 | `page.block-start` | `var(--rata-space-page-block-start)` | `32px` | Vertical padding above a page's first section. |
 | `page.block-end` | `var(--rata-space-page-block-end)` | `48px` | Vertical padding below a page's last section. |
+| `band.sm` | `var(--rata-space-band-sm)` | `64px` | Vertical gap between full-width page bands (hero → features → pricing) below breakpoint.wide. |
+| `band.lg` | `var(--rata-space-band-lg)` | `96px` | The same gap at breakpoint.wide and above. Not space.section, which separates sections inside one region of a page. |
+| `grid.gap` | `var(--rata-space-grid-gap)` | `24px` | Gap between the columns and rows of a block's grid — a feature grid, pricing cards. Same value as space.page.gutter today, and a different job: the gutter is the page's edge, this is the space between items. |
 
 **Use for**
 
@@ -905,6 +961,8 @@ The spacing scale, plus rolled-up roles (gap/stack/padding/control/page/section)
 **Do not use for**
 
 - An arbitrary pixel value anywhere spacing is needed.
+
+> space.16 and space.24 extend the 4px scale by its own naming rule for page-band rhythm only. The scale stops at 24 (96px); a gap larger than that is a layout decision, not a spacing step. space.band.* and space.grid.gap are the roles that use them — reach for those, not the raw steps.
 
 ### `state`
 

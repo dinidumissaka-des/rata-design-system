@@ -67,3 +67,10 @@ three components that unblock the most blocks — each paused for approval.
 | T5 | `motion.delay.hint` | semantic | → `motion.duration.medium-max` (280ms) | Pointer rest before a tooltip opens; focus opens immediately. | `slow-min` (525ms) — the user chose the snappier step. |
 | T6 | `theme.bg.inverse` / `theme.fg.on-inverse` | semantic, generated | neutral 20/99 light, 90/10 dark | Tooltip-only inverse surface; verified 12.88:1 / 13.3:1. | Tone 30/80, and an accent-tinted inverse. |
 | T7 | pairing `theme.accent-role.bg` on `theme.bg.muted` | contrast | AA-nontext | Progress fill on its track; measured 4.89:1 / 7.75:1, holds across every brand theme. | — |
+| T8 | `breakpoint.medium / wide` | primitive | `40rem / 60rem` | Narrow is the default below medium; wide keeps the playground's existing 60rem. CSS writes `@media (--rata-medium)` and `packages/css/build.mjs` expands it; `@rata/css/custom-media.css` ships the `@custom-media` rules. | 48/80rem and 40/64rem — both moved today's breakpoint. |
+| T9 | `size.container.max` | primitive | `75rem` | Widest page content column (`breakpoint.wide` × 1.25). | 64rem and 80rem. |
+| T10 | `size.pane.sm / md / lg` | primitive | `15 / 20 / 25rem` | Rail, list pane, inspector. SideNav and Panel migrate in their own change. | — |
+| T11 | `space.16`, `space.24` + `space.band.sm / lg`, `space.grid.gap` | primitive + semantic | `64px`, `96px`; band → 16 / 24; grid gap → `space.6` | Page-band rhythm and block-grid gaps; the 4px scale extended by its own rule, stopping at 24. | A single band step; a separate narrow grid gap. |
+| T12 | `layer.sticky / floating / overlay / toast` | primitive | `100 / 200 / 300 / 400` | Page-level z-index. Dialog and Sheet use the top layer and take none. | A `layer.modal` step; no scale at all. |
+
+Follow-ups, each its own change: point the playground's `use-media-query.ts` at `breakpoint.wide`; migrate SideNav and Panel widths to `size.pane.*`; replace the blocks' `size.control.lg` multiples with the layout tokens.

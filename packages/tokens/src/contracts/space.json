@@ -46,8 +46,16 @@
         "control.padding-inline.lg": "Horizontal padding for a size.control.lg control.",
         "page.gutter": "The page's left/right edge padding.",
         "page.block-start": "Vertical padding above a page's first section.",
-        "page.block-end": "Vertical padding below a page's last section."
-      }
+        "page.block-end": "Vertical padding below a page's last section.",
+        "16": "64px. Extends the 4px scale by its own rule (step n = n × 4px) for the gap between page bands; not a component spacing step.",
+        "24": "96px. The scale stops here — the widest gap a page needs, between bands on a wide screen.",
+        "band.sm": "Vertical gap between full-width page bands (hero → features → pricing) below breakpoint.wide.",
+        "band.lg": "The same gap at breakpoint.wide and above. Not space.section, which separates sections inside one region of a page.",
+        "grid.gap": "Gap between the columns and rows of a block's grid — a feature grid, pricing cards. Same value as space.page.gutter today, and a different job: the gutter is the page's edge, this is the space between items."
+      },
+      "notes": [
+        "space.16 and space.24 extend the 4px scale by its own naming rule for page-band rhythm only. The scale stops at 24 (96px); a gap larger than that is a layout decision, not a spacing step. space.band.* and space.grid.gap are the roles that use them — reach for those, not the raw steps."
+      ]
     }
   }
 }

@@ -1,0 +1,6 @@
+{
+  "sticky": "100",
+  "floating": "200",
+  "overlay": "300",
+  "toast": "400"
+}
