@@ -229,6 +229,7 @@
   },
   "native": {
     "applies": true,
+    "reason": "App block: gets a native version by decision B3. Native is pro tier (decision N6) while the web version stays free; the registry field for that is proposed in docs/platforms.md §3.",
     "mapping": "A single scrolling form screen. Fields map to platform text inputs with content-type hints so the OS password manager fills them; providers map to platform sign-in buttons (Sign in with Apple, Credential Manager).",
     "ios": "textContentType .username / .password; Sign in with Apple required if other social sign-in is offered.",
     "android": "autofillHints username/password; Credential Manager for passkeys."

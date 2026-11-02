@@ -242,6 +242,7 @@
   },
   "native": {
     "applies": true,
+    "reason": "App block: gets a native version by decision B3. Native is pro tier (decision N6) while the web version stays free; the registry field for that is proposed in docs/platforms.md §3.",
     "mapping": "A form screen; password requirements under the field; consent row with a link to an in-app web view of the terms.",
     "ios": "textContentType .newPassword enables strong-password suggestions.",
     "android": "autofillHints newPassword."

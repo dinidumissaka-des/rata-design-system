@@ -325,10 +325,11 @@
         "change": "List + detail + inspector Panel."
       }
     ],
-    "notes": "Three classes is one more than the playground's single NARROW; whether 'medium' earns its place is an open decision."
+    "notes": "Uses all three breakpoint classes adopted by decision B2 (narrow / medium / wide) — the only spec that needs medium."
   },
   "native": {
     "applies": true,
+    "reason": "App template: gets a native version by decision B3. Native is pro tier (decision N6) while the web version stays free; the registry field for that is proposed in docs/platforms.md §3.",
     "mapping": "Phone: navigation stack — list root, detail pushed, swipe-back. Tablet/foldable: two-column split view with the same selection model.",
     "ios": "NavigationSplitView (collapses to a stack on compact width automatically).",
     "android": "ListDetailPaneScaffold (Material 3 adaptive), single pane on compact."
@@ -342,8 +343,8 @@
   },
   "tokenGaps": [
     {
-      "need": "Named breakpoints (narrow/medium/wide) as tokens or documented constants",
-      "interim": "The block is intrinsic (auto-fill grid, flex-wrap) and needs none. Where a step is unavoidable the page owns the query, as the playground owns its single 60rem NARROW query in use-media-query.ts."
+      "need": "Narrow / medium / wide breakpoint tokens — adopted by decision B2, names and values pending the design-tokens interview",
+      "interim": "The block is intrinsic (auto-fill grid, flex-wrap) and needs none. Where a step is unavoidable the page owns the query, as the playground owns its single 60rem NARROW query in use-media-query.ts, until the B2 tokens land."
     },
     {
       "need": "A pane-width scale for split layouts",
@@ -359,7 +360,6 @@
     }
   ],
   "openQuestions": [
-    "Detail heading level: h1-on-narrow / h2-on-wide, or always h2 under a (possibly visually hidden) area h1?",
-    "Is a 'medium' breakpoint class warranted, or do list+detail and inspector swap at one query?"
+    "Detail heading level: h1-on-narrow / h2-on-wide, or always h2 under a (possibly visually hidden) area h1?"
   ]
 }

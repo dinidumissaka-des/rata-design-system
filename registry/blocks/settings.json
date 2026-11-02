@@ -210,6 +210,7 @@
   },
   "native": {
     "applies": true,
+    "reason": "App template: gets a native version by decision B3. Native is pro tier (decision N6) while the web version stays free; the registry field for that is proposed in docs/platforms.md §3.",
     "mapping": "Root screen: grouped list of categories; each pushes a screen of grouped sections (settings-page-section → list sections).",
     "ios": "NavigationStack with List(.insetGrouped).",
     "android": "PreferenceScreen hierarchy / Compose list with category headers."
@@ -221,8 +222,8 @@
   },
   "tokenGaps": [
     {
-      "need": "Named breakpoints (narrow/medium/wide) as tokens or documented constants",
-      "interim": "The block is intrinsic (auto-fill grid, flex-wrap) and needs none. Where a step is unavoidable the page owns the query, as the playground owns its single 60rem NARROW query in use-media-query.ts."
+      "need": "Narrow / medium / wide breakpoint tokens — adopted by decision B2, names and values pending the design-tokens interview",
+      "interim": "The block is intrinsic (auto-fill grid, flex-wrap) and needs none. Where a step is unavoidable the page owns the query, as the playground owns its single 60rem NARROW query in use-media-query.ts, until the B2 tokens land."
     },
     {
       "need": "A skip-link component or recipe",

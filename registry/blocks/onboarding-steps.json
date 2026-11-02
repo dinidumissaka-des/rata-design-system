@@ -87,7 +87,7 @@
   "components": [
     {
       "name": "steps",
-      "for": "Step indicator (\"steps\" or \"stepper\" — whichever name the component spec settles on).",
+      "for": "Step indicator. The component is `steps`; `stepper` is only an ambiguous alias (settled at gate-1 review).",
       "region": "progress"
     },
     {
@@ -148,7 +148,7 @@
   "dependsOnFuture": [
     {
       "component": "steps",
-      "for": "The step indicator. Name unconfirmed (steps vs stepper).",
+      "for": "The step indicator.",
       "blocking": true
     },
     {
@@ -260,6 +260,7 @@
   },
   "native": {
     "applies": true,
+    "reason": "App block: gets a native version by decision B3. Native is pro tier (decision N6) while the web version stays free; the registry field for that is proposed in docs/platforms.md §3.",
     "mapping": "A pushed navigation stack, one screen per step, with the platform back gesture as Back and a progress bar in the navigation bar.",
     "ios": "NavigationStack; ProgressView in the toolbar.",
     "android": "Navigation graph per step; LinearProgressIndicator in the top app bar."
@@ -273,8 +274,8 @@
   },
   "tokenGaps": [
     {
-      "need": "Named breakpoints (narrow/medium/wide) as tokens or documented constants",
-      "interim": "The block is intrinsic (auto-fill grid, flex-wrap) and needs none. Where a step is unavoidable the page owns the query, as the playground owns its single 60rem NARROW query in use-media-query.ts."
+      "need": "Narrow / medium / wide breakpoint tokens — adopted by decision B2, names and values pending the design-tokens interview",
+      "interim": "The block is intrinsic (auto-fill grid, flex-wrap) and needs none. Where a step is unavoidable the page owns the query, as the playground owns its single 60rem NARROW query in use-media-query.ts, until the B2 tokens land."
     }
   ]
 }

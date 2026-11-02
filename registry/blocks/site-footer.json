@@ -195,7 +195,7 @@
   },
   "native": {
     "applies": false,
-    "reason": "Native apps have no page footer; legal and about links live in a settings/about screen (see the settings template)."
+    "reason": "Website-only by decision B3 (gate-1 review, docs/decisions/2026-11-gate-1-review.md): marketing blocks and templates ship on the web only and get no native version. Native apps have no page footer; legal and about links live in a settings/about screen (see the settings template)."
   },
   "tokens": {
     "background": "theme.bg.subtle",
@@ -210,7 +210,7 @@
   "tokenGaps": [
     {
       "need": "A page content max-inline-size (container width) for marketing bands",
-      "interim": "The band's content box is capped at calc(var(--rata-size-control-lg) * 32) and centred with auto inline margins; the playground's own column cap is a literal with a comment saying there is no measure token. Open decision: a size.container.* role via the design-tokens skill, or keep deriving from the control scale."
+      "interim": "The band's content box is capped at calc(var(--rata-size-control-lg) * 32) and centred with auto inline margins; the playground's own column cap is a literal with a comment saying there is no measure token. The container max-width token is sent to the design-tokens interview (gate-1 review); this multiplier is the interim until it lands."
     },
     {
       "need": "A grid gutter role (column and row gap between tiles)",

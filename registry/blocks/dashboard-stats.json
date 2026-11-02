@@ -224,6 +224,7 @@
   },
   "native": {
     "applies": true,
+    "reason": "App block: gets a native version by decision B3. Native is pro tier (decision N6) while the web version stays free; the registry field for that is proposed in docs/platforms.md §3.",
     "mapping": "A horizontally paged or 2-column grid of stat tiles at the top of a home screen.",
     "ios": "LazyVGrid of two columns.",
     "android": "LazyVerticalGrid, 2 columns."

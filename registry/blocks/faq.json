@@ -5,8 +5,7 @@
   "kind": "block",
   "surface": [
     "website",
-    "web-app",
-    "native-app"
+    "web-app"
   ],
   "category": "marketing",
   "description": "A titled list of questions, each a Disclosure revealing its answer.",
@@ -26,7 +25,7 @@
       "state": "future"
     },
     "native": {
-      "state": "future"
+      "state": "na"
     }
   },
   "precedent": "apps/playground/src/app.tsx",
@@ -194,10 +193,8 @@
     ]
   },
   "native": {
-    "applies": true,
-    "mapping": "A help screen: a grouped list of questions; each row pushes (or expands to) the answer.",
-    "ios": "List with DisclosureGroup rows.",
-    "android": "LazyColumn of expandable rows."
+    "applies": false,
+    "reason": "Website-only by decision B3 (gate-1 review, docs/decisions/2026-11-gate-1-review.md): marketing blocks and templates ship on the web only and get no native version. An in-app help screen is a native screen of the app (a settings-style grouped list), not this block."
   },
   "tokens": {
     "band padding-block": "space.section",

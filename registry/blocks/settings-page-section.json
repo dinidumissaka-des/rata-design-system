@@ -292,6 +292,7 @@
   },
   "native": {
     "applies": true,
+    "reason": "App block: gets a native version by decision B3. Native is pro tier (decision N6) while the web version stays free; the registry field for that is proposed in docs/platforms.md §3.",
     "mapping": "A grouped list section: section header = title, footer = description, rows = controls (switch rows, disclosure rows that push a picker for Select).",
     "ios": "Form / List with .insetGrouped style; Section header/footer.",
     "android": "Preference category with preference rows."
@@ -305,8 +306,8 @@
   },
   "tokenGaps": [
     {
-      "need": "Named breakpoints (narrow/medium/wide) as tokens or documented constants",
-      "interim": "The block is intrinsic (auto-fill grid, flex-wrap) and needs none. Where a step is unavoidable the page owns the query, as the playground owns its single 60rem NARROW query in use-media-query.ts."
+      "need": "Narrow / medium / wide breakpoint tokens — adopted by decision B2, names and values pending the design-tokens interview",
+      "interim": "The block is intrinsic (auto-fill grid, flex-wrap) and needs none. Where a step is unavoidable the page owns the query, as the playground owns its single 60rem NARROW query in use-media-query.ts, until the B2 tokens land."
     }
   ]
 }

@@ -300,6 +300,7 @@
   },
   "native": {
     "applies": true,
+    "reason": "App template: gets a native version by decision B3. Native is pro tier (decision N6) while the web version stays free; the registry field for that is proposed in docs/platforms.md §3.",
     "mapping": "Phone: bottom-nav tab bar replaces the rail; each tab is a navigation stack; the dashboard is the first tab's root screen with stats as a 2-column grid. Tablet: sidebar split view.",
     "ios": "TabView on phone; NavigationSplitView sidebar on iPad.",
     "android": "NavigationBar on compact, NavigationRail on medium, permanent drawer on expanded window classes."
@@ -315,11 +316,11 @@
   "tokenGaps": [
     {
       "need": "A page content max-inline-size (container width) for marketing bands",
-      "interim": "The band's content box is capped at calc(var(--rata-size-control-lg) * 32) and centred with auto inline margins; the playground's own column cap is a literal with a comment saying there is no measure token. Open decision: a size.container.* role via the design-tokens skill, or keep deriving from the control scale."
+      "interim": "The band's content box is capped at calc(var(--rata-size-control-lg) * 32) and centred with auto inline margins; the playground's own column cap is a literal with a comment saying there is no measure token. The container max-width token is sent to the design-tokens interview (gate-1 review); this multiplier is the interim until it lands."
     },
     {
-      "need": "Named breakpoints (narrow/medium/wide) as tokens or documented constants",
-      "interim": "The block is intrinsic (auto-fill grid, flex-wrap) and needs none. Where a step is unavoidable the page owns the query, as the playground owns its single 60rem NARROW query in use-media-query.ts."
+      "need": "Narrow / medium / wide breakpoint tokens — adopted by decision B2, names and values pending the design-tokens interview",
+      "interim": "The block is intrinsic (auto-fill grid, flex-wrap) and needs none. Where a step is unavoidable the page owns the query, as the playground owns its single 60rem NARROW query in use-media-query.ts, until the B2 tokens land."
     },
     {
       "need": "A skip-link component or recipe",

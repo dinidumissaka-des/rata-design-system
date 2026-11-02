@@ -35,7 +35,7 @@
       "minItems": 1,
       "uniqueItems": true,
       "items": { "enum": ["website", "web-app", "native-app"] },
-      "description": "Where the block is meant to appear. `website` = public marketing pages; `web-app` = signed-in product UI in a browser; `native-app` = an iOS/Android app. A block listing `native-app` must give a non-trivial `native.mapping`."
+      "description": "Where the block is meant to appear. `website` = public marketing pages; `web-app` = signed-in product UI in a browser; `native-app` = an iOS/Android app. A block listing `native-app` must give a non-trivial `native.mapping`. Decision B3 (gate-1 review): a `category: marketing` block, and the landing-page and pricing-page templates, never list `native-app` — they are website-only."
     },
     "category": {
       "enum": ["marketing", "auth", "app", "data", "onboarding", "settings", "page"],
@@ -83,7 +83,7 @@
     "regions": {
       "type": "array",
       "minItems": 1,
-      "description": "Named layout regions, in source order. Budgets are stated per breakpoint CLASS (narrow/medium/wide), not per pixel value — the system has no breakpoint tokens, and the values behind the classes are an open decision (docs/blocks/README.md, Token gaps).",
+      "description": "Named layout regions, in source order. Budgets are stated per breakpoint CLASS (narrow/medium/wide), not per pixel value. Decision B2 (gate-1 review) adopts exactly these three classes as breakpoint tokens; their names and values are pending the design-tokens interview, so no manifest states a value (docs/blocks/README.md, Token gaps).",
       "items": {
         "type": "object",
         "required": ["name", "element", "purpose", "budget"],
@@ -103,7 +103,7 @@
           },
           "budget": {
             "type": "object",
-            "description": "Inline-size budget per breakpoint class, written as a token expression (`fill`, `calc(var(--rata-size-control-lg) * 6)`, `1fr of 3`, `hidden`). Never a bare px value.",
+            "description": "Inline-size budget per breakpoint class (the three B2 classes, no others), written as a token expression (`fill`, `calc(var(--rata-size-control-lg) * 6)`, `1fr of 3`, `hidden`). Never a bare px value.",
             "additionalProperties": false,
             "properties": {
               "narrow": { "type": "string" },
@@ -176,7 +176,7 @@
     },
     "slots": {
       "type": "object",
-      "description": "The block's content API — the written contract for each slot, same shape as a component prop entry. Spec mode: type/required are written by hand while status.react is `future`; once implemented they are derived from packages/blocks/src/<name>.tsx and must be deleted here.",
+      "description": "The block's content API — the written contract for each slot, same shape as a component prop entry. Spec mode: type/required are written by hand while status.react is `future`; once implemented they are derived from packages/blocks/src/<name>.tsx (the published @rata/blocks package, decision B1 — also the source `rata add` ejects) and must be deleted here.",
       "additionalProperties": {
         "type": "object",
         "required": ["summary"],
@@ -285,6 +285,7 @@
     },
     "native": {
       "type": "object",
+      "description": "Native guidance. `applies` must agree with `surface` (native-app listed ⇔ applies true) and with `status.native` (`na` when false). Decision B3 limits native versions to app blocks and templates; decision N6 makes every native version `pro` tier while the web version keeps its tier — expressed by the per-platform tier proposed in docs/platforms.md §3, not by a field here.",
       "required": ["applies"],
       "additionalProperties": false,
       "properties": {

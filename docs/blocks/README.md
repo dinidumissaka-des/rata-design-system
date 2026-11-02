@@ -3,7 +3,26 @@
 > **Status: gate-0/gate-1 SPEC.** Every manifest under `registry/blocks/` is
 > `future`. Nothing here is implemented, nothing here is read by the build,
 > the CLI or the playground yet, and no layout CSS or React exists for any of
-> it. This page is the thing being approved.
+> it. This page is the thing being approved. The gate-1 review
+> ([`../decisions/2026-11-gate-1-review.md`](../decisions/2026-11-gate-1-review.md))
+> settled distribution (B1), breakpoints (B2) and native scope (B3); what is
+> still open is listed at the end.
+
+## How blocks ship
+
+Decision **B1**: both ways, from one source.
+
+- **Published package.** `@rata/blocks` (`packages/blocks/`), versioned and
+  installed like `@rata/react`. A consumer who takes a block as-is imports it
+  and gets fixes by upgrading.
+- **CLI eject.** `rata add <block>` copies the same source into the
+  consumer's tree for customising — at which point the copy is theirs and no
+  longer receives upgrades. The eject copies from the published package; there
+  is no second, copy-only source under `registry/blocks/`.
+
+Templates ship the same two ways, and are also expected to exist as real
+pages in `apps/` (the playground is the precedent), so each one is exercised
+by a page before a consumer ejects it.
 
 ## Component, block, template
 
@@ -33,8 +52,9 @@ single component:
   everything else → plain section. `card` and `table` are `future`, so a
   block that picks either lists it in `dependsOnFuture`.
 - `regions[]` — named, in source order, each with an inline-size **budget
-  per breakpoint class** (`narrow` / `medium` / `wide`) written as a token
-  expression, and a `collapse` rule saying what happens as space runs out.
+  per breakpoint class** (`narrow` / `medium` / `wide` — the three classes
+  decision B2 adopts) written as a token expression, and a `collapse` rule
+  saying what happens as space runs out.
 
 The only page precedent is `apps/playground/src/app.tsx`. Its shell is
 actually **sticky `TopNav` → (`aside` rail at `calc(var(--rata-size-control-lg) * 6)`
@@ -45,11 +65,14 @@ stale; flagged, not edited, since this round writes only under
 `list-detail` templates adopt that shell verbatim, including its documented
 cascade-order fix for the rail's media query.
 
-### Measuring without layout tokens
+### Measuring before the layout tokens land
 
-This system deliberately has no breakpoint tokens and no container widths.
-The specs follow the two habits already in the codebase rather than
-inventing numbers:
+Decision **B2** adopts **narrow / medium / wide** as breakpoint tokens, and
+the gate-1 review sends them — with container max-width, the band spacing
+step, grid gutters, pane widths and a z-index scale — to the design-tokens
+interview. None of those tokens exists yet, and no manifest states a value
+for one. Until they land, the specs follow the habits already in the
+codebase rather than inventing numbers:
 
 1. **Intrinsic first.** Grids are `auto-fill` with the playground gallery's
    track minimum, `min(calc(var(--rata-size-control-lg) * 9), 100%)`, so the
@@ -103,8 +126,8 @@ for something that has no primitive of its own:
    inherits the blocking dependencies of every non-optional block it
    composes (`via`). Non-blocking entries ship with their stated `interim`,
    never a hand-rolled stand-in.
-4. **Implementation** — layout CSS and the React composition (location is an
-   open decision; see below), then flip `status.layout`/`status.react` to
+4. **Implementation** — layout CSS and the React composition in
+   `packages/blocks/` (`@rata/blocks`, decision B1), then flip `status.layout`/`status.react` to
    `latest`, delete the hand-written slot `type`/`required`/`default`, and
    let the cross-check take over, exactly as for components.
 
@@ -113,8 +136,8 @@ for something that has no primitive of its own:
 | Change | What it does |
 |---|---|
 | `packages/cli/lib` reads `registry/blocks/*.json` beside `registry/components/` | `rata list` gains a `--blocks` / kind column; `rata props <block>` shows slots; `rata contract <block>` shows regions, outline, decisions; `rata pages` lists templates as well as real pages |
-| `rata add <block>` | Copies the block's `files` and recursively `rata add`s every entry in `components` (and, for templates, `blocks`). **Refuses** while any blocking `dependsOnFuture` component is not `latest`, naming it — the same "nothing to look up, don't invent it" message components give |
-| `scripts/check-blocks.mjs` (in `npm run build`) | Validates against `registry/blocks/schema.json`; every `components[].name` exists in `registry/components/`; every `future` component used appears in `dependsOnFuture`; every region referenced exists; block names never collide with component names (they share `rata add`'s namespace); a `card`/`table` frame lists that dependency; blocks declare no `main` landmark and templates declare exactly one; `native.applies` agrees with `surface` |
+| `rata add <block>` | The eject path (decision B1): copies the block's source from `@rata/blocks` and recursively `rata add`s every entry in `components` (and, for templates, `blocks`). **Refuses** while any blocking `dependsOnFuture` component is not `latest`, naming it — the same "nothing to look up, don't invent it" message components give |
+| `scripts/check-blocks.mjs` (in `npm run build`) | Validates against `registry/blocks/schema.json`; every `components[].name` exists in `registry/components/`; every `future` component used appears in `dependsOnFuture`; every region referenced exists; block names never collide with component names (they share `rata add`'s namespace); a `card`/`table` frame lists that dependency; blocks declare no `main` landmark and templates declare exactly one; `native.applies` agrees with `surface`; no `marketing` block (or the landing-page / pricing-page template) lists `native-app` (B3) |
 | Outline check | Walk each template's `blocks[]` with their `headingLevel`s, expand each block's relative outline, and fail on a skipped level or a second `h1` |
 | `tokens` lint | Run every `tokens` value and `usage[].example` through `internal/vibe-tests` (`node internal/vibe-tests/run.mjs check`) — no hex, no px, no palette tokens, no hand-rolled hover |
 | Derived/written split once implemented | Slots parsed from the block's `<Name>Props`, exactly as `lib/contract.mjs` does for components; a hand-written slot `type` on a `latest` block fails |
@@ -127,7 +150,7 @@ surface/native and no-hex/no-px checks above to all 23 manifests.
 
 ## Index
 
-Surface: `website` = public marketing, `web-app` = signed-in product in a browser, `native-app` = iOS/Android. Marketing blocks are website-only: a native app is reached after install, so there is nothing to persuade or convert, and native purchase screens follow store billing rules. Each manifest's `native.reason` says so.
+Surface: `website` = public marketing, `web-app` = signed-in product in a browser, `native-app` = iOS/Android. Marketing blocks and the landing-page and pricing-page templates are **website-only by decision B3**: a native app is reached after install, so there is nothing to persuade or convert, and native purchase screens follow store billing rules. None lists `native-app`, and each manifest's `native.reason` cites B3. App blocks and templates get native versions; per decision **N6** every native version is **`pro`** tier while the web version stays `free` (the per-platform tier field is proposed in [`../platforms.md`](../platforms.md) §3).
 
 ### Website blocks
 
@@ -139,7 +162,7 @@ Surface: `website` = public marketing, `web-app` = signed-in product in a browse
 | [`testimonial`](../../registry/blocks/testimonial.json) | Testimonial | website | no | — |
 | [`logo-cloud`](../../registry/blocks/logo-cloud.json) | Logo cloud | website | no | — |
 | [`cta-band`](../../registry/blocks/cta-band.json) | Call-to-action band | website | no | **link** |
-| [`faq`](../../registry/blocks/faq.json) | FAQ | website, web-app, native-app | yes | divider, link |
+| [`faq`](../../registry/blocks/faq.json) | FAQ | website, web-app | no | divider, link |
 | [`site-footer`](../../registry/blocks/site-footer.json) | Site footer | website, web-app | no | **link**, divider |
 | [`newsletter-signup`](../../registry/blocks/newsletter-signup.json) | Newsletter sign-up | website | no | link |
 
@@ -174,8 +197,8 @@ design-tokens skill.
 
 | Need | Used by | Interim in the specs |
 |---|---|---|
-| **Container / content max-inline-size** | every marketing block, landing/pricing/dashboard templates | `calc(var(--rata-size-control-lg) * 32)` for marketing bands — a new multiplier, so explicitly provisional. The playground caps its column with a literal and a comment saying no measure token exists |
-| **Breakpoint classes** (`narrow`/`medium`/`wide`) | every template; blocks via container queries | Intrinsic layouts where possible; otherwise the page owns its query, as the playground owns `NARROW` (60rem). Whether three classes are needed or one suffices (list-detail is the only spec that wants `medium`) is open |
+| **Container / content max-inline-size** — sent to the design-tokens interview | every marketing block, landing/pricing/dashboard templates | `calc(var(--rata-size-control-lg) * 32)` for marketing bands — a new multiplier, so explicitly provisional. The playground caps its column with a literal and a comment saying no measure token exists |
+| **Breakpoints `narrow` / `medium` / `wide`** — adopted as tokens by decision B2, pending the design-tokens interview | every template; blocks via container queries | Intrinsic layouts where possible; otherwise the page owns its query, as the playground owns `NARROW` (60rem). list-detail is the only spec that uses `medium` |
 | **Section-band rhythm** larger than `space.section` | hero, feature-grid, pricing, testimonial, cta-band, logo-cloud | `padding-block: var(--rata-space-section)`; `space.section` was sized for docs pages |
 | **Grid gutter role** | feature-grid, pricing, testimonial, dashboard-stats, site-footer | `space.gap.lg` columns / `space.stack.lg` rows — `space.gap.*` is documented for inline items |
 | **Pane / content widths for split layouts** | list-detail, onboarding-steps | `size.control.lg` × 9 / × 10 — reusing existing multipliers |
@@ -193,7 +216,7 @@ design-tokens skill.
 | `table` | data-table-toolbar | pricing-table, pricing-page, dashboard |
 | `list` | list-detail | pricing-table, sign-up, settings-page-section, dashboard |
 | `empty-state` | empty-state-page | — |
-| `steps` (or `stepper`) | onboarding-steps | — |
+| `steps` | onboarding-steps | — |
 | `divider` | — | faq, site-footer, sign-in, sign-up, settings-page-section |
 | `skeleton` | — | dashboard-stats, dashboard, list-detail |
 | `progress`, `file-upload` | — | onboarding-steps |
@@ -209,22 +232,24 @@ nothing future and could go to gate 2 now.
 
 ## Open decisions
 
-1. **Where implementations live.** `packages/blocks/` (a new `@rata/blocks`
-   package the CLI copies from, like `@rata/react`) or copy-only source under
-   `registry/blocks/src/`? Templates likely belong in `apps/` as real pages
-   either way.
-2. **Breakpoint classes.** Ratify `narrow`/`medium`/`wide` as named classes
-   (values still page-owned), or keep the single-breakpoint rule and drop
-   `medium`.
-3. **Container width.** Add a container/measure token, or keep deriving from
-   `size.control.lg` (and accept a × 32 multiplier for marketing bands).
-4. **Native.** Is there a native target at all (React Native, SwiftUI,
-   Compose)? The `native` blocks here are mapping guidance only; `status.native`
-   is `future` for 12 entries and `na` for 11.
-5. **`steps` vs `stepper`** — whichever name the component spec settles on;
-   onboarding-steps references `steps`.
-6. **Per-block questions** are in each manifest's `openQuestions` — notably
-   the list-detail detail-heading level, sign-in password reveal (a TextField
-   change), and whether `empty-state-page` should instead be a `size` variant
-   of `empty-state`.
+Settled at the gate-1 review and removed from this list: where
+implementations live (B1 — `@rata/blocks` plus CLI eject), breakpoint
+classes (B2 — narrow/medium/wide as tokens), native scope (B3 — website-only
+marketing; native versions of app blocks, `pro` tier per N6), the container
+width (sent to the design-tokens interview with the other layout gaps), and
+**`steps` vs `stepper`** — it is `steps`, the name the component spec uses;
+`stepper` is an ambiguous alias, not a second name.
 
+Still open — per-block questions in each manifest's `openQuestions`, notably:
+
+1. **list-detail detail-pane heading level** — `h1` on the narrow detail
+   screen and `h2` when wide, or always `h2` under a (possibly visually
+   hidden) area `h1`.
+2. **sign-in password reveal** — a show/hide control would be a `text-field`
+   change, not a block slot; and whether magic-link / passkey-first is a
+   variant or a separate block.
+3. **empty-state-page** — a block, or a `size` variant of `empty-state`.
+4. The rest: auth's form column as Card or plain surface, feature-grid's
+   tinted icon treatment, hero carrying a form, pricing-table's comparison
+   table as part of the block, pricing-page's sibling headings, and
+   data-table-toolbar's view switching.

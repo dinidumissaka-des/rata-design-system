@@ -1,10 +1,14 @@
-# Platforms — gate 0 proposal
+# Platforms — gate 0 proposal, gate-1 decisions recorded
 
-> **Status: proposal, not approved.** Nothing in this file has been built, and
-> nothing in the tooling reads it. It is the decision record for whether — and
-> how — Rata grows from a web system into one that also ships React Native. It
-> is written so each section can be approved or rejected on its own; §6 lists
-> the decisions that are yours rather than mine.
+> **Status: proposal; §6 decisions settled except font scaling (§6.5).** Nothing in this file has been
+> built, and nothing in the tooling reads it. It is the decision record for
+> whether — and how — Rata grows from a web system into one that also ships
+> React Native. The gate-1 review
+> ([`decisions/2026-11-gate-1-review.md`](decisions/2026-11-gate-1-review.md))
+> answered the open questions as decisions **N1–N6**; §6 records each one and
+> what is still open. Decision ids (N1–N6) are not the roadmap gates (N0–N5)
+> in §5. Settling the decisions does not approve token values, token mappings
+> or any component's native API — those keep their own gates.
 
 Rata is a web system today. `README.md` says so in its first line ("for web
 apps and websites"), and every layer below the tokens assumes a browser:
@@ -33,7 +37,7 @@ they are two *profiles* of one platform, not two platforms.
 |---|---|---|---|
 | **Website** | Marketing and content: landing pages, docs, articles. Read more than operated. | `@rata/css` alone, or `@rata/react` server-rendered | Pointer and keyboard; touch on phones |
 | **Web app** | Operated software in a browser: dashboards, editors, settings. Installed as a PWA on some devices. | `@rata/react` (client-rendered or hydrated) | Pointer, keyboard **and** touch, often on one device |
-| **Native app** | An iOS/Android binary built with React Native (Expo or bare — §6). | `@rata/native` | Touch first; screen readers (VoiceOver/TalkBack); hardware keyboard on tablets; D-pad on TV |
+| **Native app** | An iOS/Android binary built with React Native — Expo or bare, both supported (decision N1, §6.1). New Architecture, iOS 15+, Android API 24+ (decision N4). | `@rata/native` | Touch first; screen readers (VoiceOver/TalkBack); hardware keyboard on tablets; D-pad on TV |
 
 ### 1.2 Demands, and where Rata stands today
 
@@ -66,9 +70,11 @@ they are two *profiles* of one platform, not two platforms.
   `checkbox.json` and `radio.json` argue their 28px pitch through its spacing
   exception — but it is under the 44pt iOS and 48dp Android platform
   guidelines that a native app is reviewed against.
-- *Responsive without breakpoint tokens.* Deliberate today: `mobile-nav.css:9`
-  says "the media query belongs to the page". That stays true; this proposal
-  adds no breakpoints.
+- *Responsive by the page, not the component.* `mobile-nav.css:9` says "the
+  media query belongs to the page", and that stays true. This proposal adds no
+  breakpoints; the gate-1 review did adopt **narrow / medium / wide** as
+  breakpoint tokens for page templates (decision B2, `docs/blocks/README.md`),
+  pending the design-tokens interview — components still never read them.
 - *Safe areas and PWA chrome.* Nothing in `packages/css/src` reads
   `env(safe-area-inset-*)`. Edge-anchored surfaces — `sheet`, `mobile-nav`,
   `top-nav` — will sit under a notch or home indicator in an installed PWA.
@@ -126,9 +132,9 @@ reasons, both from the code:
    close, with what reason — `ModalCloseReason`) is, and that belongs in the
    primitives core.
 
-`react-native-web` would let `@rata/native` also render in a browser. That is
-an open decision (§6.2), not part of this architecture: the web layers stay the
-web answer either way.
+`react-native-web` renders `@rata/native` in the **playground only**, for
+review without a device (decision N2, §6.2). It is not a consumer web target:
+websites and web apps keep `@rata/react` + `@rata/css`.
 
 ### 2.2 Tokens reach React Native
 
@@ -176,7 +182,7 @@ instead of shipping `var()` chains (THEME-ENGINE.md, deviation 3).
 | `"0.08"` (opacity, state) | `0.08` | Number. |
 | `"#151D1A80"` | `"#151D1A80"` | RN accepts 8-digit hex. |
 | `"rgb(0 0 0 / 0.1)"` (inside shadows, rings) | `"rgba(0, 0, 0, 0.1)"` | Normalized to the comma form; do not bet on every RN version parsing CSS Color 4 syntax. |
-| `"0px 1px 1px …, 0px 2px 8px …"` (`elevation.*`, `theme.elevation.*`) | `boxShadow` array **and** a fallback | RN's `boxShadow` style accepts layered shadows on the New Architecture; the emit also carries the nearest single `shadow*` (iOS) / `elevation` (Android) pair for older targets. Which one ships depends on §6.4. |
+| `"0px 1px 1px …, 0px 2px 8px …"` (`elevation.*`, `theme.elevation.*`) | `boxShadow` array | RN's `boxShadow` style accepts layered shadows on the New Architecture. No `shadow*`/`elevation` fallback is emitted: decision N4 rules out the old architecture. |
 | `"inset 0px 0px 0px 2px …"` (`ring.*`) | `{ borderWidth, borderColor }` on an overlay | RN has no inset shadow on older targets; a ring becomes an absolutely-positioned bordered `View`. |
 | `"'Google Sans', -apple-system, …"` (`font.family.*`) | `"GoogleSans"` + a loading manifest | RN takes one loaded family name, not a fallback stack. The theme seed names the family; the native emit lists the font files the app must register (Expo: `useFonts`). A stack's generic fallbacks map to `undefined` (system font). |
 | `"600"` (`font.weight.*`) | `"600"` | RN accepts the string — but only if the loaded family has that weight; §2.2 check below. |
@@ -307,7 +313,7 @@ translation keeps the rule — *compose, don't reinvent* — and the tokens:
 - Every pressable `@rata/native` component composes it; none writes its own
   pressed colour. A native `check-state-layer` equivalent should lint that
   (§3).
-- **Android ripple is a decision, not a default** (§6.6). `android_ripple`
+- **Android ripple is a decision, not a default** — made per component (decision N5, §6.6). `android_ripple`
   is the platform's own press feedback; using it means Android and iOS differ
   visibly, using the state layer means Rata looks like Rata everywhere.
 
@@ -321,7 +327,7 @@ there are two different focuses, and only one is ours:
   Access, TV, react-native-web) is ours. Components track `onFocus`/`onBlur`
   and draw the ring as an outer bordered `View` inset by `-(offset + width)`,
   or with RN's `outline*` style props where the target RN version supports
-  them (§6.4). Same three tokens, same rule: never removed, offset never `0`
+  them — which decision N4's New-Architecture floor allows (§6.4). Same three tokens, same rule: never removed, offset never `0`
   on a filled accent control.
 
 **`aria-disabled`, not `disabled`.** The web rule exists because a natively
@@ -342,7 +348,7 @@ pattern carries over directly and is still the right call:
   (`spin-reduced` under reduce-motion).
 
 **ARIA → RN mapping the adapters need** (RN 0.71+ accepts `role` and a subset
-of `aria-*` directly; verify each against the chosen RN version at gate N1):
+of `aria-*` directly; verify each against the RN version pinned at gate N1 — New Architecture, iOS 15+, Android API 24+, decision N4):
 
 | Web (from primitives) | Native | Gap |
 |---|---|---|
@@ -391,7 +397,7 @@ under `status`, reusing `#/definitions/artifact` — the same five states
 (`latest`, `in-progress`, `future`, `deprecated`, `na`). `figma` is the
 precedent: a third artifact was added without touching the state machine.
 `na` means *web-only by design*, as `state-layer`/`visually-hidden` already
-use `react: na`. Two smaller additions:
+use `react: na`. Three smaller additions:
 
 - **`files[].platform`** — `"web"` (default) or `"native"`. Without it, adding
   `packages/native/src/button.tsx` to `files` breaks the props parser:
@@ -403,6 +409,20 @@ use `react: na`. Two smaller additions:
   on both; `href`-style link props or `name` for form submission likely don't).
   Absent means both. It is a new key in `PROP_FIELDS` (`contract.mjs`), which
   currently rejects unknown fields — correctly.
+- **A per-platform tier** (decision N6: native is `pro`, web stays `free`).
+  Today `tier` is one top-level field (`free` | `pro`, default `free`), which
+  cannot say "free on the web, pro on native". Proposed: `tier` keeps its
+  meaning and becomes explicitly the **web** tier, and a sibling
+  `tiers.native` (same `free` | `pro` enum, default `pro`) sits alongside the
+  new `status.native` — so a manifest reads
+  `"tier": "free", "status": { …, "native": "future" }` and inherits
+  `native` = `pro` without stating it. A manifest states `tiers.native` only
+  to deviate from the default, which N6 gives no reason to do today. Keeping
+  `tier` rather than renaming it means no existing manifest, and nothing that
+  reads `tier`, changes; the CLI (`rata list`, `rata add --platform native`)
+  and the docs status matrix read the tier for the platform they show. When
+  `status.native` is `na` the native tier is meaningless and the build
+  should reject a stated `tiers.native`.
 
 **Tooling it touches** (none of it edited by this proposal):
 
@@ -459,22 +479,22 @@ native behavior or platform API; **L** = needs a design decision or a library.
 | `field` | `View` wrapping label, control, helper, message | no `aria-describedby` → `accessibilityHint`; `aria-invalid` has no state; live message needs two code paths (§2.4) | M |
 | `heading` | `Text` with `role="header"` | RN has **one** header role with no level — the outline-level/visual-size split collapses to visual size only; needs an approved decision | M |
 | `icon` | `lucide-react-native` behind the same glyph names | `size.icon.text` is `em`-relative (§2.2); colour from parent text via context, since RN has no `currentColor` | M |
-| `menu` | Anchored popover (a portal + measured trigger) or OS action sheet | anchoring/collision without CSS positioning; typeahead has no keys on phones; may defer to `@react-native-menu/menu` or native context menus — §6.3 | L |
+| `menu` | Anchored popover (a portal + measured trigger) or OS action sheet | anchoring/collision without CSS positioning; typeahead has no keys on phones; may defer to `@react-native-menu/menu` or native context menus — OS vs drawn is decided in its contract (decision N5, §6.6) | L |
 | `menu-item` | Row inside `menu` | `menuitemradio/checkbox` roles don't exist (§2.4) | M (with menu) |
-| `mobile-nav` | A drawer — React Navigation drawer, or Rata's own `sheet` from the start edge | if the app's navigator owns the drawer, Rata styles it rather than ships it — §6.3 | L |
+| `mobile-nav` | A drawer — React Navigation drawer, or Rata's own `sheet` from the start edge | the app's navigator owns the drawer; Rata styles it rather than ships it (decision N3, §6.3) | L |
 | `notice` | `View` + `Text`, status role tokens | announce on appear via live region; `role="alert"` analogue | S |
 | `panel` | `View` with title row + `ScrollView` | "beside the content" is a wide-screen layout; on a phone it becomes a sheet — a contract question | M |
 | `radio` | Row inside `radio-group` | no shared `name`; exclusivity comes from the group, not the platform | S (with group) |
 | `radio-group` | `View role="radiogroup"` + core roving/selection | no form submission; arrow keys only on keyboard targets | M |
 | `search` | `TextInput` with clear `Pressable` | `returnKeyType="search"`, `clearButtonMode` (iOS) vs. Rata's clear control — pick one; the Escape rule maps to hardware keyboards only | M |
-| `segmented-control` | `View` of pressables, core always-one selection | iOS has a native segmented control — decide join vs. draw (same question as ripple, §6.6) | M |
+| `segmented-control` | `View` of pressables, core always-one selection | iOS has a native segmented control — join vs. draw decided in its contract (decision N5, §6.6) | M |
 | `select` | Native picker | `select.tsx` already chose "the picker a phone shows". Native: `@react-native-picker/picker`, or an action sheet / Rata `sheet` with a list. Options-can't-be-styled carries over if a native picker is used | L |
 | `sheet` | Bottom sheet with drag-to-dismiss | gestures, snap points, keyboard avoidance, safe-area inset, Android back; likely built on Reanimated + Gesture Handler, or `@gorhom/bottom-sheet` | L |
 | `side-nav` | **Web-only** (`na`), or a styled drawer-content for a navigation library | a persistent rail is a tablet/desktop pattern; on a phone it is `mobile-nav` | — / M |
 | `spinner` | `ActivityIndicator` or Reanimated rotation | `currentColor` → explicit colour from context; `spin-reduced` under reduce-motion | S |
 | `state-layer` | `<StateLayer>` / `useStateLayer()` (§2.4) | `react: na` on web because it is a class; on native it must be a component, so `native: latest` with a props API | M |
 | `switch` | Draw it (`Pressable` + Reanimated thumb) **or** RN `Switch` | RN's `Switch` is the OS control and ignores most styling; same join-vs-draw question | M |
-| `tabs` | Two different things — in-screen tabs (`View role="tablist"` + core) vs. app-level bottom tabs (navigation library) | Rata ships the in-screen one; bottom tabs belong to the navigator — §6.3 | M |
+| `tabs` | Two different things — in-screen tabs (`View role="tablist"` + core) vs. app-level bottom tabs (navigation library) | Rata ships the in-screen one; bottom tabs belong to the navigator (decision N3, §6.3) | M |
 | `text` | `Text` at a `type.*` role | absolute line-heights and font scaling (§2.2, §6.5) | S |
 | `text-field` | `TextInput` inside `field` | `keyboardType`/`autoComplete`/`textContentType` mapping; focus border; disabled-still-submits has no meaning without forms | M |
 | `textarea` | `TextInput multiline` inside `field` | auto-grow height; keyboard avoidance | M |
@@ -504,8 +524,18 @@ component, **primitive → approved → semantics → approved → component** s
 holds, and native is a second component step sharing the first two. Each **N**
 gate below is a stop, not a formality.
 
-**N0 — this document.** Approve or amend §2–§4 and answer §6. Nothing is
-built before this.
+**Next step: tokens first.** The gate-1 review sent every proposed token gap
+to the design-tokens interview (Purpose / Use when / Don't use for / Pairs
+with) — for native that is `size.target.min` (§4, touch targets) and
+`theme.elevation.floating` — and those are settled before anything else
+moves, including N1 below. The native token emit (N1.2) builds on whatever
+that interview approves, so it follows it; no native component, and no
+native token shape, is written ahead of it.
+
+**N0 — this document.** §6 is answered (decisions N1–N6, gate-1 review);
+§2–§4 stand as the proposal those decisions were made against. Nothing is
+built before the remaining open item in §6 is either settled or explicitly
+deferred to the component that needs it.
 
 **N1 — Foundations, no components.**
 1. Extract `primitives/src/core/` and rewrite the web adapters on top of it.
@@ -514,11 +544,15 @@ built before this.
 2. Add the native token emit (§2.2) and brand `dist/native.js`. Acceptance:
    every token has a native value or an explicit web-only mark; contrast
    verification gates the brand emit as it does today.
-3. Pin RN version, Expo/bare, and minimum OS (§6) in `packages/native/package.json`.
+3. Pin what decisions N1 and N4 settled in `packages/native/package.json`:
+   the RN version (New Architecture only), iOS 15+ / Android API 24+, and
+   peer dependencies with no `expo-*` import in `packages/native/src` (Expo
+   and bare both supported; development on Expo).
    → **Stop. Approve the core API and the native token shape** before any
    native component exists — the same reason gate 1 precedes CSS.
 
-**N2 — Registry and tooling.** Schema additions (§3), CLI `--platform`,
+**N2 — Registry and tooling.** Schema additions (§3, including the
+per-platform tier for decision N6), CLI `--platform`,
 per-platform contract mode, docs status matrix, the native cross-check, and
 `native: future` on every component except the four proposed `na`.
 Acceptance: `npm run build` and `docs:check` pass with every component in
@@ -548,7 +582,8 @@ and `field`'s invalid/describedby decision are explicit approvals.
 **N5 — Overlays and navigation (L).** `dialog`, `sheet`, `menu`/`menu-item`,
 `select`, `mobile-nav`. Each starts with a written decision — build on RN
 `Modal`/Reanimated, or wrap a library — approved before its primitive
-adapter. Navigation-coupled pieces wait on §6.3.
+adapter. Nothing couples to a navigation library (decision N3): components
+take a value and `onChange`, and router adapters are documentation recipes.
 
 **Web track, in parallel and independent of native:** a `renderToString`
 smoke test for every `@rata/react` component (makes "SSR-safe" a fact), and
@@ -558,64 +593,66 @@ and *web app* profiles, not just native.
 
 ---
 
-## 6. Open decisions for you
+## 6. Decisions
 
-**6.1 Expo or bare React Native.** Recommendation: **Expo-compatible, not
-Expo-dependent.** `@rata/native` depends only on `react-native`,
-`react-native-reanimated`, `react-native-safe-area-context` (and
-`react-native-gesture-handler` once sheets land) — all of which work in both.
-The development app and device testing use Expo (dev client), because font
-loading (`expo-font`), OTA previews and CI device builds are far cheaper there.
-The question for you is whether *consumers* may be bare RN; if yes, no `expo-*`
-import may appear in `packages/native/src`.
+Settled at the gate-1 review
+([`decisions/2026-11-gate-1-review.md`](decisions/2026-11-gate-1-review.md)).
+Each subsection keeps its original number so the references above still
+resolve; the decision id is the one the review uses.
 
-**6.2 react-native-web or not.** Options: (a) **no** — web stays on
-`@rata/react` + `@rata/css`, and native is native only; (b) **yes, for the
-playground only** — render `@rata/native` components in the existing
-playground so they can be reviewed without a device, without promising RNW to
-consumers; (c) **yes, as a supported web target** — which would create a
-second web implementation of every component and is the drift this repo
-exists to prevent. Recommendation: **(b)**. It also gives the native
-cross-check a visual check in CI.
+**6.1 Expo or bare React Native — settled, decision N1: both supported,
+develop on Expo.** Consumers may use Expo or bare RN, so no `expo-*` (or other
+Expo-only) import may appear in `packages/native/src`. `@rata/native` depends
+only on `react-native`, `react-native-reanimated`,
+`react-native-safe-area-context` (and `react-native-gesture-handler` once
+sheets land) — all of which work in both. The development app and device
+testing use Expo (dev client), where font loading (`expo-font`), OTA previews
+and CI device builds are cheaper; the font loading manifest from §2.2 is
+therefore framework-neutral data, with `useFonts` as one documented recipe.
 
-**6.3 Navigation library coupling.** `top-nav`, `side-nav`, `mobile-nav`,
-`tabs` (app-level), `breadcrumbs` and parts of `sheet` overlap with what a
-navigator owns. Options: (a) **ship no navigation** — Rata ships header,
-drawer-content and tab-bar *styling* helpers that consume tokens, and apps
-use whatever navigator they like; (b) **adopt React Navigation** (and so Expo
-Router, which builds on it) and ship Rata-styled navigators. Recommendation:
-**(a)** for v1. Coupling a design system's release cadence to a navigation
-library's major versions is a cost every consumer pays.
+**6.2 react-native-web — settled, decision N2: playground only.**
+`@rata/native` components render in the existing playground through
+react-native-web so they can be reviewed without a device, and the native
+cross-check gets a visual check in CI. React-native-web is **not** a
+supported consumer target: websites and web apps keep `@rata/react` +
+`@rata/css`, and no second web implementation of any component exists.
 
-**6.4 Minimum versions.** Needed before N1, because several mappings in §2
-depend on them: layered `boxShadow` and `outline*` style props are
-New-Architecture features, and `role`/`aria-*` props need RN 0.71+.
-Recommendation: **New Architecture only**, the current RN at N1 minus one
-minor, **iOS 15+** and **Android 7 (API 24)+** unless your audience data says
-otherwise — and the native token emit drops the `shadow*`/`elevation`
-fallbacks if old-architecture support is ruled out.
+**6.3 Navigation library coupling — settled, decision N3: no coupling.**
+Rata ships no navigators and depends on no navigation library. Components that
+overlap with a navigator (`tabs` at app level, `mobile-nav`, header and
+drawer-content styling) take a value and `onChange`; adapters for React
+Navigation / Expo Router are documentation recipes, not code in
+`@rata/native`. A navigation library's major versions never set Rata's release
+cadence.
 
-**6.5 Font scaling policy.** RN scales text with the OS setting by default.
-Options: unlimited (most accessible; layouts must survive 200%+), or a
-`maxFontSizeMultiplier` cap per role (controls stay usable; large-text users
-lose some size). Recommendation: unlimited for `text`/`heading`, capped for
-dense controls (`badge`, `segmented-control`) — each cap an approved token.
+**6.4 Minimum versions — settled, decision N4: New Architecture only, iOS
+15+, Android API 24+.** The RN version is pinned at gate N1 (§5). Because the
+old architecture is out, layered `boxShadow` and the `outline*` style props
+are available, `role`/`aria-*` props can be relied on, and the native token
+emit carries no `shadow*`/`elevation` fallback (§2.2).
 
-**6.6 Join or draw.** iOS and Android ship their own switch, segmented
-control, picker, ripple and action sheet. Joining gives users the control
-they know and accessibility for free (the `select.tsx` argument); drawing
-gives one Rata look. Recommendation: **join** for `select` (picker) and
-`menu` on phones (action sheet / context menu); **draw** for `switch`,
-`segmented-control`, `checkbox` and press feedback (state layer, no ripple),
-so token theming — the point of `@rata/theme-*` — actually reaches them. You
-may well want a different line; it is the decision with the largest visual
-consequence.
+**6.5 Font scaling policy — still open.** RN scales text with the OS setting
+by default. Options: unlimited (most accessible; layouts must survive 200%+),
+or a `maxFontSizeMultiplier` cap per role (controls stay usable; large-text
+users lose some size). Recommendation: unlimited for `text`/`heading`, capped
+for dense controls (`badge`, `segmented-control`) — each cap an approved token
+through the design-tokens interview. Needed before the `text` pilot at N3.
 
-**6.7 Tier.** README's open-core split puts multi-brand theming in `pro`.
-Does `@rata/native` follow the same split (base components free, brand
-`dist/native.js` pro), or is native itself a tier?
+**6.6 OS controls or Rata-drawn — settled, decision N5: decided per
+component.** No blanket rule. Each component's contract records the choice in
+its "Web and native" decision, approved at that component's gate 1 — for
+example whether `select` uses the OS picker, whether `menu` uses an action
+sheet / context menu on phones, whether `switch` and `segmented-control` are
+drawn, and whether press feedback is the state layer or `android_ripple`. The
+§4 parity column is a starting direction for those decisions, not the
+decision.
 
----
+**6.7 Tier — settled, decision N6: native is `pro`.** Web components stay
+`free`; every `@rata/native` component is `pro`. The registry cannot express
+this today — `tier` is a single field — so §3 proposes a per-platform tier:
+`tier` stays the web tier, and `tiers.native` (default `pro`) sits alongside
+the proposed `status.native`. That is a schema change, approved with the rest
+of §3 at gate N2, not edited in by this decision.
 
 ## 7. What this document deliberately does not decide
 
