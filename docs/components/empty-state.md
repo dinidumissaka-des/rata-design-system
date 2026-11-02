@@ -25,7 +25,7 @@ A `div` with a title, an optional description and an optional action, rendered w
 - **`live` is a prop, silent by default** — Notice's reasoning, applied unchanged. An empty state present when the page loads is read in place, and announcing it would interrupt the page being read. One that appears because the reader typed a search that matched nothing must be announced, because their attention is on the search field and the list changed somewhere else. That depends on how the empty state arrived, not on what it says, so the caller states it.
 - **One action, at most** — An empty state exists to get the reader out of it. One action — Create the first one, Clear filters — is the way out; two is a choice the reader did not come here to make. Secondary help belongs in the description as a link.
 - **An icon, never an illustration** — Illustrations are brand, they carry no token, and they push the action below the fold on a phone. A `size.icon.lg` glyph in `theme.fg.muted` marks the area as intentionally empty without competing with the text. It is `aria-hidden`: the title says what it means.
-- **Token gap: `size.measure.*` — needs the design-tokens skill** — The description needs a maximum line length, or centred text runs the full width of a wide table and becomes hard to read. There is no measure token, so the recipe borrows Dialog's derivation from `size.control.lg`. Tooltip and Toast hit the same gap; one scale fixes all three.
+- **Line length: size.measure.compact** — The description is bounded at size.measure.compact, 45ch — short enough to read as one thought, centred under its heading, and in ch so it follows the text. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md).
 - **Web and native** — Web: a `div`; with `live`, it carries `role="status"` (polite) or `role="alert"` (assertive), as Notice does. The icon is `aria-hidden`. React Native: a `View`; the title is plain `Text`, not `accessibilityRole="header"`, for the outline reason above. `live` maps to `accessibilityLiveRegion` on Android and to `AccessibilityInfo.announceForAccessibility` with the title on iOS. All props work on both. Rata-drawn (decision N5): React Native exposes no OS empty-state view, so it is drawn from the same recipe as the web. The native implementation ships in the pro tier (decision N6).
 
 ## Props
@@ -198,7 +198,7 @@ Centred text in the space the content would have filled, with no box: an empty s
 |---|---|
 | padding-block | `space.padding.lg` |
 | text-align | `center` |
-| max-inline-size | `size.control.lg multiplied by 12 — a stand-in, see the token gap decision` |
+| max-inline-size | `size.measure.compact` |
 | icon size | `size.icon.lg` |
 | icon color | `theme.fg.muted` |
 | gap between icon and title | `space.stack.sm` |

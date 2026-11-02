@@ -9,7 +9,9 @@
         "height (and usually min-width) of buttons, inputs, and other controls, via size.control.*.",
         "width and height of an icon that sits with text, via size.icon.text — it follows whatever font-size it lands in, so it needs no per-control choice.",
         "width and height of a standalone glyph with no text to size from, via size.icon.xs / .sm / .md / .lg.",
-        "The minimum hit area of anything operable by touch, via size.target.min — the larger of it and the control's own size.control.* step."
+        "The minimum hit area of anything operable by touch, via size.target.min — the larger of it and the control's own size.control.* step.",
+        "Thickness of a slider or progress bar, via size.track.",
+        "max-inline-size of a component's text box, via size.measure.* — it is in ch, so it follows the font rather than the viewport."
       ],
       "scale": {
         "control.sm": "Compact control height, e.g. a dense table's inline actions.",
@@ -20,19 +22,26 @@
         "icon.sm": "Fixed 16px — what icon.text resolves to at the default control text.",
         "icon.md": "Fixed 20px, for a standalone icon-only control.",
         "icon.lg": "Fixed 24px. Lucide's native size, so it renders unscaled.",
-        "target.min": "The smallest hit area a touch-operable control may have — 48px on every platform. Size the hit area to at least this (min-block-size / min-inline-size, or a ::before extension), never the drawn control: a 28px size.control.sm button keeps its look and grows only where it can be tapped. Bottom-nav items, the FAB, a chip's remove button, list rows, a slider thumb, pagination on touch."
+        "target.min": "The smallest hit area a touch-operable control may have — 48px on every platform. Size the hit area to at least this (min-block-size / min-inline-size, or a ::before extension), never the drawn control: a 28px size.control.sm button keeps its look and grows only where it can be tapped. Bottom-nav items, the FAB, a chip's remove button, list rows, a slider thumb, pagination on touch.",
+        "track": "Thickness of a linear bar that shows a value — Slider's track, Progress's bar. 4px: the thinnest bar that still reads as a bar beside a 28px control.",
+        "measure.tight": "32ch. The longest line a tooltip may set — a hint, not a paragraph.",
+        "measure.compact": "45ch. The longest line in a toast, popover or empty-state description — the bottom of typography's readable 45–75ch band.",
+        "measure.prose": "65ch. The longest line of running text in a block or template. The scale stops here: past 75ch a line is too long to track back from."
       },
       "dont": [
         "Container, avatar or media dimensions — the fixed icon steps stop at 24px because that is the largest an icon gets; past it a graphic is illustration, not iconography.",
         "Spacing of any kind. Distance between things is space.*; this scale is the size of the things.",
         "A fixed step for an icon that has text beside it — it will stop matching the moment that text changes size. That is what size.icon.text is for.",
-        "size.target.min as a visible dimension or as spacing. It is a floor on where a control can be tapped; the drawn box stays size.control.*, and the distance between targets is space.*."
+        "size.target.min as a visible dimension or as spacing. It is a floor on where a control can be tapped; the drawn box stays size.control.*, and the distance between targets is space.*.",
+        "size.measure.* for a container, pane or page width. A measure bounds a line of text; layout widths are a separate decision about regions.",
+        "size.track for a border or a divider — those are border.width.*."
       ],
       "notes": [
         "size.icon.text is 1.15em: an icon reads at the same visual weight as the text beside it at about 1.15x its font-size, because a glyph fills less of its box than a letterform does. At this system's control text (14px) it computes to 16.1px, effectively the size.icon.sm step — so the relative and fixed scales agree at the default and diverge only where the text does.",
         "Control size and text size are independent here: size.control.* changes the box, while a control's text stays at type.control.size.md across all three. So an icon inside a control does not change size with the control either — it follows the text, which did not move.",
         "The fixed steps are a 4px arithmetic scale, 12 through 24, for a glyph with no text context to inherit from: a status dot in a table cell, an icon-only control whose label is an aria-label rather than text.",
-        "size.target.min is 48px everywhere — Material's 48dp minimum, which also clears Apple's 44pt and WCAG 2.5.5 (44px, AAA). One value on every platform was chosen over 44px web/iOS + 48dp Android so a component's touch behaviour cannot differ by platform. It is a stated platform constant rather than a seeded step, which is why it sits beside size.control.* and not in the generated scales."
+        "size.target.min is 48px everywhere — Material's 48dp minimum, which also clears Apple's 44pt and WCAG 2.5.5 (44px, AAA). One value on every platform was chosen over 44px web/iOS + 48dp Android so a component's touch behaviour cannot differ by platform. It is a stated platform constant rather than a seeded step, which is why it sits beside size.control.* and not in the generated scales.",
+        "size.track and size.measure.* are stated values, not seeded: a track is one 4px step (a thick 6px step was rejected because nothing needs it), and the measure scale is three points across the 45–75 character band, measured in ch so it scales with whatever font the text is set in."
       ]
     }
   }

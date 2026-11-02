@@ -30,7 +30,7 @@
       "tokens": {
         "padding-block": "space.padding.lg",
         "text-align": "center",
-        "max-inline-size": "size.control.lg multiplied by 12 — a stand-in, see the token gap decision",
+        "max-inline-size": "size.measure.compact",
         "icon size": "size.icon.lg",
         "icon color": "theme.fg.muted",
         "gap between icon and title": "space.stack.sm",
@@ -73,8 +73,8 @@
         "why": "Illustrations are brand, they carry no token, and they push the action below the fold on a phone. A `size.icon.lg` glyph in `theme.fg.muted` marks the area as intentionally empty without competing with the text. It is `aria-hidden`: the title says what it means."
       },
       {
-        "decision": "Token gap: `size.measure.*` — needs the design-tokens skill",
-        "why": "The description needs a maximum line length, or centred text runs the full width of a wide table and becomes hard to read. There is no measure token, so the recipe borrows Dialog's derivation from `size.control.lg`. Tooltip and Toast hit the same gap; one scale fixes all three."
+        "decision": "Line length: size.measure.compact",
+        "why": "The description is bounded at size.measure.compact, 45ch — short enough to read as one thought, centred under its heading, and in ch so it follows the text. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md)."
       },
       {
         "decision": "Web and native",

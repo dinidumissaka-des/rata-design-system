@@ -10,5 +10,8 @@
   "modal": {
     "duration": "{motion.duration.medium-max}",
     "easing": "{motion.easing.standard}"
+  },
+  "delay": {
+    "hint": "{motion.duration.medium-max}"
   }
 }

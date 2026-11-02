@@ -4345,8 +4345,8 @@
           "why": "Illustrations are brand, they carry no token, and they push the action below the fold on a phone. A `size.icon.lg` glyph in `theme.fg.muted` marks the area as intentionally empty without competing with the text. It is `aria-hidden`: the title says what it means."
         },
         {
-          "decision": "Token gap: `size.measure.*` — needs the design-tokens skill",
-          "why": "The description needs a maximum line length, or centred text runs the full width of a wide table and becomes hard to read. There is no measure token, so the recipe borrows Dialog's derivation from `size.control.lg`. Tooltip and Toast hit the same gap; one scale fixes all three."
+          "decision": "Line length: size.measure.compact",
+          "why": "The description is bounded at size.measure.compact, 45ch — short enough to read as one thought, centred under its heading, and in ch so it follows the text. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md)."
         },
         {
           "decision": "Web and native",
@@ -4360,7 +4360,7 @@
         "tokens": {
           "padding-block": "space.padding.lg",
           "text-align": "center",
-          "max-inline-size": "size.control.lg multiplied by 12 — a stand-in, see the token gap decision",
+          "max-inline-size": "size.measure.compact",
           "icon size": "size.icon.lg",
           "icon color": "theme.fg.muted",
           "gap between icon and title": "space.stack.sm",
@@ -9081,7 +9081,7 @@
           "gap between title and body": "space.stack.xs",
           "font-size": "type.body.size",
           "line-height": "type.body.line-height",
-          "max-inline-size": "size.control.lg multiplied by 9, or the viewport less space.padding.lg — a stand-in, see Tooltip's measure gap",
+          "max-inline-size": "text bounded by size.measure.compact; never wider than the viewport less space.padding.lg",
           "gap from the trigger": "space.gap.xs",
           "enter transition": "motion.overlay.duration with motion.easing.enter",
           "exit transition": "motion.overlay.duration with motion.easing.exit"
@@ -9245,12 +9245,12 @@
           "why": "Approved at gate 1 (decision C8, docs/decisions/2026-11-gate-1-review.md). Slider and Progress look alike and are split by role. A slider's empty track is part of a control — it shows how far the value can still go — so it takes the boundary tone tuned to the 3:1 WCAG 1.4.11 asks of a control. A progress bar takes no input, and its empty track carries no information on its own: what the reader needs is the fill against it, which the pairing decision below covers. So the track is the recessed well `theme.bg.muted` is documented for, and a progress bar beside a slider does not read as something to drag."
         },
         {
-          "decision": "Token gap: track thickness, shared with Slider — needs the design-tokens skill",
-          "why": "Decision C8 settles the disagreement the two specs had. The thickness of a track is a size, not a distance between things, and Slider and Progress take the same new track-thickness token — the one Slider's spec proposes — rather than one spacing step each. Until the design-tokens interview approves it, the recipe uses `space.1` as a stand-in, which is the misuse `space`'s own contract warns about and is named here so it does not ship quietly."
+          "decision": "Track thickness: size.track",
+          "why": "The bar is size.track, 4px, the same token Slider's track uses — one thickness for every linear value bar, so a progress bar and a slider side by side read as the same family. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md)."
         },
         {
-          "decision": "Pairing gap: `theme.accent-role.bg` on `theme.bg.muted` at AA-nontext is not a documented pairing",
-          "why": "WCAG 1.4.11 asks a fill to reach 3:1 against what it sits on when it conveys information, and the filled part of a bar is exactly that. The pairing is very likely to hold in the base theme but is not in the verified list, so nothing re-measures it per brand. It should be added to the token contracts' pairings — no new token, just a promise the build will check — before gate 2 approves this mapping."
+          "decision": "The fill on its track is a verified pairing",
+          "why": "theme.accent-role.bg on theme.bg.muted is now a documented AA-nontext pairing in system.json, measured at 4.89:1 (light) and 7.75:1 (dark) against the 3:1 WCAG 1.4.11 asks of a graphical object, and re-verified against every brand theme by themes:check. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md)."
         },
         {
           "decision": "Web and native",
@@ -9263,8 +9263,8 @@
         "summary": "A label above a track, with the filled part in the accent fill. The track is the recessed well `theme.bg.muted` is documented for, because a progress bar reports status and is not a control.",
         "tokens": {
           "track background": "theme.bg.muted — status, not interactive, so not Slider's theme.border.strong; see the track decision",
-          "fill background": "theme.accent-role.bg — see the pairing gap decision",
-          "track block-size": "space.1 — a stand-in for the track-thickness token shared with Slider; see the token gap decision",
+          "fill background": "theme.accent-role.bg — a verified AA-nontext pairing on theme.bg.muted (4.89:1 light, 7.75:1 dark)",
+          "track block-size": "size.track",
           "track border-radius": "radius.pill",
           "fill border-radius": "radius.pill",
           "fill transition": "motion.duration.medium with motion.easing.standard, on inline-size; none under prefers-reduced-motion",
@@ -11774,7 +11774,7 @@
         "summary": "The track, the fill and the row they sit in. The drawn track is decoration over a transparent native input, so these measurements are what the reader sees, not what they touch.",
         "tokens": {
           "hit area block-size": "size.control.sm — the transparent input's height, and so the touch target, regardless of the drawn thumb",
-          "track block-size": "space.1 — a placeholder for the one track-thickness token Slider and Progress will share (decision C8), which goes to the design-tokens interview; a spacing step standing in for a size is not the answer",
+          "track block-size": "size.track",
           "track border-radius": "radius.pill",
           "track background": "theme.border.strong — the boundary tone tuned to the 3:1 WCAG 1.4.11 asks of a control (decision C8). Progress's track is theme.bg.muted because a progress bar reports status; a slider's empty track is part of an interactive control and says how far the value can still go, so it has to be seen",
           "fill background": "theme.accent-role.bg — from min to the thumb, or between the two thumbs of a range",
@@ -14007,7 +14007,7 @@
           "font-size": "type.body.size",
           "line-height": "type.body.line-height",
           "icon size": "size.icon.text",
-          "inline-size": "size.control.lg multiplied by 10, or the viewport less twice space.page.gutter — a stand-in, see Tooltip's measure gap",
+          "inline-size": "text bounded by size.measure.compact; the box is that plus its padding, never wider than the viewport less twice space.page.gutter",
           "enter transition": "motion.overlay.duration with motion.easing.enter",
           "exit transition": "motion.overlay.duration with motion.easing.exit"
         }
@@ -14861,16 +14861,16 @@
           "why": "Approved at gate 1 (decision C3, docs/decisions/2026-11-gate-1-review.md). A tooltip is the one overlay that never holds a control and is never opened on purpose, and an inverse chip says so at a glance: it cannot be mistaken for a Menu or a Popover opened from the neighbouring control, both of which are surfaces the reader acts in. The cost is a new pairing — an inverse background and a foreground verified against it in both schemes and in every brand — which is why it goes through the design-tokens skill rather than into this recipe as a palette value."
         },
         {
-          "decision": "Token gap: the inverse surface and its foreground — needs the design-tokens skill",
-          "why": "The token set has no inverse surface and no foreground verified against one, and inventing either for a single component would be a pairing nobody else can rely on. The pair goes to the design-tokens interview (Purpose / Use when / Don't use for / Pairs with), with its contrast promise added to the token contracts so `npm run themes:check` re-measures it per brand. Until it exists the recipe uses `theme.bg.surface`, `theme.fg.primary` and `theme.border.default` — already verified together — as stand-ins, and gate 2 does not approve the colour lines until the pair is real."
+          "decision": "Surface: theme.bg.inverse with theme.fg.on-inverse",
+          "why": "The tooltip inverts the scheme (decision C3): a small dark chip on a light page, a light one on a dark page, which reads as transient and needs no border. The pair is generated in the expander, documented as tooltip-only, and verified at 12.88:1 (light) and 13.3:1 (dark). Settled by the token interview (docs/decisions/2026-11-gate-1-review.md)."
         },
         {
-          "decision": "Token gap: `motion.delay.hint` — needs the design-tokens skill",
-          "why": "A tooltip must wait before opening, or sweeping the pointer across a toolbar strobes a row of hints. The motion family has durations for transitions and none for a wait, so the recipe borrows `motion.duration.slow-min` (525ms), which happens to be about the right length and is documented for something else entirely. A `motion.delay.*` group, starting with the hint delay, is the proper home. Once one tooltip has opened, moving to a neighbouring trigger opens the next one immediately; that skip is behaviour, not a token."
+          "decision": "Open delay: motion.delay.hint",
+          "why": "A pointer resting on the trigger opens the tooltip after motion.delay.hint, which points at motion.duration.medium-max (280ms today) so it follows the motion seed. The user chose the shorter step over slow-min. Keyboard focus opens it immediately — focus is never a passing pointer. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md)."
         },
         {
-          "decision": "Token gap: `size.measure.*` — needs the design-tokens skill",
-          "why": "A tooltip needs a maximum line length so a long hint wraps instead of spanning the screen. This system has no measure token — the playground already notes it — so the recipe follows Dialog's precedent of multiplying `size.control.lg`, which describes control height and is only a stand-in. Toast and EmptyState hit the same gap; one `size.measure.*` scale would serve all three."
+          "decision": "Line length: size.measure.tight",
+          "why": "A tooltip's text is bounded at size.measure.tight, 32ch. It is in ch, so it scales with the text rather than with a control size; a hint that needs more than that is a Popover. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md)."
         },
         {
           "decision": "Web and native",
@@ -14882,20 +14882,20 @@
       "base": {
         "summary": "A small transient chip on an inverse surface, so it reads as a passing hint rather than as a menu or a popover. The inverse surface and its foreground do not exist yet, so the colour lines below are the closest existing tokens and are stand-ins; the measurements, shadow and motion are final.",
         "tokens": {
-          "background": "theme.bg.surface — a stand-in until the inverse surface pair exists; see the token gap decision",
-          "color": "theme.fg.primary — a stand-in until the inverse surface pair exists; see the token gap decision",
-          "border": "border.default solid theme.border.default — a stand-in until the inverse surface pair exists; see the token gap decision; an inverse chip needs no outline",
+          "background": "theme.bg.inverse",
+          "color": "theme.fg.on-inverse",
+          "border": "none — the inverse surface separates itself from the page",
           "box-shadow": "theme.elevation.overlay",
           "border-radius": "radius.element",
           "padding-block": "space.1",
           "padding-inline": "space.2",
           "font-size": "type.supporting.size",
           "line-height": "type.supporting.line-height",
-          "max-inline-size": "size.control.lg multiplied by 8 — a stand-in, see the token gap decision",
+          "max-inline-size": "size.measure.tight",
           "gap from the trigger": "space.gap.xs",
           "enter transition": "motion.overlay.duration with motion.easing.enter",
           "exit transition": "motion.overlay.duration with motion.easing.exit",
-          "open delay": "motion.duration.slow-min — a stand-in, see the token gap decision"
+          "open delay": "motion.delay.hint on pointer hover; none on keyboard focus"
         }
       }
     },

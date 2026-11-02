@@ -258,7 +258,7 @@ Menu's surface with room for content: the same background, outline, shadow and m
 | gap between title and body | `space.stack.xs` |
 | font-size | `type.body.size` |
 | line-height | `type.body.line-height` |
-| max-inline-size | `size.control.lg multiplied by 9, or the viewport less space.padding.lg — a stand-in, see Tooltip's measure gap` |
+| max-inline-size | `text bounded by size.measure.compact; never wider than the viewport less space.padding.lg` |
 | gap from the trigger | `space.gap.xs` |
 | enter transition | `motion.overlay.duration with motion.easing.enter` |
 | exit transition | `motion.overlay.duration with motion.easing.exit` |

@@ -401,7 +401,7 @@ The track, the fill and the row they sit in. The drawn track is decoration over 
 | Property | Token |
 |---|---|
 | hit area block-size | `size.control.sm — the transparent input's height, and so the touch target, regardless of the drawn thumb` |
-| track block-size | `space.1 — a placeholder for the one track-thickness token Slider and Progress will share (decision C8), which goes to the design-tokens interview; a spacing step standing in for a size is not the answer` |
+| track block-size | `size.track` |
 | track border-radius | `radius.pill` |
 | track background | `theme.border.strong — the boundary tone tuned to the 3:1 WCAG 1.4.11 asks of a control (decision C8). Progress's track is theme.bg.muted because a progress bar reports status; a slider's empty track is part of an interactive control and says how far the value can still go, so it has to be seen` |
 | fill background | `theme.accent-role.bg — from min to the thumb, or between the two thumbs of a range` |

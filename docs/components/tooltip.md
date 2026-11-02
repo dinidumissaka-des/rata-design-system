@@ -26,9 +26,9 @@ A trigger and a short text in the top layer, positioned with CSS anchor position
 - **Touch: it does not appear, by design** — There is no hover on touch, and the two common substitutes are both worse. Showing on tap would hijack the tap that was meant to activate the control. Showing on long-press collides with the platform's own long-press — text selection, context menus, and on mobile web the browser's link preview. So on a touch pointer the tooltip stays hidden; the accessible name or description is still wired, so VoiceOver and TalkBack users still hear it, and the rule above — nothing essential in a tooltip — is what makes hiding it safe. A pen hover, where the platform reports one, does show it.
 - **It works on an `aria-disabled` control, which is one more reason this system does not use `disabled`** — A natively disabled button receives no pointer or focus events, so the most useful tooltip there is — "why can't I press this?" — cannot be shown on it. Because disabled controls here stay focusable and hoverable, the tooltip appears on them like any other control, and `relationship="description"` is how the reason gets announced.
 - **An inverse surface, not Menu's** — Approved at gate 1 (decision C3, docs/decisions/2026-11-gate-1-review.md). A tooltip is the one overlay that never holds a control and is never opened on purpose, and an inverse chip says so at a glance: it cannot be mistaken for a Menu or a Popover opened from the neighbouring control, both of which are surfaces the reader acts in. The cost is a new pairing — an inverse background and a foreground verified against it in both schemes and in every brand — which is why it goes through the design-tokens skill rather than into this recipe as a palette value.
-- **Token gap: the inverse surface and its foreground — needs the design-tokens skill** — The token set has no inverse surface and no foreground verified against one, and inventing either for a single component would be a pairing nobody else can rely on. The pair goes to the design-tokens interview (Purpose / Use when / Don't use for / Pairs with), with its contrast promise added to the token contracts so `npm run themes:check` re-measures it per brand. Until it exists the recipe uses `theme.bg.surface`, `theme.fg.primary` and `theme.border.default` — already verified together — as stand-ins, and gate 2 does not approve the colour lines until the pair is real.
-- **Token gap: `motion.delay.hint` — needs the design-tokens skill** — A tooltip must wait before opening, or sweeping the pointer across a toolbar strobes a row of hints. The motion family has durations for transitions and none for a wait, so the recipe borrows `motion.duration.slow-min` (525ms), which happens to be about the right length and is documented for something else entirely. A `motion.delay.*` group, starting with the hint delay, is the proper home. Once one tooltip has opened, moving to a neighbouring trigger opens the next one immediately; that skip is behaviour, not a token.
-- **Token gap: `size.measure.*` — needs the design-tokens skill** — A tooltip needs a maximum line length so a long hint wraps instead of spanning the screen. This system has no measure token — the playground already notes it — so the recipe follows Dialog's precedent of multiplying `size.control.lg`, which describes control height and is only a stand-in. Toast and EmptyState hit the same gap; one `size.measure.*` scale would serve all three.
+- **Surface: theme.bg.inverse with theme.fg.on-inverse** — The tooltip inverts the scheme (decision C3): a small dark chip on a light page, a light one on a dark page, which reads as transient and needs no border. The pair is generated in the expander, documented as tooltip-only, and verified at 12.88:1 (light) and 13.3:1 (dark). Settled by the token interview (docs/decisions/2026-11-gate-1-review.md).
+- **Open delay: motion.delay.hint** — A pointer resting on the trigger opens the tooltip after motion.delay.hint, which points at motion.duration.medium-max (280ms today) so it follows the motion seed. The user chose the shorter step over slow-min. Keyboard focus opens it immediately — focus is never a passing pointer. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md).
+- **Line length: size.measure.tight** — A tooltip's text is bounded at size.measure.tight, 32ch. It is in ch, so it scales with the text rather than with a control size; a hint that needs more than that is a Popover. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md).
 - **Web and native** — Web: the trigger is the caller's element, cloned to receive `aria-labelledby` or `aria-describedby`; the tooltip is a `role="tooltip"` element carrying the `popover` attribute (`hint` where supported, `manual` otherwise) so it renders in the top layer without a portal. React Native has no hover and no tooltip core component, so nothing is drawn: with `relationship="label"` the text becomes the trigger's `accessibilityLabel`, and with `relationship="description"` it becomes its `accessibilityHint` — which is what both platform screen readers read after the name. `placement` is web-only. The native behaviour is the touch behaviour above, followed through: the information still reaches assistive tech, and nothing is drawn that a finger cannot dismiss. Neither OS control nor Rata-drawn (decision N5): nothing is drawn on native, and the platform screen reader is what delivers the text. The native implementation ships in the pro tier (decision N6).
 
 ## Props
@@ -165,17 +165,17 @@ A small transient chip on an inverse surface, so it reads as a passing hint rath
 
 | Property | Token |
 |---|---|
-| background | `theme.bg.surface — a stand-in until the inverse surface pair exists; see the token gap decision` |
-| color | `theme.fg.primary — a stand-in until the inverse surface pair exists; see the token gap decision` |
-| border | `border.default solid theme.border.default — a stand-in until the inverse surface pair exists; see the token gap decision; an inverse chip needs no outline` |
+| background | `theme.bg.inverse` |
+| color | `theme.fg.on-inverse` |
+| border | `none — the inverse surface separates itself from the page` |
 | box-shadow | `theme.elevation.overlay` |
 | border-radius | `radius.element` |
 | padding-block | `space.1` |
 | padding-inline | `space.2` |
 | font-size | `type.supporting.size` |
 | line-height | `type.supporting.line-height` |
-| max-inline-size | `size.control.lg multiplied by 8 — a stand-in, see the token gap decision` |
+| max-inline-size | `size.measure.tight` |
 | gap from the trigger | `space.gap.xs` |
 | enter transition | `motion.overlay.duration with motion.easing.enter` |
 | exit transition | `motion.overlay.duration with motion.easing.exit` |
-| open delay | `motion.duration.slow-min — a stand-in, see the token gap decision` |
+| open delay | `motion.delay.hint on pointer hover; none on keyboard focus` |

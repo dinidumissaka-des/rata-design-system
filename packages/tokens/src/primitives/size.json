@@ -13,5 +13,11 @@
   },
   "target": {
     "min": "48px"
+  },
+  "track": "4px",
+  "measure": {
+    "tight": "32ch",
+    "compact": "45ch",
+    "prose": "65ch"
   }
 }

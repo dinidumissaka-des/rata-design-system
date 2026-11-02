@@ -58,6 +58,20 @@
         "theme.accent-role.bg",
         "theme.danger-role.bg"
       ]
+    },
+    "theme.fg.on-inverse": {
+      "layer": "semantic",
+      "summary": "Text and icon colour on theme.bg.inverse, and nowhere else.",
+      "use": [
+        "A tooltip's text."
+      ],
+      "dont": [
+        "On any other background — it is the surface tone, so on theme.bg.surface it is invisible.",
+        "On a filled role: those own their label tokens (theme.fg.on-accent, theme.danger-role.on, …)."
+      ],
+      "pairsWith": [
+        "theme.bg.inverse"
+      ]
     }
   }
 }

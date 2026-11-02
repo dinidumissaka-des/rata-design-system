@@ -206,7 +206,7 @@ Notice's frame on a floating surface. The text, icon and dismiss are built exact
 | font-size | `type.body.size` |
 | line-height | `type.body.line-height` |
 | icon size | `size.icon.text` |
-| inline-size | `size.control.lg multiplied by 10, or the viewport less twice space.page.gutter — a stand-in, see Tooltip's measure gap` |
+| inline-size | `text bounded by size.measure.compact; the box is that plus its padding, never wider than the viewport less twice space.page.gutter` |
 | enter transition | `motion.overlay.duration with motion.easing.enter` |
 | exit transition | `motion.overlay.duration with motion.easing.exit` |
 

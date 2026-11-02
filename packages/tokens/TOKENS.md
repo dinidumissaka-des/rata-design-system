@@ -204,6 +204,25 @@ The most recessed background — an inset well, a track, or a skeleton-loading p
 
 **Pairs with** `theme.fg.secondary`
 
+### `theme.bg.inverse`
+
+`var(--rata-theme-bg-inverse)` · light `#29322E` · dark `#DAE5E0`
+
+An inverted surface — dark in the light scheme, light in the dark — for a small transient hint.
+
+**Use for**
+
+- A tooltip's background.
+
+**Use instead**
+
+| Instead of reaching for this | Use |
+|---|---|
+| A toast, menu or popover — anything that carries interactive content | `theme.bg.surface with theme.elevation.overlay; inverting a surface the reader acts inside makes it read as an alert` |
+| A selected or emphasised row | `theme.accent-role.subtle` |
+
+**Pairs with** `theme.fg.on-inverse`
+
 ### `theme.border.default`
 
 `var(--rata-theme-border-default)` · light `#151D1A1A` · dark `#E8F3EE1A`
@@ -350,6 +369,23 @@ White text/icon color for use on a filled, saturated role background.
 - On theme.success-role.bg or theme.warning-role.bg — both are known contrast gaps (see Known gaps). Use the role's subtle/fg pairing for text instead.
 
 **Pairs with** `theme.accent-role.bg`, `theme.danger-role.bg`
+
+### `theme.fg.on-inverse`
+
+`var(--rata-theme-fg-on-inverse)` · light `#F3FFF9` · dark `#151D1A`
+
+Text and icon colour on theme.bg.inverse, and nowhere else.
+
+**Use for**
+
+- A tooltip's text.
+
+**Do not use for**
+
+- On any other background — it is the surface tone, so on theme.bg.surface it is invisible.
+- On a filled role: those own their label tokens (theme.fg.on-accent, theme.danger-role.on, …).
+
+**Pairs with** `theme.bg.inverse`
 
 ### `theme.scrim`
 
@@ -703,10 +739,12 @@ Duration and easing. The duration bands are generated from the theme's {fast, me
 | `overlay.easing` | `var(--rata-motion-overlay-easing)` | `cubic-bezier(0.24, 1, 0.4, 1)` | Curve for overlay transitions. |
 | `modal.duration` | `var(--rata-motion-modal-duration)` | `280ms` | Dialogs, sheets, drawers. |
 | `modal.easing` | `var(--rata-motion-modal-easing)` | `cubic-bezier(0.24, 1, 0.4, 1)` | Curve for modal transitions. |
+| `delay.hint` | `var(--rata-motion-delay-hint)` | `280ms` | How long the pointer rests on a trigger before a hint (a tooltip) opens. Points at duration.medium-max, so it follows the motion seed. Keyboard focus opens a tooltip immediately — the delay exists to stop a passing pointer from setting off every hint it crosses, and focus is never passing. Not an animation length: that is motion.duration.*. |
 
 **Use for**
 
 - transition-duration / transition-timing-function, via a role (motion.interactive.*, motion.overlay.*, motion.modal.*) rather than a raw duration when one names the situation.
+- transition-delay / an open timer for a hover-triggered hint, via motion.delay.hint.
 
 ### `opacity`
 
@@ -789,6 +827,10 @@ Control heights, and icon sizes — one relative step that follows text, plus fi
 | `icon.md` | `var(--rata-size-icon-md)` | `20px` | Fixed 20px, for a standalone icon-only control. |
 | `icon.lg` | `var(--rata-size-icon-lg)` | `24px` | Fixed 24px. Lucide's native size, so it renders unscaled. |
 | `target.min` | `var(--rata-size-target-min)` | `48px` | The smallest hit area a touch-operable control may have — 48px on every platform. Size the hit area to at least this (min-block-size / min-inline-size, or a ::before extension), never the drawn control: a 28px size.control.sm button keeps its look and grows only where it can be tapped. Bottom-nav items, the FAB, a chip's remove button, list rows, a slider thumb, pagination on touch. |
+| `track` | `var(--rata-size-track)` | `4px` | Thickness of a linear bar that shows a value — Slider's track, Progress's bar. 4px: the thinnest bar that still reads as a bar beside a 28px control. |
+| `measure.tight` | `var(--rata-size-measure-tight)` | `32ch` | 32ch. The longest line a tooltip may set — a hint, not a paragraph. |
+| `measure.compact` | `var(--rata-size-measure-compact)` | `45ch` | 45ch. The longest line in a toast, popover or empty-state description — the bottom of typography's readable 45–75ch band. |
+| `measure.prose` | `var(--rata-size-measure-prose)` | `65ch` | 65ch. The longest line of running text in a block or template. The scale stops here: past 75ch a line is too long to track back from. |
 
 **Use for**
 
@@ -796,6 +838,8 @@ Control heights, and icon sizes — one relative step that follows text, plus fi
 - width and height of an icon that sits with text, via size.icon.text — it follows whatever font-size it lands in, so it needs no per-control choice.
 - width and height of a standalone glyph with no text to size from, via size.icon.xs / .sm / .md / .lg.
 - The minimum hit area of anything operable by touch, via size.target.min — the larger of it and the control's own size.control.* step.
+- Thickness of a slider or progress bar, via size.track.
+- max-inline-size of a component's text box, via size.measure.* — it is in ch, so it follows the font rather than the viewport.
 
 **Do not use for**
 
@@ -803,11 +847,14 @@ Control heights, and icon sizes — one relative step that follows text, plus fi
 - Spacing of any kind. Distance between things is space.*; this scale is the size of the things.
 - A fixed step for an icon that has text beside it — it will stop matching the moment that text changes size. That is what size.icon.text is for.
 - size.target.min as a visible dimension or as spacing. It is a floor on where a control can be tapped; the drawn box stays size.control.*, and the distance between targets is space.*.
+- size.measure.* for a container, pane or page width. A measure bounds a line of text; layout widths are a separate decision about regions.
+- size.track for a border or a divider — those are border.width.*.
 
 > size.icon.text is 1.15em: an icon reads at the same visual weight as the text beside it at about 1.15x its font-size, because a glyph fills less of its box than a letterform does. At this system's control text (14px) it computes to 16.1px, effectively the size.icon.sm step — so the relative and fixed scales agree at the default and diverge only where the text does.
 > Control size and text size are independent here: size.control.* changes the box, while a control's text stays at type.control.size.md across all three. So an icon inside a control does not change size with the control either — it follows the text, which did not move.
 > The fixed steps are a 4px arithmetic scale, 12 through 24, for a glyph with no text context to inherit from: a status dot in a table cell, an icon-only control whose label is an aria-label rather than text.
 > size.target.min is 48px everywhere — Material's 48dp minimum, which also clears Apple's 44pt and WCAG 2.5.5 (44px, AAA). One value on every platform was chosen over 44px web/iOS + 48dp Android so a component's touch behaviour cannot differ by platform. It is a stated platform constant rather than a seeded step, which is why it sits beside size.control.* and not in the generated scales.
+> size.track and size.measure.* are stated values, not seeded: a track is one 4px step (a thick 6px step was rejected because nothing needs it), and the measure scale is three points across the 45–75 character band, measured in ch so it scales with whatever font the text is set in.
 
 ### `space`
 
@@ -1001,6 +1048,8 @@ Ratios are measured from the resolved token values every build. A pairing listed
 | `theme.focus-ring` | `theme.bg.surface` | AA-nontext | 4.31:1 | 7.49:1 |
 | `theme.danger-role.on` | `theme.danger-role.bg` | AA-text | 4.83:1 | 4.83:1 |
 | `theme.warning-role.on` | `theme.warning-role.bg` | AA-text | 8.23:1 | 8.23:1 |
+| `theme.fg.on-inverse` | `theme.bg.inverse` | AA-text | 12.88:1 | 13.30:1 |
+| `theme.accent-role.bg` | `theme.bg.muted` | AA-nontext | 4.89:1 | 7.75:1 |
 
 ### Known gaps — do not use these combinations
 
@@ -1755,7 +1804,7 @@ Centred text in the space the content would have filled, with no box: an empty s
 |---|---|
 | padding-block | `space.padding.lg` |
 | text-align | center |
-| max-inline-size | `size.control.lg` multiplied by 12 — a stand-in, see the token gap decision |
+| max-inline-size | `size.measure.compact` |
 | icon size | `size.icon.lg` |
 | icon color | `theme.fg.muted` |
 | gap between icon and title | `space.stack.sm` |
@@ -2389,7 +2438,7 @@ Menu's surface with room for content: the same background, outline, shadow and m
 | gap between title and body | `space.stack.xs` |
 | font-size | `type.body.size` |
 | line-height | `type.body.line-height` |
-| max-inline-size | `size.control.lg` multiplied by 9, or the viewport less `space.padding.lg` — a stand-in, see Tooltip's measure gap |
+| max-inline-size | text bounded by `size.measure.compact`; never wider than the viewport less `space.padding.lg` |
 | gap from the trigger | `space.gap.xs` |
 | enter transition | `motion.overlay.duration` with `motion.easing.enter` |
 | exit transition | `motion.overlay.duration` with `motion.easing.exit` |
@@ -2411,8 +2460,8 @@ A label above a track, with the filled part in the accent fill. The track is the
 | Property | Token |
 |---|---|
 | track background | `theme.bg.muted` — status, not interactive, so not Slider's `theme.border.strong`; see the track decision |
-| fill background | `theme.accent-role.bg` — see the pairing gap decision |
-| track block-size | `space.1` — a stand-in for the track-thickness token shared with Slider; see the token gap decision |
+| fill background | `theme.accent-role.bg` — a verified AA-nontext pairing on `theme.bg.muted` (4.89:1 light, 7.75:1 dark) |
+| track block-size | `size.track` |
 | track border-radius | `radius.pill` |
 | fill border-radius | `radius.pill` |
 | fill transition | `motion.duration.medium` with `motion.easing.standard`, on inline-size; none under prefers-reduced-motion |
@@ -2778,7 +2827,7 @@ The track, the fill and the row they sit in. The drawn track is decoration over 
 | Property | Token |
 |---|---|
 | hit area block-size | `size.control.sm` — the transparent input's height, and so the touch target, regardless of the drawn thumb |
-| track block-size | `space.1` — a placeholder for the one track-thickness token Slider and Progress will share (decision C8), which goes to the design-tokens interview; a spacing step standing in for a size is not the answer |
+| track block-size | `size.track` |
 | track border-radius | `radius.pill` |
 | track background | `theme.border.strong` — the boundary tone tuned to the 3:1 WCAG 1.4.11 asks of a control (decision C8). Progress's track is `theme.bg.muted` because a progress bar reports status; a slider's empty track is part of an interactive control and says how far the value can still go, so it has to be seen |
 | fill background | `theme.accent-role.bg` — from min to the thumb, or between the two thumbs of a range |
@@ -3094,7 +3143,7 @@ Notice's frame on a floating surface. The text, icon and dismiss are built exact
 | font-size | `type.body.size` |
 | line-height | `type.body.line-height` |
 | icon size | `size.icon.text` |
-| inline-size | `size.control.lg` multiplied by 10, or the viewport less twice `space.page.gutter` — a stand-in, see Tooltip's measure gap |
+| inline-size | text bounded by `size.measure.compact`; the box is that plus its padding, never wider than the viewport less twice `space.page.gutter` |
 | enter transition | `motion.overlay.duration` with `motion.easing.enter` |
 | exit transition | `motion.overlay.duration` with `motion.easing.exit` |
 
@@ -3270,20 +3319,20 @@ A small transient chip on an inverse surface, so it reads as a passing hint rath
 
 | Property | Token |
 |---|---|
-| background | `theme.bg.surface` — a stand-in until the inverse surface pair exists; see the token gap decision |
-| color | `theme.fg.primary` — a stand-in until the inverse surface pair exists; see the token gap decision |
-| border | `border.default` solid `theme.border.default` — a stand-in until the inverse surface pair exists; see the token gap decision; an inverse chip needs no outline |
+| background | `theme.bg.inverse` |
+| color | `theme.fg.on-inverse` |
+| border | none — the inverse surface separates itself from the page |
 | box-shadow | `theme.elevation.overlay` |
 | border-radius | `radius.element` |
 | padding-block | `space.1` |
 | padding-inline | `space.2` |
 | font-size | `type.supporting.size` |
 | line-height | `type.supporting.line-height` |
-| max-inline-size | `size.control.lg` multiplied by 8 — a stand-in, see the token gap decision |
+| max-inline-size | `size.measure.tight` |
 | gap from the trigger | `space.gap.xs` |
 | enter transition | `motion.overlay.duration` with `motion.easing.enter` |
 | exit transition | `motion.overlay.duration` with `motion.easing.exit` |
-| open delay | `motion.duration.slow-min` — a stand-in, see the token gap decision |
+| open delay | `motion.delay.hint` on pointer hover; none on keyboard focus |
 
 ### top-nav
 

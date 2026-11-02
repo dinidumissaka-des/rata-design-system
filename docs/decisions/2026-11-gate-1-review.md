@@ -62,3 +62,8 @@ three components that unblock the most blocks — each paused for approval.
 |---|---|---|---|---|---|
 | T1 | `size.target.min` | primitive (`size.json`) | `48px`, every platform | Minimum hit area for any touch-operable control; never the drawn size. | 44px web/iOS + 48dp Android — one value so touch behaviour can't differ by platform. |
 | T2 | `theme.elevation.floating` | semantic | `elevation.med` / `elevation.med-strong` | Persistent controls over scrolling content (FAB, bottom-nav, sticky action bar). | Reusing `overlay` — would tie the FAB's shadow to menus. |
+| T3 | `size.track` | primitive | `4px` | Thickness of slider and progress bars. | A 6px "thick" step — nothing needs it. |
+| T4 | `size.measure.tight / compact / prose` | primitive | `32ch / 45ch / 65ch` | Max line length: tooltip; toast, popover, empty-state; running prose. In `ch`, so it follows the font. | Container widths — those are layout (group 3). |
+| T5 | `motion.delay.hint` | semantic | → `motion.duration.medium-max` (280ms) | Pointer rest before a tooltip opens; focus opens immediately. | `slow-min` (525ms) — the user chose the snappier step. |
+| T6 | `theme.bg.inverse` / `theme.fg.on-inverse` | semantic, generated | neutral 20/99 light, 90/10 dark | Tooltip-only inverse surface; verified 12.88:1 / 13.3:1. | Tone 30/80, and an accent-tinted inverse. |
+| T7 | pairing `theme.accent-role.bg` on `theme.bg.muted` | contrast | AA-nontext | Progress fill on its track; measured 4.89:1 / 7.75:1, holds across every brand theme. | — |

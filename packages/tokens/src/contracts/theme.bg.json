@@ -69,6 +69,20 @@
       "pairsWith": [
         "theme.fg.secondary"
       ]
+    },
+    "theme.bg.inverse": {
+      "layer": "semantic",
+      "summary": "An inverted surface — dark in the light scheme, light in the dark — for a small transient hint.",
+      "use": [
+        "A tooltip's background."
+      ],
+      "instead": {
+        "A toast, menu or popover — anything that carries interactive content": "theme.bg.surface with theme.elevation.overlay; inverting a surface the reader acts inside makes it read as an alert",
+        "A selected or emphasised row": "theme.accent-role.subtle"
+      },
+      "pairsWith": [
+        "theme.fg.on-inverse"
+      ]
     }
   }
 }
