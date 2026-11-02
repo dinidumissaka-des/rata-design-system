@@ -87,7 +87,7 @@
       },
       {
         "decision": "Web and native",
-        "why": "Web: `<nav aria-label>` around a `<ul>` of `<a>` elements, `aria-current=\"page\"` on the current one, `aria-disabled` on an unavailable Previous or Next. React Native has no URLs to link to, so `href` is web-only and `onPageChange` is what drives navigation; it is required there. Each item is a `Pressable` with `accessibilityRole=\"button\"` — on native, changing a page is an action rather than a link — with `accessibilityLabel` \"Page 4\" and `accessibilityState` carrying `selected` for the current page and `disabled` for an unavailable Previous or Next. The row wraps in a `View` with `accessibilityLabel` set from `label`."
+        "why": "Web: `<nav aria-label>` around a `<ul>` of `<a>` elements, `aria-current=\"page\"` on the current one, `aria-disabled` on an unavailable Previous or Next. React Native has no URLs to link to, so `href` is web-only and `onPageChange` is what drives navigation; it is required there. Each item is a `Pressable` with `accessibilityRole=\"button\"` — on native, changing a page is an action rather than a link — with `accessibilityLabel` \"Page 4\" and `accessibilityState` carrying `selected` for the current page and `disabled` for an unavailable Previous or Next. The row wraps in a `View` with `accessibilityLabel` set from `label`. Rata-drawn (decision N5): there is no OS page-selector control, so each item is a drawn `Pressable`. The native implementation ships in the pro tier (decision N6)."
       }
     ]
   },

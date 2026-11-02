@@ -83,7 +83,7 @@
     }
   },
   "behavior": {
-    "summary": "A message rendered into one app-level toast region, announced politely, never taking focus, and removed after `duration` unless the reader is hovering it, focused inside it, or away from the tab. The region is a proposed companion — `ToastRegion`, mounted once near the app root, with a `useToast()` hook that shows a Toast from an event handler — and is part of what this gate is asking to approve.",
+    "summary": "A message rendered into one app-level toast region, announced politely, never taking focus, and removed after `duration` unless the reader is hovering it, focused inside it, or away from the tab. The region is `ToastRegion`, mounted once near the app root, and a Toast is shown from an event handler with the `useToast()` hook — both approved at gate 1.",
     "decisions": [
       {
         "decision": "Toast confirms; Notice informs; Dialog interrupts",
@@ -102,12 +102,16 @@
         "why": "WCAG 2.2.1 requires timed content to be adjustable. The countdown pauses while the pointer is over the toast, while focus is inside it, and while the tab is hidden, so a reader who is reading it, or reaching for its action, or who switched away, does not lose it. An action in a toast — Undo, View — must also be reachable somewhere else in the interface, because the toast will eventually leave; a toast whose action is the only path to something must pass `duration={null}` and stay until dismissed."
       },
       {
+        "decision": "`ToastRegion` and `useToast()` are part of the API",
+        "why": "Approved at gate 1 (decision C5, docs/decisions/2026-11-gate-1-review.md). A toast is raised from an event handler — a save that finished, a path that was copied — far from where it is drawn, so rendering `<Toast>` in place would put it in whatever stacking context the handler's component happens to live in. `ToastRegion` is the one place every toast lands, mounted once near the app root; `useToast()` returns `show`, which hands a Toast to that region from anywhere below it. Toast itself stays a plain component with the props below, so the region owns the stack, the timers and the live region, and the message owns only what it says."
+      },
+      {
         "decision": "One region per app, in the top layer, stacking at most three",
         "why": "Toasts from anywhere in the app have to land in one place, or two of them overlap and a screen reader hears neither cleanly. The region is a single `popover=\"manual\"` element so it sits in the top layer without a z-index — there are no z-index tokens in this system and the top layer is why none are needed. More than three visible at once is a log, not a confirmation; the oldest leaves early to make room."
       },
       {
         "decision": "Web and native",
-        "why": "Web: each toast is a `div` inside one `role=\"status\"` region, named \"Notifications\" with `aria-label` so it can be found by landmark navigation; the region carries `popover=\"manual\"`. Icons are `aria-hidden`, as in Notice. React Native has no top layer: the region is an absolutely positioned `View` mounted once at the root, above the navigation container. Each toast sets `accessibilityLiveRegion=\"polite\"` on Android and is announced with `AccessibilityInfo.announceForAccessibility` on iOS, where live regions do not exist; the action is `accessibilityRole=\"button\"`. Swipe-to-dismiss is native-only, and always backed by the dismiss button, because a gesture is not discoverable by a screen reader. The pause-on-hover half of the timer rule is web-only; on native the timer pauses while a screen reader is running."
+        "why": "Web: each toast is a `div` inside one `role=\"status\"` region, named \"Notifications\" with `aria-label` so it can be found by landmark navigation; the region carries `popover=\"manual\"`. Icons are `aria-hidden`, as in Notice. React Native has no top layer: the region is an absolutely positioned `View` mounted once at the root, above the navigation container. Each toast sets `accessibilityLiveRegion=\"polite\"` on Android and is announced with `AccessibilityInfo.announceForAccessibility` on iOS, where live regions do not exist; the action is `accessibilityRole=\"button\"`. Swipe-to-dismiss is native-only, and always backed by the dismiss button, because a gesture is not discoverable by a screen reader. The pause-on-hover half of the timer rule is web-only; on native the timer pauses while a screen reader is running. Rata-drawn on both platforms, not the OS's own toast (decision N5): Android's system Toast cannot carry an action or a dismiss button, and iOS has none, so one drawn component behaves the same everywhere. The native implementation ships in the pro tier (decision N6)."
       },
       {
         "decision": "Open question for approval: toasts while a modal Dialog is open",
@@ -196,7 +200,7 @@
       "case": "A confirmation that can safely be missed",
       "when": "The reader did something whose result is not otherwise visible where they are.",
       "example": "const toast = useToast();\n\n<Button onClick={() => { copy(path); toast.show(<Toast>Token path copied</Toast>); }}>\n  Copy path\n</Button>",
-      "notes": "Neutral, default duration, no action. Focus stays on the button, and the message is announced politely after the button's own feedback."
+      "notes": "Neutral, default duration, no action. `show` hands the toast to the `ToastRegion` mounted once at the app root. Focus stays on the button, and the message is announced politely after the button's own feedback."
     },
     {
       "case": "Undo for something reversible",

@@ -23,11 +23,11 @@
   "tier": "free",
   "tokens": {
     "base": {
-      "summary": "A small transient surface, built like a miniature Menu: the same surface, outline and overlay shadow, so a tooltip and a menu opened from neighbouring controls read as the same kind of thing. Not an inverse (dark-on-light) chip — see the decisions.",
+      "summary": "A small transient chip on an inverse surface, so it reads as a passing hint rather than as a menu or a popover. The inverse surface and its foreground do not exist yet, so the colour lines below are the closest existing tokens and are stand-ins; the measurements, shadow and motion are final.",
       "tokens": {
-        "background": "theme.bg.surface",
-        "color": "theme.fg.primary",
-        "border": "border.default solid theme.border.default",
+        "background": "theme.bg.surface — a stand-in until the inverse surface pair exists; see the token gap decision",
+        "color": "theme.fg.primary — a stand-in until the inverse surface pair exists; see the token gap decision",
+        "border": "border.default solid theme.border.default — a stand-in until the inverse surface pair exists; see the token gap decision; an inverse chip needs no outline",
         "box-shadow": "theme.elevation.overlay",
         "border-radius": "radius.element",
         "padding-block": "space.1",
@@ -70,8 +70,12 @@
         "why": "A natively disabled button receives no pointer or focus events, so the most useful tooltip there is — \"why can't I press this?\" — cannot be shown on it. Because disabled controls here stay focusable and hoverable, the tooltip appears on them like any other control, and `relationship=\"description\"` is how the reason gets announced."
       },
       {
-        "decision": "Same surface as Menu, not an inverse chip",
-        "why": "A dark tooltip on a light page needs an inverse background and a foreground verified against it, and the token set has neither — inventing one for a single component would be a pairing nobody else can rely on. The surface-and-outline construction is already verified (`theme.fg.primary` on `theme.bg.surface`) and keeps tooltips and menus visibly related. If an inverse surface is wanted, that is a new theme role through the design-tokens skill, not a hex in this recipe."
+        "decision": "An inverse surface, not Menu's",
+        "why": "Approved at gate 1 (decision C3, docs/decisions/2026-11-gate-1-review.md). A tooltip is the one overlay that never holds a control and is never opened on purpose, and an inverse chip says so at a glance: it cannot be mistaken for a Menu or a Popover opened from the neighbouring control, both of which are surfaces the reader acts in. The cost is a new pairing — an inverse background and a foreground verified against it in both schemes and in every brand — which is why it goes through the design-tokens skill rather than into this recipe as a palette value."
+      },
+      {
+        "decision": "Token gap: the inverse surface and its foreground — needs the design-tokens skill",
+        "why": "The token set has no inverse surface and no foreground verified against one, and inventing either for a single component would be a pairing nobody else can rely on. The pair goes to the design-tokens interview (Purpose / Use when / Don't use for / Pairs with), with its contrast promise added to the token contracts so `npm run themes:check` re-measures it per brand. Until it exists the recipe uses `theme.bg.surface`, `theme.fg.primary` and `theme.border.default` — already verified together — as stand-ins, and gate 2 does not approve the colour lines until the pair is real."
       },
       {
         "decision": "Token gap: `motion.delay.hint` — needs the design-tokens skill",
@@ -83,7 +87,7 @@
       },
       {
         "decision": "Web and native",
-        "why": "Web: the trigger is the caller's element, cloned to receive `aria-labelledby` or `aria-describedby`; the tooltip is a `role=\"tooltip\"` element carrying the `popover` attribute (`hint` where supported, `manual` otherwise) so it renders in the top layer without a portal. React Native has no hover and no tooltip core component, so nothing is drawn: with `relationship=\"label\"` the text becomes the trigger's `accessibilityLabel`, and with `relationship=\"description\"` it becomes its `accessibilityHint` — which is what both platform screen readers read after the name. `placement` is web-only. The native behaviour is the touch behaviour above, followed through: the information still reaches assistive tech, and nothing is drawn that a finger cannot dismiss."
+        "why": "Web: the trigger is the caller's element, cloned to receive `aria-labelledby` or `aria-describedby`; the tooltip is a `role=\"tooltip\"` element carrying the `popover` attribute (`hint` where supported, `manual` otherwise) so it renders in the top layer without a portal. React Native has no hover and no tooltip core component, so nothing is drawn: with `relationship=\"label\"` the text becomes the trigger's `accessibilityLabel`, and with `relationship=\"description\"` it becomes its `accessibilityHint` — which is what both platform screen readers read after the name. `placement` is web-only. The native behaviour is the touch behaviour above, followed through: the information still reaches assistive tech, and nothing is drawn that a finger cannot dismiss. Neither OS control nor Rata-drawn (decision N5): nothing is drawn on native, and the platform screen reader is what delivers the text. The native implementation ships in the pro tier (decision N6)."
       }
     ]
   },

@@ -61,7 +61,7 @@
       },
       {
         "decision": "Web and native",
-        "why": "Web: `<hr>` horizontally; `<div role=\"separator\" aria-orientation=\"vertical\">` vertically; with `decorative`, the same element with `aria-hidden=\"true\"` (and `role=\"none\"` on the `<hr>`). React Native has no separator role: a hairline `View` that is always hidden from assistive tech with `importantForAccessibility=\"no\"` and `accessibilityElementsHidden`, whatever `decorative` says — the topic change is carried by the heading that follows it, which is the only structure native screen readers navigate by. `decorative` therefore has an effect on web only."
+        "why": "Web: `<hr>` horizontally; `<div role=\"separator\" aria-orientation=\"vertical\">` vertically; with `decorative`, the same element with `aria-hidden=\"true\"` (and `role=\"none\"` on the `<hr>`). React Native has no separator role: a hairline `View` that is always hidden from assistive tech with `importantForAccessibility=\"no\"` and `accessibilityElementsHidden`, whatever `decorative` says — the topic change is carried by the heading that follows it, which is the only structure native screen readers navigate by. `decorative` therefore has an effect on web only. Rata-drawn (decision N5): there is no OS separator control. The native implementation ships in the pro tier (decision N6)."
       }
     ]
   },

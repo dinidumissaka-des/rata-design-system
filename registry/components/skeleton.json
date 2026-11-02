@@ -75,7 +75,7 @@
       },
       {
         "decision": "Web and native",
-        "why": "Web: a `span` (so it can sit inside text or inline layout) with `aria-hidden=\"true\"`; the loading container carries `aria-busy`. React Native: a `View` with `importantForAccessibility=\"no-hide-descendants\"` and `accessibilityElementsHidden`, animated with the core `Animated` API and skipped when `AccessibilityInfo.isReduceMotionEnabled()` is true. The container's loading state is `accessibilityState={{ busy: true }}`. All props work on both."
+        "why": "Web: a `span` (so it can sit inside text or inline layout) with `aria-hidden=\"true\"`; the loading container carries `aria-busy`. React Native: a `View` with `importantForAccessibility=\"no-hide-descendants\"` and `accessibilityElementsHidden`, animated with the core `Animated` API and skipped when `AccessibilityInfo.isReduceMotionEnabled()` is true. The container's loading state is `accessibilityState={{ busy: true }}`. All props work on both. Rata-drawn (decision N5): there is no OS placeholder control. The native implementation ships in the pro tier (decision N6)."
       }
     ]
   },

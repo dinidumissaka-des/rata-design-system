@@ -78,7 +78,7 @@
       },
       {
         "decision": "Web and native",
-        "why": "Web: a `div`; with `live`, it carries `role=\"status\"` (polite) or `role=\"alert\"` (assertive), as Notice does. The icon is `aria-hidden`. React Native: a `View`; the title is plain `Text`, not `accessibilityRole=\"header\"`, for the outline reason above. `live` maps to `accessibilityLiveRegion` on Android and to `AccessibilityInfo.announceForAccessibility` with the title on iOS. All props work on both."
+        "why": "Web: a `div`; with `live`, it carries `role=\"status\"` (polite) or `role=\"alert\"` (assertive), as Notice does. The icon is `aria-hidden`. React Native: a `View`; the title is plain `Text`, not `accessibilityRole=\"header\"`, for the outline reason above. `live` maps to `accessibilityLiveRegion` on Android and to `AccessibilityInfo.announceForAccessibility` with the title on iOS. All props work on both. Rata-drawn (decision N5): React Native exposes no OS empty-state view, so it is drawn from the same recipe as the web. The native implementation ships in the pro tier (decision N6)."
       }
     ]
   },
