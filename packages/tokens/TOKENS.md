@@ -2491,33 +2491,44 @@ A row of boxes, each the text field's box in miniature. Field owns the label, he
 
 ### popover
 
-Menu's surface with room for content: the same background, outline, shadow and motion, so every anchored overlay in the system reads as one family, and more padding because it holds text and fields rather than one-line rows.
+The popover surface — the same surface as Menu (P1, P3–P5).
 
 | Property | Token |
 |---|---|
-| background | `theme.bg.surface` |
-| color | `theme.fg.primary` |
-| border | `border.default` solid `theme.border.default` |
-| box-shadow | `theme.elevation.overlay` |
-| border-radius | `radius.container` |
-| padding | `space.padding.sm` |
-| gap between title and body | `space.stack.xs` |
-| font-size | `type.body.size` |
-| line-height | `type.body.line-height` |
-| max-inline-size | text bounded by `size.measure.compact`; never wider than the viewport less `space.padding.lg` |
-| gap from the trigger | `space.gap.xs` |
-| enter transition | `motion.overlay.duration` with `motion.easing.enter` |
-| exit transition | `motion.overlay.duration` with `motion.easing.exit` |
+| background | `theme.bg.surface` (P1) |
+| color | `theme.fg.primary` (P1) |
+| border | `border.default` solid `theme.border.default` (P1) |
+| box-shadow | `theme.elevation.overlay` (P1) |
+| border-radius | `radius.container` (P1) |
+| padding | `space.padding.sm` (P1) |
+| font-size | `type.body.size` (P1) |
+| line-height | `type.body.line-height` (P1) |
+| max-inline-size | text bounded by `size.measure.compact`; never wider than the viewport less `space.padding.lg` (P3) |
+| gap from the trigger | `space.gap.xs`, anchor-positioned with flip-block / flip-inline fallbacks (P3) |
+| stacking | the browser's top layer via the Popover API — no z-index (P3) |
+| enter | `motion.overlay.duration` with `motion.easing.enter`: fade in and rise by `space.1`, only under prefers-reduced-motion: no-preference (P4) |
+| exit | none — closes instantly, as Menu does (P5) |
 
 ### popover-title
 
-The popover's name, styled as a label rather than a heading — see the decisions.
+The required title, a styled label rather than a heading (P2).
 
 | Property | Token |
 |---|---|
-| font-size | `type.body.size` |
-| font-weight | `type.label.weight` |
-| color | `theme.fg.primary` |
+| font-size | `type.body.size` (P2) |
+| font-weight | `type.label.weight` (P2) |
+| color | `theme.fg.primary` (P2) |
+| gap below | `space.stack.xs` (P2) |
+
+### popover-focus
+
+Where the focus ring is drawn (P6).
+
+| Property | Token |
+|---|---|
+| popover | no ring of its own — focus moves to the first focusable control inside, or initialFocus (P6) |
+| controls inside | each draws its own `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible (P6) |
+| trigger | keeps its own ring and carries aria-expanded (P6) |
 
 ### progress
 

@@ -25,6 +25,7 @@ A non-modal `role="dialog"` carrying `popover="auto"`, positioned against its tr
 - **It is the touch answer for anything a Tooltip cannot do** — A tooltip does not appear on touch, by design. A popover opens on a tap, a click, Enter or Space — the same activation on every input — so supplementary help that must be reachable on a phone, sometimes called a toggletip, is a Popover with a help-icon trigger.
 - **No close button by default, and no scrim** — Escape, clicking elsewhere and tabbing out all close it, and the trigger toggles it — four ways out, all expected for a non-modal overlay. A close button is content the caller can add when the popover holds a form with an explicit Done. A scrim would claim the page is inert, which `theme.scrim`'s contract reserves for modals.
 - **Web and native** — Web: a `role="dialog"` element, not `aria-modal`, with the `popover="auto"` attribute and `aria-labelledby` pointing at its title; the trigger receives `aria-expanded` and `aria-controls` (deliberately not `aria-haspopup="dialog"`, which screen readers announce inconsistently). React Native has no anchored overlay and no top layer, and a small anchored surface is the wrong shape for a phone anyway. On native it renders through the core `Modal` as a sheet from the block-end edge, with `accessibilityViewIsModal` on iOS and the title as `accessibilityRole="header"` — modal on native because the platform offers no non-modal floating surface that screen readers handle. `placement` is web-only. Rata-drawn content inside the OS's own modal presentation (decision N5): the core `Modal` supplies the presentation and its screen-reader behaviour, and Rata draws the sheet; no platform popover or action sheet is used. The native implementation ships in the pro tier (decision N6).
+- **Gate 2: every state's token mapping is approved** — Approved state by state — P1 surface (Menu's), P2 title, P3 size and position in the top layer, P4 enter motion, P5 instant close, P6 focus. The exit transition the gate-1 recipe described is dropped: an exit transition on a top-layer element has to hold display with allow-discrete while non-animatable properties revert at once, which is the bug Dialog already shipped and fixed, and Menu closes instantly for the same reason (gate 2, docs/decisions/2026-11-gate-1-review.md).
 
 ## Props
 
@@ -245,30 +246,41 @@ Don't. A list of actions is a Menu — arrow keys, typeahead, focus returned aft
 
 ### base
 
-Menu's surface with room for content: the same background, outline, shadow and motion, so every anchored overlay in the system reads as one family, and more padding because it holds text and fields rather than one-line rows.
+The popover surface — the same surface as Menu (P1, P3–P5).
 
 | Property | Token |
 |---|---|
-| background | `theme.bg.surface` |
-| color | `theme.fg.primary` |
-| border | `border.default solid theme.border.default` |
-| box-shadow | `theme.elevation.overlay` |
-| border-radius | `radius.container` |
-| padding | `space.padding.sm` |
-| gap between title and body | `space.stack.xs` |
-| font-size | `type.body.size` |
-| line-height | `type.body.line-height` |
-| max-inline-size | `text bounded by size.measure.compact; never wider than the viewport less space.padding.lg` |
-| gap from the trigger | `space.gap.xs` |
-| enter transition | `motion.overlay.duration with motion.easing.enter` |
-| exit transition | `motion.overlay.duration with motion.easing.exit` |
+| background | `theme.bg.surface (P1)` |
+| color | `theme.fg.primary (P1)` |
+| border | `border.default solid theme.border.default (P1)` |
+| box-shadow | `theme.elevation.overlay (P1)` |
+| border-radius | `radius.container (P1)` |
+| padding | `space.padding.sm (P1)` |
+| font-size | `type.body.size (P1)` |
+| line-height | `type.body.line-height (P1)` |
+| max-inline-size | `text bounded by size.measure.compact; never wider than the viewport less space.padding.lg (P3)` |
+| gap from the trigger | `space.gap.xs, anchor-positioned with flip-block / flip-inline fallbacks (P3)` |
+| stacking | `the browser's top layer via the Popover API — no z-index (P3)` |
+| enter | `motion.overlay.duration with motion.easing.enter: fade in and rise by space.1, only under prefers-reduced-motion: no-preference (P4)` |
+| exit | `none — closes instantly, as Menu does (P5)` |
 
 ### title
 
-The popover's name, styled as a label rather than a heading — see the decisions.
+The required title, a styled label rather than a heading (P2).
 
 | Property | Token |
 |---|---|
-| font-size | `type.body.size` |
-| font-weight | `type.label.weight` |
-| color | `theme.fg.primary` |
+| font-size | `type.body.size (P2)` |
+| font-weight | `type.label.weight (P2)` |
+| color | `theme.fg.primary (P2)` |
+| gap below | `space.stack.xs (P2)` |
+
+### focus
+
+Where the focus ring is drawn (P6).
+
+| Property | Token |
+|---|---|
+| popover | `no ring of its own — focus moves to the first focusable control inside, or initialFocus (P6)` |
+| controls inside | `each draws its own theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible (P6)` |
+| trigger | `keeps its own ring and carries aria-expanded (P6)` |

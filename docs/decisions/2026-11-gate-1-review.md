@@ -99,3 +99,14 @@ Follow-ups, each its own change: point the playground's `use-media-query.ts` at 
 | C4 | linked · hover/press | Heading link's `::after` stretches over the card; card composes `.rata-state-layer` via `:has()`. |
 | C5 | linked · focus | Ring around the card while the link is `:focus-visible`; link outline suppressed only there. |
 | C6 | secondary actions | `position: relative`, after the heading in source order; no z-index. |
+
+### Popover (approved state by state)
+
+| # | State | Mapping |
+|---|---|---|
+| P1 | surface | `theme.bg.surface`, `theme.fg.primary`, `border.default` `theme.border.default`, `theme.elevation.overlay`, `radius.container`, `space.padding.sm`, `type.body` — Menu's surface. |
+| P2 | title | `type.body.size`, `type.label.weight`, `theme.fg.primary`, `space.stack.xs` below. |
+| P3 | size / position | Text ≤ `size.measure.compact`, ≤ viewport − `space.padding.lg`; `space.gap.xs` from the trigger with flip fallbacks; top layer, no z-index. |
+| P4 | enter | `motion.overlay.duration` + `motion.easing.enter`, fade and `space.1` rise, reduced-motion off. |
+| P5 | exit | Instant, like Menu. The spec's exit transition is dropped. |
+| P6 | focus | No ring on the popover; first control (or `initialFocus`) takes focus and draws its own ring; trigger keeps its ring and `aria-expanded`. |
