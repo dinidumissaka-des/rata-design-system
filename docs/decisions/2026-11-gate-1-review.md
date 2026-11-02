@@ -74,3 +74,17 @@ three components that unblock the most blocks — each paused for approval.
 | T12 | `layer.sticky / floating / overlay / toast` | primitive | `100 / 200 / 300 / 400` | Page-level z-index. Dialog and Sheet use the top layer and take none. | A `layer.modal` step; no scale at all. |
 
 Follow-ups, each its own change: point the playground's `use-media-query.ts` at `breakpoint.wide`; migrate SideNav and Panel widths to `size.pane.*`; replace the blocks' `size.control.lg` multiples with the layout tokens.
+
+## Gate 2 — token mappings
+
+### Link (approved state by state)
+
+| # | State | Mapping |
+|---|---|---|
+| L1 | inline · rest | `theme.accent-role.fg`, underline `border.1` at `space.0-5`, font inherited. Adds five verified pairings: `accent-role.fg` on `bg.subtle`, `bg.muted`, and the success/warning/danger `subtle` backgrounds (≥ 4.89:1). |
+| L2 | inline · hover/press | No change; cursor only. |
+| L3 | inline · focus | `focus.ring-width` `theme.focus-ring`, `focus.ring-offset`, `radius.inner`, `box-decoration-break: clone`. |
+| L4 | new-tab glyph | `size.icon.text`, `space.gap.xs`, glyph `aria-hidden`, visually hidden "(opens in new tab)". |
+| L5 | standalone · rest | `theme.accent-role.fg`, no underline, `type.control.weight`, `space.1` inline padding, `radius.inner`. |
+| L6 | standalone · hover/press | Compose `.rata-state-layer`. |
+| L7 | standalone · focus | Same ring as L3. |

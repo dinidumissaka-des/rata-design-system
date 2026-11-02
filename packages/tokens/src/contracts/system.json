@@ -208,6 +208,31 @@
       "fg": "theme.accent-role.bg",
       "bg": "theme.bg.muted",
       "requires": "AA-nontext"
+    },
+    {
+      "fg": "theme.accent-role.fg",
+      "bg": "theme.bg.subtle",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.accent-role.fg",
+      "bg": "theme.bg.muted",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.accent-role.fg",
+      "bg": "theme.success-role.subtle",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.accent-role.fg",
+      "bg": "theme.warning-role.subtle",
+      "requires": "AA-text"
+    },
+    {
+      "fg": "theme.accent-role.fg",
+      "bg": "theme.danger-role.subtle",
+      "requires": "AA-text"
     }
   ],
   "knownGaps": [

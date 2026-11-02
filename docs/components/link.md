@@ -25,6 +25,7 @@ An `<a href>`, always. No primitive: the platform already owns a link's keyboard
 - **`newTab` exists so the warning cannot be forgotten** — WCAG 3.2.5 asks that a change of context be predictable, and a link that silently opens a new tab breaks Back for the reader who did not expect it. `newTab` sets `target="_blank"` and `rel="noopener noreferrer"` together, and adds a glyph plus visually-hidden "(opens in a new tab)" so it is announced. Passing `target="_blank"` by hand gets none of that, which is the reason this is a prop rather than an attribute the caller remembers.
 - **No visited colour** — Approved at gate 1 (decision C4, docs/decisions/2026-11-gate-1-review.md). In an application most links are repeated navigation — the same invoices, the same settings — so a visited state would recolour half of every page and tell the reader nothing. A link is recognised by its underline, not its colour, so a visited colour would add no cue the reader needs. And it would be one more foreground to verify for contrast against every surface, in both schemes and every brand, while browsers deliberately limit what `:visited` can style for privacy. There is no visited token, none is to be proposed, and `:visited` gets no rule.
 - **Web and native** — Web: an `<a href>`; `newTab` adds `target` and `rel`, a glyph and a visually-hidden suffix; a router intercepts `onClick` and calls `preventDefault`. React Native has no anchor: the link is a nested `Text` with `accessibilityRole="link"` and `onPress`, so it flows inside a paragraph, and `href` is opened with `Linking.openURL` unless the caller's `onPress` handles it for in-app navigation. `newTab` is web-only. `variant` works on both; the native state-layer equivalent is the `Pressable` pressed style, and the inline underline is `textDecorationLine: "underline"`. The OS's own text and link handling, not a Rata-drawn control (decision N5): the platform `Text` carries the link and `Linking` opens it; Rata supplies only the colour and underline. The native implementation ships in the pro tier (decision N6).
+- **Gate 2: every state's token mapping is approved** — Approved state by state — L1 inline rest, L2 inline hover/press (no change), L3 inline focus, L4 the new-tab glyph, L5 standalone rest, L6 standalone hover/press (state layer), L7 standalone focus. Mapping it surfaced one gap: the link colour was verified on only three surfaces, while links also land in table rows, wells and Notices. theme.accent-role.fg was measured on theme.bg.subtle, theme.bg.muted and the three status subtle backgrounds — 4.89:1 or better in both schemes — and all five are now documented pairings that themes:check re-verifies for every brand (gate 2, docs/decisions/2026-11-gate-1-review.md).
 
 ## Props
 
@@ -172,31 +173,33 @@ Don't. Nothing is navigated to, so it is a button: `<Button variant="tertiary" o
 
 ### inline
 
-A link inside a sentence: the accent foreground `theme.accent-role.fg` documents for links, and always underlined, because colour alone does not distinguish it from the text around it.
+A link inside a sentence. Always underlined, because colour alone does not distinguish it from the text around it.
 
 | Property | Token |
 |---|---|
-| color | `theme.accent-role.fg — verified at AA-text on theme.bg.canvas, theme.bg.surface and theme.accent-role.subtle` |
-| text-decoration-line | `underline, at rest and on hover alike` |
-| text-decoration-thickness | `border.1` |
-| text-underline-offset | `space.0-5` |
-| font | `inherited from the surrounding text` |
-| focus ring | `focus.ring-width solid theme.focus-ring, offset focus.ring-offset, on :focus-visible, cloned across line breaks` |
-| focus ring corners | `radius.inner` |
+| rest · color | `theme.accent-role.fg — verified AA-text on theme.bg.canvas, theme.bg.surface, theme.bg.subtle, theme.bg.muted, theme.accent-role.subtle and the success/warning/danger subtle backgrounds (L1)` |
+| rest · text-decoration-line | `underline (L1)` |
+| rest · text-decoration-thickness | `border.1 (L1)` |
+| rest · text-underline-offset | `space.0-5 (L1)` |
+| rest · font | `inherited from the surrounding text (L1)` |
+| hover / press | `no change — the underline is already the affordance, and a colour shift mid-sentence reads as flicker; cursor: pointer only (L2)` |
+| focus · outline | `focus.ring-width solid theme.focus-ring, offset focus.ring-offset, on :focus-visible (L3)` |
+| focus · corners | `radius.inner (L3)` |
+| focus · wrapping | `box-decoration-break: clone, so a link broken across lines gets a ring on each line (L3)` |
 
 ### standalone
 
-A link on its own line or in a row of actions — "View all", "Back to invoices". Not underlined, so it gets a box for the state layer instead.
+A link on its own line or in a row of actions — 'View all', 'Back to invoices'. Not underlined, so it gets a box for the state layer.
 
 | Property | Token |
 |---|---|
-| color | `theme.accent-role.fg` |
-| font-size | `inherited from where it sits` |
-| font-weight | `type.control.weight` |
-| padding-inline | `space.1` |
-| border-radius | `radius.inner` |
-| hover / press | `compose the .rata-state-layer class` |
-| focus ring | `theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible` |
+| rest · color | `theme.accent-role.fg (L5)` |
+| rest · font-size | `inherited from where it sits (L5)` |
+| rest · font-weight | `type.control.weight (L5)` |
+| rest · padding-inline | `space.1 (L5)` |
+| rest · border-radius | `radius.inner (L5)` |
+| hover / press | `compose the .rata-state-layer class — state.hover-opacity / state.press-opacity (L6)` |
+| focus | `theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible — the same ring as inline (L7)` |
 
 ### new-tab
 
@@ -204,5 +207,6 @@ The glyph that says a link opens a new tab, sized from the text so it never outg
 
 | Property | Token |
 |---|---|
-| icon size | `size.icon.text` |
-| gap before the icon | `space.gap.xs` |
+| icon size | `size.icon.text (L4)` |
+| gap before the icon | `space.gap.xs (L4)` |
+| announcement | `the glyph is aria-hidden; '(opens in new tab)' is visually hidden text inside the link (L4)` |
