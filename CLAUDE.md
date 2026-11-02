@@ -52,7 +52,9 @@ Before writing any UI code in `apps/*` or adding a component under `packages/`:
 
 1. **Find the precedent.** `npm run ui -- pages` — is there a page in this
    repo with a similar shell? Right now there's exactly one
-   (`apps/playground/src/app.tsx`, shell: `header → section×3`, no sidebar).
+   (`apps/playground/src/app.tsx`, shell: `TopNav` header → `.pg-layout`
+   = `.pg-sidebar` (Search + SideNav rail) beside `main.pg-main`, which holds
+   one section per page).
    Open it before adding a second one.
 2. **Study the frame.** Read that page's layout shell only — ignore its
    content. What are the regions, and how wide is each one?
