@@ -21,6 +21,7 @@ import {
   Checkbox,
   Dialog,
   Disclosure,
+  Divider,
   Heading,
   Link,
   Panel,
@@ -451,6 +452,24 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
         </Heading>
         <TextField label="Billing email" />
       </Card>
+    ),
+  },
+
+  divider: {
+    "A change of topic in running content": () => (
+      <div className="pg-block-stack pg-wide-specimen">
+        <Text>Your plan renews on 1 March.</Text>
+        <Divider />
+        <Heading level={4}>Danger zone</Heading>
+      </div>
+    ),
+    "Groups in a toolbar": () => (
+      <div role="toolbar" aria-label="Formatting" className="pg-toolbar">
+        <Button variant="tertiary">Bold</Button>
+        <Button variant="tertiary">Italic</Button>
+        <Divider orientation="vertical" />
+        <Button variant="tertiary">Link</Button>
+      </div>
     ),
   },
 

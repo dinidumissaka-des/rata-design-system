@@ -1663,6 +1663,20 @@ code {
   gap: var(--rata-space-stack-sm);
 }
 
+/* A specimen whose content takes its container's width — a rule, a loading
+   placeholder, a bar — and so has none of its own inside the centred stage. */
+.pg-wide-specimen {
+  inline-size: var(--rata-size-measure-compact);
+  max-inline-size: 100%;
+}
+
+/* A row of grouped controls, for the Divider's toolbar specimen. */
+.pg-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--rata-space-gap-xs);
+}
+
 
 /* The grid a Card gallery sits in: it owns the gap, the cards own none.
    One column: no token states a card column's minimum width yet, and

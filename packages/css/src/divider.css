@@ -1,0 +1,31 @@
+/* Divider — a rule marking a change of topic, or a boundary between groups
+   in a row of controls.
+
+   Every value below is the gate-2 recipe in registry/components/divider.json.
+   One hairline in theme.border.default, and no margin: the stack or row it
+   sits in owns the space either side, as with Heading. */
+
+/* base — horizontal. An <hr>, so the user-agent rule's inset border, margin
+   and fixed colour are replaced whole rather than layered on. */
+.rata-divider--horizontal {
+  display: block;
+  box-sizing: border-box;
+  inline-size: 100%;
+  block-size: var(--rata-space-0);
+  margin: var(--rata-space-0);
+  border: none;
+  border-block-start: var(--rata-border-default) solid var(--rata-theme-border-default);
+}
+
+/* vertical — the same hairline on the other axis, stretched to the height of
+   the row it divides. align-self rather than a block-size, so a row that
+   centres its items still gets a full-height rule. */
+.rata-divider--vertical {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  align-self: stretch;
+  inline-size: var(--rata-space-0);
+  margin: var(--rata-space-0);
+  border: none;
+  border-inline-start: var(--rata-border-default) solid var(--rata-theme-border-default);
+}

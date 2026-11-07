@@ -10,17 +10,32 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
     }
   },
   "dependencies": [],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/divider.css",
+      "target": "styles/divider.css"
+    },
+    {
+      "source": "packages/react/src/divider.tsx",
+      "target": "components/divider.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -67,8 +82,6 @@
   },
   "props": {
     "orientation": {
-      "type": "\"horizontal\" | \"vertical\"",
-      "default": "\"horizontal\"",
       "summary": "Which way the rule runs.",
       "use": [
         "`vertical` between groups of controls in a horizontal row, such as a toolbar."
@@ -79,8 +92,6 @@
       "a11y": "`horizontal` renders an `<hr>`; `vertical` renders `role=\"separator\"` with `aria-orientation=\"vertical\"`."
     },
     "decorative": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Hides the rule from assistive tech when it marks no real change of topic.",
       "use": [
         "A line the design wants where the content does not change subject — around an \"or\" between two sign-in options."
@@ -91,7 +102,6 @@
       "a11y": "Adds `aria-hidden=\"true\"`. Web only: on React Native the rule is always hidden."
     },
     "className": {
-      "type": "string",
       "summary": "Extra classes, for placement.",
       "use": [
         "The space the page wants either side, which this component deliberately does not own."

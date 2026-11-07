@@ -32,7 +32,7 @@ this path is the honest answer to when it last actually moved.
 | [date-range-picker](../docs/components/date-range-picker.md) | `@rata/react` | inputs | future / future / future | free |
 | [dialog](../docs/components/dialog.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [disclosure](../docs/components/disclosure.md) | `@rata/react` | content | latest / latest / future | free |
-| [divider](../docs/components/divider.md) | `@rata/react` | content | future / future / future | free |
+| [divider](../docs/components/divider.md) | `@rata/react` | content | latest / latest / future | free |
 | [empty-state](../docs/components/empty-state.md) | `@rata/react` | feedback | future / future / future | free |
 | [fab](../docs/components/fab.md) | `@rata/react` | buttons | future / future / future | free |
 | [field](../docs/components/field.md) | `@rata/react` | inputs | latest / latest / future | free |
@@ -352,9 +352,21 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/disclosure.md](../docs/components/disclosure.md)
 
-### Divider
+### Divider (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<HTMLAttributes<HTMLElement>, "children" | "role" | "aria-orientation" | "aria-hidden">`
+
+- `orientation?: DividerOrientation` — default: `"horizontal"`
+  Which way the rule runs.
+- `decorative?: boolean` — default: `false`
+  Hides the rule from assistive tech when it marks no real change of topic.
+- `className?: string`
+  Extra classes, for placement.
+
+Real usage (from `apps/`):
+```tsx
+<Divider />
+```
 
 Contract: [docs/components/divider.md](../docs/components/divider.md)
 
@@ -1082,7 +1094,7 @@ Extends: `Omit<HTMLAttributes<HTMLElement>, "role">`
 
 Real usage (from `apps/`):
 ```tsx
-<Text>Choose which events send you an email.</Text>
+<Text>Your plan renews on 1 March.</Text>
 ```
 
 Contract: [docs/components/text.md](../docs/components/text.md)

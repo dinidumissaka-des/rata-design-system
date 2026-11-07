@@ -4043,10 +4043,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -4054,21 +4056,21 @@
     },
     "dependencies": [],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLElement>, \"children\" | \"role\" | \"aria-orientation\" | \"aria-hidden\">",
     "props": [
       {
         "name": "orientation",
-        "type": "\"horizontal\" | \"vertical\"",
+        "optional": true,
+        "type": "DividerOrientation",
+        "description": "Which way the rule runs.",
+        "default": "\"horizontal\"",
         "values": [
           "horizontal",
           "vertical"
         ],
-        "optional": true,
-        "default": "\"horizontal\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Which way the rule runs.",
         "use": [
           "`vertical` between groups of controls in a horizontal row, such as a toolbar."
@@ -4081,11 +4083,11 @@
       },
       {
         "name": "decorative",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Hides the rule from assistive tech when it marks no real change of topic.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Hides the rule from assistive tech when it marks no real change of topic.",
         "use": [
           "A line the design wants where the content does not change subject — around an \"or\" between two sign-in options."
@@ -4098,10 +4100,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Extra classes, for placement.",
+        "declared": true,
         "summary": "Extra classes, for placement.",
         "use": [
           "The space the page wants either side, which this component deliberately does not own."
@@ -4176,7 +4178,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Divider />"
   },
   {
     "name": "empty-state",
@@ -13246,7 +13248,7 @@
         }
       }
     },
-    "example": "<Text>Choose which events send you an email.</Text>"
+    "example": "<Text>Your plan renews on 1 March.</Text>"
   },
   {
     "name": "text-field",
