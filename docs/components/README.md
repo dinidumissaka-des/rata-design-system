@@ -45,7 +45,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Pagination](pagination.md) | `pagination` | navigation | future / future | spec | free |
 | [Panel](panel.md) | `panel` | content | latest / latest | documented | free |
 | [Pin Input](pin-input.md) | `pin-input` | inputs | future / future | spec | free |
-| [Popover](popover.md) | `popover` | overlays | future / future | spec | free |
+| [Popover](popover.md) | `popover` | overlays | latest / latest | documented | free |
 | [Progress](progress.md) | `progress` | loading | future / future | spec | free |
 | [Radio](radio.md) | `radio` | inputs | latest / latest | documented | free |
 | [Radio Group](radio-group.md) | `radio-group` | inputs | latest / latest | documented | free |

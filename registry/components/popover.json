@@ -10,17 +10,36 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
     }
   },
   "dependencies": [],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/popover.css",
+      "target": "styles/popover.css"
+    },
+    {
+      "source": "packages/react/src/popover.tsx",
+      "target": "components/popover.tsx"
+    },
+    {
+      "source": "packages/primitives/src/popover.ts",
+      "target": "lib/popover.ts"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -60,6 +79,7 @@
     }
   },
   "behavior": {
+    "primitive": "getPopoverProps",
     "summary": "A non-modal `role=\"dialog\"` carrying `popover=\"auto\"`, positioned against its trigger with CSS anchor positioning — the same top-layer and anchoring machinery as Menu, including the per-instance anchor name. It moves focus in when opened, does not trap it, and returns it to the trigger on Escape. Proposed primitive: `getPopoverProps` in `packages/primitives/src/popover.ts`, sharing Menu's open/close reporting; it is a proposal, not yet a commitment.",
     "decisions": [
       {
@@ -94,8 +114,6 @@
   },
   "props": {
     "trigger": {
-      "type": "ReactElement",
-      "required": true,
       "summary": "The control that opens and closes the popover.",
       "use": [
         "A `Button` — including an icon-only help button, which is how a toggletip is built."
@@ -107,8 +125,6 @@
       "a11y": "Receives `aria-expanded` and `aria-controls`. Its own text or `aria-label` names the trigger; `title` names the popover."
     },
     "title": {
-      "type": "string",
-      "required": true,
       "summary": "The popover's name, shown at its top.",
       "use": [
         "A noun phrase naming what is inside: \"Date range\", \"Share link\"."
@@ -119,8 +135,6 @@
       "a11y": "Names the `role=\"dialog\"` through `aria-labelledby`. Rendered as a styled paragraph, never a heading — the page's outline is still live behind a non-modal popover."
     },
     "children": {
-      "type": "ReactNode",
-      "required": true,
       "summary": "The content: short text, a link, a few fields.",
       "use": [
         "A filter with two or three controls, a help text with a \"Learn more\" link, a copyable link."
@@ -132,7 +146,6 @@
       "a11y": "Reached by Tab in document order from wherever focus lands on open. Not trapped."
     },
     "open": {
-      "type": "boolean",
       "summary": "Whether the popover is showing. Makes the component controlled.",
       "use": [
         "Opening it from somewhere other than the trigger, or closing it after a submit inside it."
@@ -146,8 +159,6 @@
       "a11y": "`aria-expanded` on the trigger follows it."
     },
     "defaultOpen": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Starting state for an uncontrolled popover.",
       "use": [
         "Almost never. A popover open before the reader asked covers what they came to see."
@@ -160,7 +171,6 @@
       ]
     },
     "onOpenChange": {
-      "type": "(open: boolean) => void",
       "summary": "Called whenever the popover asks to open or close — trigger, Escape, light-dismiss or Tab out.",
       "use": [
         "Keeping `open` in step, or saving a filter's draft when it closes."
@@ -170,8 +180,6 @@
       ]
     },
     "placement": {
-      "type": "\"block-start\" | \"block-end\" | \"inline-start\" | \"inline-end\"",
-      "default": "\"block-end\"",
       "summary": "Which side of the trigger the popover prefers.",
       "use": [
         "`block-start` for a trigger near the bottom of the viewport."
@@ -182,7 +190,6 @@
       "a11y": "Visual only, and logical rather than physical. Web only: on React Native the popover is a sheet from the block-end edge."
     },
     "initialFocus": {
-      "type": "RefObject<HTMLElement | null>",
       "summary": "The element to focus on open, when the first focusable one is the wrong place to start.",
       "use": [
         "The input in a popover whose first focusable element is a link in its help text."

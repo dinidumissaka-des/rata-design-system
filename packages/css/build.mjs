@@ -49,6 +49,8 @@ const ORDER = [
   "notice.css",
   // After notice: both are surfaces, and the menu sits above one.
   "menu.css",
+  // After menu: the same top-layer surface and anchoring, read beside it.
+  "popover.css",
   "dialog.css",
   // After dialog: Sheet is the same native-modal construction with different
   // geometry, and its rules are written to replace dialog.css's where they

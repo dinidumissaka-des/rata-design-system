@@ -50,7 +50,7 @@ this path is the honest answer to when it last actually moved.
 | [pagination](../docs/components/pagination.md) | `@rata/react` | navigation | future / future / future | free |
 | [panel](../docs/components/panel.md) | `@rata/react` | content | latest / latest / future | free |
 | [pin-input](../docs/components/pin-input.md) | `@rata/react` | inputs | future / future / future | free |
-| [popover](../docs/components/popover.md) | `@rata/react` | overlays | future / future / future | free |
+| [popover](../docs/components/popover.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [progress](../docs/components/progress.md) | `@rata/react` | loading | future / future / future | free |
 | [radio](../docs/components/radio.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [radio-group](../docs/components/radio-group.md) | `@rata/react` | inputs | latest / latest / future | free |
@@ -622,9 +622,38 @@ No React implementation yet (status: future). There is nothing to look up — do
 
 Contract: [docs/components/pin-input.md](../docs/components/pin-input.md)
 
-### Popover
+### Popover (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `trigger: ReactElement`
+- `title: string`
+  The popover's name, shown at its top. A styled label, not a heading.
+- `children: ReactNode`
+  The content: short text, a link, a few fields.
+- `open?: boolean`
+  Whether the popover is showing. Makes the component controlled.
+- `defaultOpen?: boolean`
+  Starting state for an uncontrolled popover. Conflicts with `open`.
+- `onOpenChange?: (open: boolean) => void`
+  Called whenever it asks to open or close — trigger, Escape, light-dismiss or Tab out.
+- `placement?: PopoverPlacement` — default: `"block-end"`
+  Which side of the trigger it prefers. Anchor positioning flips it near an edge.
+- `initialFocus?: RefObject<HTMLElement | null>`
+  Focused on open, when the first focusable element is the wrong place to start.
+
+Real usage (from `apps/`):
+```tsx
+<Popover
+        title="Billing email"
+        trigger={
+          <Button variant="tertiary" iconOnly aria-label="About billing email">
+            <Icon icon={Info} />
+          </Button>
+        }
+      >
+        <Text>Invoices and receipts go here, not to your login email.</Text>
+        <a href="#billing">Learn more</a>
+      </Popover>
+```
 
 Contract: [docs/components/popover.md](../docs/components/popover.md)
 
@@ -650,7 +679,7 @@ Extends: `Omit<`
 
 Real usage (from `apps/`):
 ```tsx
-<Radio value="annual" label="Annual" />
+<Radio value="open" label="Open" />
 ```
 
 Contract: [docs/components/radio.md](../docs/components/radio.md)

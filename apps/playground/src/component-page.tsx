@@ -23,6 +23,7 @@ import {
   Heading,
   Link,
   Panel,
+  Popover,
   Sheet,
   Menu,
   MenuItem,
@@ -79,6 +80,7 @@ import {
   Upload,
   Download,
   CircleAlert,
+  Info,
   ChevronLeft,
   ChevronRight,
   Bold,
@@ -861,6 +863,23 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     ),
   },
 
+  popover: {
+    "A toggletip: help that has to work on touch": () => (
+      <Popover
+        title="Billing email"
+        trigger={
+          <Button variant="tertiary" iconOnly aria-label="About billing email">
+            <Icon icon={Info} />
+          </Button>
+        }
+      >
+        <Text>Invoices and receipts go here, not to your login email.</Text>
+        <a href="#billing">Learn more</a>
+      </Popover>
+    ),
+    "A small filter, controlled": () => <PopoverFilterStage />,
+  },
+
   notice: {
     "A page-level message that is there when the page loads": () => (
       <Notice variant="warning">This project is read-only while the migration runs.</Notice>
@@ -1406,6 +1425,24 @@ function MenuItemStage({
  * worth trying: the trigger still reports, and the state above it still owns
  * the answer.
  */
+function PopoverFilterStage() {
+  const [filtering, setFiltering] = useState(false);
+  const [status, setStatus] = useState<string | null>("open");
+  return (
+    <Popover
+      title="Status"
+      trigger={<Button variant="secondary">Status</Button>}
+      open={filtering}
+      onOpenChange={setFiltering}
+    >
+      <RadioGroup label="Status" value={status} onValueChange={setStatus}>
+        <Radio value="open" label="Open" />
+        <Radio value="closed" label="Closed" />
+      </RadioGroup>
+    </Popover>
+  );
+}
+
 function DisclosureStage() {
   const [open, setOpen] = useState(true);
   return (

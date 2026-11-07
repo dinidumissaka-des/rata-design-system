@@ -53,6 +53,8 @@ export type { PanelProps, PanelEdge, PanelHeadingLevel } from "./panel.js";
 export type { ModalCloseReason } from "./modal-dialog.js";
 export { Menu, MenuItem, MenuSeparator } from "./menu.js";
 export type { MenuProps, MenuItemProps } from "./menu.js";
+export { Popover } from "./popover.js";
+export type { PopoverProps, PopoverPlacement } from "./popover.js";
 export { Notice } from "./notice.js";
 export type { NoticeProps, NoticeVariant, NoticeLive } from "./notice.js";
 export { MobileNav } from "./mobile-nav.js";

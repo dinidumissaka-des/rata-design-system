@@ -8874,10 +8874,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -8885,16 +8887,16 @@
     },
     "dependencies": [],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "trigger",
-        "type": "ReactElement",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactElement",
+        "description": "",
+        "declared": true,
         "summary": "The control that opens and closes the popover.",
         "use": [
           "A `Button` — including an icon-only help button, which is how a toggletip is built."
@@ -8908,10 +8910,10 @@
       },
       {
         "name": "title",
-        "type": "string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The popover's name, shown at its top. A styled label, not a heading.",
+        "declared": true,
         "summary": "The popover's name, shown at its top.",
         "use": [
           "A noun phrase naming what is inside: \"Date range\", \"Share link\"."
@@ -8924,10 +8926,10 @@
       },
       {
         "name": "children",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The content: short text, a link, a few fields.",
+        "declared": true,
         "summary": "The content: short text, a link, a few fields.",
         "use": [
           "A filter with two or three controls, a help text with a \"Learn more\" link, a copyable link."
@@ -8941,10 +8943,10 @@
       },
       {
         "name": "open",
-        "type": "boolean",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "boolean",
+        "description": "Whether the popover is showing. Makes the component controlled.",
+        "declared": true,
         "summary": "Whether the popover is showing. Makes the component controlled.",
         "use": [
           "Opening it from somewhere other than the trigger, or closing it after a submit inside it."
@@ -8959,11 +8961,10 @@
       },
       {
         "name": "defaultOpen",
-        "type": "boolean",
         "optional": true,
-        "default": "false",
-        "description": null,
-        "declared": false,
+        "type": "boolean",
+        "description": "Starting state for an uncontrolled popover. Conflicts with `open`.",
+        "declared": true,
         "summary": "Starting state for an uncontrolled popover.",
         "use": [
           "Almost never. A popover open before the reader asked covers what they came to see."
@@ -8978,10 +8979,10 @@
       },
       {
         "name": "onOpenChange",
-        "type": "(open: boolean) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(open: boolean) => void",
+        "description": "Called whenever it asks to open or close — trigger, Escape, light-dismiss or Tab out.",
+        "declared": true,
         "summary": "Called whenever the popover asks to open or close — trigger, Escape, light-dismiss or Tab out.",
         "use": [
           "Keeping `open` in step, or saving a filter's draft when it closes."
@@ -8994,17 +8995,17 @@
       },
       {
         "name": "placement",
-        "type": "\"block-start\" | \"block-end\" | \"inline-start\" | \"inline-end\"",
+        "optional": true,
+        "type": "PopoverPlacement",
+        "description": "Which side of the trigger it prefers. Anchor positioning flips it near an edge.",
+        "default": "\"block-end\"",
         "values": [
           "block-start",
           "block-end",
           "inline-start",
           "inline-end"
         ],
-        "optional": true,
-        "default": "\"block-end\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Which side of the trigger the popover prefers.",
         "use": [
           "`block-start` for a trigger near the bottom of the viewport."
@@ -9017,10 +9018,10 @@
       },
       {
         "name": "initialFocus",
-        "type": "RefObject<HTMLElement | null>",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "RefObject<HTMLElement | null>",
+        "description": "Focused on open, when the first focusable element is the wrong place to start.",
+        "declared": true,
         "summary": "The element to focus on open, when the first focusable one is the wrong place to start.",
         "use": [
           "The input in a popover whose first focusable element is a link in its help text."
@@ -9053,6 +9054,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getPopoverProps",
       "summary": "A non-modal `role=\"dialog\"` carrying `popover=\"auto\"`, positioned against its trigger with CSS anchor positioning — the same top-layer and anchoring machinery as Menu, including the per-instance anchor name. It moves focus in when opened, does not trap it, and returns it to the trigger on Escape. Proposed primitive: `getPopoverProps` in `packages/primitives/src/popover.ts`, sharing Menu's open/close reporting; it is a proposal, not yet a commitment.",
       "decisions": [
         {
@@ -9122,7 +9124,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Popover\n        title=\"Billing email\"\n        trigger={\n          <Button variant=\"tertiary\" iconOnly aria-label=\"About billing email\">\n            <Icon icon={Info} />\n          </Button>\n        }\n      >\n        <Text>Invoices and receipts go here, not to your login email.</Text>\n        <a href=\"#billing\">Learn more</a>\n      </Popover>"
   },
   {
     "name": "progress",
@@ -9446,7 +9448,7 @@
         }
       }
     },
-    "example": "<Radio value=\"annual\" label=\"Annual\" />"
+    "example": "<Radio value=\"open\" label=\"Open\" />"
   },
   {
     "name": "radio-group",
