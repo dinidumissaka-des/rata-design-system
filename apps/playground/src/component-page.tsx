@@ -429,6 +429,18 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
         ))}
       </ul>
     ),
+    "A whole card that goes somewhere": () => (
+      <ul className="pg-card-grid">
+        {["Atlas", "Beacon"].map((name) => (
+          <Card as="li" key={name} media={<div className="pg-card-preview" aria-hidden="true" />}>
+            <Heading level={4}>
+              <Link href={`#project-${name.toLowerCase()}`}>{name}</Link>
+            </Heading>
+            <Text tone="secondary">Open the {name} project.</Text>
+          </Card>
+        ))}
+      </ul>
+    ),
     "A titled group of settings": () => (
       <Card as="section" aria-labelledby="pg-card-billing">
         <Heading level={4} id="pg-card-billing">
