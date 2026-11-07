@@ -58,14 +58,61 @@ export function afterRules(css) {
   return rules;
 }
 
+/**
+ * The compound selector a `::after` actually belongs to: the last one before
+ * the pseudo-element, after any combinator, for each selector in a list.
+ *
+ * `.rata-card :is(h2, h3) a::after` draws on the `a`, not on the card, so only
+ * `a` is the subject — the card is context. Matching the whole selector string
+ * flagged every descendant rule as a collision on the ancestor. Combinators and
+ * commas inside parentheses (`:is(h2, h3)`, `:has(a > b)`) are not split on.
+ */
+export function afterSubjects(selector) {
+  const subjects = [];
+  let depth = 0;
+  let start = 0;
+  const pieces = [];
+  for (let i = 0; i < selector.length; i += 1) {
+    const ch = selector[i];
+    if (ch === "(") depth += 1;
+    else if (ch === ")") depth -= 1;
+    else if (ch === "," && depth === 0) {
+      pieces.push(selector.slice(start, i));
+      start = i + 1;
+    }
+  }
+  pieces.push(selector.slice(start));
+  for (const piece of pieces) {
+    if (!/::after\b/.test(piece)) continue;
+    let compoundStart = 0;
+    depth = 0;
+    const trimmed = piece.trim();
+    for (let i = 0; i < trimmed.length; i += 1) {
+      const ch = trimmed[i];
+      if (ch === "(") depth += 1;
+      else if (ch === ")") depth -= 1;
+      else if (depth === 0 && /[\s>+~]/.test(ch)) compoundStart = i + 1;
+    }
+    subjects.push(trimmed.slice(compoundStart));
+  }
+  return subjects;
+}
+
+/** Whether a compound selector names `.cls` itself, not `.cls-something`. */
+function namesClass(compound, cls) {
+  const escaped = cls.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`\\.${escaped}(?![\\w-])`).test(compound.replace(/\([^)]*\)/g, ""));
+}
+
 export function collisions(reactSource, css, cssName) {
   const composed = composedClasses(reactSource);
   const problems = [];
   for (const [selector, line] of afterRules(css)) {
     // The layer's own rules, and a host opting out of its bleed, both name it.
     if (/\.rata-state-layer/.test(selector)) continue;
+    const subjects = afterSubjects(selector);
     for (const cls of composed) {
-      if (selector.includes(`.${cls}`)) {
+      if (subjects.some((subject) => namesClass(subject, cls))) {
         problems.push(
           `${cssName}:${line} — \`${selector}\` styles ::after on .${cls}, which composes ` +
             `.rata-state-layer in the React source. The layer already owns that ` +
@@ -88,6 +135,21 @@ const LEGITIMATE = {
   css: `.rata-thing[aria-selected="true"]::before { content: ""; }
 .rata-thing.rata-state-layer::after { inset: 0; }`,
 };
+// The same class names the context, but the ::after is drawn on another
+// element: a descendant link, or a `.rata-thing-*` part. Neither is the
+// composed element's own pseudo-element, so neither collides.
+const DIFFERENT_ELEMENT = {
+  react: `<div className={cx("rata-thing", "rata-state-layer")} />`,
+  css: `.rata-thing :is(h2, h3) a[href]::after { content: ""; position: absolute; }
+.rata-thing .rata-link::after { content: ""; }
+.rata-thing-media::after { content: ""; }`,
+};
+// …while the composed element's own ::after is still caught when it is the
+// subject after a combinator, or one entry in a selector list.
+const COMPOUND_COLLISION = {
+  react: `<div className={cx("rata-thing", "rata-state-layer")} />`,
+  css: `.rata-grid > .rata-thing:hover::after, .other::after { opacity: 1; }`,
+};
 
 async function selfTest() {
   let failed = 0;
@@ -98,6 +160,15 @@ async function selfTest() {
   const cried = collisions(LEGITIMATE.react, LEGITIMATE.css, "planted.css");
   if (cried.length > 0) {
     console.error(`✖ self-test: flagged correct code — ${cried[0]}`);
+    failed += 1;
+  }
+  if (collisions(COMPOUND_COLLISION.react, COMPOUND_COLLISION.css, "planted.css").length === 0) {
+    console.error("✖ self-test: missed a collision behind a combinator in a selector list");
+    failed += 1;
+  }
+  const elsewhere = collisions(DIFFERENT_ELEMENT.react, DIFFERENT_ELEMENT.css, "planted.css");
+  if (elsewhere.length > 0) {
+    console.error(`✖ self-test: flagged a ::after on a different element — ${elsewhere[0]}`);
     failed += 1;
   }
   if (failed) {

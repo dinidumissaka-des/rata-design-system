@@ -19,7 +19,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Breadcrumbs](breadcrumbs.md) | `breadcrumbs` | navigation | latest / latest | documented | free |
 | [Button](button.md) | `button` | buttons | latest / latest | documented | free |
 | [Button Group](button-group.md) | `button-group` | buttons | latest / latest | documented | free |
-| [Card](card.md) | `card` | content | future / future | spec | free |
+| [Card](card.md) | `card` | content | latest / latest | documented | free |
 | [Checkbox](checkbox.md) | `checkbox` | inputs | latest / latest | documented | free |
 | [Chip](chip.md) | `chip` | inputs | future / future | spec | free |
 | [Combobox](combobox.md) | `combobox` | inputs | future / future | spec | free |

@@ -1405,7 +1405,7 @@ A whole-card link through a stretched heading link (C4–C6).
 | Property | Token |
 |---|---|
 | card position | relative, so the link's stretched pseudo-element is bounded by the card (C4) |
-| stretched hit area | a ::after on the heading's link, inset `space.0` on every side of the card. The card's own ::after belongs to the state layer — the two pseudo-elements sit on different elements, so they never collide (C4) |
+| stretched hit area | a ::after on the heading's link — the inline Link variant (C7) — inset `space.0` on every side of the card. The card's own ::after belongs to the state layer — the two pseudo-elements sit on different elements, so they never collide (C4) |
 | hover / press | compose the .rata-state-layer class on the card, driven by :has() on the link's :hover and :active (C4) |
 | focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, drawn around the card while the link matches :focus-visible; the link's own outline is suppressed only inside a card that draws it, so a browser without :has() keeps the link's ring (C5) |
 | secondary actions | position: relative and later in source order than the heading, so they paint above the stretched area without a z-index and stay separately clickable and focusable (C6) |

@@ -1663,3 +1663,19 @@ code {
   gap: var(--rata-space-stack-sm);
 }
 
+
+/* The grid a Card gallery sits in: it owns the gap, the cards own none.
+   One column: no token states a card column's minimum width yet, and
+   borrowing a text measure or a pane width for it would be a guess. */
+.pg-card-grid {
+  display: grid;
+  gap: var(--rata-space-grid-gap);
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+}
+
+/* A stand-in preview for the media slot, so the specimen needs no image. */
+.pg-card-preview {
+  aspect-ratio: 16 / 9;
+  background: var(--rata-theme-bg-muted);
+}

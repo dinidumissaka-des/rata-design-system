@@ -24,7 +24,7 @@ this path is the honest answer to when it last actually moved.
 | [breadcrumbs](../docs/components/breadcrumbs.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [button](../docs/components/button.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [button-group](../docs/components/button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
-| [card](../docs/components/card.md) | `@rata/react` | content | future / future / future | free |
+| [card](../docs/components/card.md) | `@rata/react` | content | latest / latest / future | free |
 | [checkbox](../docs/components/checkbox.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [chip](../docs/components/chip.md) | `@rata/react` | inputs | future / future / future | free |
 | [combobox](../docs/components/combobox.md) | `@rata/react` | inputs | future / future / future | free |
@@ -189,9 +189,30 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/button-group.md](../docs/components/button-group.md)
 
-### Card
+### Card (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `HTMLAttributes<HTMLElement>`
+
+- `children: ReactNode`
+  The card's content.
+- `as?: CardElement`
+  Which element the card is, because that depends on what is in it.
+- `variant?: CardVariant` — default: `"outlined"`
+  How the card's edge is drawn: a border, or the resting-card shadow.
+- `media?: ReactNode`
+  An image or preview shown flush with the card's top edge, above the content.
+- `className?: string`
+  Extra classes, for placement in a grid — not for restyling the card.
+
+Real usage (from `apps/`):
+```tsx
+<Card as="section" aria-labelledby="pg-card-billing">
+        <Heading level={4} id="pg-card-billing">
+          Billing
+        </Heading>
+        <TextField label="Billing email" />
+      </Card>
+```
 
 Contract: [docs/components/card.md](../docs/components/card.md)
 
@@ -1059,7 +1080,7 @@ Extends: `Omit<`
 
 Real usage (from `apps/`):
 ```tsx
-<TextField label="Retry limit" description="How many times to try again." />
+<TextField label="Billing email" />
 ```
 
 Contract: [docs/components/text-field.md](../docs/components/text-field.md)

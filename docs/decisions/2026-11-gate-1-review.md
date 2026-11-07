@@ -100,6 +100,8 @@ Follow-ups, each its own change: point the playground's `use-media-query.ts` at 
 | C5 | linked · focus | Ring around the card while the link is `:focus-visible`; link outline suppressed only there. |
 | C6 | secondary actions | `position: relative`, after the heading in source order; no z-index. |
 
+C7 (gate 3): a linked card's heading uses the inline Link variant; the standalone variant's state layer collides with C4's stretched `::after`.
+
 ### Popover (approved state by state)
 
 | # | State | Mapping |

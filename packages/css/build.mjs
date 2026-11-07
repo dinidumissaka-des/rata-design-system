@@ -36,6 +36,9 @@ const ORDER = [
   // element-agnostic and neither should win over a component's own type rules.
   "heading.css",
   "text.css",
+  // After typography, which a card holds but never restyles; before the
+  // controls that sit inside one, so their own rules win any tie.
+  "card.css",
   "badge.css",
   "avatar.css",
   "disclosure.css",

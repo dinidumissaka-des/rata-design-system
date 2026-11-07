@@ -333,7 +333,7 @@ A search input beside a magnifier, or a column of fields under a header that nam
 ## Real usage in this repo
 
 ```tsx
-<TextField label="Retry limit" description="How many times to try again." />
+<TextField label="Billing email" />
 ```
 
 ## Token recipe

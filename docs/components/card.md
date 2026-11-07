@@ -5,15 +5,17 @@
 
 A bordered surface holding one self-contained item among several — a widget, a gallery entry, a settings group.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Card } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `card` |
 | Family | content |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
-| Depends on | — |
+| Status (css / react / figma) | latest / latest / future |
+| Depends on | `state-layer` |
 
 ## Behavior
 
@@ -27,14 +29,17 @@ A box with a surface, an edge and padding, rendered as whichever element its con
 - **It carries no margin and no width** — The same bargain Heading and Panel make. Cards live in a grid or a stack, and the gap between them is the grid's — a card that shipped its own margin would double up with the grid's gap and be overridden everywhere. Width is the grid's too: there are no breakpoint tokens, because where a card stops fitting is the page's knowledge.
 - **Web and native** — Web: the element `as` names — `div` by default, or `article`, `section` or `li` — with no role added, because each of those elements already carries the right one. A `section` card should be named by its heading through `aria-labelledby`, or it is not exposed as a region at all. React Native: a `View` with no `accessibilityRole`, because RN has no article, section or listitem role that platforms announce; the list semantics of a gallery belong to the `FlatList` that renders the cards, not to each card. `as` is web-only and is ignored on native. `media` works on both; on native the clip comes from `overflow: "hidden"` with the same radius token. No OS control (decision N5): the card is Rata-drawn on both platforms, from the same recipe. On native, `raised` is the platform shadow (`elevation` on Android) taken from the same token. The stretched link is web-only — a nested `Text` link cannot be stretched — so on native the heading's Link is the target, and a list of whole-row targets is ListItem's job. The native implementation ships in the pro tier (decision N6).
 - **Gate 2: every state's token mapping is approved** — Approved state by state — C1 outlined rest, C2 raised (border kept), C3 full-bleed media, C4 linked hover/press via the state layer, C5 linked focus drawn around the card, C6 secondary actions above the stretched link. The focus ring is moved to the card, never removed: it is suppressed on the link only where the card's :has() rule can draw it instead (gate 2, docs/decisions/2026-11-gate-1-review.md).
+- **A linked card's heading uses the inline Link** — Decided at gate 3 (decision C7, docs/decisions/2026-11-gate-1-review.md). C4 stretches the heading link's hit area with its `::after`. A standalone Link composes `.rata-state-layer`, whose `::after` is already the link's hover tint and whose `position: relative` makes the link the containing block: the stretched area would be trapped inside the link instead of covering the card, the layer's `pointer-events: none` would swallow its clicks, and the link's own tint would stack on the card's. The inline Link has no state layer and no position of its own, so nothing collides — and its underline is drawn on the heading text, while the card draws the hover, press and focus.
 
 ## Props
+
+Extends `HTMLAttributes<HTMLElement>`.
 
 | Prop | Type | Default | Summary |
 |---|---|---|---|
 | `children` | `ReactNode` | — | The card's content. |
-| `as?` | `"div" \| "article" \| "section" \| "li"` | `"div"` | Which element the card is, because that depends on what is in it. |
-| `variant?` | `"outlined" \| "raised"` | `"outlined"` | How the card's edge is drawn: a border, or the resting-card shadow. |
+| `as?` | `CardElement` | — | Which element the card is, because that depends on what is in it. |
+| `variant?` | `CardVariant` | `"outlined"` | How the card's edge is drawn: a border, or the resting-card shadow. |
 | `media?` | `ReactNode` | — | An image or preview shown flush with the card's top edge, above the content. |
 | `className?` | `string` | — | Extra classes, for placement in a grid — not for restyling the card. |
 
@@ -54,13 +59,14 @@ The card's content.
 
 - Another Card. A card inside a card is a section wearing two borders — use a Divider or a heading inside the one card.
 - A dense list of records. That is a Table, and a table inside a card is a table that has lost its edge-to-edge alignment for no reason.
+- A `variant="standalone"` Link in the card's heading. The standalone variant composes `.rata-state-layer`, which already owns the link's `::after` and makes the link `position: relative` — the stretched hit area would be trapped inside the link, its clicks swallowed, and a second hover tint stacked on the card's. Use the inline Link, the default.
 
-**Accessibility** Read in document order. If the card is a `section`, its first heading should name it through `aria-labelledby`. A Link inside the card's heading is stretched over the whole card, so put the card's one destination there and nowhere else.
+**Accessibility** Read in document order. If the card is a `section`, its first heading should name it through `aria-labelledby`. An inline Link inside the card's heading is stretched over the whole card, so put the card's one destination there and nowhere else.
 
 ### `as`
 
 ```ts
-as?: "div" | "article" | "section" | "li" = "div"
+as?: CardElement
 ```
 
 Which element the card is, because that depends on what is in it.
@@ -81,7 +87,7 @@ Which element the card is, because that depends on what is in it.
 ### `variant`
 
 ```ts
-variant?: "outlined" | "raised" = "outlined"
+variant?: CardVariant = "outlined"
 ```
 
 How the card's edge is drawn: a border, or the resting-card shadow.
@@ -161,7 +167,7 @@ A gallery where each card opens its own page, and pressing anywhere on the card 
   {projects.map((p) => (
     <Card as="li" key={p.id} media={<img src={p.preview} alt="" />}>
       <Heading level={3}>
-        <Link variant="standalone" href={`/projects/${p.id}`}>{p.name}</Link>
+        <Link href={`/projects/${p.id}`}>{p.name}</Link>
       </Heading>
       <Text tone="secondary">{p.summary}</Text>
     </Card>
@@ -169,7 +175,7 @@ A gallery where each card opens its own page, and pressing anywhere on the card 
 </ul>
 ```
 
-No `href` or `onClick` on the Card: the Link in the heading is the control, and the card stretches its hit area over the whole card and shows its hover and focus. The link's name is the project's name, not every word in the card, and each card is one tab stop. A secondary action — a Menu button, say — placed after the heading sits above the stretched area, so pressing it does not also open the project.
+No `href` or `onClick` on the Card: the inline Link in the heading is the control — not `variant="standalone"`, whose state layer would trap the stretched hit area inside the link, and the card stretches its hit area over the whole card and shows its hover and focus. The link's name is the project's name, not every word in the card, and each card is one tab stop. A secondary action — a Menu button, say — placed after the heading sits above the stretched area, so pressing it does not also open the project.
 
 ### A titled group of settings
 
@@ -195,6 +201,17 @@ A list of invoices, each with a number, a date, an amount and a status.
 ```
 
 Don't. Those are rows compared by column — is this amount larger, is that one overdue — and putting each in its own card destroys the column. That is a Table. Equally, a single card holding a whole page's content is a `<section>` with a border; drop the card.
+
+## Real usage in this repo
+
+```tsx
+<Card as="section" aria-labelledby="pg-card-billing">
+        <Heading level={4} id="pg-card-billing">
+          Billing
+        </Heading>
+        <TextField label="Billing email" />
+      </Card>
+```
 
 ## Token recipe
 
@@ -238,7 +255,7 @@ A whole-card link through a stretched heading link (C4–C6).
 | Property | Token |
 |---|---|
 | card position | `relative, so the link's stretched pseudo-element is bounded by the card (C4)` |
-| stretched hit area | `a ::after on the heading's link, inset space.0 on every side of the card. The card's own ::after belongs to the state layer — the two pseudo-elements sit on different elements, so they never collide (C4)` |
+| stretched hit area | `a ::after on the heading's link — the inline Link variant (C7) — inset space.0 on every side of the card. The card's own ::after belongs to the state layer — the two pseudo-elements sit on different elements, so they never collide (C4)` |
 | hover / press | `compose the .rata-state-layer class on the card, driven by :has() on the link's :hover and :active (C4)` |
 | focus ring | `theme.focus-ring at focus.ring-width, offset focus.ring-offset, drawn around the card while the link matches :focus-visible; the link's own outline is suppressed only inside a card that draws it, so a browser without :has() keeps the link's ring (C5)` |
 | secondary actions | `position: relative and later in source order than the heading, so they paint above the stretched area without a z-index and stay separately clickable and focusable (C6)` |

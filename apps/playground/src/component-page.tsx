@@ -17,6 +17,7 @@ import {
   Breadcrumbs,
   Button,
   ButtonGroup,
+  Card,
   Checkbox,
   Dialog,
   Disclosure,
@@ -414,6 +415,27 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
         </Text>
         .
       </Text>
+    ),
+  },
+
+  card: {
+    "A gallery of peer items": () => (
+      <ul className="pg-card-grid">
+        {["Invoice", "Proposal", "Changelog"].map((name) => (
+          <Card as="li" key={name} media={<div className="pg-card-preview" aria-hidden="true" />}>
+            <Heading level={4}>{name}</Heading>
+            <Text tone="secondary">A starting point for a new {name.toLowerCase()}.</Text>
+          </Card>
+        ))}
+      </ul>
+    ),
+    "A titled group of settings": () => (
+      <Card as="section" aria-labelledby="pg-card-billing">
+        <Heading level={4} id="pg-card-billing">
+          Billing
+        </Heading>
+        <TextField label="Billing email" />
+      </Card>
     ),
   },
 

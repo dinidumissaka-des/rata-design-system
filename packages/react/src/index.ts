@@ -30,6 +30,8 @@ export { Heading } from "./heading.js";
 export type { HeadingProps, HeadingLevel, HeadingRole } from "./heading.js";
 export { Text } from "./text.js";
 export type { TextProps, TextElement, TextRole, TextTone } from "./text.js";
+export { Card } from "./card.js";
+export type { CardProps, CardElement, CardVariant } from "./card.js";
 export { Disclosure } from "./disclosure.js";
 export type { DisclosureProps, DisclosureHeadingLevel } from "./disclosure.js";
 export { Link } from "./link.js";

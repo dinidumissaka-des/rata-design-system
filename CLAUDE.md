@@ -39,8 +39,8 @@ before writing a prop you haven't used in this repo before.
 
 **Component names are `kebab-case` and match the registry exactly**
 (`button`, `state-layer`, `text-field`) — check `npm run ui -- list` before
-typing one from memory. `card` and `table` are the names most often reached
-for that are not in the registry at all — see the Card note below. Which
+typing one from memory. `table` is the name most often reached for that is
+not in the registry at all; `card` is, as of its gate-3 ship. Which
 entries are in the `future` state changes every time one ships, so this file
 deliberately doesn't name them: `npm run ui -- list` is the only current
 answer. A `future` entry is a contract approved at gate 1 with no code behind
@@ -130,10 +130,12 @@ full-width, name the regions, budget them, *then* fill.
 | Widgets, galleries, settings groups | Card |
 | Everything else | Neither — plain `<section>` |
 
-**There is no `Card` component yet.** It isn't in the registry
-(`npm run ui -- list` won't show one), so don't hand-roll a `<div className="card">`
-as a stand-in — that's exactly the kind of ungoverned pattern the registry
-exists to prevent. Use a plain `<section>` and flag the gap instead.
+**Use the `Card` component, never a hand-rolled `<div className="card">`** —
+that is exactly the ungoverned pattern the registry exists to prevent. Read
+`npm run ui -- contract card` first: `as` picks the element (`li` in a
+gallery, `section` for a named settings group), and a whole-card link is an
+inline `Link` in the card's heading, never `href`/`onClick` on the card and
+never `variant="standalone"`.
 
 ## Token discipline
 
@@ -244,7 +246,7 @@ write against the same rules — see [internal/vibe-tests/README.md](internal/vi
 | Forking the tokens for a new brand | A theme package under `packages/themes/*` with `extends: baseTheme` |
 | `disabled` attribute on a new interactive primitive | `aria-disabled` + a click guard, like `getButtonProps` |
 | A new `:hover`/`:active` rule for feedback | Compose `.rata-state-layer` |
-| A `<div className="card">` wrapper | Plain `<section>` — there's no Card yet, don't invent one |
+| A `<div className="card">` wrapper | `Card` — or a plain `<section>` when the content isn't one item among several |
 | Wrap a component in a div just for spacing | A `--rata-space-*` token on the component or its parent |
 | Add new component CSS and assume load order | Add the file to `ORDER` in `packages/css/build.mjs` |
 | Write CSS/React for a new component before its primitive and token mapping are approved | Follow the gated order above — primitives approved, then semantics approved state by state, then component |
