@@ -36,3 +36,13 @@ The layer's default bleeds outward by border.default, so an unbordered host need
 ```
 
 The layer is an absolutely positioned pseudo-element, and `inset` on one resolves against the containing block's padding box — which excludes the border. At `inset: 0` the tint stopped a border-width short on every side, invisible under a filled background but plainly smaller on a host whose only fill is the layer itself. It now bleeds by border.default, since every bordered host in this system uses that width, and CSS gives no way to read a containing block's computed border-width. `--flush` restores `inset: 0` for hosts with none.
+
+### Feedback for an element the pointer does not reach
+
+A drawn part shows the state while a transparent control laid over it receives the pointer — a slider's thumb over its range control.
+
+```tsx
+<span className="rata-slider-thumb rata-state-layer" data-hovered="" />
+```
+
+The layer also responds to `[data-hovered]` and `[data-pressed]`, which the component's primitive sets from pointer events on the control (decision C9). Same opacities, same disabled override; only the trigger widens. Never write a `:has(…:hover)` rule for this — that is the hand-rolled hover the layer exists to replace.
