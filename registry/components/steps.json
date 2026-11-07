@@ -12,10 +12,12 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
@@ -26,7 +28,24 @@
     "icon",
     "visually-hidden"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/steps.css",
+      "target": "styles/steps.css"
+    },
+    {
+      "source": "packages/react/src/steps.tsx",
+      "target": "components/steps.tsx"
+    },
+    {
+      "source": "packages/primitives/src/steps.ts",
+      "target": "lib/steps.ts"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -38,6 +57,7 @@
         "connector colour": "theme.border.strong",
         "connector colour, after a completed step": "theme.accent-role.bg",
         "connector inset from each marker": "space.gap.xs",
+        "horizontal: connector minimum length": "space.gap.lg — gate 3 addition, not in the batch-approved recipe: without a floor the connector is zero-length at the row's natural width, which is the width the overflow measurement uses",
         "vertical: gap between steps": "space.stack.md",
         "label font-size": "type.control.size.sm",
         "label colour": "theme.fg.secondary",
@@ -78,6 +98,7 @@
     }
   },
   "behavior": {
+    "primitive": "getStepsProps",
     "summary": "An ordered list of steps with `aria-current=\"step\"` on the current one, each step's state stated in words as well as drawn. An indicator only: the caller owns which step is current and what each one renders.",
     "decisions": [
       {
@@ -102,22 +123,20 @@
       },
       {
         "decision": "Horizontal collapses to \"Step 2 of 4\" when it does not fit",
-        "why": "A row of four labelled steps does not fit a phone. Below the width the full row needs — a container query, not a viewport breakpoint, because the indicator may sit in a narrow column on a wide screen — it renders the current step's marker, its label and \"Step 2 of 4\", with the list still in the accessibility tree whole. Truncating labels instead would leave a row of ellipses."
+        "why": "A row of four labelled steps does not fit a phone. When the full row does not fit its container it renders the current step's marker, its label and \"Step 2 of 4\", with the list still in the accessibility tree whole. Truncating labels instead would leave a row of ellipses. Whether it fits is measured, not set by a container query or a viewport breakpoint (gate 3, owner decision, docs/decisions/2026-11-gate-1-review.md): the width the row needs depends on its step count and label lengths, so no token threshold fits. A ResizeObserver compares the container's width with a hidden max-content copy of the full row, re-checking on resize and content change and expanding back when there is room; because that copy's width does not depend on which form is showing, collapsing cannot make the row fit and flip it back."
       },
       {
-        "decision": "Proposed primitive: `getStepsProps`",
-        "why": "No primitive exists yet. It is small: derive each step's state from its position against `current` and its `invalid` flag, build each step's accessible name, and decide which are navigable. It still belongs in a primitive, because the native package needs exactly the same derivation."
+        "decision": "Primitive: `getStepsProps`",
+        "why": "Small: derive each step's state from its position against `current` and its `invalid` flag, build each step's accessible name, and decide which are navigable. It belongs in a primitive (`packages/primitives/src/steps.ts`), because the native package needs exactly the same derivation."
       },
       {
         "decision": "Web and native",
-        "why": "Web: a `<nav aria-label>` (only when navigable) around an `<ol aria-label>` of `<li>`, with `aria-current=\"step\"` on the current item and a system Button-styled `<button>` inside each navigable one; markers and connectors are `aria-hidden`. Pointer, touch and keyboard all reach the same buttons. React Native: a `View` with `accessibilityRole=\"list\"`, each step a `View` — or a `Pressable` with `accessibilityRole=\"button\"` when navigable — whose `accessibilityLabel` is the same derived name, and `accessibilityState={{ selected: true }}` on the current step, since native has no `aria-current`. The container query has no native equivalent, so the native package chooses the compact form from the window width instead. No prop is platform-specific. Rata-drawn (decision N5): neither platform has an OS step indicator, so it is drawn from the same recipe as the web. The native implementation ships in the pro tier (decision N6)."
+        "why": "Web: a `<nav aria-label>` (only when navigable) around an `<ol aria-label>` of `<li>`, with `aria-current=\"step\"` on the current item and a system Button-styled `<button>` inside each navigable one; markers and connectors are `aria-hidden`. Pointer, touch and keyboard all reach the same buttons. React Native: a `View` with `accessibilityRole=\"list\"`, each step a `View` — or a `Pressable` with `accessibilityRole=\"button\"` when navigable — whose `accessibilityLabel` is the same derived name, and `accessibilityState={{ selected: true }}` on the current step, since native has no `aria-current`. The web measures the row against its container; the native package chooses the compact form from the window width instead. No prop is platform-specific. Rata-drawn (decision N5): neither platform has an OS step indicator, so it is drawn from the same recipe as the web. The native implementation ships in the pro tier (decision N6)."
       }
     ]
   },
   "props": {
     "label": {
-      "type": "string",
-      "required": true,
       "summary": "Names the whole sequence: \"Checkout progress\".",
       "use": [
         "The task the steps belong to, so a reader landing on the list knows what is being counted."
@@ -128,8 +147,6 @@
       "a11y": "Becomes the `<nav>`'s or `<ol>`'s `aria-label`. Required, because a page can hold a step indicator and other lists, and an unnamed one is indistinguishable from them."
     },
     "steps": {
-      "type": "StepItem[]",
-      "required": true,
       "summary": "The steps in order, as `{ id, label, description?, invalid? }`.",
       "use": [
         "Short noun labels — \"Shipping\", \"Payment\", \"Review\" — and `description` for the one-line detail under each.",
@@ -142,8 +159,6 @@
       "a11y": "Each is an `<li>` whose accessible name includes its position and state — \"Step 2 of 4, Payment, current\" — through visually hidden text, so state is never carried by the marker's colour or glyph alone."
     },
     "current": {
-      "type": "string",
-      "required": true,
       "summary": "The `id` of the step the reader is on. Steps before it are complete; steps after it are upcoming.",
       "use": [
         "The step whose content is on screen."
@@ -154,7 +169,6 @@
       "a11y": "That step gets `aria-current=\"step\"`, which is the value WAI-ARIA defines for exactly this."
     },
     "onStepSelect": {
-      "type": "(id: string) => void",
       "summary": "Makes completed steps navigable, and fires with the chosen step's id.",
       "use": [
         "A flow where going back to change an earlier answer is allowed — the usual case."
@@ -165,8 +179,6 @@
       "a11y": "Without it every step is plain text. With it, completed and invalid steps become buttons, and the current and upcoming steps stay text, so the tab order holds only the places the reader can actually go."
     },
     "orientation": {
-      "type": "\"horizontal\" | \"vertical\"",
-      "default": "\"horizontal\"",
       "summary": "Lays the steps out in a row or a column.",
       "use": [
         "`vertical` beside a long form, where each step's description has room and the column doubles as a table of contents."
@@ -177,7 +189,6 @@
       "a11y": "Visual only. The list order, and so the reading order, is the same either way."
     },
     "className": {
-      "type": "string",
       "summary": "Class for the root — placement, not a restyle.",
       "use": [
         "The margin the page wants above its first section."

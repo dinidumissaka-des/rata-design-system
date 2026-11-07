@@ -12,10 +12,12 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
@@ -28,7 +30,24 @@
     "icon",
     "visually-hidden"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/file-upload.css",
+      "target": "styles/file-upload.css"
+    },
+    {
+      "source": "packages/react/src/file-upload.tsx",
+      "target": "components/file-upload.tsx"
+    },
+    {
+      "source": "packages/primitives/src/file-upload.ts",
+      "target": "lib/file-upload.ts"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "dropzone": {
@@ -85,6 +104,7 @@
     }
   },
   "behavior": {
+    "primitive": "getFileUploadProps",
     "summary": "A visually hidden native file input opened by a Button, an optional drop zone around it, and a list of the chosen files with a remove control each — composed with Field. It validates and holds a selection; it does not upload.",
     "decisions": [
       {
@@ -135,8 +155,6 @@
   },
   "props": {
     "label": {
-      "type": "ReactNode",
-      "required": true,
       "summary": "What the files are for. Always required — `labelHidden` hides it, nothing removes it.",
       "use": [
         "The document being asked for: \"Proof of address\", \"Attachments\"."
@@ -147,7 +165,6 @@
       "a11y": "Labels the group: the choose button, the drop zone and the file list are announced as belonging to it."
     },
     "accept": {
-      "type": "string",
       "summary": "Which files are allowed, as MIME types and extensions: \"image/*,.pdf\".",
       "use": [
         "MIME types first — they are the part that works on every platform, including native."
@@ -158,8 +175,6 @@
       "a11y": "Restated in the description chain in words — \"PDF or image\" — because a reader who cannot see a file dialog's filter never learns it."
     },
     "multiple": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Accepts more than one file.",
       "use": [
         "Attachments, a photo set."
@@ -169,7 +184,6 @@
       ]
     },
     "maxFiles": {
-      "type": "number",
       "summary": "The most files the list may hold. Only meaningful with `multiple`.",
       "use": [
         "A real limit on the receiving side."
@@ -179,7 +193,6 @@
       ]
     },
     "maxSize": {
-      "type": "number",
       "summary": "The largest file allowed, in bytes.",
       "use": [
         "The server's real limit, so a reader learns it before a long upload fails."
@@ -189,7 +202,6 @@
       ]
     },
     "value": {
-      "type": "PickedFile[]",
       "summary": "Controls the chosen files from outside. Each is `{ name, size, type }` plus the platform's handle — `file` on web, `uri` on native — and, optionally, `progress` (0–100) and `error`, which the caller's uploader sets and the row displays.",
       "use": [
         "A form library, or restoring a selection after a validation round-trip.",
@@ -201,7 +213,6 @@
       ]
     },
     "onValueChange": {
-      "type": "(files: PickedFile[]) => void",
       "summary": "Fires with the whole accepted list whenever a file is added or removed.",
       "use": [
         "Starting an upload per file, or enabling a submit button."
@@ -211,7 +222,6 @@
       ]
     },
     "onReject": {
-      "type": "(rejections: FileRejection[]) => void",
       "summary": "Fires with the files that were refused and why: `{ file, reason: \"type\" | \"size\" | \"count\" }`.",
       "use": [
         "Setting `status=\"invalid\"` and a `message` that names the file and the rule it broke."
@@ -222,8 +232,6 @@
       "a11y": "The component announces nothing about rejections itself; the message you set from this is what joins the description chain, which keeps one announcement policy for every field."
     },
     "dropzone": {
-      "type": "boolean",
-      "default": "true",
       "summary": "Draws a drop target around the button, for dragging files in from the desktop.",
       "use": [
         "Turning it off in a compact row — a reply box's attachment control — where a large target would dominate."
@@ -234,8 +242,6 @@
       "a11y": "The zone has no role and no tab stop. Dragging is not available to keyboard, switch or most screen-reader users, so it is never the only way in — WCAG 2.5.7."
     },
     "buttonLabel": {
-      "type": "string",
-      "default": "\"Choose file\" — \"Choose files\" with `multiple`",
       "summary": "The choose button's text.",
       "use": [
         "Naming the kind of file: \"Choose photos\"."
@@ -245,7 +251,6 @@
       ]
     },
     "name": {
-      "type": "string",
       "summary": "Form field name. A native form post submits exactly the listed files.",
       "use": [
         "A plain `multipart/form-data` form."
@@ -253,8 +258,6 @@
       "a11y": "Carried by the native file input, which is visually hidden and out of the tab order — the button stands in for it."
     },
     "labelHidden": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Takes the label off screen while leaving it in the accessibility tree.",
       "use": [
         "A control whose meaning is already carried by a heading or column header directly above it."
@@ -265,7 +268,6 @@
       "a11y": "Field's, unchanged: the label element is still rendered and still bound. Only the pixels go."
     },
     "id": {
-      "type": "string",
       "summary": "Stable id for the file field, when something outside needs to point at it.",
       "use": [
         "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -275,8 +277,6 @@
       ]
     },
     "status": {
-      "type": "FieldStatus",
-      "default": "\"idle\"",
       "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
       "use": [
         "`invalid` with a `message` saying what to do about it."
@@ -287,7 +287,6 @@
       "a11y": "Field's, unchanged."
     },
     "description": {
-      "type": "ReactNode",
       "summary": "Persistent helper text under the control.",
       "use": [
         "The limits, in words, before the reader picks: \"PDF or JPEG, up to 10 MB.\""
@@ -298,7 +297,6 @@
       "a11y": "Joins `aria-describedby` ahead of the message, so a constraint is heard before a failure."
     },
     "message": {
-      "type": "ReactNode",
       "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
       "use": [
         "What to do about an `invalid` status, in the imperative."
@@ -309,8 +307,6 @@
       "a11y": "Announced politely rather than as an alert, because it is already in `aria-describedby`."
     },
     "required": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Marks the field required, in the label and to assistive technology.",
       "use": [
         "Fields that genuinely block submission."
@@ -321,8 +317,6 @@
       "a11y": "`aria-required` on the control; the rendered marker is `aria-hidden`."
     },
     "disabled": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Blocks choosing, dropping and removing while keeping the controls focusable and announced.",
       "use": [
         "While uploads are in flight, if the form cannot accept changes to the set."
@@ -333,7 +327,6 @@
       "a11y": "`aria-disabled` on the choose button and every remove button, each with a click guard; drops are ignored."
     },
     "className": {
-      "type": "string",
       "summary": "Class for the wrapper — the width the form wants, not a restyle.",
       "use": [
         "The measure the form decides."

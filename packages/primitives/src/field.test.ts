@@ -8,6 +8,10 @@ describe("getFieldProps", () => {
     expect(props.input.id).toBe("email");
   });
 
+  it("gives the label an id derived from the field's, for a group control to point at", () => {
+    expect(getFieldProps({ id: "price" }).label.id).toBe("price-label");
+  });
+
   it("describes the input with helper text when there is any", () => {
     const props = getFieldProps({ id: "email", hasDescription: true });
     expect(props.input["aria-describedby"]).toBe("email-description");

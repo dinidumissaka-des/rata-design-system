@@ -5,28 +5,35 @@
 
 Links to the pages of a long, ordered result set, with previous, next and the current page marked.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Pagination } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `pagination` |
 | Family | navigation |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | `state-layer`, `icon` |
 
 ## Behavior
 
 A `<nav>` landmark holding a list of links: Previous, a window of page numbers with ellipses, Next. Every page is a real `href`, and a client-side router intercepts through `onPageChange` — the same bargain TopNav and SideNav make with `onClick`. Proposed primitive: `getPaginationItems` in `packages/primitives/src/pagination.ts`, a pure function from `page` and `pageCount` to the list of items; it is a proposal, not yet a commitment.
 
+Headless contract: `getPaginationItems` in `packages/primitives/src/pagination.ts` — importable from `@rata/primitives` without the React wrapper or any CSS.
+
 - **Links with real URLs, not buttons with state** — A page of results the reader cannot bookmark, share or return to with Back is a page they lose. Every item is an `<a href>` built by `href(page)`, so middle-click, copy-link and the Back button all work, and a router that wants to stay client-side intercepts through `onPageChange` without the link stopping being a link. The precedent is TopNav and SideNav, which keep `href` real and let the caller intercept.
 - **The window is fixed: first, last, the current page and one either side** — "1 … 4 5 6 … 20" is the shape every reader already knows, and it is at most seven items wide whatever `pageCount` is, so the row cannot overflow a phone. A `siblingCount` prop would let every page pick its own width and gain nothing. The ellipsis is `aria-hidden` punctuation, and is not a control; jumping to a page in the gap is what the neighbouring numbers are for.
 - **Previous and Next stay on the first and last pages, `aria-disabled`** — The rule this system follows everywhere: an unavailable control is still announced. Removing Previous on page 1 makes the row a different length depending on where you are, and a screen-reader user hears a list of six on one page and seven on the next. The unavailable link has no `href`, carries `aria-disabled="true"`, and stays in the tab order with `tabindex="0"`.
 - **Not for infinite or unknown-length lists** — Pagination needs `pageCount`. A feed with no known end is a "Load more" Button below the list, which keeps the reader's place and needs no component of its own. Cursor-based APIs that only know whether there is a next page get Previous and Next as two Buttons or Links, not a Pagination with an invented count.
 - **The landmark is named, and the numbers say what they are** — A page with Breadcrumbs, a TopNav and a Pagination has three navigation landmarks, and three that are all called "navigation" are unusable. `label` names this one. Each number link is named "Page 4" rather than "4", and the current one is marked `aria-current="page"`, so a screen reader announces "Page 4, current page".
+- **Touch target: size.target.min** — Owner amendment at gate 3 (docs/decisions/2026-11-gate-1-review.md): the page buttons and Previous / Next get a hit area of size.target.min, 48px, on touch — Material's minimum, which also clears Apple's 44pt and WCAG 2.5.5. It sizes where an item can be tapped, never the drawn box, which stays size.control.md so the row keeps its density. Drawn with a ::before, centred on the item, because the composed state layer owns ::after; neighbouring areas overlap across the space.gap.xs gap, and the later item takes a tap there.
 - **Web and native** — Web: `<nav aria-label>` around a `<ul>` of `<a>` elements, `aria-current="page"` on the current one, `aria-disabled` on an unavailable Previous or Next. React Native has no URLs to link to, so `href` is web-only and `onPageChange` is what drives navigation; it is required there. Each item is a `Pressable` with `accessibilityRole="button"` — on native, changing a page is an action rather than a link — with `accessibilityLabel` "Page 4" and `accessibilityState` carrying `selected` for the current page and `disabled` for an unavailable Previous or Next. The row wraps in a `View` with `accessibilityLabel` set from `label`. Rata-drawn (decision N5): there is no OS page-selector control, so each item is a drawn `Pressable`. The native implementation ships in the pro tier (decision N6).
 
 ## Props
+
+Extends `Omit<HTMLAttributes<HTMLElement>, "aria-label" | "children">`.
 
 | Prop | Type | Default | Summary |
 |---|---|---|---|
@@ -98,6 +105,8 @@ onPageChange?: (page: number, event: { preventDefault(): void }) => void
 ```
 
 Called when the reader picks a page. Intercepts the link for a client-side router; required on React Native.
+
+Source doc: Called when the reader picks a page. Intercepts the link for a client-side router.
 
 **Use when**
 
@@ -201,6 +210,7 @@ A row of control-sized targets. Built from the same parts as a SideNav row — s
 | gap between items | `space.gap.xs` |
 | item min-inline-size | `size.control.md` |
 | item block-size | `size.control.md` |
+| hit area, on touch | `size.target.min in both dimensions, centred on the drawn item with a ::before (the state layer owns ::after); the item itself stays size.control.md` |
 | item padding-inline | `space.1` |
 | item font-size | `type.control.size.md` |
 | item font-weight | `type.control.weight` |

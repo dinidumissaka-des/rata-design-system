@@ -229,17 +229,7 @@ Don't. A menu is a list of actions; a choice with a current answer is a `RadioGr
 ## Real usage in this repo
 
 ```tsx
-<Menu
-            label="Account"
-            trigger={
-              <Button iconOnly aria-label="Account" variant="tertiary">
-                <Icon icon={User} />
-              </Button>
-            }
-          >
-            <MenuItem icon={Settings} onSelect={() => {}}>Settings</MenuItem>
-            <MenuItem onSelect={() => {}}>Sign out</MenuItem>
-          </Menu>
+<Menu label="Add" trigger={<Fab label="Add" icon={Plus} />
 ```
 
 ## Token recipe

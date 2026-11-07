@@ -10,10 +10,12 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
@@ -25,7 +27,20 @@
     "spinner",
     "icon"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/fab.css",
+      "target": "styles/fab.css"
+    },
+    {
+      "source": "packages/react/src/fab.tsx",
+      "target": "components/fab.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -108,13 +123,15 @@
       {
         "decision": "Web and native",
         "why": "On the web it renders `<button type=\"button\">`, position fixed, with `aria-label={label}` only when `labelHidden` is set — otherwise the visible text is the name, and the icon is `aria-hidden`. While `loading` it carries `aria-disabled=\"true\"` and `aria-busy=\"true\"`. On React Native it renders a `Pressable` with `accessibilityRole=\"button\"`, `accessibilityLabel={label}`, and `accessibilityState={{ disabled, busy: loading }}`, absolutely positioned inside the screen and offset by `useSafeAreaInsets()`. Web-only: `className`, and the BottomNav clearance, which is a CSS `:has()` rule — a native screen knows its tab bar's height from the navigator and offsets by that instead. No prop is native-only. There is no gesture. Rata-drawn (decision N5): iOS has no floating action button and Android's is a Material library component rather than an OS control, so it is a drawn `Pressable` from the same recipe on both. The native implementation ships in the pro tier (decision N6)."
+      },
+      {
+        "decision": "BottomNav publishes the clearance; the FAB reads it",
+        "why": "Decided at gate 3. The recipe's clearance rule is ':root:has(.rata-bottom-nav)' adding the bar's block size. Written in fab.css, that selector names BottomNav's class, so the FAB would depend on a component it works without and 'rata add fab' would install it. So bottom-nav.css sets '--rata-bottom-nav-block-size' on ':root:has(.rata-bottom-nav)', summed from the tokens it draws the bar with, and fab.css adds 'var(--rata-bottom-nav-block-size, space.0)' to its safe-area offset. Same condition, same sum, and the sum sits beside the bar it measures. The bar's size includes its own safe-area padding, so on a notched phone the FAB clears the bar by space.padding.md plus the inset. That is the recipe's sum taken literally. A BottomNav hidden with 'display: none' still matches ':has()', so the FAB keeps the clearance at widths where the bar is hidden."
       }
     ]
   },
   "props": {
     "label": {
-      "type": "string",
-      "required": true,
       "summary": "What the action does, as a verb phrase — shown beside the icon, or used as the accessible name when hidden.",
       "use": [
         "A short imperative: 'Compose', 'New invoice', 'Add photo'."
@@ -125,8 +142,6 @@
       "a11y": "The accessible name in both states. Visible text when shown; `aria-label` when `labelHidden` is set."
     },
     "icon": {
-      "type": "LucideIcon",
-      "required": true,
       "summary": "The glyph, which is always shown.",
       "use": [
         "A glyph that means the action on its own — a plus for create, a pencil for compose."
@@ -137,8 +152,6 @@
       "a11y": "Decorative: `aria-hidden`, because `label` is the name."
     },
     "labelHidden": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Shows the icon alone, as a circle, with `label` as the accessible name.",
       "use": [
         "An action so conventional on its screen that the glyph explains it — the plus on a list of notes."
@@ -149,8 +162,6 @@
       "a11y": "The name does not change; only whether it is visible."
     },
     "placement": {
-      "type": "\"end\" | \"center\"",
-      "default": "\"end\"",
       "summary": "Which bottom corner it floats at — inline-end, or centred.",
       "use": [
         "`center` when the screen's content is symmetrical and the action belongs to all of it, such as a camera's shutter."
@@ -161,7 +172,6 @@
       "a11y": "Visual only; reading order follows the DOM, not the corner."
     },
     "loading": {
-      "type": "boolean",
       "summary": "Shows a Spinner in place of the icon and blocks activation, while staying focusable.",
       "use": [
         "The action's request is in flight and a second press would send it twice."
@@ -175,7 +185,6 @@
       "a11y": "`aria-disabled=\"true\"` and `aria-busy=\"true\"`, as on Button. The label stays, so the name does not change while it is pending."
     },
     "disabled": {
-      "type": "boolean",
       "summary": "Blocks activation while keeping it focusable and announced.",
       "use": [
         "The action exists on this screen but cannot run yet, and the reader should be able to find out it exists."
@@ -189,7 +198,6 @@
       "a11y": "`aria-disabled`, not the `disabled` attribute, so it stays in the tab order and screen readers announce it as unavailable rather than skipping it."
     },
     "className": {
-      "type": "string",
       "summary": "Extra classes, for placement adjustments — not for restyling it.",
       "use": [
         "Hiding it at widths where the action lives in a toolbar instead."

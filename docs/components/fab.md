@@ -5,14 +5,16 @@
 
 The one primary action of a screen, floating over its content at the bottom inline-end corner.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { FAB } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `fab` |
 | Family | buttons |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | `button`, `state-layer`, `spinner`, `icon` |
 
 ## Behavior
@@ -30,15 +32,18 @@ A `<button type="button">` fixed to a corner of the viewport, with Button's acti
 - **Touch target: size.target.min** — The hit area is size.target.min, 48px, on every platform — Material's minimum, which also clears Apple's 44pt and WCAG 2.5.5. It sizes where the control can be tapped, never the drawn box. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md).
 - **Elevation: theme.elevation.floating** — A FAB is persistent and floats over moving content, which is neither raised (a resting card), overlay (a transient surface anchored to a trigger) nor modal. theme.elevation.floating is that role. It points at the same primitive as overlay today, and is a separate role so a theme can strengthen one without the other. A menu opened from the FAB still uses overlay. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md).
 - **Web and native** — On the web it renders `<button type="button">`, position fixed, with `aria-label={label}` only when `labelHidden` is set — otherwise the visible text is the name, and the icon is `aria-hidden`. While `loading` it carries `aria-disabled="true"` and `aria-busy="true"`. On React Native it renders a `Pressable` with `accessibilityRole="button"`, `accessibilityLabel={label}`, and `accessibilityState={{ disabled, busy: loading }}`, absolutely positioned inside the screen and offset by `useSafeAreaInsets()`. Web-only: `className`, and the BottomNav clearance, which is a CSS `:has()` rule — a native screen knows its tab bar's height from the navigator and offsets by that instead. No prop is native-only. There is no gesture. Rata-drawn (decision N5): iOS has no floating action button and Android's is a Material library component rather than an OS control, so it is a drawn `Pressable` from the same recipe on both. The native implementation ships in the pro tier (decision N6).
+- **BottomNav publishes the clearance; the FAB reads it** — Decided at gate 3. The recipe's clearance rule is ':root:has(.rata-bottom-nav)' adding the bar's block size. Written in fab.css, that selector names BottomNav's class, so the FAB would depend on a component it works without and 'rata add fab' would install it. So bottom-nav.css sets '--rata-bottom-nav-block-size' on ':root:has(.rata-bottom-nav)', summed from the tokens it draws the bar with, and fab.css adds 'var(--rata-bottom-nav-block-size, space.0)' to its safe-area offset. Same condition, same sum, and the sum sits beside the bar it measures. The bar's size includes its own safe-area padding, so on a notched phone the FAB clears the bar by space.padding.md plus the inset. That is the recipe's sum taken literally. A BottomNav hidden with 'display: none' still matches ':has()', so the FAB keeps the clearance at widths where the bar is hidden.
 
 ## Props
+
+Extends `Omit<ButtonHTMLAttributes<HTMLButtonElement>, "disabled" | "children">`.
 
 | Prop | Type | Default | Summary |
 |---|---|---|---|
 | `label` | `string` | — | What the action does, as a verb phrase — shown beside the icon, or used as the accessible name when hidden. |
 | `icon` | `LucideIcon` | — | The glyph, which is always shown. |
 | `labelHidden?` | `boolean` | `false` | Shows the icon alone, as a circle, with `label` as the accessible name. |
-| `placement?` | `"end" \| "center"` | `"end"` | Which bottom corner it floats at — inline-end, or centred. |
+| `placement?` | `FabPlacement` | `"end"` | Which bottom corner it floats at — inline-end, or centred. |
 | `loading?` | `boolean` | — | Shows a Spinner in place of the icon and blocks activation, while staying focusable. |
 | `disabled?` | `boolean` | — | Blocks activation while keeping it focusable and announced. |
 | `className?` | `string` | — | Extra classes, for placement adjustments — not for restyling it. |
@@ -100,7 +105,7 @@ Shows the icon alone, as a circle, with `label` as the accessible name.
 ### `placement`
 
 ```ts
-placement?: "end" | "center" = "end"
+placement?: FabPlacement = "end"
 ```
 
 Which bottom corner it floats at — inline-end, or centred.
@@ -216,6 +221,12 @@ A screen with a primary action and a secondary one, both wanting to float.
 ```
 
 Don't. Two FABs is no primary action. Discard is not something to keep under the thumb at all — it belongs in a footer or a Menu, as a Button or a destructive MenuItem.
+
+## Real usage in this repo
+
+```tsx
+<Fab label="Add" icon={Plus} />
+```
 
 ## Token recipe
 

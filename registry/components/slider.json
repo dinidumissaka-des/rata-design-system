@@ -11,10 +11,12 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
@@ -24,7 +26,24 @@
     "field",
     "state-layer"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/slider.css",
+      "target": "styles/slider.css"
+    },
+    {
+      "source": "packages/react/src/slider.tsx",
+      "target": "components/slider.tsx"
+    },
+    {
+      "source": "packages/primitives/src/slider.ts",
+      "target": "lib/slider.ts"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -58,6 +77,7 @@
     }
   },
   "behavior": {
+    "primitive": "getSliderProps",
     "summary": "One or two native range inputs over a drawn track, composed with Field for the label and helper text. APG Slider and Multi-Thumb Slider, with the platform supplying the keyboard model and the touch-screen-reader gestures a scripted slider cannot receive.",
     "decisions": [
       {
@@ -108,8 +128,6 @@
   },
   "props": {
     "label": {
-      "type": "ReactNode",
-      "required": true,
       "summary": "What the value measures. Always required — `labelHidden` hides it, nothing removes it.",
       "use": [
         "The quantity, with its unit when the output does not carry one: \"Volume\", \"Max price (USD)\"."
@@ -120,7 +138,6 @@
       "a11y": "Bound to the input by Field, so it is the slider's accessible name. For a range it names the group, and each thumb is named by `thumbLabels`."
     },
     "value": {
-      "type": "number | [number, number]",
       "summary": "Controls the value from outside. A two-element tuple renders two thumbs.",
       "use": [
         "A filter that other controls also write to, or a value persisted elsewhere."
@@ -134,8 +151,6 @@
       ]
     },
     "defaultValue": {
-      "type": "number | [number, number]",
-      "default": "min",
       "summary": "The starting value when the component owns the state. Its shape decides one thumb or two.",
       "use": [
         "`[min, max]` for a range filter that starts unconstrained."
@@ -148,7 +163,6 @@
       ]
     },
     "onValueChange": {
-      "type": "(value: number | [number, number]) => void",
       "summary": "Fires continuously while the thumb moves.",
       "use": [
         "Updating the visible output and anything cheap that should track the thumb."
@@ -158,7 +172,6 @@
       ]
     },
     "onValueCommit": {
-      "type": "(value: number | [number, number]) => void",
       "summary": "Fires once when an interaction ends: pointer release, a key press, or an assistive-technology adjustment.",
       "use": [
         "Re-running a query or saving a preference — anything expensive enough that it should happen once per decision."
@@ -168,24 +181,18 @@
       ]
     },
     "min": {
-      "type": "number",
-      "default": "0",
       "summary": "The lowest value.",
       "use": [
         "The real floor of the quantity, not a guess at the usual one."
       ]
     },
     "max": {
-      "type": "number",
-      "default": "100",
       "summary": "The highest value.",
       "use": [
         "The real ceiling. If there is none, this is the wrong control — a slider needs both ends to mean anything; use `NumberField`."
       ]
     },
     "step": {
-      "type": "number",
-      "default": "1",
       "summary": "The grid values snap to. Arrow keys move one step, PageUp and PageDown ten.",
       "use": [
         "A step that makes every reachable value meaningful — a price filter in 5s, not in cents."
@@ -195,7 +202,6 @@
       ]
     },
     "thumbLabels": {
-      "type": "[string, string]",
       "summary": "Names for the two thumbs of a range. Required when the value is a tuple.",
       "use": [
         "\"Minimum price\" and \"Maximum price\" — each thumb is its own control and needs its own name."
@@ -206,7 +212,6 @@
       "a11y": "Each becomes its thumb's `aria-label`, and the group keeps `label`. Without it a reader hears two identical sliders and cannot tell which end they are moving."
     },
     "formatValue": {
-      "type": "(value: number) => string",
       "summary": "Turns a value into the text shown in the output and announced as `aria-valuetext`.",
       "use": [
         "Units and currency: `(v) => `$${v}``, or `Intl.NumberFormat` for the page's locale.",
@@ -218,8 +223,6 @@
       "a11y": "Without it a screen reader announces the bare number, which is meaningless for a price, a percentage or a named level."
     },
     "showValue": {
-      "type": "boolean",
-      "default": "true",
       "summary": "Renders the current value as visible text beside the label.",
       "use": [
         "Almost always. A slider without a number is a guess, and touch makes it a worse one — the finger covers the thumb."
@@ -230,15 +233,12 @@
       "a11y": "Rendered in an `<output>` tied to the input, but not a live region: the input's own `aria-valuetext` is already announced on every change, and a live output would say it twice."
     },
     "name": {
-      "type": "string",
       "summary": "Form field name. A range submits two values under the same name, lower first.",
       "use": [
         "A native form post or `FormData`."
       ]
     },
     "labelHidden": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Takes the label off screen while leaving it in the accessibility tree.",
       "use": [
         "A control whose meaning is already carried by a heading or column header directly above it."
@@ -249,7 +249,6 @@
       "a11y": "Field's, unchanged: the label element is still rendered and still bound. Only the pixels go."
     },
     "id": {
-      "type": "string",
       "summary": "Stable id for the slider, when something outside needs to point at it.",
       "use": [
         "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -259,7 +258,6 @@
       ]
     },
     "description": {
-      "type": "ReactNode",
       "summary": "Persistent helper text under the control.",
       "use": [
         "What the value affects, when the label alone does not say: \"Applies to new uploads only.\""
@@ -270,8 +268,6 @@
       "a11y": "Joins `aria-describedby` ahead of the message, so a constraint is heard before a failure."
     },
     "disabled": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Blocks adjustment while keeping the slider focusable, readable and announced.",
       "use": [
         "A setting that depends on another being on."
@@ -282,7 +278,6 @@
       "a11y": "`aria-disabled` on each thumb. A range input has no `readOnly`, so the primitive blocks the change itself: keys and pointer down are refused, and an assistive-technology adjustment that slips past them is reverted to the current value."
     },
     "className": {
-      "type": "string",
       "summary": "Class for the wrapper — the width the layout wants, not a restyle.",
       "use": [
         "The inline size of the track, which is the layout's decision."

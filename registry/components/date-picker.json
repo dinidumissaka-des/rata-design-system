@@ -11,10 +11,12 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
@@ -26,7 +28,36 @@
     "icon",
     "visually-hidden"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/date-picker.css",
+      "target": "styles/date-picker.css"
+    },
+    {
+      "source": "packages/react/src/date-picker.tsx",
+      "target": "components/date-picker.tsx"
+    },
+    {
+      "source": "packages/primitives/src/date-picker.ts",
+      "target": "lib/date-picker.ts"
+    },
+    {
+      "source": "packages/primitives/src/calendar-grid.ts",
+      "target": "lib/calendar-grid.ts"
+    },
+    {
+      "source": "packages/react/src/modal-dialog.ts",
+      "target": "lib/modal-dialog.ts"
+    },
+    {
+      "source": "packages/react/src/scroll-lock.ts",
+      "target": "lib/scroll-lock.ts"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -110,6 +141,7 @@
     }
   },
   "behavior": {
+    "primitive": "getDatePickerProps",
     "summary": "A text input that parses a locale-formatted date, beside a button opening the APG Date Picker Dialog — a modal with a keyboard-navigable grid of days. Composed with Field. The value is an ISO calendar date, which is the only representation of a date with no time zone in it.",
     "decisions": [
       {
@@ -156,8 +188,6 @@
   },
   "props": {
     "label": {
-      "type": "ReactNode",
-      "required": true,
       "summary": "What the date is. Always required — `labelHidden` hides it, nothing removes it.",
       "use": [
         "The event the date belongs to: \"Departure\", \"Date of birth\"."
@@ -168,7 +198,6 @@
       "a11y": "Bound to the input by Field, so it is the accessible name. The calendar dialog is labelled by it too, with the visible month as its description."
     },
     "value": {
-      "type": "string | null",
       "summary": "Controls the chosen date from outside, as an ISO calendar date: \"2026-11-01\". `null` is empty.",
       "use": [
         "A form library, or a return date bound to a departure date."
@@ -182,8 +211,6 @@
       ]
     },
     "defaultValue": {
-      "type": "string | null",
-      "default": "null",
       "summary": "The starting date when the component owns the state.",
       "use": [
         "A genuine default the reader would usually keep, such as today for a log entry."
@@ -193,7 +220,6 @@
       ]
     },
     "onValueChange": {
-      "type": "(value: string | null) => void",
       "summary": "Fires with the ISO date when a day is chosen in the calendar, or typed text parses on blur or Enter.",
       "use": [
         "Reading a date without parsing a string in your locale."
@@ -203,7 +229,6 @@
       ]
     },
     "min": {
-      "type": "string",
       "summary": "The earliest choosable date, as ISO.",
       "use": [
         "A booking that cannot start in the past: today's date."
@@ -211,14 +236,12 @@
       "a11y": "Days before it stay in the grid, focusable, `aria-disabled` and announced as unavailable — the system's disabled rule, applied to a day."
     },
     "max": {
-      "type": "string",
       "summary": "The latest choosable date, as ISO.",
       "use": [
         "A date of birth: today, at the latest."
       ]
     },
     "isDateUnavailable": {
-      "type": "(date: string) => boolean",
       "summary": "Marks individual dates unchoosable — weekends, holidays, fully booked days.",
       "use": [
         "Availability that `min` and `max` cannot express."
@@ -230,7 +253,6 @@
       "a11y": "Unavailable days are `aria-disabled` and say so in their accessible name, and keep their place in the grid so arrow keys move by a day, not by an available day."
     },
     "firstDayOfWeek": {
-      "type": "0 | 1 | 2 | 3 | 4 | 5 | 6",
       "summary": "Which weekday starts each row of the calendar, 0 being Sunday. Defaults to the page locale's.",
       "use": [
         "A product whose week is a business rule rather than a locale convention."
@@ -240,8 +262,6 @@
       ]
     },
     "calendarLabel": {
-      "type": "string",
-      "default": "\"Choose date\"",
       "summary": "Accessible name for the button that opens the calendar.",
       "use": [
         "Translating it."
@@ -252,7 +272,6 @@
       "a11y": "Once a date is chosen, the primitive appends it: \"Choose date, 1 November 2026\" — the APG Date Picker Dialog's convention, so the button says what it will change."
     },
     "placeholder": {
-      "type": "string",
       "summary": "Shown while empty. Defaults to the expected format for the page locale.",
       "use": [
         "Leaving the default. It is generated from the same format the parser accepts, so the hint cannot disagree with the parser."
@@ -262,7 +281,6 @@
       ]
     },
     "name": {
-      "type": "string",
       "summary": "Form field name. Submits the ISO date, not the displayed text.",
       "use": [
         "A native form post, where the server should receive \"2026-11-01\" regardless of the reader's locale."
@@ -270,16 +288,12 @@
       "a11y": "Carried by a hidden input; the visible one holds the formatted text."
     },
     "size": {
-      "type": "\"sm\" | \"md\" | \"lg\"",
-      "default": "\"md\"",
       "summary": "Control height and inline padding. Text size does not change with it.",
       "use": [
         "Matching whatever the control sits beside."
       ]
     },
     "labelHidden": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Takes the label off screen while leaving it in the accessibility tree.",
       "use": [
         "A control whose meaning is already carried by a heading or column header directly above it."
@@ -290,7 +304,6 @@
       "a11y": "Field's, unchanged: the label element is still rendered and still bound. Only the pixels go."
     },
     "id": {
-      "type": "string",
       "summary": "Stable id for the date field, when something outside needs to point at it.",
       "use": [
         "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -300,8 +313,6 @@
       ]
     },
     "status": {
-      "type": "FieldStatus",
-      "default": "\"idle\"",
       "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
       "use": [
         "`invalid` with a `message` saying what to do about it."
@@ -312,7 +323,6 @@
       "a11y": "Field's, unchanged."
     },
     "description": {
-      "type": "ReactNode",
       "summary": "Persistent helper text under the control.",
       "use": [
         "The constraint before the reader picks: \"Any weekday in the next 30 days.\""
@@ -323,7 +333,6 @@
       "a11y": "Joins `aria-describedby` ahead of the message, so a constraint is heard before a failure."
     },
     "message": {
-      "type": "ReactNode",
       "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
       "use": [
         "What to do about an `invalid` status, in the imperative."
@@ -334,8 +343,6 @@
       "a11y": "Announced politely rather than as an alert, because it is already in `aria-describedby`."
     },
     "required": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Marks the field required, in the label and to assistive technology.",
       "use": [
         "Fields that genuinely block submission."
@@ -346,8 +353,6 @@
       "a11y": "`aria-required` on the control; the rendered marker is `aria-hidden`."
     },
     "disabled": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Blocks typing and opening the calendar while keeping the field focusable, readable and announced.",
       "use": [
         "A date fixed by an earlier choice that should still be readable."
@@ -358,7 +363,6 @@
       "a11y": "`aria-disabled` plus `readOnly` on the input from Field, and `aria-disabled` on the calendar button, whose click guard refuses to open."
     },
     "className": {
-      "type": "string",
       "summary": "Class for the wrapper — the width the form wants, not a restyle.",
       "use": [
         "A measure that fits the formatted date. A full-width date field looks like it wants a sentence."

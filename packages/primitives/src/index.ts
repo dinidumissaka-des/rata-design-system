@@ -50,6 +50,84 @@ export type {
   PopoverFocusDestination,
   PopoverKeyEvent,
 } from "./popover.js";
+export {
+  getComboboxProps,
+  filterComboboxOptions,
+  findComboboxOptionByLabel,
+  resolveComboboxText,
+  comboboxCountMessage,
+} from "./combobox.js";
+export type {
+  ComboboxOptions,
+  ComboboxProps,
+  ComboboxOptionDescriptor,
+  ComboboxFilter,
+  ComboboxOpenReason,
+  ComboboxCloseReason,
+  ComboboxKeyEvent,
+  ComboboxResolution,
+  ComboboxInputProps,
+  ComboboxToggleProps,
+  ComboboxListboxProps,
+  ComboboxOptionProps,
+} from "./combobox.js";
+export {
+  getDatePickerProps,
+  resolveDateText,
+  getCalendarGridProps,
+  addDays,
+  addMonths,
+  addYears,
+  dayOfWeek,
+  daysInMonth,
+  endOfWeek,
+  formatDayNumber,
+  formatLongDate,
+  formatMonthYear,
+  formatNumericDate,
+  isISODate,
+  isUnavailable,
+  localeFirstDayOfWeek,
+  monthOf,
+  monthWeeks,
+  numericDateFormat,
+  numericDatePlaceholder,
+  parseDateText,
+  parseISODate,
+  startOfWeek,
+  toISODate,
+  todayISO,
+  weekdayNames,
+} from "./date-picker.js";
+export type {
+  DatePickerOptions,
+  DatePickerProps,
+  DatePickerKeyEvent,
+  DatePickerCloseReason,
+  AvailabilityOptions,
+  CalendarCellProps,
+  CalendarDayProps,
+  CalendarGridOptions,
+  CalendarGridProps,
+  CalendarKeyEvent,
+} from "./date-picker.js";
+export {
+  getDateRangePickerProps,
+  chooseRangeDate,
+  nextRangeEnd,
+  nextUnavailableAfter,
+  formatDateRange,
+} from "./date-range-picker.js";
+export type {
+  DateRange,
+  DateRangeEnd,
+  DateRangeCellProps,
+  DateRangeInputProps,
+  DateRangePickerOptions,
+  DateRangePickerProps,
+  DateRangePickerKeyEvent,
+  DateRangePickerCloseReason,
+} from "./date-range-picker.js";
 export { getSearchProps } from "./search.js";
 export type { SearchOptions, SearchProps, SearchKeyEvent } from "./search.js";
 export { getTabsProps } from "./tabs.js";
@@ -73,8 +151,97 @@ export type {
 } from "./segmented-control.js";
 export { getSwitchProps } from "./switch.js";
 export type { SwitchOptions, SwitchProps } from "./switch.js";
-export { getFieldProps } from "./field.js";
+export { getFieldProps, fieldLabelId } from "./field.js";
 export type { FieldOptions, FieldParts, FieldControlProps, FieldStatus } from "./field.js";
 // The names this primitive had while TextField was its only consumer.
 export { getTextFieldProps } from "./field.js";
 export type { TextFieldOptions, TextFieldProps, TextFieldStatus } from "./field.js";
+export { getPaginationItems } from "./pagination.js";
+export type { PaginationItem, PaginationOptions } from "./pagination.js";
+export { getTableProps, nextTableSort } from "./table.js";
+export type {
+  TableOptions,
+  TableProps,
+  TableSort,
+  TableSortDirection,
+  TableColumnDescriptor,
+  TableHeaderProps,
+  TableSortButtonProps,
+  TableCellProps,
+} from "./table.js";
+export {
+  getTooltipProps,
+  tooltipInitialState,
+  tooltipIsOpen,
+  tooltipOpenIsDelayed,
+  tooltipReducer,
+  tooltipShowsForPointer,
+} from "./tooltip.js";
+export type {
+  TooltipOptions,
+  TooltipProps,
+  TooltipTriggerProps,
+  TooltipSurfaceProps,
+  TooltipRelationship,
+  TooltipFocusModality,
+  TooltipPointerDestination,
+  TooltipEvent,
+  TooltipState,
+  TooltipKeyEvent,
+} from "./tooltip.js";
+export {
+  getNumberFieldProps,
+  parseNumber,
+  formatNumber,
+  formatForEditing,
+  stepValue,
+  clamp,
+  separators,
+  NUMBER_FIELD_REPEAT,
+} from "./number-field.js";
+export type {
+  NumberFieldOptions,
+  NumberFieldProps,
+  NumberFieldStepButtonProps,
+  NumberFieldKeyEvent,
+} from "./number-field.js";
+export { getPinInputProps, filterCode } from "./pin-input.js";
+export type {
+  PinInputOptions,
+  PinInputProps,
+  PinInputBox,
+  PinInputBoxState,
+  PinInputCharacters,
+  PinInputPurpose,
+  PinInputPasteEvent,
+} from "./pin-input.js";
+export { getSliderProps, snapToStep } from "./slider.js";
+export type {
+  SliderOptions,
+  SliderProps,
+  SliderThumb,
+  SliderInputProps,
+  SliderKeyEvent,
+  SliderValue,
+} from "./slider.js";
+export {
+  getFileUploadProps,
+  validateFiles,
+  matchesAccept,
+  toPickedFile,
+  focusAfterRemoval,
+  formatFileSize,
+  describeAccept,
+  fileUploadAnnouncements,
+} from "./file-upload.js";
+export type {
+  PickedFile,
+  FileRejection,
+  FileRejectionReason,
+  FileConstraints,
+  FileUploadOptions,
+  FileUploadProps,
+  FileUploadRow,
+} from "./file-upload.js";
+export { getStepsProps } from "./steps.js";
+export type { StepStatus, StepsItemInput, StepsOptions, StepState, StepsState } from "./steps.js";

@@ -13,10 +13,12 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
@@ -30,7 +32,24 @@
     "visually-hidden",
     "popover"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/combobox.css",
+      "target": "styles/combobox.css"
+    },
+    {
+      "source": "packages/react/src/combobox.tsx",
+      "target": "components/combobox.tsx"
+    },
+    {
+      "source": "packages/primitives/src/combobox.ts",
+      "target": "lib/combobox.ts"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -99,6 +118,7 @@
     }
   },
   "behavior": {
+    "primitive": "getComboboxProps",
     "summary": "An APG combobox: a text input that keeps focus while `aria-activedescendant` walks a popup listbox, composed with Field for its label, helper text and validation. The answer is an option's value; the text is only how the reader finds it.",
     "decisions": [
       {
@@ -153,8 +173,6 @@
   },
   "props": {
     "label": {
-      "type": "ReactNode",
-      "required": true,
       "summary": "The control's name. Always required — `labelHidden` hides it, nothing removes it.",
       "use": [
         "A short noun phrase naming what is being chosen: \"Assignee\", not \"Search for an assignee\"."
@@ -165,8 +183,6 @@
       "a11y": "Bound to the input by Field, so it is the combobox's accessible name. The popup listbox is labelled by the same element, so the list and the field are announced as one thing."
     },
     "options": {
-      "type": "ComboboxOption[]",
-      "required": true,
       "summary": "The choices, as `{ value, label, description?, disabled? }`, in the order they are read.",
       "use": [
         "Every option when the list is local; the current page of results when the server filters (with `filter=\"none\"`).",
@@ -179,7 +195,6 @@
       "a11y": "Each becomes a `role=\"option\"` in a `role=\"listbox\"`. A disabled option stays in the list, reachable by arrow keys and announced as unavailable, and cannot be chosen."
     },
     "value": {
-      "type": "string | null",
       "summary": "Controls the chosen option's `value` from outside. `null` means nothing is chosen.",
       "use": [
         "A form library, or a field whose options depend on another field's answer."
@@ -192,8 +207,6 @@
       ]
     },
     "defaultValue": {
-      "type": "string | null",
-      "default": "null",
       "summary": "The starting choice when the component owns the state.",
       "use": [
         "A genuine default the reader usually wants."
@@ -206,7 +219,6 @@
       ]
     },
     "onValueChange": {
-      "type": "(value: string | null) => void",
       "summary": "Fires with the chosen option's value when a choice is committed — Enter, a click, or clearing the text.",
       "use": [
         "Reading the answer, which is the option's `value`, never the text in the box."
@@ -216,7 +228,6 @@
       ]
     },
     "onInputChange": {
-      "type": "(text: string) => void",
       "summary": "Fires with the text in the box on every edit.",
       "use": [
         "Fetching the next page of options when the server does the filtering — debounce it on your side, the component does not."
@@ -226,8 +237,6 @@
       ]
     },
     "filter": {
-      "type": "\"contains\" | \"starts-with\" | \"none\"",
-      "default": "\"contains\"",
       "summary": "How typed text narrows `options` locally.",
       "use": [
         "`none` when `options` is already the server's answer to the current text — filtering it again would hide results the server matched on fields the reader cannot see.",
@@ -239,8 +248,6 @@
       "a11y": "Whatever the mode, the result count is announced politely after each change, because a list changing under an `aria-activedescendant` is otherwise silent in most screen readers."
     },
     "allowCustomValue": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Accepts text that matches no option as the answer.",
       "use": [
         "Suggestions over an open answer: a tag that may not exist yet, a city the list does not know."
@@ -252,8 +259,6 @@
       "a11y": "With it on, the value reported is the text itself, so `onValueChange` receives a string that may not be any option's value — the caller has to expect that."
     },
     "loading": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Options are being fetched. The popup shows a spinner row and the field is busy.",
       "use": [
         "Between an `onInputChange` that went to the network and its answer."
@@ -264,8 +269,6 @@
       "a11y": "Sets `aria-busy` on the listbox. The count announcement waits for it to clear, so a reader does not hear \"0 results\" for a search that has not answered yet."
     },
     "emptyMessage": {
-      "type": "ReactNode",
-      "default": "\"No matches\"",
       "summary": "What the popup says when nothing matches.",
       "use": [
         "Translating it, or saying what to try: \"No people match — check the spelling or invite them.\""
@@ -276,7 +279,6 @@
       "a11y": "Rendered as a plain row outside the listbox's options, so it is announced by the count region rather than being arrowed onto as if it were a choice."
     },
     "placeholder": {
-      "type": "string",
       "summary": "A hint shown while the box is empty.",
       "use": [
         "Naming the act: \"Type a name\"."
@@ -286,7 +288,6 @@
       ]
     },
     "name": {
-      "type": "string",
       "summary": "Form field name. The submitted value is the chosen option's `value`, not the text in the box.",
       "use": [
         "A native form post, where the server needs the id rather than the display label."
@@ -297,8 +298,6 @@
       "a11y": "Carried by a hidden input, which is not in the tab order and is not announced."
     },
     "size": {
-      "type": "\"sm\" | \"md\" | \"lg\"",
-      "default": "\"md\"",
       "summary": "Control height and inline padding. Text size does not change with it.",
       "use": [
         "Matching whatever the control sits beside — a combobox and a button in one row should be the same height."
@@ -308,8 +307,6 @@
       ]
     },
     "labelHidden": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Takes the label off screen while leaving it in the accessibility tree.",
       "use": [
         "A control whose meaning is already carried by a heading or column header directly above it."
@@ -320,7 +317,6 @@
       "a11y": "Field's, unchanged: the label element is still rendered and still bound. Only the pixels go."
     },
     "id": {
-      "type": "string",
       "summary": "Stable id for the combobox, when something outside needs to point at it.",
       "use": [
         "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -330,8 +326,6 @@
       ]
     },
     "status": {
-      "type": "FieldStatus",
-      "default": "\"idle\"",
       "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
       "use": [
         "`invalid` with a `message` saying what to do about it."
@@ -342,7 +336,6 @@
       "a11y": "Field's, unchanged."
     },
     "description": {
-      "type": "ReactNode",
       "summary": "Persistent helper text under the control.",
       "use": [
         "A constraint the reader needs before they answer."
@@ -353,7 +346,6 @@
       "a11y": "Joins `aria-describedby` ahead of the message, so a constraint is heard before a failure."
     },
     "message": {
-      "type": "ReactNode",
       "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
       "use": [
         "What to do about an `invalid` status, in the imperative."
@@ -364,8 +356,6 @@
       "a11y": "Announced politely rather than as an alert, because it is already in `aria-describedby`."
     },
     "required": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Marks the field required, in the label and to assistive technology.",
       "use": [
         "Fields that genuinely block submission."
@@ -376,8 +366,6 @@
       "a11y": "`aria-required` on the control; the rendered marker is `aria-hidden`."
     },
     "disabled": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Blocks choosing while keeping the field focusable, readable and announced.",
       "use": [
         "A choice that depends on an answer nobody has given yet."
@@ -388,7 +376,6 @@
       "a11y": "`aria-disabled` plus `readOnly` on the input, from Field. The popup never opens, so arrow keys and the toggle do nothing, and the field stays in the tab order."
     },
     "className": {
-      "type": "string",
       "summary": "Class for the wrapper — the width the form wants, not a restyle.",
       "use": [
         "The measure or grid placement the form decides."

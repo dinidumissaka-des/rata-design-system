@@ -5,14 +5,16 @@
 
 A vertical stack of rows — contacts, settings, messages, files — each a ListItem, divided and edge-to-edge.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { List } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `list` |
 | Family | content |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | `list-item` |
 
 ## Behavior
@@ -27,6 +29,7 @@ A `<ul role="list">` of ListItems. No primitive and no keyboard model of its own
 - **No virtualization in this version** — Rendering only the visible rows changes what is in the DOM, which changes what find-in-page, a screen reader's list count and Tab can reach. Those are solvable — `aria-setsize` and `aria-posinset` on each row — but they are a behaviour of their own and they belong in a primitive that has been through gate 1, not in a styling component.
 - **Pull-to-refresh is not part of List, and is not a component** — It was proposed as a component and declined. On the web the browser already owns the gesture on the document scroller — Chrome on Android and Safari on iOS both reload the page on an overscroll — so a custom one has to disable that with `overscroll-behavior-y: contain` and replace a behaviour readers already know. It has no surface of its own beyond a Spinner, it binds to a scroll container rather than rendering anything, and on React Native it is not a component either: it is `RefreshControl`, passed to a `ScrollView` or `FlatList`'s `refreshControl` prop. Its non-gesture equivalent — a Refresh Button, or refreshing on focus — has to exist regardless, and that equivalent is what ships today. If installed PWAs (which lose the browser's gesture in standalone mode) make the gesture worth having, it is a `refreshing` / `onRefresh` pair on this component, mirroring FlatList's, backed by a new pointer-state primitive proposed through gate 1.
 - **Web and native** — On the web it renders `<ul role="list">`, named by `aria-label` or `aria-labelledby` when given one. The explicit role is load-bearing: Safari removes list semantics from a list styled `list-style: none`, which is every list here, and without it VoiceOver stops announcing 'list, 12 items'. On React Native it renders a `View` with `accessibilityRole="list"` for short static lists. A long native list should be a `FlatList` — virtualization is not optional at a few hundred rows on a phone — so the native package is expected to take `data` and `renderItem` where the web takes `children`; that divergence is an open question for the native package's own gate 1. `className` is web-only. Swipe actions live on ListItem, and this component has no gesture of its own. Rata-drawn rows inside the core list views (decision N5): `View` or `FlatList` supplies the scrolling and the list semantics, and no OS table or list styling (UITableView, RecyclerView) is used. The native implementation ships in the pro tier (decision N6).
+- **A row's focus ring is drawn inside the row, so the list needs no block padding** — Decided at gate 3, owner decision, docs/decisions/2026-11-gate-1-review.md. ListItem draws its ring with a negative offset of focus.ring-offset plus focus.ring-width, so it never reaches the list's edges and neither a scroll container nor the inset appearance's `overflow: clip` can cut it. That removes the only reason for the block padding the gate-2 recipe gave the list, and the padding is space.0: kept, it would also stop the first and last rows' state layers short of an inset list's rounded corners, which the clip exists to give them.
 
 ## Props
 
@@ -36,7 +39,7 @@ A `<ul role="list">` of ListItems. No primitive and no keyboard model of its own
 | `label?` | `string` | — | Accessible name for the list, when no visible heading names it. |
 | `labelledBy?` | `string` | — | Id of a visible element — usually the Heading above the list — that names it. |
 | `dividers?` | `boolean` | `true` | Whether a rule is drawn between rows. |
-| `appearance?` | `"plain" \| "inset"` | `"plain"` | Edge-to-edge on the page's own surface, or grouped on a rounded surface inside the gutter. |
+| `appearance?` | `ListAppearance` | `"plain"` | Edge-to-edge on the page's own surface, or grouped on a rounded surface inside the gutter. |
 | `className?` | `string` | — | Extra classes on the `<ul>`, for placement — not for restyling it. |
 
 ### `children`
@@ -116,7 +119,7 @@ Whether a rule is drawn between rows.
 ### `appearance`
 
 ```ts
-appearance?: "plain" | "inset" = "plain"
+appearance?: ListAppearance = "plain"
 ```
 
 Edge-to-edge on the page's own surface, or grouped on a rounded surface inside the gutter.
@@ -192,6 +195,27 @@ The rows are the options of a question, and the reader chooses one of them.
 
 Don't. Nothing here says which one is chosen or that only one can be. That is a RadioGroup, which announces the choice, holds the answer, and submits it with the form.
 
+## Real usage in this repo
+
+```tsx
+<List label="People">
+          <ListItem
+            href="#people-ada"
+            leading={<Avatar name="Ada Lovelace" decorative />}
+            description="Last seen 2 hours ago"
+          >
+            Ada Lovelace
+          </ListItem>
+          <ListItem
+            href="#people-grace"
+            leading={<Avatar name="Grace Hopper" decorative />}
+            description="Online"
+          >
+            Grace Hopper
+          </ListItem>
+        </List>
+```
+
 ## Token recipe
 
 ### base
@@ -203,7 +227,7 @@ The list draws almost nothing itself. The rows own their padding, their dividers
 | background | `inherited — the list takes the surface it is placed on, which is what lets it sit edge-to-edge in a page or inside a Sheet` |
 | margin | `space.0` |
 | padding-inline | `space.0 — rows fill the width, for the reason SideNav's rows do: the whole row is the target` |
-| padding-block | `focus.ring-width plus focus.ring-offset — just enough that the first and last rows' focus rings are not clipped when the list is a scroll container, the device Tabs uses for the same problem` |
+| padding-block | `space.0 — the recipe padded the block edges by focus.ring-width plus focus.ring-offset so the first and last rows' rings survived a scroll container; a row's ring is now drawn inside the row (gate 3, owner decision), so there is nothing to make room for, and padding would stop the first and last rows' state layers short of an inset list's corners` |
 | list-style | `none, with role="list" restored — see the web and native decision` |
 
 ### inset
@@ -215,4 +239,4 @@ The grouped look: the list as a rounded surface inside the page's gutter, as in 
 | background | `theme.bg.surface` |
 | border | `border.default solid theme.border.default` |
 | border-radius | `radius.container` |
-| overflow | `clip, so the first and last rows' state layers take the container's corners — with the padding-block above, so the rings still fit inside` |
+| overflow | `clip, so the first and last rows' state layers take the container's corners — a row's focus ring is drawn inside the row, so the clip never cuts it` |

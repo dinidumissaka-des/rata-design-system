@@ -1,0 +1,71 @@
+/* Skeleton — a placeholder in the shape of content that is about to load.
+
+   Every value below is the gate-2 recipe in registry/components/skeleton.json.
+   A recessed theme.bg.muted block that pulses toward theme.bg.subtle: two
+   documented steps that change with the theme, and no highlight colour of
+   its own. The element is a span so it can sit inside text or inline layout;
+   it is drawn as a block. */
+
+.rata-skeleton {
+  display: block;
+}
+
+/* The filled part: the bar of each text line, or the block or circle itself. */
+.rata-skeleton-line,
+.rata-skeleton--block,
+.rata-skeleton--circle {
+  background: var(--rata-theme-bg-muted);
+}
+
+/* The pulse, only when motion is welcome. Under reduced motion there is no
+   animation at all: a still theme.bg.muted block says "not yet" just as well.
+   It runs at the slow band's slowest step, alternating, so it never becomes
+   a flicker in peripheral vision. */
+@media (prefers-reduced-motion: no-preference) {
+  .rata-skeleton-line,
+  .rata-skeleton--block,
+  .rata-skeleton--circle {
+    animation: rata-skeleton-pulse var(--rata-motion-duration-slow-max)
+      var(--rata-motion-easing-standard) infinite alternate;
+  }
+}
+
+@keyframes rata-skeleton-pulse {
+  to {
+    background: var(--rata-theme-bg-subtle);
+  }
+}
+
+/* text — one bar per line, type.body.size tall, centred in a line box of
+   type.body.line-height. The half-leading is a margin either side, so the
+   lines need no gap: the line box already carries the leading. A flex column
+   keeps those margins from collapsing between lines. */
+.rata-skeleton--text {
+  display: flex;
+  flex-direction: column;
+}
+
+.rata-skeleton-line {
+  display: block;
+  block-size: var(--rata-type-body-size);
+  margin-block: calc(var(--rata-type-body-size) * (var(--rata-type-body-line-height) - 1) / 2);
+  border-radius: var(--rata-radius-inner);
+}
+
+/* The last line of a paragraph is shorter, so the block reads as a paragraph
+   and not a wall. A one-line skeleton (a title) keeps the full width. */
+.rata-skeleton-line:last-child:not(:only-child) {
+  inline-size: 60%;
+}
+
+/* block — an image, a chart or a card's media. Sized by the caller's layout. */
+.rata-skeleton--block {
+  border-radius: var(--rata-radius-element);
+}
+
+/* circle — an avatar. Sized by the caller; square by construction, so one
+   dimension is enough. */
+.rata-skeleton--circle {
+  aspect-ratio: 1;
+  border-radius: var(--rata-radius-pill);
+}

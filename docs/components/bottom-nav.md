@@ -5,15 +5,17 @@
 
 Three to five top-level destinations in a bar held to the bottom of a narrow viewport.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { BottomNav } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `bottom-nav` |
 | Family | navigation |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
-| Depends on | `state-layer`, `icon` |
+| Status (css / react / figma) | latest / latest / future |
+| Depends on | `state-layer`, `icon`, `visually-hidden` |
 
 ## Behavior
 
@@ -46,6 +48,8 @@ items: BottomNavItem[]
 ```
 
 The destinations, in the order they are read: each `{ label: string; href: string; icon: LucideIcon; current?: boolean; badge?: { count?: number; label: string }; onClick?: (event) => void }`.
+
+Source doc: The destinations, in the order they are read.
 
 **Use when**
 
@@ -146,6 +150,12 @@ An app with more top-level destinations than fit in a thumb's width.
 ```
 
 Don't, and don't add a 'More' item either. That is MobileNav, whose drawer holds a SideNav with as many grouped sections as the app needs.
+
+## Real usage in this repo
+
+```tsx
+<BottomNav items={BOTTOM_NAV_SECTIONS} />
+```
 
 ## Token recipe
 

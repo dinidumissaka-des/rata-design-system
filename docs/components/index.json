@@ -12,7 +12,7 @@
   {
     "name": "bottom-nav",
     "title": "Bottom Nav",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "breadcrumbs",
@@ -42,22 +42,22 @@
   {
     "name": "chip",
     "title": "Chip",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "combobox",
     "title": "Combobox",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "date-picker",
     "title": "Date Picker",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "date-range-picker",
     "title": "Date Range Picker",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "dialog",
@@ -72,17 +72,17 @@
   {
     "name": "divider",
     "title": "Divider",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "empty-state",
     "title": "Empty state",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "fab",
     "title": "FAB",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "field",
@@ -92,7 +92,7 @@
   {
     "name": "file-upload",
     "title": "File Upload",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "heading",
@@ -112,12 +112,12 @@
   {
     "name": "list",
     "title": "List",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "list-item",
     "title": "List Item",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "menu",
@@ -142,12 +142,12 @@
   {
     "name": "number-field",
     "title": "Number Field",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "pagination",
     "title": "Pagination",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "panel",
@@ -157,7 +157,7 @@
   {
     "name": "pin-input",
     "title": "Pin Input",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "popover",
@@ -167,7 +167,7 @@
   {
     "name": "progress",
     "title": "Progress",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "radio",
@@ -207,12 +207,12 @@
   {
     "name": "skeleton",
     "title": "Skeleton",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "slider",
     "title": "Slider",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "spinner",
@@ -227,7 +227,7 @@
   {
     "name": "steps",
     "title": "Steps",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "switch",
@@ -237,7 +237,7 @@
   {
     "name": "table",
     "title": "Table",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "tabs",
@@ -262,7 +262,7 @@
   {
     "name": "toast",
     "title": "Toast",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "toggle-button",
@@ -277,7 +277,7 @@
   {
     "name": "tooltip",
     "title": "Tooltip",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "top-nav",

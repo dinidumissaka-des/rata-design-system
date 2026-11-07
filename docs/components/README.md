@@ -15,38 +15,38 @@ behind it yet, and `css-only` when there is no props API by design.
 |---|---|---|---|---|---|
 | [Avatar](avatar.md) | `avatar` | content | latest / latest | documented | free |
 | [Badge](badge.md) | `badge` | content | latest / latest | documented | free |
-| [Bottom Nav](bottom-nav.md) | `bottom-nav` | navigation | future / future | spec | free |
+| [Bottom Nav](bottom-nav.md) | `bottom-nav` | navigation | latest / latest | documented | free |
 | [Breadcrumbs](breadcrumbs.md) | `breadcrumbs` | navigation | latest / latest | documented | free |
 | [Button](button.md) | `button` | buttons | latest / latest | documented | free |
 | [Button Group](button-group.md) | `button-group` | buttons | latest / latest | documented | free |
 | [Card](card.md) | `card` | content | latest / latest | documented | free |
 | [Checkbox](checkbox.md) | `checkbox` | inputs | latest / latest | documented | free |
-| [Chip](chip.md) | `chip` | inputs | future / future | spec | free |
-| [Combobox](combobox.md) | `combobox` | inputs | future / future | spec | free |
-| [Date Picker](date-picker.md) | `date-picker` | inputs | future / future | spec | free |
-| [Date Range Picker](date-range-picker.md) | `date-range-picker` | inputs | future / future | spec | free |
+| [Chip](chip.md) | `chip` | inputs | latest / latest | documented | free |
+| [Combobox](combobox.md) | `combobox` | inputs | latest / latest | documented | free |
+| [Date Picker](date-picker.md) | `date-picker` | inputs | latest / latest | documented | free |
+| [Date Range Picker](date-range-picker.md) | `date-range-picker` | inputs | latest / latest | documented | free |
 | [Dialog](dialog.md) | `dialog` | overlays | latest / latest | documented | free |
 | [Disclosure](disclosure.md) | `disclosure` | content | latest / latest | documented | free |
-| [Divider](divider.md) | `divider` | content | future / future | spec | free |
-| [Empty state](empty-state.md) | `empty-state` | feedback | future / future | spec | free |
-| [FAB](fab.md) | `fab` | buttons | future / future | spec | free |
+| [Divider](divider.md) | `divider` | content | latest / latest | documented | free |
+| [Empty state](empty-state.md) | `empty-state` | feedback | latest / latest | documented | free |
+| [FAB](fab.md) | `fab` | buttons | latest / latest | documented | free |
 | [Field](field.md) | `field` | inputs | latest / latest | documented | free |
-| [File Upload](file-upload.md) | `file-upload` | inputs | future / future | spec | free |
+| [File Upload](file-upload.md) | `file-upload` | inputs | latest / latest | documented | free |
 | [Heading](heading.md) | `heading` | content | latest / latest | documented | free |
 | [Icon](icon.md) | `icon` | content | latest / latest | documented | free |
 | [Link](link.md) | `link` | navigation | latest / latest | documented | free |
-| [List](list.md) | `list` | content | future / future | spec | free |
-| [List Item](list-item.md) | `list-item` | content | future / future | spec | free |
+| [List](list.md) | `list` | content | latest / latest | documented | free |
+| [List Item](list-item.md) | `list-item` | content | latest / latest | documented | free |
 | [Menu](menu.md) | `menu` | overlays | latest / latest | documented | free |
 | [MenuItem](menu-item.md) | `menu-item` | overlays | latest / latest | documented | free |
 | [MobileNav](mobile-nav.md) | `mobile-nav` | navigation | latest / latest | documented | free |
 | [Notice](notice.md) | `notice` | feedback | latest / latest | documented | free |
-| [Number Field](number-field.md) | `number-field` | inputs | future / future | spec | free |
-| [Pagination](pagination.md) | `pagination` | navigation | future / future | spec | free |
+| [Number Field](number-field.md) | `number-field` | inputs | latest / latest | documented | free |
+| [Pagination](pagination.md) | `pagination` | navigation | latest / latest | documented | free |
 | [Panel](panel.md) | `panel` | content | latest / latest | documented | free |
-| [Pin Input](pin-input.md) | `pin-input` | inputs | future / future | spec | free |
+| [Pin Input](pin-input.md) | `pin-input` | inputs | latest / latest | documented | free |
 | [Popover](popover.md) | `popover` | overlays | latest / latest | documented | free |
-| [Progress](progress.md) | `progress` | loading | future / future | spec | free |
+| [Progress](progress.md) | `progress` | loading | latest / latest | documented | free |
 | [Radio](radio.md) | `radio` | inputs | latest / latest | documented | free |
 | [Radio Group](radio-group.md) | `radio-group` | inputs | latest / latest | documented | free |
 | [Search](search.md) | `search` | inputs | latest / latest | documented | free |
@@ -54,20 +54,20 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Select](select.md) | `select` | inputs | latest / latest | documented | free |
 | [Sheet](sheet.md) | `sheet` | overlays | latest / latest | documented | free |
 | [SideNav](side-nav.md) | `side-nav` | navigation | latest / latest | documented | free |
-| [Skeleton](skeleton.md) | `skeleton` | loading | future / future | spec | free |
-| [Slider](slider.md) | `slider` | inputs | future / future | spec | free |
+| [Skeleton](skeleton.md) | `skeleton` | loading | latest / latest | documented | free |
+| [Slider](slider.md) | `slider` | inputs | latest / latest | documented | free |
 | [Loading: Spinner](spinner.md) | `spinner` | loading | latest / latest | documented | free |
 | [State layer](state-layer.md) | `state-layer` | foundations | latest / na | css-only | free |
-| [Steps](steps.md) | `steps` | navigation | future / future | spec | free |
+| [Steps](steps.md) | `steps` | navigation | latest / latest | documented | free |
 | [Switch](switch.md) | `switch` | inputs | latest / latest | documented | free |
-| [Table](table.md) | `table` | content | future / future | spec | free |
+| [Table](table.md) | `table` | content | latest / latest | documented | free |
 | [Tabs](tabs.md) | `tabs` | navigation | latest / latest | documented | free |
 | [Text](text.md) | `text` | content | latest / latest | documented | free |
 | [Input: Text field](text-field.md) | `text-field` | inputs | latest / latest | documented | free |
 | [Textarea](textarea.md) | `textarea` | inputs | latest / latest | documented | free |
-| [Toast](toast.md) | `toast` | feedback | future / future | spec | free |
+| [Toast](toast.md) | `toast` | feedback | latest / latest | documented | free |
 | [Toggle Button](toggle-button.md) | `toggle-button` | buttons | latest / latest | documented | free |
 | [Toggle Button Group](toggle-button-group.md) | `toggle-button-group` | buttons | latest / latest | documented | free |
-| [Tooltip](tooltip.md) | `tooltip` | overlays | future / future | spec | free |
+| [Tooltip](tooltip.md) | `tooltip` | overlays | latest / latest | documented | free |
 | [TopNav](top-nav.md) | `top-nav` | navigation | latest / latest | documented | free |
 | [Visually hidden](visually-hidden.md) | `visually-hidden` | foundations | latest / na | css-only | free |

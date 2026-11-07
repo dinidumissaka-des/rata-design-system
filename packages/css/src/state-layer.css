@@ -37,11 +37,19 @@
   inset: 0;
 }
 
-.rata-state-layer:hover::after {
+/* [data-hovered] and [data-pressed] are the same two states, set by a
+   primitive when the element under the pointer is not the element that shows
+   the feedback — a slider's transparent range control receives the pointer
+   while its drawn thumb carries this class (decision C9). Only the trigger
+   widens: the opacities are the same tokens, and the disabled rule below
+   still wins over both. */
+.rata-state-layer:hover::after,
+.rata-state-layer[data-hovered]::after {
   opacity: var(--rata-state-hover-opacity);
 }
 
-.rata-state-layer:active::after {
+.rata-state-layer:active::after,
+.rata-state-layer[data-pressed]::after {
   opacity: var(--rata-state-press-opacity);
 }
 

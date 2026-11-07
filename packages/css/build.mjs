@@ -12,7 +12,14 @@ const require = createRequire(import.meta.url);
 const ORDER = [
   "state-layer.css",
   "spinner.css",
+  // Beside spinner, the other loading placeholder; it composes nothing.
+  "skeleton.css",
+  // With the loading indicators; a status bar that composes nothing.
+  "progress.css",
   "button.css",
+  // After button: the same primary pair, and its `position: fixed` must win
+  // over the state layer's `position: relative`.
+  "fab.css",
   "button-group.css",
   "toggle-button.css",
   // After toggle-button: the attached bar overrides the radius each option sets.
@@ -25,6 +32,14 @@ const ORDER = [
   // After text-field: all three borrow its look and its focus treatment.
   "textarea.css",
   "select.css",
+  // After text-field: composes Field and redraws the text field's box, with two step wells.
+  "number-field.css",
+  // After text-field: composes Field and draws the text field's box once per character.
+  "pin-input.css",
+  // After field: re-lays Field's root as a grid so the value sits beside the label.
+  "slider.css",
+  // After field and button: composes both, and styles only the zone and rows around them.
+  "file-upload.css",
   "search.css",
   "checkbox.css",
   // After checkbox: radio shares its construction and overrides the shape.
@@ -36,24 +51,59 @@ const ORDER = [
   // element-agnostic and neither should win over a component's own type rules.
   "heading.css",
   "text.css",
+  // After typography: a rule between text blocks, owning only its own border.
+  "divider.css",
   // After typography, which a card holds but never restyles; before the
   // controls that sit inside one, so their own rules win any tie.
   "card.css",
+  // Same reasoning as card: after typography and state-layer, before the
+  // badges, links and buttons its cells hold, so their own rules win.
+  "table.css",
+  // After button and icon, whose sizes and colour the actions trigger and the
+  // leading glyph override; list after list-item, because the inset list
+  // resets the rows' safe-area edges at equal specificity to their RTL rule.
+  "list-item.css",
+  "list.css",
   "badge.css",
+  // After badge: the removable value is read beside the static label it is not.
+  "chip.css",
   "avatar.css",
   "disclosure.css",
   "breadcrumbs.css",
+  // After state-layer and beside breadcrumbs: a nav row that composes the
+  // layer and must win its own current tint over nothing but itself.
+  "pagination.css",
+  // Beside pagination: a nav row that composes the layer. Before
+  // visually-hidden, which must still win for the hidden prefix and suffix.
+  "steps.css",
   "top-nav.css",
   "side-nav.css",
   // After side-nav: the drawer renders one and overrides its scrolling.
   "mobile-nav.css",
+  // With the other navigation: a bar of links that composes the state layer
+  // and overrides nothing loaded before it.
+  "bottom-nav.css",
   "tabs.css",
   "segmented-control.css",
   "notice.css",
+  // After notice: the same feedback family, drawn on the content's surface; it
+  // only colours the Icon it holds, so it follows icon.css.
+  "empty-state.css",
+  // After notice, whose frame it copies; after button, whose margin it trims.
+  "toast.css",
   // After notice: both are surfaces, and the menu sits above one.
   "menu.css",
   // After menu: the same top-layer surface and anchoring, read beside it.
   "popover.css",
+  // After popover: the same top-layer anchoring, on an inverse chip instead.
+  "tooltip.css",
+  // After popover: the listbox popup composes .rata-popover and overrides its
+  // padding, width and height.
+  "combobox.css",
+  // After combobox: the same field box beside an overlay, read with it.
+  "date-picker.css",
+  // After date-picker: the same box and calendar, with the range states.
+  "date-range-picker.css",
   "dialog.css",
   // After dialog: Sheet is the same native-modal construction with different
   // geometry, and its rules are written to replace dialog.css's where they

@@ -5,19 +5,23 @@
 
 Choose files with a button or drop them in, see what was chosen, and remove what was not meant.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { FileUpload } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `file-upload` |
 | Family | inputs |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | `field`, `button`, `state-layer`, `icon`, `visually-hidden` |
 
 ## Behavior
 
 A visually hidden native file input opened by a Button, an optional drop zone around it, and a list of the chosen files with a remove control each — composed with Field. It validates and holds a selection; it does not upload.
+
+Headless contract: `getFileUploadProps` in `packages/primitives/src/file-upload.ts` — importable from `@rata/primitives` without the React wrapper or any CSS.
 
 - **A native `<input type="file">` is the control; a Button opens it** — The native input owns things nothing else can: the OS file dialog, the camera option on phones, and form submission. Its own rendering cannot be styled and its text cannot be translated, so it is visually hidden and out of the tab order, and the system's Button calls it. A `<label>` styled as a button is the other common approach and is worse: a label is not focusable, so the keyboard cannot reach it.
 - **The drop zone is an enhancement, never the way in** — Drag and drop is a pointer-only gesture, and phones have no files to drag. So the zone has no role and no tab stop, its "or drag files here" text is shown only under `(pointer: fine)`, and the button inside it is always present — the alternative to dragging that WCAG 2.5.7 asks for.
@@ -44,7 +48,7 @@ A visually hidden native file input opened by a Button, an optional drop zone ar
 | `onValueChange?` | `(files: PickedFile[]) => void` | — | Fires with the whole accepted list whenever a file is added or removed. |
 | `onReject?` | `(rejections: FileRejection[]) => void` | — | Fires with the files that were refused and why: `{ file, reason: "type" \| "size" \| "count" }`. |
 | `dropzone?` | `boolean` | `true` | Draws a drop target around the button, for dragging files in from the desktop. |
-| `buttonLabel?` | `string` | `"Choose file" — "Choose files" with `multiple`` | The choose button's text. |
+| `buttonLabel?` | `string` | — | The choose button's text. |
 | `name?` | `string` | — | Form field name. A native form post submits exactly the listed files. |
 | `labelHidden?` | `boolean` | `false` | Takes the label off screen while leaving it in the accessibility tree. |
 | `id?` | `string` | — | Stable id for the file field, when something outside needs to point at it. |
@@ -147,6 +151,8 @@ value?: PickedFile[]
 
 Controls the chosen files from outside. Each is `{ name, size, type }` plus the platform's handle — `file` on web, `uri` on native — and, optionally, `progress` (0–100) and `error`, which the caller's uploader sets and the row displays.
 
+Source doc: Controls the chosen files from outside, with the caller's per-file `progress` and `error`.
+
 **Use when**
 
 - A form library, or restoring a selection after a validation round-trip.
@@ -181,6 +187,8 @@ onReject?: (rejections: FileRejection[]) => void
 
 Fires with the files that were refused and why: `{ file, reason: "type" | "size" | "count" }`.
 
+Source doc: Fires with the files that were refused and why.
+
 **Use when**
 
 - Setting `status="invalid"` and a `message` that names the file and the rule it broke.
@@ -212,10 +220,12 @@ Draws a drop target around the button, for dragging files in from the desktop.
 ### `buttonLabel`
 
 ```ts
-buttonLabel?: string = "Choose file" — "Choose files" with `multiple`
+buttonLabel?: string
 ```
 
 The choose button's text.
+
+Source doc: The choose button's text. Defaults to "Choose file", or "Choose files" with `multiple`.
 
 **Use when**
 
@@ -265,6 +275,8 @@ id?: string
 
 Stable id for the file field, when something outside needs to point at it.
 
+Source doc: Stable id for the file field. Defaults to a generated one.
+
 **Use when**
 
 - A form library that addresses fields by id, or an error summary linking to the field it names.
@@ -280,6 +292,8 @@ status?: FieldStatus = "idle"
 ```
 
 Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.
+
+Source doc: Validation lifecycle. Drives `aria-invalid`, `aria-busy`, the message tone and the drop zone's edge.
 
 **Use when**
 
@@ -317,6 +331,8 @@ message?: ReactNode
 
 The status-dependent line: the error, the confirmation, or the in-flight note.
 
+Source doc: Status-dependent message under the control.
+
 **Use when**
 
 - What to do about an `invalid` status, in the imperative.
@@ -334,6 +350,8 @@ required?: boolean = false
 ```
 
 Marks the field required, in the label and to assistive technology.
+
+Source doc: Marks the field required to assistive technology and in the label.
 
 **Use when**
 
@@ -451,6 +469,12 @@ Choosing an avatar, where the reader wants to see and crop the image.
 ```
 
 This will take the file, but shows its name, not the picture, and offers no crop. An avatar editor is a different component with previews and their alt-text and memory decisions; it does not exist yet.
+
+## Real usage in this repo
+
+```tsx
+<FileUpload label="Attachments" labelHidden multiple dropzone={false} buttonLabel="Attach files" />
+```
 
 ## Token recipe
 

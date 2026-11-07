@@ -155,7 +155,7 @@ Don't. Nothing navigates to it and it heads no section, so it does not belong in
 ## Real usage in this repo
 
 ```tsx
-<Heading level={4}>Known gaps</Heading>
+<Heading level={3}>Deploys</Heading>
 ```
 
 ## Token recipe

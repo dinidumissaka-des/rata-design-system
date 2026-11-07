@@ -1,0 +1,214 @@
+/* ListItem — one row in a List.
+
+   Every value is the gate-2 recipe in registry/components/list-item.json.
+   Leading slot, text column, trailing slot along the inline axis; the text
+   column takes the slack.
+
+   Construction. The `<li>` is a flex row. The leading slot sits directly in
+   it, and everything from the text column to the inline end sits in
+   `.rata-list-item-main`, which carries the divider — so on a row with a
+   leading slot the rule starts at the text column and never cuts between an
+   avatar and its own text, and on a row without one it runs edge to edge.
+
+   PSEUDO-ELEMENTS. An interactive row composes .rata-state-layer on the
+   `<li>`, which owns the `<li>`'s `::after`. The stretched hit area is the
+   target's `::before` — a different element and a different pseudo-element —
+   so the two never merge. */
+
+/* The inline edge padding: space.padding.md, or the safe-area inset when that
+   is larger, so a phone in landscape does not put the text under the notch.
+   Safe areas are physical, so the start and end edges read the left and right
+   insets and swap under RTL. An inset List, which already sits inside the
+   page's gutter, resets both to space.padding.md (list.css). */
+.rata-list-item {
+  --rata-list-item-edge-start: max(var(--rata-space-padding-md), env(safe-area-inset-left));
+  --rata-list-item-edge-end: max(var(--rata-space-padding-md), env(safe-area-inset-right));
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-block-size: var(--rata-size-target-min);
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+  list-style: none;
+  color: var(--rata-theme-fg-primary);
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-body-size);
+  font-weight: var(--rata-type-body-weight);
+  line-height: var(--rata-type-body-line-height);
+}
+
+.rata-list-item:dir(rtl) {
+  --rata-list-item-edge-start: max(var(--rata-space-padding-md), env(safe-area-inset-right));
+  --rata-list-item-edge-end: max(var(--rata-space-padding-md), env(safe-area-inset-left));
+}
+
+/* rata-allow: unknown-token — --rata-list-item-edge-start/-end are the row's
+   own edge padding, a max() of space.padding.md and the safe-area inset, set
+   above; not tokens themselves. */
+.rata-list-item--leading {
+  padding-inline-start: var(--rata-list-item-edge-start);
+}
+
+/* Leading slot: an Icon or an Avatar, centred on the row. */
+.rata-list-item-leading {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  padding-inline-end: var(--rata-space-gap-md);
+  color: var(--rata-theme-fg-secondary);
+}
+
+.rata-list-item-leading > .rata-icon {
+  inline-size: var(--rata-size-icon-md);
+  block-size: var(--rata-size-icon-md);
+}
+
+/* rata-allow: unknown-token — --rata-list-item-edge-start/-end are the row's
+   own edge padding, a max() of space.padding.md and the safe-area inset, set
+   above; not tokens themselves. */
+.rata-list-item-main {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--rata-space-gap-md);
+  min-inline-size: var(--rata-space-0);
+  padding-block: var(--rata-space-padding-xs);
+  padding-inline-start: var(--rata-list-item-edge-start);
+  padding-inline-end: var(--rata-list-item-edge-end);
+}
+
+.rata-list-item--leading > .rata-list-item-main {
+  padding-inline-start: var(--rata-space-0);
+}
+
+/* Divider — above every row but the first, drawn by the row itself, so a
+   conditional row never leaves a doubled or orphaned rule. */
+.rata-list-item + .rata-list-item > .rata-list-item-main {
+  border-block-start: var(--rata-border-default) solid var(--rata-theme-border-default);
+}
+
+/* The text column takes the slack. */
+.rata-list-item-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--rata-space-stack-2xs);
+  min-inline-size: var(--rata-space-0);
+}
+
+.rata-list-item-text {
+  color: var(--rata-theme-fg-primary);
+  font-size: var(--rata-type-body-size);
+  font-weight: var(--rata-type-body-weight);
+  line-height: var(--rata-type-body-line-height);
+}
+
+.rata-list-item-description {
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-supporting-size);
+  line-height: var(--rata-type-supporting-line-height);
+}
+
+.rata-list-item-trailing {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--rata-theme-fg-secondary);
+}
+
+/* The link or button wraps the text only; it looks like the text. */
+.rata-list-item-target {
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+  border: var(--rata-space-0);
+  background: transparent;
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.rata-list-item-target[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+/* The whole row is the target: the link's or button's hit area, stretched
+   over the `<li>`, which is positioned by the state layer. */
+.rata-list-item-target::before {
+  content: "";
+  position: absolute;
+  inset: var(--rata-space-0);
+}
+
+/* Hover and press. The layer's own :hover would tint the row while the
+   pointer is over the actions button, which is not what is about to be
+   activated, so it is driven by the target instead. */
+.rata-list-item.rata-state-layer:hover::after,
+.rata-list-item.rata-state-layer:active::after {
+  opacity: 0;
+}
+
+.rata-list-item.rata-state-layer:has(.rata-list-item-target:hover)::after {
+  opacity: var(--rata-state-hover-opacity);
+}
+
+.rata-list-item.rata-state-layer:has(.rata-list-item-target:active)::after {
+  opacity: var(--rata-state-press-opacity);
+}
+
+.rata-list-item--disabled.rata-state-layer:has(.rata-list-item-target)::after {
+  opacity: 0;
+}
+
+/* Focus — theme.focus-ring at focus.ring-width on :focus-visible, drawn
+   INSIDE the row: the offset is negative by focus.ring-offset plus
+   focus.ring-width, so the gap and the width this system requires are kept
+   and an inset List's `overflow: clip` never cuts the ring (gate 3, owner
+   decision). The target's own ring is moved here, not removed: it is
+   suppressed only where the row draws it, so a browser without :has() keeps
+   the target's. */
+.rata-list-item:has(.rata-list-item-target:focus-visible) {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: calc(-1 * (var(--rata-focus-ring-offset) + var(--rata-focus-ring-width)));
+}
+
+.rata-list-item:has(.rata-list-item-target:focus-visible) .rata-list-item-target:focus-visible {
+  outline-color: transparent;
+}
+
+/* Disclosure chevron — decorative, href rows only; it points the reading
+   direction. */
+.rata-list-item-chevron {
+  color: var(--rata-theme-fg-muted);
+}
+
+.rata-list-item-chevron:dir(rtl) {
+  scale: -1 1;
+}
+
+/* The actions trigger: an icon-only tertiary Button, so it already composes
+   the state layer, radius.element and the focus ring at focus.ring-offset.
+   Positioned by the layer and later in source order than the target, so it
+   paints above the stretched hit area without a z-index. */
+.rata-list-item-actions.rata-icon-button {
+  flex-shrink: 0;
+  inline-size: var(--rata-size-control-md);
+  block-size: var(--rata-size-control-md);
+  border-radius: var(--rata-radius-element);
+  color: var(--rata-theme-fg-secondary);
+}
+
+.rata-list-item-actions > .rata-icon {
+  inline-size: var(--rata-size-icon-md);
+  block-size: var(--rata-size-icon-md);
+}
+
+/* Disabled — state.disabled-opacity on the row's content. The actions trigger
+   is aria-disabled too and dims itself, so it is left out here rather than
+   dimmed twice. */
+.rata-list-item--disabled
+  :is(.rata-list-item-leading, .rata-list-item-body, .rata-list-item-trailing, .rata-list-item-chevron) {
+  opacity: var(--rata-state-disabled-opacity);
+}

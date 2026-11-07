@@ -5,14 +5,16 @@
 
 A value the reader has added — a recipient, a selected filter, a tag on a record — shown with a control to remove it.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Chip } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `chip` |
 | Family | inputs |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | `state-layer`, `icon` |
 
 ## Behavior
@@ -35,9 +37,9 @@ A `<span>` holding the value's text and a `<button type="button">` that removes 
 |---|---|---|---|
 | `children` | `string` | — | The value, as text. |
 | `onRemove` | `() => void` | — | Called when the reader removes the value — by pressing the button, or by Backspace or Delete while it has focus. |
-| `removeLabel?` | `string` | `"Remove " + children` | The remove button's full accessible name. |
+| `removeLabel?` | `string` | ``Remove ${children}`` | The remove button's full accessible name. |
 | `icon?` | `LucideIcon` | — | A glyph before the text that says what kind of value it is. |
-| `disabled?` | `boolean` | — | Blocks removal while keeping the button focusable and announced. |
+| `disabled?` | `boolean` | `false` | Blocks removal while keeping the button focusable and announced. |
 | `className?` | `string` | — | Extra classes, for placement — not for restyling it. |
 
 ### `children`
@@ -80,7 +82,7 @@ Called when the reader removes the value — by pressing the button, or by Backs
 ### `removeLabel`
 
 ```ts
-removeLabel?: string = "Remove " + children
+removeLabel?: string = `Remove ${children}`
 ```
 
 The remove button's full accessible name.
@@ -116,7 +118,7 @@ A glyph before the text that says what kind of value it is.
 ### `disabled`
 
 ```ts
-disabled?: boolean
+disabled?: boolean = false
 ```
 
 Blocks removal while keeping the button focusable and announced.
@@ -194,6 +196,12 @@ A label on a record that says what state it is in.
 ```
 
 Don't. Nobody removes 'Paid' from an invoice by pressing an ×. That is a Badge, with `variant="success"`.
+
+## Real usage in this repo
+
+```tsx
+<Chip onRemove={() => remove(i)}>{name}</Chip>
+```
 
 ## Token recipe
 

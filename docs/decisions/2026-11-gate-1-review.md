@@ -112,3 +112,22 @@ C7 (gate 3): a linked card's heading uses the inline Link variant; the standalon
 | P4 | enter | `motion.overlay.duration` + `motion.easing.enter`, fade and `space.1` rise, reduced-motion off. |
 | P5 | exit | Instant, like Menu. The spec's exit transition is dropped. |
 | P6 | focus | No ring on the popover; first control (or `initialFocus`) takes focus and draws its own ring; trigger keeps its ring and `aria-expanded`. |
+
+### Remaining 21 components — gate 2 approved as a batch (2026-11-07)
+
+The owner approved, in one decision, every remaining spec's existing `tokens`
+recipe as its gate-2 mapping: bottom-nav, chip, combobox, date-picker,
+date-range-picker, divider, empty-state, fab, file-upload, list, list-item,
+number-field, pagination, pin-input, progress, skeleton, slider, steps, table,
+toast, tooltip. This replaces the state-by-state interview used for Link, Card
+and Popover. A recipe that cannot be built as written is not improvised at
+gate 3: the implementer stops and reports it, as Card's C4/L6 collision was.
+Slider's thumb composes the state layer through `[data-hovered]` /
+`[data-pressed]` (decision C9), which extends `state-layer.css` in the same
+change.
+
+Steps (gate 3): collapses by measuring overflow (ResizeObserver), not a container query — the needed width depends on step count and label lengths, so no token threshold fits.
+
+Pagination (gate 3): buttons get size.target.min hit areas — owner amendment.
+List/ListItem (gate 3): a row's focus ring is drawn inside the row (negative offset), so a clipped inset List never cuts it.
+DateRangePicker (gate 3): the range preview uses theme.accent-role.ring as-is (2px) — the token is a complete inset stroke, so a 1px width was not buildable.

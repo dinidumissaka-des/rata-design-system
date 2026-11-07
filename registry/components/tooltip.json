@@ -9,21 +9,40 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
     }
   },
   "dependencies": [],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/tooltip.css",
+      "target": "styles/tooltip.css"
+    },
+    {
+      "source": "packages/react/src/tooltip.tsx",
+      "target": "components/tooltip.tsx"
+    },
+    {
+      "source": "packages/primitives/src/tooltip.ts",
+      "target": "lib/tooltip.ts"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
-      "summary": "A small transient chip on an inverse surface, so it reads as a passing hint rather than as a menu or a popover. The inverse surface and its foreground do not exist yet, so the colour lines below are the closest existing tokens and are stand-ins; the measurements, shadow and motion are final.",
+      "summary": "A small transient chip on the inverse surface (theme.bg.inverse with theme.fg.on-inverse), so it reads as a passing hint rather than as a menu or a popover.",
       "tokens": {
         "background": "theme.bg.inverse",
         "color": "theme.fg.on-inverse",
@@ -43,6 +62,7 @@
     }
   },
   "behavior": {
+    "primitive": "getTooltipProps",
     "summary": "A trigger and a short text in the top layer, positioned with CSS anchor positioning — the same machinery as Menu, with no measurement code and no dependency. It is never focusable and never contains anything interactive. Proposed primitive: `getTooltipProps` in `packages/primitives/src/tooltip.ts`, owning the open delay, the hover bridge and Escape; it is a proposal, not yet a commitment.",
     "decisions": [
       {
@@ -93,8 +113,6 @@
   },
   "props": {
     "content": {
-      "type": "string",
-      "required": true,
       "summary": "The hint text. Plain text only.",
       "use": [
         "A few words: the name of an icon-only control, or one sentence of detail about a labelled one."
@@ -106,8 +124,6 @@
       "a11y": "Becomes the trigger's accessible name or description, per `relationship`."
     },
     "children": {
-      "type": "ReactElement",
-      "required": true,
       "summary": "The one focusable element the tooltip is attached to.",
       "use": [
         "A `Button`, usually an icon-only one, or a link."
@@ -119,8 +135,6 @@
       "a11y": "Cloned to receive the ARIA reference and the hover, focus and Escape handlers. It must be focusable, or the tooltip is pointer-only."
     },
     "relationship": {
-      "type": "\"label\" | \"description\"",
-      "default": "\"description\"",
       "summary": "Whether the tooltip names the trigger or describes it.",
       "use": [
         "`label` on an icon-only button, with the button's own `aria-label` set to the same words. Button requires it, and `aria-labelledby` wins over it, so the name is read once.",
@@ -132,8 +146,6 @@
       "a11y": "`label` wires `aria-labelledby`; `description` wires `aria-describedby`. On React Native these become `accessibilityLabel` and `accessibilityHint`."
     },
     "placement": {
-      "type": "\"block-start\" | \"block-end\" | \"inline-start\" | \"inline-end\"",
-      "default": "\"block-start\"",
       "summary": "Which side of the trigger the tooltip prefers.",
       "use": [
         "`block-end` for a trigger at the top of the viewport, where the default would always flip anyway."

@@ -5,30 +5,36 @@
 
 Shows where the reader is in a linear multi-step flow, and lets them return to steps already reached.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Steps } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `steps` |
 | Family | navigation |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | `state-layer`, `icon`, `visually-hidden` |
 
 ## Behavior
 
 An ordered list of steps with `aria-current="step"` on the current one, each step's state stated in words as well as drawn. An indicator only: the caller owns which step is current and what each one renders.
 
+Headless contract: `getStepsProps` in `packages/primitives/src/steps.ts` — importable from `@rata/primitives` without the React wrapper or any CSS.
+
 - **Named `steps`, not `stepper`** — "Stepper" means two unrelated controls: Material and most web libraries use it for this progress indicator, and iOS, Android and most native toolkits use it for the plus-and-minus control that changes a number. Registering either under that name would hand half the people who type it the wrong component with total confidence. So neither owns it: this is `steps`, the increment control is `number-field`, and both list `stepper` as an alias — which the resolver reports as ambiguous and refuses to guess, the same treatment `drawer` gets for Sheet and MobileNav.
 - **An ordered list with `aria-current="step"`, not tabs** — No APG pattern covers a step indicator. The tempting one is Tabs, and it is wrong: tabs are siblings that can be visited in any order and each owns a panel that is ready now, while steps are a sequence where the later ones are not available yet. So it is an `<ol>` — which announces "list, 4 items" and gives the count for free — with `aria-current="step"` on the current item, the value WAI-ARIA defines for this case. When steps are navigable the list is wrapped in a labelled `<nav>`.
 - **It shows progress; it does not own the flow** — The caller holds which step is current and renders that step's content. A component that also owned the panels would have to own validation between steps, which differs in every flow. This is the indicator only, the same split Tabs would have been forced into if it had had to decide when a tab may be opened.
 - **Only reached steps can be navigated to** — Going back to change an answer is a normal need; jumping forward past a step skips whatever that step checks. So with `onStepSelect` set, steps before `current` and any `invalid` step become buttons, and the current and upcoming steps stay plain text — not disabled buttons, since there is nothing they could ever do from here and each would be a dead stop in the tab order.
 - **State is in the accessible name, not only in the marker** — Complete, current, upcoming and invalid are shown by the marker's fill, glyph and the label's weight — and each step's name also says it in words through visually hidden text: "Step 1 of 4, Shipping, completed". `aria-current` alone covers only one of the four states.
-- **Horizontal collapses to "Step 2 of 4" when it does not fit** — A row of four labelled steps does not fit a phone. Below the width the full row needs — a container query, not a viewport breakpoint, because the indicator may sit in a narrow column on a wide screen — it renders the current step's marker, its label and "Step 2 of 4", with the list still in the accessibility tree whole. Truncating labels instead would leave a row of ellipses.
-- **Proposed primitive: `getStepsProps`** — No primitive exists yet. It is small: derive each step's state from its position against `current` and its `invalid` flag, build each step's accessible name, and decide which are navigable. It still belongs in a primitive, because the native package needs exactly the same derivation.
-- **Web and native** — Web: a `<nav aria-label>` (only when navigable) around an `<ol aria-label>` of `<li>`, with `aria-current="step"` on the current item and a system Button-styled `<button>` inside each navigable one; markers and connectors are `aria-hidden`. Pointer, touch and keyboard all reach the same buttons. React Native: a `View` with `accessibilityRole="list"`, each step a `View` — or a `Pressable` with `accessibilityRole="button"` when navigable — whose `accessibilityLabel` is the same derived name, and `accessibilityState={{ selected: true }}` on the current step, since native has no `aria-current`. The container query has no native equivalent, so the native package chooses the compact form from the window width instead. No prop is platform-specific. Rata-drawn (decision N5): neither platform has an OS step indicator, so it is drawn from the same recipe as the web. The native implementation ships in the pro tier (decision N6).
+- **Horizontal collapses to "Step 2 of 4" when it does not fit** — A row of four labelled steps does not fit a phone. When the full row does not fit its container it renders the current step's marker, its label and "Step 2 of 4", with the list still in the accessibility tree whole. Truncating labels instead would leave a row of ellipses. Whether it fits is measured, not set by a container query or a viewport breakpoint (gate 3, owner decision, docs/decisions/2026-11-gate-1-review.md): the width the row needs depends on its step count and label lengths, so no token threshold fits. A ResizeObserver compares the container's width with a hidden max-content copy of the full row, re-checking on resize and content change and expanding back when there is room; because that copy's width does not depend on which form is showing, collapsing cannot make the row fit and flip it back.
+- **Primitive: `getStepsProps`** — Small: derive each step's state from its position against `current` and its `invalid` flag, build each step's accessible name, and decide which are navigable. It belongs in a primitive (`packages/primitives/src/steps.ts`), because the native package needs exactly the same derivation.
+- **Web and native** — Web: a `<nav aria-label>` (only when navigable) around an `<ol aria-label>` of `<li>`, with `aria-current="step"` on the current item and a system Button-styled `<button>` inside each navigable one; markers and connectors are `aria-hidden`. Pointer, touch and keyboard all reach the same buttons. React Native: a `View` with `accessibilityRole="list"`, each step a `View` — or a `Pressable` with `accessibilityRole="button"` when navigable — whose `accessibilityLabel` is the same derived name, and `accessibilityState={{ selected: true }}` on the current step, since native has no `aria-current`. The web measures the row against its container; the native package chooses the compact form from the window width instead. No prop is platform-specific. Rata-drawn (decision N5): neither platform has an OS step indicator, so it is drawn from the same recipe as the web. The native implementation ships in the pro tier (decision N6).
 
 ## Props
+
+Extends `Omit<HTMLAttributes<HTMLElement>, "aria-label" | "children">`.
 
 | Prop | Type | Default | Summary |
 |---|---|---|---|
@@ -65,6 +71,8 @@ steps: StepItem[]
 
 The steps in order, as `{ id, label, description?, invalid? }`.
 
+Source doc: The steps in order.
+
 **Use when**
 
 - Short noun labels — "Shipping", "Payment", "Review" — and `description` for the one-line detail under each.
@@ -84,6 +92,8 @@ current: string
 ```
 
 The `id` of the step the reader is on. Steps before it are complete; steps after it are upcoming.
+
+Source doc: The `id` of the step the reader is on.
 
 **Use when**
 
@@ -209,6 +219,17 @@ Sections of a settings page the reader can visit in any order.
 
 Don't. Nothing here is a sequence, so "upcoming" is false about every section after the first. Sections visited in any order are `Tabs` or a `SideNav`.
 
+## Real usage in this repo
+
+```tsx
+<Steps
+        label="Checkout progress"
+        current={current}
+        steps={CHECKOUT_STEPS}
+        onStepSelect={setCurrent}
+      />
+```
+
 ## Token recipe
 
 ### base
@@ -223,6 +244,7 @@ The row or column of steps and the connectors between them.
 | connector colour | `theme.border.strong` |
 | connector colour, after a completed step | `theme.accent-role.bg` |
 | connector inset from each marker | `space.gap.xs` |
+| horizontal: connector minimum length | `space.gap.lg — gate 3 addition, not in the batch-approved recipe: without a floor the connector is zero-length at the row's natural width, which is the width the overflow measurement uses` |
 | vertical: gap between steps | `space.stack.md` |
 | label font-size | `type.control.size.sm` |
 | label colour | `theme.fg.secondary` |

@@ -186,7 +186,7 @@ Don't lean on this and then colour it — `tone` is deliberately closed to three
 ## Real usage in this repo
 
 ```tsx
-<Text>Choose which events send you an email.</Text>
+<Text>Your plan renews on 1 March.</Text>
 ```
 
 ## Token recipe

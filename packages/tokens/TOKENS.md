@@ -1726,7 +1726,7 @@ One day, DatePicker's, plus the three range states. The ends are the filled acce
 | in-range background | `theme.accent-role.subtle` |
 | in-range colour | `theme.fg.primary` — verified at AA-text on `theme.accent-role.subtle` |
 | in-range border-radius | `radius.none`, so consecutive days join into one band; the start and end keep `radius.pill` on their outer side |
-| preview (start chosen, end not yet) | `theme.accent-role.ring` at `border.default` as an inset stroke from the start to the focused or hovered day — a selection stroke, distinct from the focus ring |
+| preview (start chosen, end not yet) | `theme.accent-role.ring` as-is (2px) — a complete inset stroke on each day from the start to the focused or hovered day; a selection stroke, distinct from the focus ring |
 
 ### dialog
 
@@ -2135,8 +2135,8 @@ A row with `href` or `onClick`. The link or button is stretched over the whole r
 
 | Property | Token |
 |---|---|
-| hover / press | compose the .rata-state-layer class on the row |
-| focus ring | `theme.focus-ring` at `focus.ring-width`, offset `focus.ring-offset`, on :focus-visible — drawn around the row, which is the target the reader is about to activate |
+| hover / press | compose the .rata-state-layer class on the row, driven by the link or button's own :hover / :active through :has(), so pointing at the actions trigger does not tint the row |
+| focus ring | `theme.focus-ring` at `focus.ring-width` on :focus-visible, drawn on the row while its link or button is focused, INSIDE it: outline-offset is calc(-1 * (`focus.ring-offset` + `focus.ring-width`)), so the gap and width are kept and an inset List's overflow: clip never cuts it (gate 3, owner decision) |
 | disclosure chevron | `size.icon.sm`, `theme.fg.muted` — decorative, and shown only for href rows, since it promises a new page |
 | disabled | `state.disabled-opacity`, on aria-disabled |
 
@@ -2162,7 +2162,7 @@ The list draws almost nothing itself. The rows own their padding, their dividers
 | background | inherited — the list takes the surface it is placed on, which is what lets it sit edge-to-edge in a page or inside a Sheet |
 | margin | `space.0` |
 | padding-inline | `space.0` — rows fill the width, for the reason SideNav's rows do: the whole row is the target |
-| padding-block | `focus.ring-width` plus `focus.ring-offset` — just enough that the first and last rows' focus rings are not clipped when the list is a scroll container, the device Tabs uses for the same problem |
+| padding-block | `space.0` — the recipe padded the block edges by `focus.ring-width` plus `focus.ring-offset` so the first and last rows' rings survived a scroll container; a row's ring is now drawn inside the row (gate 3, owner decision), so there is nothing to make room for, and padding would stop the first and last rows' state layers short of an inset list's corners |
 | list-style | none, with role="list" restored — see the web and native decision |
 
 ### list-inset
@@ -2174,7 +2174,7 @@ The grouped look: the list as a rounded surface inside the page's gutter, as in 
 | background | `theme.bg.surface` |
 | border | `border.default` solid `theme.border.default` |
 | border-radius | `radius.container` |
-| overflow | clip, so the first and last rows' state layers take the container's corners — with the padding-block above, so the rings still fit inside |
+| overflow | clip, so the first and last rows' state layers take the container's corners — a row's focus ring is drawn inside the row, so the clip never cuts it |
 
 ### menu-item
 
@@ -2394,6 +2394,7 @@ A row of control-sized targets. Built from the same parts as a SideNav row — s
 | gap between items | `space.gap.xs` |
 | item min-inline-size | `size.control.md` |
 | item block-size | `size.control.md` |
+| hit area, on touch | `size.target.min` in both dimensions, centred on the drawn item with a ::before (the state layer owns ::after); the item itself stays `size.control.md` |
 | item padding-inline | `space.1` |
 | item font-size | `type.control.size.md` |
 | item font-weight | `type.control.weight` |
@@ -2942,6 +2943,7 @@ The row or column of steps and the connectors between them.
 | connector colour | `theme.border.strong` |
 | connector colour, after a completed step | `theme.accent-role.bg` |
 | connector inset from each marker | `space.gap.xs` |
+| horizontal: connector minimum length | `space.gap.lg` — gate 3 addition, not in the batch-approved recipe: without a floor the connector is zero-length at the row's natural width, which is the width the overflow measurement uses |
 | vertical: gap between steps | `space.stack.md` |
 | label font-size | `type.control.size.sm` |
 | label colour | `theme.fg.secondary` |
@@ -3392,7 +3394,7 @@ The on state of a borderless toggle: the tint alone separates it from its unpres
 
 ### tooltip
 
-A small transient chip on an inverse surface, so it reads as a passing hint rather than as a menu or a popover. The inverse surface and its foreground do not exist yet, so the colour lines below are the closest existing tokens and are stand-ins; the measurements, shadow and motion are final.
+A small transient chip on the inverse surface (theme.bg.inverse with theme.fg.on-inverse), so it reads as a passing hint rather than as a menu or a popover.
 
 | Property | Token |
 |---|---|

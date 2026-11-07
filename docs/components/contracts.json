@@ -339,10 +339,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -350,19 +352,20 @@
     },
     "dependencies": [
       "state-layer",
-      "icon"
+      "icon",
+      "visually-hidden"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "items",
-        "type": "BottomNavItem[]",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "BottomNavItem[]",
+        "description": "The destinations, in the order they are read.",
+        "declared": true,
         "summary": "The destinations, in the order they are read: each `{ label: string; href: string; icon: LucideIcon; current?: boolean; badge?: { count?: number; label: string }; onClick?: (event) => void }`.",
         "use": [
           "Three to five top-level sections of the app — the places a reader moves between constantly, from anywhere.",
@@ -379,11 +382,11 @@
       },
       {
         "name": "label",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "Accessible name for the navigation landmark.",
         "default": "\"Main\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accessible name for the navigation landmark.",
         "use": [
           "A different name from any other `<nav>` on the page that is visible at the same time."
@@ -396,10 +399,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
+        "type": "string",
         "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Extra classes on the `<nav>`, for placement — not for restyling it.",
         "use": [
           "Hiding it at the widths where the layout shows a rail or a TopNav instead, with `display: none`."
@@ -540,7 +543,7 @@
         }
       }
     },
-    "example": null
+    "example": "<BottomNav items={BOTTOM_NAV_SECTIONS} />"
   },
   {
     "name": "breadcrumbs",
@@ -1563,10 +1566,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -1577,16 +1582,16 @@
       "icon"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "children",
-        "type": "string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The value, as text.",
+        "declared": true,
         "summary": "The value, as text.",
         "use": [
           "A recipient's name or address, a filter's value, a tag."
@@ -1599,10 +1604,10 @@
       },
       {
         "name": "onRemove",
-        "type": "() => void",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "() => void",
+        "description": "Called when the reader removes the value — by pressing the button, or by Backspace or Delete while it has focus.",
+        "declared": true,
         "summary": "Called when the reader removes the value — by pressing the button, or by Backspace or Delete while it has focus.",
         "use": [
           "Removing the value from the caller's state, and moving focus in the same handler: to the next chip's remove button, or to the field the chips belong to."
@@ -1616,11 +1621,11 @@
       },
       {
         "name": "removeLabel",
-        "type": "string",
         "optional": true,
-        "default": "\"Remove \" + children",
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The remove button's full accessible name.",
+        "default": "`Remove ${children}`",
+        "declared": true,
         "summary": "The remove button's full accessible name.",
         "use": [
           "A translated phrase, in whatever word order the language needs: `removeLabel={t(\"remove\", { name })}`."
@@ -1633,10 +1638,10 @@
       },
       {
         "name": "icon",
-        "type": "LucideIcon",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "LucideIcon",
+        "description": "A glyph before the text that says what kind of value it is.",
+        "declared": true,
         "summary": "A glyph before the text that says what kind of value it is.",
         "use": [
           "A mail glyph on an address that is not a known contact, beside chips that are."
@@ -1649,10 +1654,11 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "boolean",
+        "description": "Blocks removal while keeping the button focusable and announced.",
+        "default": "false",
+        "declared": true,
         "summary": "Blocks removal while keeping the button focusable and announced.",
         "use": [
           "A value the reader cannot remove right now — a required recipient, a filter locked by a permission."
@@ -1665,10 +1671,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
+        "type": "string",
         "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Extra classes, for placement — not for restyling it.",
         "use": [
           "Rare. A set of chips gets its gap from the list that holds them."
@@ -1780,7 +1786,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Chip onRemove={() => remove(i)}>{name}</Chip>"
   },
   {
     "name": "combobox",
@@ -1790,10 +1796,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -1808,16 +1816,16 @@
       "popover"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "label",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The control's name. Always required — `labelHidden` hides it, nothing removes it.",
+        "declared": true,
         "summary": "The control's name. Always required — `labelHidden` hides it, nothing removes it.",
         "use": [
           "A short noun phrase naming what is being chosen: \"Assignee\", not \"Search for an assignee\"."
@@ -1830,10 +1838,10 @@
       },
       {
         "name": "options",
-        "type": "ComboboxOption[]",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ComboboxOption[]",
+        "description": "The choices, in the order they are read.",
+        "declared": true,
         "summary": "The choices, as `{ value, label, description?, disabled? }`, in the order they are read.",
         "use": [
           "Every option when the list is local; the current page of results when the server filters (with `filter=\"none\"`).",
@@ -1848,10 +1856,10 @@
       },
       {
         "name": "value",
-        "type": "string | null",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string | null",
+        "description": "Controls the chosen option's `value` from outside. `null` means nothing is chosen.",
+        "declared": true,
         "summary": "Controls the chosen option's `value` from outside. `null` means nothing is chosen.",
         "use": [
           "A form library, or a field whose options depend on another field's answer."
@@ -1866,11 +1874,11 @@
       },
       {
         "name": "defaultValue",
-        "type": "string | null",
         "optional": true,
+        "type": "string | null",
+        "description": "The starting choice when the component owns the state.",
         "default": "null",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The starting choice when the component owns the state.",
         "use": [
           "A genuine default the reader usually wants."
@@ -1885,10 +1893,10 @@
       },
       {
         "name": "onValueChange",
-        "type": "(value: string | null) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(value: string | null) => void",
+        "description": "Fires with the chosen option's value when a choice is committed.",
+        "declared": true,
         "summary": "Fires with the chosen option's value when a choice is committed — Enter, a click, or clearing the text.",
         "use": [
           "Reading the answer, which is the option's `value`, never the text in the box."
@@ -1901,10 +1909,10 @@
       },
       {
         "name": "onInputChange",
-        "type": "(text: string) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(text: string) => void",
+        "description": "Fires with the text in the box on every edit.",
+        "declared": true,
         "summary": "Fires with the text in the box on every edit.",
         "use": [
           "Fetching the next page of options when the server does the filtering — debounce it on your side, the component does not."
@@ -1917,16 +1925,16 @@
       },
       {
         "name": "filter",
-        "type": "\"contains\" | \"starts-with\" | \"none\"",
+        "optional": true,
+        "type": "ComboboxFilter",
+        "description": "How typed text narrows `options` locally.",
+        "default": "\"contains\"",
         "values": [
           "contains",
           "starts-with",
           "none"
         ],
-        "optional": true,
-        "default": "\"contains\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "How typed text narrows `options` locally.",
         "use": [
           "`none` when `options` is already the server's answer to the current text — filtering it again would hide results the server matched on fields the reader cannot see.",
@@ -1940,11 +1948,11 @@
       },
       {
         "name": "allowCustomValue",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Accepts text that matches no option as the answer.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accepts text that matches no option as the answer.",
         "use": [
           "Suggestions over an open answer: a tag that may not exist yet, a city the list does not know."
@@ -1958,11 +1966,11 @@
       },
       {
         "name": "loading",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Options are being fetched. The popup shows a spinner row and the field is busy.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Options are being fetched. The popup shows a spinner row and the field is busy.",
         "use": [
           "Between an `onInputChange` that went to the network and its answer."
@@ -1975,11 +1983,11 @@
       },
       {
         "name": "emptyMessage",
-        "type": "ReactNode",
         "optional": true,
+        "type": "ReactNode",
+        "description": "What the popup says when nothing matches.",
         "default": "\"No matches\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "What the popup says when nothing matches.",
         "use": [
           "Translating it, or saying what to try: \"No people match — check the spelling or invite them.\""
@@ -1992,10 +2000,10 @@
       },
       {
         "name": "placeholder",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "A hint shown while the box is empty.",
+        "declared": true,
         "summary": "A hint shown while the box is empty.",
         "use": [
           "Naming the act: \"Type a name\"."
@@ -2008,10 +2016,10 @@
       },
       {
         "name": "name",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Form field name. Submits the chosen option's `value`, not the text.",
+        "declared": true,
         "summary": "Form field name. The submitted value is the chosen option's `value`, not the text in the box.",
         "use": [
           "A native form post, where the server needs the id rather than the display label."
@@ -2024,16 +2032,16 @@
       },
       {
         "name": "size",
-        "type": "\"sm\" | \"md\" | \"lg\"",
+        "optional": true,
+        "type": "ComboboxSize",
+        "description": "Control height and inline padding. Text size does not change with it.",
+        "default": "\"md\"",
         "values": [
           "sm",
           "md",
           "lg"
         ],
-        "optional": true,
-        "default": "\"md\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Control height and inline padding. Text size does not change with it.",
         "use": [
           "Matching whatever the control sits beside — a combobox and a button in one row should be the same height."
@@ -2046,11 +2054,11 @@
       },
       {
         "name": "labelHidden",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Takes the label off screen while leaving it in the accessibility tree.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Takes the label off screen while leaving it in the accessibility tree.",
         "use": [
           "A control whose meaning is already carried by a heading or column header directly above it."
@@ -2063,10 +2071,10 @@
       },
       {
         "name": "id",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Stable id for the combobox. Defaults to a generated one.",
+        "declared": true,
         "summary": "Stable id for the combobox, when something outside needs to point at it.",
         "use": [
           "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -2079,11 +2087,11 @@
       },
       {
         "name": "status",
-        "type": "FieldStatus",
         "optional": true,
+        "type": "FieldStatus",
+        "description": "Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.",
         "default": "\"idle\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
         "use": [
           "`invalid` with a `message` saying what to do about it."
@@ -2096,10 +2104,10 @@
       },
       {
         "name": "description",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Persistent helper text under the control.",
+        "declared": true,
         "summary": "Persistent helper text under the control.",
         "use": [
           "A constraint the reader needs before they answer."
@@ -2112,10 +2120,10 @@
       },
       {
         "name": "message",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Status-dependent message under the control.",
+        "declared": true,
         "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
         "use": [
           "What to do about an `invalid` status, in the imperative."
@@ -2128,11 +2136,11 @@
       },
       {
         "name": "required",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Marks the field required to assistive technology and in the label.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Marks the field required, in the label and to assistive technology.",
         "use": [
           "Fields that genuinely block submission."
@@ -2145,11 +2153,11 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Blocks choosing while keeping the field focusable, readable and announced.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Blocks choosing while keeping the field focusable, readable and announced.",
         "use": [
           "A choice that depends on an answer nobody has given yet."
@@ -2162,10 +2170,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Class for the wrapper — the width the form wants, not a restyle.",
+        "declared": true,
         "summary": "Class for the wrapper — the width the form wants, not a restyle.",
         "use": [
           "The measure or grid placement the form decides."
@@ -2204,6 +2212,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getComboboxProps",
       "summary": "An APG combobox: a text input that keeps focus while `aria-activedescendant` walks a popup listbox, composed with Field for its label, helper text and validation. The answer is an option's value; the text is only how the reader finds it.",
       "decisions": [
         {
@@ -2322,7 +2331,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Combobox\n          label=\"Time zone\"\n          placeholder=\"Type a city\"\n          options={TIME_ZONES}\n          name=\"tz\"\n          required\n        />"
   },
   {
     "name": "date-picker",
@@ -2332,10 +2341,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -2348,16 +2359,16 @@
       "visually-hidden"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "label",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "What the date is. Always required — `labelHidden` hides it, nothing removes it.",
+        "declared": true,
         "summary": "What the date is. Always required — `labelHidden` hides it, nothing removes it.",
         "use": [
           "The event the date belongs to: \"Departure\", \"Date of birth\"."
@@ -2370,10 +2381,10 @@
       },
       {
         "name": "value",
-        "type": "string | null",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string | null",
+        "description": "Controls the chosen date from outside, as an ISO calendar date. `null` is empty.",
+        "declared": true,
         "summary": "Controls the chosen date from outside, as an ISO calendar date: \"2026-11-01\". `null` is empty.",
         "use": [
           "A form library, or a return date bound to a departure date."
@@ -2389,11 +2400,11 @@
       },
       {
         "name": "defaultValue",
-        "type": "string | null",
         "optional": true,
+        "type": "string | null",
+        "description": "The starting date when the component owns the state.",
         "default": "null",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The starting date when the component owns the state.",
         "use": [
           "A genuine default the reader would usually keep, such as today for a log entry."
@@ -2406,10 +2417,10 @@
       },
       {
         "name": "onValueChange",
-        "type": "(value: string | null) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(value: string | null) => void",
+        "description": "Fires with the ISO date when a day is chosen, or typed text parses on blur or Enter.",
+        "declared": true,
         "summary": "Fires with the ISO date when a day is chosen in the calendar, or typed text parses on blur or Enter.",
         "use": [
           "Reading a date without parsing a string in your locale."
@@ -2422,10 +2433,10 @@
       },
       {
         "name": "min",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The earliest choosable date, as ISO.",
+        "declared": true,
         "summary": "The earliest choosable date, as ISO.",
         "use": [
           "A booking that cannot start in the past: today's date."
@@ -2436,10 +2447,10 @@
       },
       {
         "name": "max",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The latest choosable date, as ISO.",
+        "declared": true,
         "summary": "The latest choosable date, as ISO.",
         "use": [
           "A date of birth: today, at the latest."
@@ -2450,10 +2461,10 @@
       },
       {
         "name": "isDateUnavailable",
-        "type": "(date: string) => boolean",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(date: string) => boolean",
+        "description": "Marks individual dates unchoosable. Runs for every visible day; precompute a set.",
+        "declared": true,
         "summary": "Marks individual dates unchoosable — weekends, holidays, fully booked days.",
         "use": [
           "Availability that `min` and `max` cannot express."
@@ -2467,10 +2478,10 @@
       },
       {
         "name": "firstDayOfWeek",
-        "type": "0 | 1 | 2 | 3 | 4 | 5 | 6",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "0 | 1 | 2 | 3 | 4 | 5 | 6",
+        "description": "Which weekday starts each row, 0 being Sunday. Defaults to the page locale's.",
+        "declared": true,
         "summary": "Which weekday starts each row of the calendar, 0 being Sunday. Defaults to the page locale's.",
         "use": [
           "A product whose week is a business rule rather than a locale convention."
@@ -2483,11 +2494,11 @@
       },
       {
         "name": "calendarLabel",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "Accessible name for the calendar button. The chosen date is appended to it.",
         "default": "\"Choose date\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accessible name for the button that opens the calendar.",
         "use": [
           "Translating it."
@@ -2500,10 +2511,10 @@
       },
       {
         "name": "placeholder",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Shown while empty. Defaults to the expected format for the page locale.",
+        "declared": true,
         "summary": "Shown while empty. Defaults to the expected format for the page locale.",
         "use": [
           "Leaving the default. It is generated from the same format the parser accepts, so the hint cannot disagree with the parser."
@@ -2516,10 +2527,10 @@
       },
       {
         "name": "name",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Form field name. Submits the ISO date, not the displayed text.",
+        "declared": true,
         "summary": "Form field name. Submits the ISO date, not the displayed text.",
         "use": [
           "A native form post, where the server should receive \"2026-11-01\" regardless of the reader's locale."
@@ -2530,16 +2541,16 @@
       },
       {
         "name": "size",
-        "type": "\"sm\" | \"md\" | \"lg\"",
+        "optional": true,
+        "type": "DatePickerSize",
+        "description": "Control height and inline padding. Text size does not change with it.",
+        "default": "\"md\"",
         "values": [
           "sm",
           "md",
           "lg"
         ],
-        "optional": true,
-        "default": "\"md\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Control height and inline padding. Text size does not change with it.",
         "use": [
           "Matching whatever the control sits beside."
@@ -2550,11 +2561,11 @@
       },
       {
         "name": "labelHidden",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Takes the label off screen while leaving it in the accessibility tree.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Takes the label off screen while leaving it in the accessibility tree.",
         "use": [
           "A control whose meaning is already carried by a heading or column header directly above it."
@@ -2567,10 +2578,10 @@
       },
       {
         "name": "id",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Stable id for the date field. Defaults to a generated one.",
+        "declared": true,
         "summary": "Stable id for the date field, when something outside needs to point at it.",
         "use": [
           "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -2583,11 +2594,11 @@
       },
       {
         "name": "status",
-        "type": "FieldStatus",
         "optional": true,
+        "type": "FieldStatus",
+        "description": "Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.",
         "default": "\"idle\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
         "use": [
           "`invalid` with a `message` saying what to do about it."
@@ -2600,10 +2611,10 @@
       },
       {
         "name": "description",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Persistent helper text under the control.",
+        "declared": true,
         "summary": "Persistent helper text under the control.",
         "use": [
           "The constraint before the reader picks: \"Any weekday in the next 30 days.\""
@@ -2616,10 +2627,10 @@
       },
       {
         "name": "message",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Status-dependent message under the control.",
+        "declared": true,
         "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
         "use": [
           "What to do about an `invalid` status, in the imperative."
@@ -2632,11 +2643,11 @@
       },
       {
         "name": "required",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Marks the field required to assistive technology and in the label.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Marks the field required, in the label and to assistive technology.",
         "use": [
           "Fields that genuinely block submission."
@@ -2649,11 +2660,11 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Blocks typing and opening the calendar while keeping the field focusable and announced.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Blocks typing and opening the calendar while keeping the field focusable, readable and announced.",
         "use": [
           "A date fixed by an earlier choice that should still be readable."
@@ -2666,10 +2677,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Class for the wrapper — the width the form wants, not a restyle.",
+        "declared": true,
         "summary": "Class for the wrapper — the width the form wants, not a restyle.",
         "use": [
           "A measure that fits the formatted date. A full-width date field looks like it wants a sentence."
@@ -2706,6 +2717,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getDatePickerProps",
       "summary": "A text input that parses a locale-formatted date, beside a button opening the APG Date Picker Dialog — a modal with a keyboard-navigable grid of days. Composed with Field. The value is an ISO calendar date, which is the only representation of a date with no time zone in it.",
       "decisions": [
         {
@@ -2831,7 +2843,7 @@
         }
       }
     },
-    "example": null
+    "example": "<DatePicker label=\"Date of birth\" max={todayISO()} description=\"As it appears on your passport.\" />"
   },
   {
     "name": "date-range-picker",
@@ -2841,10 +2853,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -2857,16 +2871,16 @@
       "visually-hidden"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "label",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "What the range is. Always required — `labelHidden` hides it, nothing removes it.",
+        "declared": true,
         "summary": "What the range is. Always required — `labelHidden` hides it, nothing removes it.",
         "use": [
           "The thing the dates bound: \"Stay\", \"Reporting period\"."
@@ -2879,11 +2893,11 @@
       },
       {
         "name": "startLabel",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "The visible label on the start input.",
         "default": "\"Start date\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The visible label on the start input.",
         "use": [
           "Naming the end in the domain's words: \"Check-in\", \"From\"."
@@ -2896,11 +2910,11 @@
       },
       {
         "name": "endLabel",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "The visible label on the end input.",
         "default": "\"End date\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The visible label on the end input.",
         "use": [
           "\"Check-out\", \"To\"."
@@ -2911,10 +2925,10 @@
       },
       {
         "name": "value",
-        "type": "DateRange",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "DateRange",
+        "description": "Controls the range from outside: `{ start, end }`, each an ISO calendar date or `null`.",
+        "declared": true,
         "summary": "Controls the range from outside: `{ start, end }`, each an ISO calendar date or `null`.",
         "use": [
           "A form library, or a search whose range is in the URL."
@@ -2930,11 +2944,11 @@
       },
       {
         "name": "defaultValue",
-        "type": "DateRange",
         "optional": true,
+        "type": "DateRange",
+        "description": "The starting range when the component owns the state.",
         "default": "{ start: null, end: null }",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The starting range when the component owns the state.",
         "use": [
           "A genuine default, such as the current month for a report."
@@ -2947,10 +2961,10 @@
       },
       {
         "name": "onValueChange",
-        "type": "(value: DateRange) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(value: DateRange) => void",
+        "description": "Fires with both ends whenever either changes.",
+        "declared": true,
         "summary": "Fires with both ends whenever either changes: a day chosen in the calendar, or typed text that parses on blur or Enter.",
         "use": [
           "Validating the pair — an end before the start, a range too long — and setting `status`."
@@ -2963,10 +2977,10 @@
       },
       {
         "name": "min",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The earliest choosable date for either end, as ISO.",
+        "declared": true,
         "summary": "The earliest choosable date for either end, as ISO.",
         "use": [
           "A booking that cannot start in the past: today's date."
@@ -2977,10 +2991,10 @@
       },
       {
         "name": "max",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The latest choosable date for either end, as ISO.",
+        "declared": true,
         "summary": "The latest choosable date for either end, as ISO.",
         "use": [
           "A report that cannot run past today."
@@ -2991,10 +3005,10 @@
       },
       {
         "name": "isDateUnavailable",
-        "type": "(date: string) => boolean",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(date: string) => boolean",
+        "description": "Marks individual dates unchoosable. Runs for every visible day; precompute a set.",
+        "declared": true,
         "summary": "Marks individual dates unchoosable — weekends, holidays, fully booked days.",
         "use": [
           "Availability that `min` and `max` cannot express."
@@ -3008,10 +3022,10 @@
       },
       {
         "name": "firstDayOfWeek",
-        "type": "0 | 1 | 2 | 3 | 4 | 5 | 6",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "0 | 1 | 2 | 3 | 4 | 5 | 6",
+        "description": "Which weekday starts each row, 0 being Sunday. Defaults to the page locale's.",
+        "declared": true,
         "summary": "Which weekday starts each row of the calendar, 0 being Sunday. Defaults to the page locale's.",
         "use": [
           "A product whose week is a business rule rather than a locale convention."
@@ -3024,11 +3038,11 @@
       },
       {
         "name": "calendarLabel",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "Accessible name for the calendar button. The chosen range is appended to it.",
         "default": "\"Choose dates\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accessible name for the button that opens the calendar.",
         "use": [
           "Translating it."
@@ -3041,10 +3055,10 @@
       },
       {
         "name": "placeholder",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Shown in each empty input. Defaults to the expected format for the page locale.",
+        "declared": true,
         "summary": "Shown in each empty input. Defaults to the expected format for the page locale.",
         "use": [
           "Leaving the default. It is generated from the same format the parser accepts, so the hint cannot disagree with the parser."
@@ -3057,10 +3071,10 @@
       },
       {
         "name": "startName",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Form field name for the start. Submits the ISO date.",
+        "declared": true,
         "summary": "Form field name for the start. Submits the ISO date, not the displayed text.",
         "use": [
           "A native form post: `startName=\"checkin\"`."
@@ -3071,10 +3085,10 @@
       },
       {
         "name": "endName",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Form field name for the end. Submits the ISO date.",
+        "declared": true,
         "summary": "Form field name for the end. Submits the ISO date.",
         "use": [
           "`endName=\"checkout\"`, beside `startName`."
@@ -3085,16 +3099,16 @@
       },
       {
         "name": "size",
-        "type": "\"sm\" | \"md\" | \"lg\"",
+        "optional": true,
+        "type": "DateRangePickerSize",
+        "description": "Control height and inline padding. Text size does not change with it.",
+        "default": "\"md\"",
         "values": [
           "sm",
           "md",
           "lg"
         ],
-        "optional": true,
-        "default": "\"md\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Control height and inline padding. Text size does not change with it.",
         "use": [
           "Matching whatever the control sits beside."
@@ -3105,11 +3119,11 @@
       },
       {
         "name": "labelHidden",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Takes the label off screen while leaving it in the accessibility tree.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Takes the label off screen while leaving it in the accessibility tree.",
         "use": [
           "A control whose meaning is already carried by a heading or column header directly above it."
@@ -3122,10 +3136,10 @@
       },
       {
         "name": "id",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Stable id for the range field. Defaults to a generated one.",
+        "declared": true,
         "summary": "Stable id for the range field, when something outside needs to point at it.",
         "use": [
           "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -3138,11 +3152,11 @@
       },
       {
         "name": "status",
-        "type": "FieldStatus",
         "optional": true,
+        "type": "FieldStatus",
+        "description": "Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.",
         "default": "\"idle\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
         "use": [
           "`invalid` with a `message` saying what to do about it."
@@ -3155,10 +3169,10 @@
       },
       {
         "name": "description",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Persistent helper text under the control.",
+        "declared": true,
         "summary": "Persistent helper text under the control.",
         "use": [
           "The rule before the reader picks: \"Up to 14 nights.\""
@@ -3171,10 +3185,10 @@
       },
       {
         "name": "message",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Status-dependent message under the control.",
+        "declared": true,
         "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
         "use": [
           "What to do about an `invalid` status, in the imperative."
@@ -3187,11 +3201,11 @@
       },
       {
         "name": "required",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Marks both ends required to assistive technology and in the label.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Marks both ends required, in the label and to assistive technology.",
         "use": [
           "Fields that genuinely block submission."
@@ -3204,11 +3218,11 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Blocks typing and opening the calendar while keeping both inputs focusable and announced.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Blocks typing and opening the calendar while keeping both inputs focusable, readable and announced.",
         "use": [
           "A range fixed by an earlier choice that should still be readable."
@@ -3221,10 +3235,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Class for the wrapper — the width the form wants, not a restyle.",
+        "declared": true,
         "summary": "Class for the wrapper — the width the form wants, not a restyle.",
         "use": [
           "A measure that fits two formatted dates and the separator."
@@ -3261,6 +3275,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getDateRangePickerProps",
       "summary": "Two text inputs — start and end — inside one Field, beside one button opening the same modal calendar dialog DatePicker uses, where the first day chosen is the start and the second the end. Its own contract rather than a mode of DatePicker (decision C10, docs/decisions/2026-11-gate-1-review.md), built on the same calendar-grid primitive. The value is a pair of ISO calendar dates.",
       "decisions": [
         {
@@ -3289,7 +3304,11 @@
         },
         {
           "decision": "Each day's name says where it sits in the range",
-          "why": "Fill and tint are invisible to a screen reader, so the start, the end and the days between append \"start date\", \"end date\" and \"in range\" to their accessible name, and the chosen ends use `aria-selected`. The days between are not `aria-selected`: they were not chosen, and announcing six selected days for one choice of two ends misstates what the reader did."
+          "why": "Fill and tint are invisible to a screen reader, so the start, the end and the days between append \"start date\", \"end date\" and \"in range\" to their accessible name, and the chosen ends' grid cells carry `aria-selected`. The days between are not `aria-selected`: they were not chosen, and announcing six selected days for one choice of two ends misstates what the reader did."
+        },
+        {
+          "decision": "The range preview uses `theme.accent-role.ring` as-is",
+          "why": "The gate-2 recipe asked for the ring \"at border.default\", but the token is a complete 2px inset box-shadow rather than a colour, so a 1px width was not buildable without a new token. The preview draws the token unchanged on each day from the start to the focused or hovered day: still the selection stroke, still distinct from the focus ring, which is an outline (gate 3, owner decision, docs/decisions/2026-11-gate-1-review.md)."
         },
         {
           "decision": "Disabled is `aria-disabled` plus `readOnly`, inherited from Field",
@@ -3301,7 +3320,7 @@
         },
         {
           "decision": "Web and native",
-          "why": "Web: a `role=\"group\"` labelled by `label`, holding two text inputs with their own labels, a calendar `<button>` with a click guard, two hidden inputs carrying `startName` and `endName`, and a modal `<dialog>` holding a `<table role=\"grid\">` whose day cells are buttons with `aria-selected` on the ends, `aria-current=\"date\"` on today and `aria-disabled` on unavailable days. Touch, pointer and keyboard share it; only placement changes with width. React Native: the two ends are `Pressable` fields with `accessibilityRole=\"button\"` and the formatted date as `accessibilityValue={{ text }}`, opening one calendar through the core `Modal` as a sheet. Rata-drawn, not the OS control (decision N5): iOS's date picker has no range mode and Android's range picker belongs to the Material library rather than the OS, so native draws the calendar from the same grid primitive and recipe as the web — which is also why the grid is a primitive. Typed entry, `placeholder`, `startName`, `endName` and `size` are web-only. The native implementation ships in the pro tier (decision N6)."
+          "why": "Web: a `role=\"group\"` labelled by `label`, holding two text inputs with their own labels, a calendar `<button>` with a click guard, two hidden inputs carrying `startName` and `endName`, and a modal `<dialog>` holding a `<table role=\"grid\">` whose day cells are `role=\"gridcell\"` cells each holding a day button, with `aria-selected` on the ends' cells (ARIA does not support it on `button`), `aria-current=\"date\"` on today and `aria-disabled` on unavailable days. Touch, pointer and keyboard share it; only placement changes with width. React Native: the two ends are `Pressable` fields with `accessibilityRole=\"button\"` and the formatted date as `accessibilityValue={{ text }}`, opening one calendar through the core `Modal` as a sheet. Rata-drawn, not the OS control (decision N5): iOS's date picker has no range mode and Android's range picker belongs to the Material library rather than the OS, so native draws the calendar from the same grid primitive and recipe as the web — which is also why the grid is a primitive. Typed entry, `placeholder`, `startName`, `endName` and `size` are web-only. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -3390,11 +3409,11 @@
           "in-range background": "theme.accent-role.subtle",
           "in-range colour": "theme.fg.primary — verified at AA-text on theme.accent-role.subtle",
           "in-range border-radius": "radius.none, so consecutive days join into one band; the start and end keep radius.pill on their outer side",
-          "preview (start chosen, end not yet)": "theme.accent-role.ring at border.default as an inset stroke from the start to the focused or hovered day — a selection stroke, distinct from the focus ring"
+          "preview (start chosen, end not yet)": "theme.accent-role.ring as-is (2px) — a complete inset stroke on each day from the start to the focused or hovered day; a selection stroke, distinct from the focus ring"
         }
       }
     },
-    "example": null
+    "example": "<DateRangePicker\n        label=\"Period\"\n        startLabel=\"From\"\n        endLabel=\"To\"\n        max={todayISO()}\n        value={range}\n        onValueChange={setRange}\n      />"
   },
   {
     "name": "dialog",
@@ -4043,10 +4062,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -4054,21 +4075,21 @@
     },
     "dependencies": [],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLElement>, \"children\" | \"role\" | \"aria-orientation\" | \"aria-hidden\">",
     "props": [
       {
         "name": "orientation",
-        "type": "\"horizontal\" | \"vertical\"",
+        "optional": true,
+        "type": "DividerOrientation",
+        "description": "Which way the rule runs.",
+        "default": "\"horizontal\"",
         "values": [
           "horizontal",
           "vertical"
         ],
-        "optional": true,
-        "default": "\"horizontal\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Which way the rule runs.",
         "use": [
           "`vertical` between groups of controls in a horizontal row, such as a toolbar."
@@ -4081,11 +4102,11 @@
       },
       {
         "name": "decorative",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Hides the rule from assistive tech when it marks no real change of topic.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Hides the rule from assistive tech when it marks no real change of topic.",
         "use": [
           "A line the design wants where the content does not change subject — around an \"or\" between two sign-in options."
@@ -4098,10 +4119,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Extra classes, for placement.",
+        "declared": true,
         "summary": "Extra classes, for placement.",
         "use": [
           "The space the page wants either side, which this component deliberately does not own."
@@ -4176,7 +4197,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Divider />"
   },
   {
     "name": "empty-state",
@@ -4186,10 +4207,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -4199,16 +4222,16 @@
       "icon"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLDivElement>, \"title\" | \"role\" | \"children\">",
     "props": [
       {
         "name": "title",
-        "type": "string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "What is empty, said plainly.",
+        "declared": true,
         "summary": "What is empty, said plainly.",
         "use": [
           "First use: \"No invoices yet\".",
@@ -4223,10 +4246,10 @@
       },
       {
         "name": "description",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "One or two sentences on why it is empty or what the action will do.",
+        "declared": true,
         "summary": "One or two sentences on why it is empty or what the action will do.",
         "use": [
           "What the first item will be for, or which filter is excluding everything."
@@ -4239,10 +4262,10 @@
       },
       {
         "name": "action",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The one way out: a Button or a Link.",
+        "declared": true,
         "summary": "The one way out: a Button or a Link.",
         "use": [
           "Create the first item; clear the search or filters."
@@ -4255,10 +4278,10 @@
       },
       {
         "name": "icon",
-        "type": "LucideIcon | false",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "LucideIcon | false",
+        "description": "A glyph marking the area as intentionally empty. Omit for none.",
+        "declared": true,
         "summary": "A glyph marking the area as intentionally empty. Omit for none.",
         "use": [
           "An icon for the kind of thing that is missing — a file for documents, a search glyph for no results."
@@ -4271,16 +4294,16 @@
       },
       {
         "name": "live",
-        "type": "\"off\" | \"polite\" | \"assertive\"",
+        "optional": true,
+        "type": "EmptyStateLive",
+        "description": "Whether the empty state is announced when it appears.",
+        "default": "\"off\"",
         "values": [
           "off",
           "polite",
           "assertive"
         ],
-        "optional": true,
-        "default": "\"off\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Whether the empty state is announced when it appears.",
         "use": [
           "`polite` for no-results after a search or filter the reader just changed."
@@ -4294,10 +4317,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Extra classes, for placement.",
+        "declared": true,
         "summary": "Extra classes, for placement.",
         "use": [
           "Positioning it in the space the content would fill."
@@ -4397,10 +4420,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -4413,16 +4438,16 @@
       "icon"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<ButtonHTMLAttributes<HTMLButtonElement>, \"disabled\" | \"children\">",
     "props": [
       {
         "name": "label",
-        "type": "string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "What the action does, as a verb phrase — shown beside the icon, or used as the accessible name when hidden.",
+        "declared": true,
         "summary": "What the action does, as a verb phrase — shown beside the icon, or used as the accessible name when hidden.",
         "use": [
           "A short imperative: 'Compose', 'New invoice', 'Add photo'."
@@ -4435,10 +4460,10 @@
       },
       {
         "name": "icon",
-        "type": "LucideIcon",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "LucideIcon",
+        "description": "The glyph, which is always shown.",
+        "declared": true,
         "summary": "The glyph, which is always shown.",
         "use": [
           "A glyph that means the action on its own — a plus for create, a pencil for compose."
@@ -4451,11 +4476,11 @@
       },
       {
         "name": "labelHidden",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Shows the icon alone, as a circle, with `label` as the accessible name.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Shows the icon alone, as a circle, with `label` as the accessible name.",
         "use": [
           "An action so conventional on its screen that the glyph explains it — the plus on a list of notes."
@@ -4468,15 +4493,15 @@
       },
       {
         "name": "placement",
-        "type": "\"end\" | \"center\"",
+        "optional": true,
+        "type": "FabPlacement",
+        "description": "Which bottom corner it floats at — inline-end, or centred.",
+        "default": "\"end\"",
         "values": [
           "end",
           "center"
         ],
-        "optional": true,
-        "default": "\"end\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Which bottom corner it floats at — inline-end, or centred.",
         "use": [
           "`center` when the screen's content is symmetrical and the action belongs to all of it, such as a camera's shutter."
@@ -4489,10 +4514,10 @@
       },
       {
         "name": "loading",
-        "type": "boolean",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "boolean",
+        "description": "Shows a Spinner in place of the icon and blocks activation, while staying focusable.",
+        "declared": true,
         "summary": "Shows a Spinner in place of the icon and blocks activation, while staying focusable.",
         "use": [
           "The action's request is in flight and a second press would send it twice."
@@ -4507,10 +4532,10 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "boolean",
+        "description": "Blocks activation while keeping it focusable and announced.",
+        "declared": true,
         "summary": "Blocks activation while keeping it focusable and announced.",
         "use": [
           "The action exists on this screen but cannot run yet, and the reader should be able to find out it exists."
@@ -4525,10 +4550,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
+        "type": "string",
         "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Extra classes, for placement adjustments — not for restyling it.",
         "use": [
           "Hiding it at widths where the action lives in a toolbar instead."
@@ -4612,6 +4637,10 @@
         {
           "decision": "Web and native",
           "why": "On the web it renders `<button type=\"button\">`, position fixed, with `aria-label={label}` only when `labelHidden` is set — otherwise the visible text is the name, and the icon is `aria-hidden`. While `loading` it carries `aria-disabled=\"true\"` and `aria-busy=\"true\"`. On React Native it renders a `Pressable` with `accessibilityRole=\"button\"`, `accessibilityLabel={label}`, and `accessibilityState={{ disabled, busy: loading }}`, absolutely positioned inside the screen and offset by `useSafeAreaInsets()`. Web-only: `className`, and the BottomNav clearance, which is a CSS `:has()` rule — a native screen knows its tab bar's height from the navigator and offsets by that instead. No prop is native-only. There is no gesture. Rata-drawn (decision N5): iOS has no floating action button and Android's is a Material library component rather than an OS control, so it is a drawn `Pressable` from the same recipe on both. The native implementation ships in the pro tier (decision N6)."
+        },
+        {
+          "decision": "BottomNav publishes the clearance; the FAB reads it",
+          "why": "Decided at gate 3. The recipe's clearance rule is ':root:has(.rata-bottom-nav)' adding the bar's block size. Written in fab.css, that selector names BottomNav's class, so the FAB would depend on a component it works without and 'rata add fab' would install it. So bottom-nav.css sets '--rata-bottom-nav-block-size' on ':root:has(.rata-bottom-nav)', summed from the tokens it draws the bar with, and fab.css adds 'var(--rata-bottom-nav-block-size, space.0)' to its safe-area offset. Same condition, same sum, and the sum sits beside the bar it measures. The bar's size includes its own safe-area padding, so on a notched phone the FAB clears the bar by space.padding.md plus the inset. That is the recipe's sum taken literally. A BottomNav hidden with 'display: none' still matches ':has()', so the FAB keeps the clearance at widths where the bar is hidden."
         }
       ]
     },
@@ -4650,7 +4679,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Fab label=\"Add\" icon={Plus} />"
   },
   {
     "name": "field",
@@ -4968,10 +4997,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -4985,16 +5016,16 @@
       "visually-hidden"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "label",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "What the files are for. Always required — `labelHidden` hides it, nothing removes it.",
+        "declared": true,
         "summary": "What the files are for. Always required — `labelHidden` hides it, nothing removes it.",
         "use": [
           "The document being asked for: \"Proof of address\", \"Attachments\"."
@@ -5007,10 +5038,10 @@
       },
       {
         "name": "accept",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Which files are allowed, as MIME types and extensions: \"image/*,.pdf\".",
+        "declared": true,
         "summary": "Which files are allowed, as MIME types and extensions: \"image/*,.pdf\".",
         "use": [
           "MIME types first — they are the part that works on every platform, including native."
@@ -5023,11 +5054,11 @@
       },
       {
         "name": "multiple",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Accepts more than one file.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accepts more than one file.",
         "use": [
           "Attachments, a photo set."
@@ -5040,10 +5071,10 @@
       },
       {
         "name": "maxFiles",
-        "type": "number",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "number",
+        "description": "The most files the list may hold. Only meaningful with `multiple`.",
+        "declared": true,
         "summary": "The most files the list may hold. Only meaningful with `multiple`.",
         "use": [
           "A real limit on the receiving side."
@@ -5056,10 +5087,10 @@
       },
       {
         "name": "maxSize",
-        "type": "number",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "number",
+        "description": "The largest file allowed, in bytes.",
+        "declared": true,
         "summary": "The largest file allowed, in bytes.",
         "use": [
           "The server's real limit, so a reader learns it before a long upload fails."
@@ -5072,10 +5103,10 @@
       },
       {
         "name": "value",
-        "type": "PickedFile[]",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "PickedFile[]",
+        "description": "Controls the chosen files from outside, with the caller's per-file `progress` and `error`.",
+        "declared": true,
         "summary": "Controls the chosen files from outside. Each is `{ name, size, type }` plus the platform's handle — `file` on web, `uri` on native — and, optionally, `progress` (0–100) and `error`, which the caller's uploader sets and the row displays.",
         "use": [
           "A form library, or restoring a selection after a validation round-trip.",
@@ -5090,10 +5121,10 @@
       },
       {
         "name": "onValueChange",
-        "type": "(files: PickedFile[]) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(files: PickedFile[]) => void",
+        "description": "Fires with the whole accepted list whenever a file is added or removed.",
+        "declared": true,
         "summary": "Fires with the whole accepted list whenever a file is added or removed.",
         "use": [
           "Starting an upload per file, or enabling a submit button."
@@ -5106,10 +5137,10 @@
       },
       {
         "name": "onReject",
-        "type": "(rejections: FileRejection[]) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(rejections: FileRejection[]) => void",
+        "description": "Fires with the files that were refused and why.",
+        "declared": true,
         "summary": "Fires with the files that were refused and why: `{ file, reason: \"type\" | \"size\" | \"count\" }`.",
         "use": [
           "Setting `status=\"invalid\"` and a `message` that names the file and the rule it broke."
@@ -5122,11 +5153,11 @@
       },
       {
         "name": "dropzone",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Draws a drop target around the button, for dragging files in from the desktop.",
         "default": "true",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Draws a drop target around the button, for dragging files in from the desktop.",
         "use": [
           "Turning it off in a compact row — a reply box's attachment control — where a large target would dominate."
@@ -5139,11 +5170,10 @@
       },
       {
         "name": "buttonLabel",
-        "type": "string",
         "optional": true,
-        "default": "\"Choose file\" — \"Choose files\" with `multiple`",
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The choose button's text. Defaults to \"Choose file\", or \"Choose files\" with `multiple`.",
+        "declared": true,
         "summary": "The choose button's text.",
         "use": [
           "Naming the kind of file: \"Choose photos\"."
@@ -5156,10 +5186,10 @@
       },
       {
         "name": "name",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Form field name. A native form post submits exactly the listed files.",
+        "declared": true,
         "summary": "Form field name. A native form post submits exactly the listed files.",
         "use": [
           "A plain `multipart/form-data` form."
@@ -5170,11 +5200,11 @@
       },
       {
         "name": "labelHidden",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Takes the label off screen while leaving it in the accessibility tree.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Takes the label off screen while leaving it in the accessibility tree.",
         "use": [
           "A control whose meaning is already carried by a heading or column header directly above it."
@@ -5187,10 +5217,10 @@
       },
       {
         "name": "id",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Stable id for the file field. Defaults to a generated one.",
+        "declared": true,
         "summary": "Stable id for the file field, when something outside needs to point at it.",
         "use": [
           "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -5203,11 +5233,11 @@
       },
       {
         "name": "status",
-        "type": "FieldStatus",
         "optional": true,
+        "type": "FieldStatus",
+        "description": "Validation lifecycle. Drives `aria-invalid`, `aria-busy`, the message tone and the drop zone's edge.",
         "default": "\"idle\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
         "use": [
           "`invalid` with a `message` saying what to do about it."
@@ -5220,10 +5250,10 @@
       },
       {
         "name": "description",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Persistent helper text under the control.",
+        "declared": true,
         "summary": "Persistent helper text under the control.",
         "use": [
           "The limits, in words, before the reader picks: \"PDF or JPEG, up to 10 MB.\""
@@ -5236,10 +5266,10 @@
       },
       {
         "name": "message",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Status-dependent message under the control.",
+        "declared": true,
         "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
         "use": [
           "What to do about an `invalid` status, in the imperative."
@@ -5252,11 +5282,11 @@
       },
       {
         "name": "required",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Marks the field required to assistive technology and in the label.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Marks the field required, in the label and to assistive technology.",
         "use": [
           "Fields that genuinely block submission."
@@ -5269,11 +5299,11 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Blocks choosing, dropping and removing while keeping the controls focusable and announced.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Blocks choosing, dropping and removing while keeping the controls focusable and announced.",
         "use": [
           "While uploads are in flight, if the form cannot accept changes to the set."
@@ -5286,10 +5316,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Class for the wrapper — the width the form wants, not a restyle.",
+        "declared": true,
         "summary": "Class for the wrapper — the width the form wants, not a restyle.",
         "use": [
           "The measure the form decides."
@@ -5332,6 +5362,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getFileUploadProps",
       "summary": "A visually hidden native file input opened by a Button, an optional drop zone around it, and a list of the chosen files with a remove control each — composed with Field. It validates and holds a selection; it does not upload.",
       "decisions": [
         {
@@ -5434,7 +5465,7 @@
         }
       }
     },
-    "example": null
+    "example": "<FileUpload label=\"Attachments\" labelHidden multiple dropzone={false} buttonLabel=\"Attach files\" />"
   },
   {
     "name": "heading",
@@ -5595,7 +5626,7 @@
         }
       }
     },
-    "example": "<Heading level={4}>Known gaps</Heading>"
+    "example": "<Heading level={3}>Deploys</Heading>"
   },
   {
     "name": "icon",
@@ -5952,10 +5983,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -5965,16 +5998,16 @@
       "list-item"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "children",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The rows: ListItem elements, in reading order.",
+        "declared": true,
         "summary": "The rows: ListItem elements, in reading order.",
         "use": [
           "ListItems, and nothing else at the top level."
@@ -5987,10 +6020,10 @@
       },
       {
         "name": "label",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Accessible name for the list, when no visible heading names it.",
+        "declared": true,
         "summary": "Accessible name for the list, when no visible heading names it.",
         "use": [
           "A list with no heading above it whose purpose is not obvious from its rows."
@@ -6005,10 +6038,10 @@
       },
       {
         "name": "labelledBy",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Id of a visible element — usually the Heading above the list — that names it.",
+        "declared": true,
         "summary": "Id of a visible element — usually the Heading above the list — that names it.",
         "use": [
           "Every list with a heading directly above it."
@@ -6023,11 +6056,11 @@
       },
       {
         "name": "dividers",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Whether a rule is drawn between rows.",
         "default": "true",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Whether a rule is drawn between rows.",
         "use": [
           "`false` for a short list of tall rows — each with an avatar and two lines — whose height already separates them."
@@ -6040,15 +6073,15 @@
       },
       {
         "name": "appearance",
-        "type": "\"plain\" | \"inset\"",
+        "optional": true,
+        "type": "ListAppearance",
+        "description": "Edge-to-edge on the page's own surface, or grouped on a rounded surface inside the gutter.",
+        "default": "\"plain\"",
         "values": [
           "plain",
           "inset"
         ],
-        "optional": true,
-        "default": "\"plain\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Edge-to-edge on the page's own surface, or grouped on a rounded surface inside the gutter.",
         "use": [
           "`inset` for a settings screen, where each list is a group of related options under a heading."
@@ -6061,10 +6094,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
+        "type": "string",
         "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Extra classes on the `<ul>`, for placement — not for restyling it.",
         "use": [
           "The margin the page wants around the list."
@@ -6130,6 +6163,10 @@
         {
           "decision": "Web and native",
           "why": "On the web it renders `<ul role=\"list\">`, named by `aria-label` or `aria-labelledby` when given one. The explicit role is load-bearing: Safari removes list semantics from a list styled `list-style: none`, which is every list here, and without it VoiceOver stops announcing 'list, 12 items'. On React Native it renders a `View` with `accessibilityRole=\"list\"` for short static lists. A long native list should be a `FlatList` — virtualization is not optional at a few hundred rows on a phone — so the native package is expected to take `data` and `renderItem` where the web takes `children`; that divergence is an open question for the native package's own gate 1. `className` is web-only. Swipe actions live on ListItem, and this component has no gesture of its own. Rata-drawn rows inside the core list views (decision N5): `View` or `FlatList` supplies the scrolling and the list semantics, and no OS table or list styling (UITableView, RecyclerView) is used. The native implementation ships in the pro tier (decision N6)."
+        },
+        {
+          "decision": "A row's focus ring is drawn inside the row, so the list needs no block padding",
+          "why": "Decided at gate 3, owner decision, docs/decisions/2026-11-gate-1-review.md. ListItem draws its ring with a negative offset of focus.ring-offset plus focus.ring-width, so it never reaches the list's edges and neither a scroll container nor the inset appearance's `overflow: clip` can cut it. That removes the only reason for the block padding the gate-2 recipe gave the list, and the padding is space.0: kept, it would also stop the first and last rows' state layers short of an inset list's rounded corners, which the clip exists to give them."
         }
       ]
     },
@@ -6140,7 +6177,7 @@
           "background": "inherited — the list takes the surface it is placed on, which is what lets it sit edge-to-edge in a page or inside a Sheet",
           "margin": "space.0",
           "padding-inline": "space.0 — rows fill the width, for the reason SideNav's rows do: the whole row is the target",
-          "padding-block": "focus.ring-width plus focus.ring-offset — just enough that the first and last rows' focus rings are not clipped when the list is a scroll container, the device Tabs uses for the same problem",
+          "padding-block": "space.0 — the recipe padded the block edges by focus.ring-width plus focus.ring-offset so the first and last rows' rings survived a scroll container; a row's ring is now drawn inside the row (gate 3, owner decision), so there is nothing to make room for, and padding would stop the first and last rows' state layers short of an inset list's corners",
           "list-style": "none, with role=\"list\" restored — see the web and native decision"
         }
       },
@@ -6150,11 +6187,11 @@
           "background": "theme.bg.surface",
           "border": "border.default solid theme.border.default",
           "border-radius": "radius.container",
-          "overflow": "clip, so the first and last rows' state layers take the container's corners — with the padding-block above, so the rings still fit inside"
+          "overflow": "clip, so the first and last rows' state layers take the container's corners — a row's focus ring is drawn inside the row, so the clip never cuts it"
         }
       }
     },
-    "example": null
+    "example": "<List label=\"People\">\n          <ListItem\n            href=\"#people-ada\"\n            leading={<Avatar name=\"Ada Lovelace\" decorative />}\n            description=\"Last seen 2 hours ago\"\n          >\n            Ada Lovelace\n          </ListItem>\n          <ListItem\n            href=\"#people-grace\"\n            leading={<Avatar name=\"Grace Hopper\" decorative />}\n            description=\"Online\"\n          >\n            Grace Hopper\n          </ListItem>\n        </List>"
   },
   {
     "name": "list-item",
@@ -6164,10 +6201,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -6181,16 +6220,16 @@
       "button"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "children",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The row's text — what the row is.",
+        "declared": true,
         "summary": "The row's text — what the row is.",
         "use": [
           "A short label: a name, a title, a setting."
@@ -6203,10 +6242,10 @@
       },
       {
         "name": "description",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "A second, secondary line under the text.",
+        "declared": true,
         "summary": "A second, secondary line under the text.",
         "use": [
           "The value of a setting ('10 pm – 7 am'), a message preview, a file's size and date."
@@ -6219,10 +6258,10 @@
       },
       {
         "name": "leading",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "A visual at the start of the row — an Icon or an Avatar.",
+        "declared": true,
         "summary": "A visual at the start of the row — an Icon or an Avatar.",
         "use": [
           "An Avatar for a person, an Icon for a kind of thing.",
@@ -6236,10 +6275,10 @@
       },
       {
         "name": "trailing",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Metadata or one control at the end of the row.",
+        "declared": true,
         "summary": "Metadata or one control at the end of the row.",
         "use": [
           "A Badge, a count, a timestamp.",
@@ -6254,10 +6293,10 @@
       },
       {
         "name": "href",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Makes the row a link to this address.",
+        "declared": true,
         "summary": "Makes the row a link to this address.",
         "use": [
           "A row that opens the thing it describes."
@@ -6270,10 +6309,10 @@
       },
       {
         "name": "onClick",
-        "type": "(event: MouseEvent<HTMLElement>) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(event: MouseEvent<HTMLElement>) => void",
+        "description": "Makes the row a button, or — with `href` — intercepts the link for client-side routing.",
+        "declared": true,
         "summary": "Makes the row a button, or — with `href` — intercepts the link for client-side routing.",
         "use": [
           "A row that opens a Sheet or a Dialog in place.",
@@ -6287,10 +6326,10 @@
       },
       {
         "name": "actions",
-        "type": "ListItemAction[]",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ListItemAction[]",
+        "description": "Secondary commands on this row, shown in a Menu behind a trailing button.",
+        "declared": true,
         "summary": "Secondary commands on this row — `{ label: string; icon?: LucideIcon; destructive?: boolean; onSelect: () => void }` each — shown in a Menu behind a trailing button.",
         "use": [
           "Archive, rename, share, delete — what a mobile app would put behind a swipe."
@@ -6304,11 +6343,11 @@
       },
       {
         "name": "actionsLabel",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "The name of the actions trigger, before the row's own text.",
         "default": "\"More actions\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The visible-to-assistive-technology name of the actions trigger, before the row's own text.",
         "use": [
           "A translated string."
@@ -6321,10 +6360,11 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "boolean",
+        "description": "Blocks the row's activation and its actions, while keeping both focusable and announced.",
+        "default": "false",
+        "declared": true,
         "summary": "Blocks the row's activation and its actions, while keeping both focusable and announced.",
         "use": [
           "A row that exists but cannot be opened right now — a file still uploading."
@@ -6337,10 +6377,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
+        "type": "string",
         "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Extra classes on the `<li>`, for placement — not for restyling it.",
         "use": [
           "Rare. The row's spacing and states are the component's."
@@ -6418,12 +6458,16 @@
           "why": "The hit area is size.target.min, 48px, on every platform — Material's minimum, which also clears Apple's 44pt and WCAG 2.5.5. It sizes where the control can be tapped, never the drawn box. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md)."
         },
         {
-          "decision": "Open: the focus ring at a list's inline edges",
-          "why": "An edge-to-edge row's ring sits outside the row, by `focus.ring-offset`, which is outside the list's inline edges. List pads its block edges so the first and last rings survive a scroll container, but padding the inline edges would inset every row from the page's edge and undo 'edge-to-edge'. Either the rule is that an edge-to-edge list is never an overflow-clipping container, or a row's ring is drawn inset (a negative offset of `focus.ring-width` plus `focus.ring-offset`) — which keeps the gap and the width this system requires but moves the ring inside the target. That choice belongs at gate 2."
+          "decision": "The focus ring is drawn inside the row",
+          "why": "Decided at gate 3, owner decision, docs/decisions/2026-11-gate-1-review.md. An edge-to-edge row's ring at a positive focus.ring-offset sits outside the list's inline edges, where an overflow-clipping container — the inset List's `overflow: clip`, or any scroll container — cuts it, and padding the inline edges would undo 'edge-to-edge'. So the ring is drawn on the `<li>` while its link or button is `:focus-visible`, with `outline-offset: calc(-1 * (focus.ring-offset + focus.ring-width))`: still theme.focus-ring at focus.ring-width with the focus.ring-offset gap, but inside the target the reader is about to activate. The link's or button's own ring is suppressed only where the row draws it, so a browser without `:has()` keeps it. The actions trigger keeps the ordinary outside ring; it sits inside the row's padding, so nothing clips it."
         },
         {
           "decision": "Web and native",
           "why": "On the web it renders `<li>`, with an `<a href>` or `<button type=\"button\">` over the text when interactive, `aria-describedby` to the description, and `aria-disabled` when disabled. The actions trigger is an icon-only Button with `aria-haspopup=\"menu\"` opening a Menu. On React Native it renders a `View` (or a `Pressable` with `accessibilityRole=\"link\"` or `\"button\"` when interactive), `accessibilityHint` from the description, and `accessibilityState={{ disabled }}`. `actions` become the row's `accessibilityActions`, with `onAccessibilityAction` dispatching to each `onSelect` — so VoiceOver's actions rotor and TalkBack's actions menu reach them from the row itself — and the visible trailing button remains for touch. A future swipe reveals the same array on both platforms. Web-only: `href`, `onClick` (a DOM `MouseEvent`) and `className`; the native package takes `onPress` in their place. No prop is native-only. Rata-drawn (decision N5): the row is a drawn `View` or `Pressable` from the same recipe, not an OS table cell. The native implementation ships in the pro tier (decision N6)."
+        },
+        {
+          "decision": "The stretched hit area is the target's ::before; the state layer keeps the row's ::after",
+          "why": "Decided at gate 3. An interactive row composes .rata-state-layer on the `<li>`, and the layer owns that element's `::after` — a second `::after` rule on the row would merge with it and inherit its zero opacity. So the stretch is drawn by the link or button's own `::before`, positioned against the `<li>` (which the layer positions), and the two pseudo-elements sit on different elements. The actions trigger is a Button, positioned by its own state layer and later in source order, so it paints above the stretch without a z-index."
         }
       ]
     },
@@ -6458,8 +6502,8 @@
       "interactive": {
         "summary": "A row with `href` or `onClick`. The link or button is stretched over the whole row, so the whole row is the target.",
         "tokens": {
-          "hover / press": "compose the .rata-state-layer class on the row",
-          "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible — drawn around the row, which is the target the reader is about to activate",
+          "hover / press": "compose the .rata-state-layer class on the row, driven by the link or button's own :hover / :active through :has(), so pointing at the actions trigger does not tint the row",
+          "focus ring": "theme.focus-ring at focus.ring-width on :focus-visible, drawn on the row while its link or button is focused, INSIDE it: outline-offset is calc(-1 * (focus.ring-offset + focus.ring-width)), so the gap and width are kept and an inset List's overflow: clip never cuts it (gate 3, owner decision)",
           "disclosure chevron": "size.icon.sm, theme.fg.muted — decorative, and shown only for href rows, since it promises a new page",
           "disabled": "state.disabled-opacity, on aria-disabled"
         }
@@ -6476,7 +6520,7 @@
         }
       }
     },
-    "example": null
+    "example": "<ListItem href=\"#settings-quiet-hours\" description=\"10 pm – 7 am\">\n          Quiet hours\n        </ListItem>"
   },
   {
     "name": "menu",
@@ -6703,7 +6747,7 @@
         }
       }
     },
-    "example": "<Menu\n            label=\"Account\"\n            trigger={\n              <Button iconOnly aria-label=\"Account\" variant=\"tertiary\">\n                <Icon icon={User} />\n              </Button>\n            }\n          >\n            <MenuItem icon={Settings} onSelect={() => {}}>Settings</MenuItem>\n            <MenuItem onSelect={() => {}}>Sign out</MenuItem>\n          </Menu>"
+    "example": "<Menu label=\"Add\" trigger={<Fab label=\"Add\" icon={Plus} />"
   },
   {
     "name": "menu-item",
@@ -6931,7 +6975,7 @@
         }
       }
     },
-    "example": "<MenuItem onSelect={() => {}}>Sign out</MenuItem>"
+    "example": "<MenuItem onSelect={() => {}}>Note</MenuItem>"
   },
   {
     "name": "mobile-nav",
@@ -7509,10 +7553,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -7525,16 +7571,16 @@
       "visually-hidden"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "label",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The quantity's name. Always required — `labelHidden` hides it, nothing removes it.",
+        "declared": true,
         "summary": "The quantity's name. Always required — `labelHidden` hides it, nothing removes it.",
         "use": [
           "A noun phrase with the unit when `formatOptions` does not show one: \"Seats\", \"Weight (kg)\"."
@@ -7547,10 +7593,10 @@
       },
       {
         "name": "value",
-        "type": "number | null",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "number | null",
+        "description": "Controls the value from outside. `null` is empty, which is different from zero.",
+        "declared": true,
         "summary": "Controls the value from outside. `null` is empty, which is different from zero.",
         "use": [
           "A form library, or a quantity another control also writes to."
@@ -7566,11 +7612,11 @@
       },
       {
         "name": "defaultValue",
-        "type": "number | null",
         "optional": true,
+        "type": "number | null",
+        "description": "The starting value when the component owns the state.",
         "default": "null",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The starting value when the component owns the state.",
         "use": [
           "A genuine default — one seat, one unit."
@@ -7583,10 +7629,10 @@
       },
       {
         "name": "onValueChange",
-        "type": "(value: number | null) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(value: number | null) => void",
+        "description": "Fires with the parsed number when the value changes.",
+        "declared": true,
         "summary": "Fires with the parsed number when the value changes: a step, or text that parses on blur or Enter.",
         "use": [
           "Reading a number without parsing a string, which is the whole point of the component."
@@ -7599,10 +7645,10 @@
       },
       {
         "name": "min",
-        "type": "number",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "number",
+        "description": "The lowest allowed value. Typed values below it are clamped on blur.",
+        "declared": true,
         "summary": "The lowest allowed value. Typed values below it are clamped on blur.",
         "use": [
           "A real floor: zero items, one seat."
@@ -7615,10 +7661,10 @@
       },
       {
         "name": "max",
-        "type": "number",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "number",
+        "description": "The highest allowed value. Typed values above it are clamped on blur.",
+        "declared": true,
         "summary": "The highest allowed value. Typed values above it are clamped on blur.",
         "use": [
           "A real ceiling, such as stock on hand."
@@ -7629,11 +7675,11 @@
       },
       {
         "name": "step",
-        "type": "number",
         "optional": true,
+        "type": "number",
+        "description": "How far ArrowUp, ArrowDown and the buttons move. PageUp and PageDown move ten steps.",
         "default": "1",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "How far ArrowUp, ArrowDown and the buttons move. PageUp and PageDown move ten steps.",
         "use": [
           "`0.01` for currency, `0.5` for half-units."
@@ -7646,10 +7692,10 @@
       },
       {
         "name": "formatOptions",
-        "type": "Intl.NumberFormatOptions",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "Intl.NumberFormatOptions",
+        "description": "How the value is displayed when the field is not being edited.",
+        "declared": true,
         "summary": "How the value is displayed when the field is not being edited — currency, percent, units, fraction digits.",
         "use": [
           "`{ style: \"currency\", currency: \"EUR\" }` for money, so the reader sees \"€12.50\" and edits \"12.50\"."
@@ -7662,11 +7708,11 @@
       },
       {
         "name": "stepButtons",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Renders the decrement and increment buttons at either end.",
         "default": "true",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Renders the decrement and increment buttons at either end.",
         "use": [
           "Small adjustments a reader makes by touch — quantities in a cart, guests on a booking."
@@ -7679,11 +7725,11 @@
       },
       {
         "name": "incrementLabel",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "Accessible name for the increment button.",
         "default": "\"Increase\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accessible name for the increment button.",
         "use": [
           "Translating it."
@@ -7696,11 +7742,11 @@
       },
       {
         "name": "decrementLabel",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "Accessible name for the decrement button.",
         "default": "\"Decrease\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accessible name for the decrement button.",
         "use": [
           "Translating it."
@@ -7713,10 +7759,10 @@
       },
       {
         "name": "placeholder",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "A hint shown while the field is empty.",
+        "declared": true,
         "summary": "A hint shown while the field is empty.",
         "use": [
           "An example in the expected format: \"0.00\"."
@@ -7729,10 +7775,10 @@
       },
       {
         "name": "name",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Form field name. Submits the unformatted number as a plain decimal string.",
+        "declared": true,
         "summary": "Form field name. Submits the unformatted number as a plain decimal string.",
         "use": [
           "A native form post, where the server should receive \"1234.5\" and not \"1.234,50 €\"."
@@ -7743,16 +7789,16 @@
       },
       {
         "name": "size",
-        "type": "\"sm\" | \"md\" | \"lg\"",
+        "optional": true,
+        "type": "NumberFieldSize",
+        "description": "Control height and inline padding. Text size does not change with it.",
+        "default": "\"md\"",
         "values": [
           "sm",
           "md",
           "lg"
         ],
-        "optional": true,
-        "default": "\"md\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Control height and inline padding. Text size does not change with it.",
         "use": [
           "Matching whatever the control sits beside."
@@ -7765,11 +7811,11 @@
       },
       {
         "name": "labelHidden",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Takes the label off screen while leaving it in the accessibility tree.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Takes the label off screen while leaving it in the accessibility tree.",
         "use": [
           "A control whose meaning is already carried by a heading or column header directly above it."
@@ -7782,10 +7828,10 @@
       },
       {
         "name": "id",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Stable id for the input. Defaults to a generated one.",
+        "declared": true,
         "summary": "Stable id for the number field, when something outside needs to point at it.",
         "use": [
           "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -7798,11 +7844,11 @@
       },
       {
         "name": "status",
-        "type": "FieldStatus",
         "optional": true,
+        "type": "FieldStatus",
+        "description": "Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.",
         "default": "\"idle\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
         "use": [
           "`invalid` with a `message` saying what to do about it."
@@ -7815,10 +7861,10 @@
       },
       {
         "name": "description",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Persistent helper text under the control.",
+        "declared": true,
         "summary": "Persistent helper text under the control.",
         "use": [
           "A constraint the reader needs before they answer."
@@ -7831,10 +7877,10 @@
       },
       {
         "name": "message",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Status-dependent message under the control.",
+        "declared": true,
         "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
         "use": [
           "What to do about an `invalid` status, in the imperative."
@@ -7847,11 +7893,11 @@
       },
       {
         "name": "required",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Marks the field required to assistive technology and in the label.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Marks the field required, in the label and to assistive technology.",
         "use": [
           "Fields that genuinely block submission."
@@ -7864,11 +7910,11 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Blocks editing and stepping while keeping the field focusable, readable and announced.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Blocks editing and stepping while keeping the field focusable, readable and announced.",
         "use": [
           "A quantity fixed by an earlier choice that should still be readable."
@@ -7881,10 +7927,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Class for the wrapper — the width the form wants, not a restyle.",
+        "declared": true,
         "summary": "Class for the wrapper — the width the form wants, not a restyle.",
         "use": [
           "A narrow measure. A quantity rarely needs a full-width field, and a short box hints at a short answer."
@@ -7921,6 +7967,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getNumberFieldProps",
       "summary": "An APG spinbutton built on a text input, so the value is parsed rather than trusted to `type=\"number\"`. Composed with Field for label, helper text and validation; formatting and parsing follow the page's locale.",
       "decisions": [
         {
@@ -7996,7 +8043,7 @@
         }
       }
     },
-    "example": null
+    "example": "<NumberField\n        className=\"pg-field\"\n        label=\"Team size\"\n        defaultValue={12}\n        min={1}\n        status=\"invalid\"\n        message=\"Teams on this plan have at most 10 people.\"\n      />"
   },
   {
     "name": "pagination",
@@ -8006,10 +8053,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -8020,16 +8069,16 @@
       "icon"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLElement>, \"aria-label\" | \"children\">",
     "props": [
       {
         "name": "page",
-        "type": "number",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "number",
+        "description": "The current page, counting from 1.",
+        "declared": true,
         "summary": "The current page, counting from 1.",
         "use": [
           "Read from the URL, so the page and the address bar cannot disagree."
@@ -8042,10 +8091,10 @@
       },
       {
         "name": "pageCount",
-        "type": "number",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "number",
+        "description": "How many pages there are.",
+        "declared": true,
         "summary": "How many pages there are.",
         "use": [
           "The real total, from the result count."
@@ -8058,10 +8107,10 @@
       },
       {
         "name": "href",
-        "type": "(page: number) => string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(page: number) => string",
+        "description": "Builds the URL for a page. Web only.",
+        "declared": true,
         "summary": "Builds the URL for a page. Web only.",
         "use": [
           "Every web use — a function of the page number that keeps the address's other query parameters intact."
@@ -8074,10 +8123,10 @@
       },
       {
         "name": "onPageChange",
-        "type": "(page: number, event: { preventDefault(): void }) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(page: number, event: { preventDefault(): void }) => void",
+        "description": "Called when the reader picks a page. Intercepts the link for a client-side router.",
+        "declared": true,
         "summary": "Called when the reader picks a page. Intercepts the link for a client-side router; required on React Native.",
         "use": [
           "Calling the router's navigate and `event.preventDefault()`, so the link stays a link but the page does not reload."
@@ -8090,11 +8139,11 @@
       },
       {
         "name": "label",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "Accessible name for the navigation landmark.",
         "default": "\"Pagination\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accessible name for the navigation landmark.",
         "use": [
           "Naming what is paged when a page has more than one: \"Invoice pages\"."
@@ -8107,10 +8156,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Extra classes, for placement.",
+        "declared": true,
         "summary": "Extra classes, for placement.",
         "use": [
           "Aligning the row in the page's layout."
@@ -8143,6 +8192,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getPaginationItems",
       "summary": "A `<nav>` landmark holding a list of links: Previous, a window of page numbers with ellipses, Next. Every page is a real `href`, and a client-side router intercepts through `onPageChange` — the same bargain TopNav and SideNav make with `onClick`. Proposed primitive: `getPaginationItems` in `packages/primitives/src/pagination.ts`, a pure function from `page` and `pageCount` to the list of items; it is a proposal, not yet a commitment.",
       "decisions": [
         {
@@ -8166,6 +8216,10 @@
           "why": "A page with Breadcrumbs, a TopNav and a Pagination has three navigation landmarks, and three that are all called \"navigation\" are unusable. `label` names this one. Each number link is named \"Page 4\" rather than \"4\", and the current one is marked `aria-current=\"page\"`, so a screen reader announces \"Page 4, current page\"."
         },
         {
+          "decision": "Touch target: size.target.min",
+          "why": "Owner amendment at gate 3 (docs/decisions/2026-11-gate-1-review.md): the page buttons and Previous / Next get a hit area of size.target.min, 48px, on touch — Material's minimum, which also clears Apple's 44pt and WCAG 2.5.5. It sizes where an item can be tapped, never the drawn box, which stays size.control.md so the row keeps its density. Drawn with a ::before, centred on the item, because the composed state layer owns ::after; neighbouring areas overlap across the space.gap.xs gap, and the later item takes a tap there."
+        },
+        {
           "decision": "Web and native",
           "why": "Web: `<nav aria-label>` around a `<ul>` of `<a>` elements, `aria-current=\"page\"` on the current one, `aria-disabled` on an unavailable Previous or Next. React Native has no URLs to link to, so `href` is web-only and `onPageChange` is what drives navigation; it is required there. Each item is a `Pressable` with `accessibilityRole=\"button\"` — on native, changing a page is an action rather than a link — with `accessibilityLabel` \"Page 4\" and `accessibilityState` carrying `selected` for the current page and `disabled` for an unavailable Previous or Next. The row wraps in a `View` with `accessibilityLabel` set from `label`. Rata-drawn (decision N5): there is no OS page-selector control, so each item is a drawn `Pressable`. The native implementation ships in the pro tier (decision N6)."
         }
@@ -8178,6 +8232,7 @@
           "gap between items": "space.gap.xs",
           "item min-inline-size": "size.control.md",
           "item block-size": "size.control.md",
+          "hit area, on touch": "size.target.min in both dimensions, centred on the drawn item with a ::before (the state layer owns ::after); the item itself stays size.control.md",
           "item padding-inline": "space.1",
           "item font-size": "type.control.size.md",
           "item font-weight": "type.control.weight",
@@ -8465,10 +8520,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -8479,16 +8536,16 @@
       "visually-hidden"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "label",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "What the code is. Always required — `labelHidden` hides it, nothing removes it.",
+        "declared": true,
         "summary": "What the code is. Always required — `labelHidden` hides it, nothing removes it.",
         "use": [
           "Where the code came from, when that is the useful part: \"Code from your authenticator app\"."
@@ -8501,10 +8558,10 @@
       },
       {
         "name": "length",
-        "type": "number",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "number",
+        "description": "How many characters the code has. Draws that many boxes and caps the input.",
+        "declared": true,
         "summary": "How many characters the code has. Draws that many boxes and caps the input.",
         "use": [
           "The exact length the server sends — usually 6 for a one-time code, 4 to 8 for a PIN."
@@ -8517,10 +8574,10 @@
       },
       {
         "name": "value",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Controls the code from outside.",
+        "declared": true,
         "summary": "Controls the code from outside.",
         "use": [
           "Clearing the field after a failed attempt."
@@ -8535,11 +8592,11 @@
       },
       {
         "name": "defaultValue",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "The starting text when the component owns the state.",
         "default": "\"\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The starting text when the component owns the state.",
         "use": [
           "Almost never. A pre-filled one-time code is a code someone else already read."
@@ -8552,10 +8609,10 @@
       },
       {
         "name": "onValueChange",
-        "type": "(value: string) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(value: string) => void",
+        "description": "Fires with the whole code on every change.",
+        "declared": true,
         "summary": "Fires with the whole code on every change.",
         "use": [
           "Tracking a partial code, to enable a submit button only when it is complete."
@@ -8566,10 +8623,10 @@
       },
       {
         "name": "onComplete",
-        "type": "(value: string) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(value: string) => void",
+        "description": "Fires once when the code reaches `length` characters.",
+        "declared": true,
         "summary": "Fires once when the code reaches `length` characters.",
         "use": [
           "Starting verification — the commonest reason for this component's existence is to save the reader a tap."
@@ -8582,15 +8639,15 @@
       },
       {
         "name": "characters",
-        "type": "\"numeric\" | \"alphanumeric\"",
+        "optional": true,
+        "type": "PinInputCharacters",
+        "description": "Which characters are accepted, and which on-screen keyboard appears.",
+        "default": "\"numeric\"",
         "values": [
           "numeric",
           "alphanumeric"
         ],
-        "optional": true,
-        "default": "\"numeric\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Which characters are accepted, and which on-screen keyboard appears.",
         "use": [
           "`alphanumeric` for codes like recovery keys that mix letters and digits."
@@ -8603,15 +8660,15 @@
       },
       {
         "name": "purpose",
-        "type": "\"one-time-code\" | \"pin\"",
+        "optional": true,
+        "type": "PinInputPurpose",
+        "description": "Whether this is a code the reader was sent or a secret they know.",
+        "default": "\"one-time-code\"",
         "values": [
           "one-time-code",
           "pin"
         ],
-        "optional": true,
-        "default": "\"one-time-code\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Whether this is a code the reader was sent or a secret they know.",
         "use": [
           "`one-time-code` for SMS and email codes — the browser and the OS offer to fill it from the message.",
@@ -8625,10 +8682,10 @@
       },
       {
         "name": "name",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Form field name. Submits the code as one string.",
+        "declared": true,
         "summary": "Form field name. Submits the code as one string.",
         "use": [
           "A native form post."
@@ -8639,15 +8696,15 @@
       },
       {
         "name": "size",
-        "type": "\"md\" | \"lg\"",
+        "optional": true,
+        "type": "PinInputSize",
+        "description": "Box size. There is no `sm`.",
+        "default": "\"lg\"",
         "values": [
           "md",
           "lg"
         ],
-        "optional": true,
-        "default": "\"lg\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Box size. There is no `sm`: a code box smaller than a control is a target smaller than a fingertip.",
         "use": [
           "`md` inside a dense dialog where six large boxes do not fit."
@@ -8658,11 +8715,11 @@
       },
       {
         "name": "labelHidden",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Takes the label off screen while leaving it in the accessibility tree.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Takes the label off screen while leaving it in the accessibility tree.",
         "use": [
           "A control whose meaning is already carried by a heading or column header directly above it."
@@ -8675,10 +8732,10 @@
       },
       {
         "name": "id",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Stable id for the code input. Defaults to a generated one.",
+        "declared": true,
         "summary": "Stable id for the code input, when something outside needs to point at it.",
         "use": [
           "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -8691,11 +8748,11 @@
       },
       {
         "name": "status",
-        "type": "FieldStatus",
         "optional": true,
+        "type": "FieldStatus",
+        "description": "Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring on every box.",
         "default": "\"idle\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
         "use": [
           "`invalid` with a `message` saying what to do about it."
@@ -8708,10 +8765,10 @@
       },
       {
         "name": "description",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Persistent helper text under the control.",
+        "declared": true,
         "summary": "Persistent helper text under the control.",
         "use": [
           "A constraint the reader needs before they answer."
@@ -8724,10 +8781,10 @@
       },
       {
         "name": "message",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Status-dependent message under the control.",
+        "declared": true,
         "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
         "use": [
           "What to do about an `invalid` status, in the imperative."
@@ -8740,11 +8797,11 @@
       },
       {
         "name": "required",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Marks the field required to assistive technology and in the label.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Marks the field required, in the label and to assistive technology.",
         "use": [
           "Fields that genuinely block submission."
@@ -8757,11 +8814,11 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Blocks typing while keeping the input focusable, readable and announced.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Blocks typing while keeping the input focusable, readable and announced.",
         "use": [
           "While a verification request is in flight, alongside `status=\"validating\"`."
@@ -8774,10 +8831,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Class for the wrapper — placement, not a restyle.",
+        "declared": true,
         "summary": "Class for the wrapper — placement, not a restyle.",
         "use": [
           "Centring the boxes in a verification screen."
@@ -8814,6 +8871,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getPinInputProps",
       "summary": "A single labelled text input, capped at `length`, rendered as a row of boxes it lies over. Composed with Field for the label, helper text and validation. Autofill, paste and Backspace are the platform's, because there is only one input.",
       "decisions": [
         {
@@ -8872,7 +8930,7 @@
         }
       }
     },
-    "example": null
+    "example": "<PinInput label=\"PIN\" length={4} purpose=\"pin\" />"
   },
   {
     "name": "popover",
@@ -9142,10 +9200,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -9153,16 +9213,16 @@
     },
     "dependencies": [],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLDivElement>, ProgressOwnedAttribute>",
     "props": [
       {
         "name": "label",
-        "type": "string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "What is in progress, shown above the bar.",
+        "declared": true,
         "summary": "What is in progress, shown above the bar.",
         "use": [
           "A noun phrase naming the task: \"Uploading tokens.json\", \"Import\"."
@@ -9175,10 +9235,10 @@
       },
       {
         "name": "value",
-        "type": "number",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "number",
+        "description": "How much is done, from 0 to `max`.",
+        "declared": true,
         "summary": "How much is done, from 0 to `max`.",
         "use": [
           "The real count of done units — bytes, files, steps."
@@ -9191,11 +9251,11 @@
       },
       {
         "name": "max",
-        "type": "number",
         "optional": true,
+        "type": "number",
+        "description": "The value that means done.",
         "default": "100",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The value that means done.",
         "use": [
           "The total of whatever `value` counts — `max={7}` for seven files."
@@ -9208,10 +9268,10 @@
       },
       {
         "name": "valueText",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The value in the reader's own units, shown beside the label and announced instead of a percentage.",
+        "declared": true,
         "summary": "The value in the reader's own units, shown beside the label and announced instead of a percentage.",
         "use": [
           "\"3 of 7 files\", \"12 MB of 40 MB\"."
@@ -9224,10 +9284,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Extra classes, for placement and width.",
+        "declared": true,
         "summary": "Extra classes, for placement and width.",
         "use": [
           "Setting the bar's width in the page's layout."
@@ -9312,7 +9372,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Progress\n        label=\"Uploading assets\"\n        value={3}\n        max={7}\n        valueText=\"3 of 7 files\"\n        className=\"pg-wide-specimen\"\n      />"
   },
   {
     "name": "radio",
@@ -11278,10 +11338,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -11289,22 +11351,22 @@
     },
     "dependencies": [],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\" | \"aria-hidden\">",
     "props": [
       {
         "name": "shape",
-        "type": "\"text\" | \"block\" | \"circle\"",
+        "optional": true,
+        "type": "SkeletonShape",
+        "description": "What kind of content it stands in for.",
+        "default": "\"text\"",
         "values": [
           "text",
           "block",
           "circle"
         ],
-        "optional": true,
-        "default": "\"text\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "What kind of content it stands in for.",
         "use": [
           "`text` for lines of running text — sized from the type scale.",
@@ -11319,11 +11381,11 @@
       },
       {
         "name": "lines",
-        "type": "number",
         "optional": true,
+        "type": "number",
+        "description": "How many lines a `text` skeleton stands in for.",
         "default": "1",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "How many lines a `text` skeleton stands in for.",
         "use": [
           "The usual line count of what replaces it — 3 for a summary, 1 for a title."
@@ -11336,10 +11398,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Extra classes, for the size of a `block` or `circle` and its placement.",
+        "declared": true,
         "summary": "Extra classes, for the size of a `block` or `circle` and its placement.",
         "use": [
           "Taking the size of the thing it replaces, from the same layout rule that sizes that thing."
@@ -11422,7 +11484,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Skeleton lines={2} />"
   },
   {
     "name": "slider",
@@ -11432,10 +11494,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -11446,16 +11510,16 @@
       "state-layer"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "label",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "What the value measures. Always required — `labelHidden` hides it, nothing removes it.",
+        "declared": true,
         "summary": "What the value measures. Always required — `labelHidden` hides it, nothing removes it.",
         "use": [
           "The quantity, with its unit when the output does not carry one: \"Volume\", \"Max price (USD)\"."
@@ -11468,10 +11532,10 @@
       },
       {
         "name": "value",
-        "type": "number | [number, number]",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "number | [number, number]",
+        "description": "Controls the value from outside. A two-element tuple renders two thumbs.",
+        "declared": true,
         "summary": "Controls the value from outside. A two-element tuple renders two thumbs.",
         "use": [
           "A filter that other controls also write to, or a value persisted elsewhere."
@@ -11487,11 +11551,11 @@
       },
       {
         "name": "defaultValue",
-        "type": "number | [number, number]",
         "optional": true,
+        "type": "number | [number, number]",
+        "description": "The starting value when the component owns the state. Its shape decides one thumb or two.",
         "default": "min",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The starting value when the component owns the state. Its shape decides one thumb or two.",
         "use": [
           "`[min, max]` for a range filter that starts unconstrained."
@@ -11506,10 +11570,10 @@
       },
       {
         "name": "onValueChange",
-        "type": "(value: number | [number, number]) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(value: number | [number, number]) => void",
+        "description": "Fires continuously while the thumb moves.",
+        "declared": true,
         "summary": "Fires continuously while the thumb moves.",
         "use": [
           "Updating the visible output and anything cheap that should track the thumb."
@@ -11522,10 +11586,10 @@
       },
       {
         "name": "onValueCommit",
-        "type": "(value: number | [number, number]) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(value: number | [number, number]) => void",
+        "description": "Fires once when an interaction ends: pointer release, a key press, or an assistive-technology adjustment.",
+        "declared": true,
         "summary": "Fires once when an interaction ends: pointer release, a key press, or an assistive-technology adjustment.",
         "use": [
           "Re-running a query or saving a preference — anything expensive enough that it should happen once per decision."
@@ -11538,11 +11602,11 @@
       },
       {
         "name": "min",
-        "type": "number",
         "optional": true,
+        "type": "number",
+        "description": "The lowest value.",
         "default": "0",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The lowest value.",
         "use": [
           "The real floor of the quantity, not a guess at the usual one."
@@ -11553,11 +11617,11 @@
       },
       {
         "name": "max",
-        "type": "number",
         "optional": true,
+        "type": "number",
+        "description": "The highest value.",
         "default": "100",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The highest value.",
         "use": [
           "The real ceiling. If there is none, this is the wrong control — a slider needs both ends to mean anything; use `NumberField`."
@@ -11568,11 +11632,11 @@
       },
       {
         "name": "step",
-        "type": "number",
         "optional": true,
+        "type": "number",
+        "description": "The grid values snap to. Arrow keys move one step, PageUp and PageDown ten.",
         "default": "1",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The grid values snap to. Arrow keys move one step, PageUp and PageDown ten.",
         "use": [
           "A step that makes every reachable value meaningful — a price filter in 5s, not in cents."
@@ -11585,10 +11649,10 @@
       },
       {
         "name": "thumbLabels",
-        "type": "[string, string]",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "[string, string]",
+        "description": "Names for the two thumbs of a range. Required when the value is a tuple.",
+        "declared": true,
         "summary": "Names for the two thumbs of a range. Required when the value is a tuple.",
         "use": [
           "\"Minimum price\" and \"Maximum price\" — each thumb is its own control and needs its own name."
@@ -11601,10 +11665,10 @@
       },
       {
         "name": "formatValue",
-        "type": "(value: number) => string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(value: number) => string",
+        "description": "Turns a value into the text shown in the output and announced as `aria-valuetext`.",
+        "declared": true,
         "summary": "Turns a value into the text shown in the output and announced as `aria-valuetext`.",
         "use": [
           "Units and currency: `(v) => `$${v}``, or `Intl.NumberFormat` for the page's locale.",
@@ -11618,11 +11682,11 @@
       },
       {
         "name": "showValue",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Renders the current value as visible text beside the label.",
         "default": "true",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Renders the current value as visible text beside the label.",
         "use": [
           "Almost always. A slider without a number is a guess, and touch makes it a worse one — the finger covers the thumb."
@@ -11635,10 +11699,10 @@
       },
       {
         "name": "name",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Form field name. A range submits two values under the same name, lower first.",
+        "declared": true,
         "summary": "Form field name. A range submits two values under the same name, lower first.",
         "use": [
           "A native form post or `FormData`."
@@ -11649,11 +11713,11 @@
       },
       {
         "name": "labelHidden",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Takes the label off screen while leaving it in the accessibility tree.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Takes the label off screen while leaving it in the accessibility tree.",
         "use": [
           "A control whose meaning is already carried by a heading or column header directly above it."
@@ -11666,10 +11730,10 @@
       },
       {
         "name": "id",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Stable id for the slider. Defaults to a generated one.",
+        "declared": true,
         "summary": "Stable id for the slider, when something outside needs to point at it.",
         "use": [
           "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -11682,10 +11746,10 @@
       },
       {
         "name": "description",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Persistent helper text under the control.",
+        "declared": true,
         "summary": "Persistent helper text under the control.",
         "use": [
           "What the value affects, when the label alone does not say: \"Applies to new uploads only.\""
@@ -11698,11 +11762,11 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Blocks adjustment while keeping the slider focusable, readable and announced.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Blocks adjustment while keeping the slider focusable, readable and announced.",
         "use": [
           "A setting that depends on another being on."
@@ -11715,10 +11779,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Class for the wrapper — the width the layout wants, not a restyle.",
+        "declared": true,
         "summary": "Class for the wrapper — the width the layout wants, not a restyle.",
         "use": [
           "The inline size of the track, which is the layout's decision."
@@ -11757,6 +11821,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getSliderProps",
       "summary": "One or two native range inputs over a drawn track, composed with Field for the label and helper text. APG Slider and Multi-Thumb Slider, with the platform supplying the keyboard model and the touch-screen-reader gestures a scripted slider cannot receive.",
       "decisions": [
         {
@@ -11933,6 +11998,12 @@
         "when": "The layer's default bleeds outward by border.default, so an unbordered host needs the opt-out or its tint sits a hairline proud of the element.",
         "example": "<button className=\"rata-thing rata-state-layer rata-state-layer--flush\">…</button>",
         "notes": "The layer is an absolutely positioned pseudo-element, and `inset` on one resolves against the containing block's padding box — which excludes the border. At `inset: 0` the tint stopped a border-width short on every side, invisible under a filled background but plainly smaller on a host whose only fill is the layer itself. It now bleeds by border.default, since every bordered host in this system uses that width, and CSS gives no way to read a containing block's computed border-width. `--flush` restores `inset: 0` for hosts with none."
+      },
+      {
+        "case": "Feedback for an element the pointer does not reach",
+        "when": "A drawn part shows the state while a transparent control laid over it receives the pointer — a slider's thumb over its range control.",
+        "example": "<span className=\"rata-slider-thumb rata-state-layer\" data-hovered=\"\" />",
+        "notes": "The layer also responds to `[data-hovered]` and `[data-pressed]`, which the component's primitive sets from pointer events on the control (decision C9). Same opacities, same disabled override; only the trigger widens. Never write a `:has(…:hover)` rule for this — that is the hand-rolled hover the layer exists to replace."
       }
     ],
     "behavior": null,
@@ -11947,10 +12018,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -11962,16 +12035,16 @@
       "visually-hidden"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLElement>, \"aria-label\" | \"children\">",
     "props": [
       {
         "name": "label",
-        "type": "string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Names the whole sequence: \"Checkout progress\".",
+        "declared": true,
         "summary": "Names the whole sequence: \"Checkout progress\".",
         "use": [
           "The task the steps belong to, so a reader landing on the list knows what is being counted."
@@ -11984,10 +12057,10 @@
       },
       {
         "name": "steps",
-        "type": "StepItem[]",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "StepItem[]",
+        "description": "The steps in order.",
+        "declared": true,
         "summary": "The steps in order, as `{ id, label, description?, invalid? }`.",
         "use": [
           "Short noun labels — \"Shipping\", \"Payment\", \"Review\" — and `description` for the one-line detail under each.",
@@ -12002,10 +12075,10 @@
       },
       {
         "name": "current",
-        "type": "string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The `id` of the step the reader is on.",
+        "declared": true,
         "summary": "The `id` of the step the reader is on. Steps before it are complete; steps after it are upcoming.",
         "use": [
           "The step whose content is on screen."
@@ -12018,10 +12091,10 @@
       },
       {
         "name": "onStepSelect",
-        "type": "(id: string) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(id: string) => void",
+        "description": "Makes completed steps navigable, and fires with the chosen step's id.",
+        "declared": true,
         "summary": "Makes completed steps navigable, and fires with the chosen step's id.",
         "use": [
           "A flow where going back to change an earlier answer is allowed — the usual case."
@@ -12034,15 +12107,15 @@
       },
       {
         "name": "orientation",
+        "optional": true,
         "type": "\"horizontal\" | \"vertical\"",
+        "description": "Lays the steps out in a row or a column.",
+        "default": "\"horizontal\"",
         "values": [
           "horizontal",
           "vertical"
         ],
-        "optional": true,
-        "default": "\"horizontal\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Lays the steps out in a row or a column.",
         "use": [
           "`vertical` beside a long form, where each step's description has room and the column doubles as a table of contents."
@@ -12055,10 +12128,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Class for the root — placement, not a restyle.",
+        "declared": true,
         "summary": "Class for the root — placement, not a restyle.",
         "use": [
           "The margin the page wants above its first section."
@@ -12095,6 +12168,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getStepsProps",
       "summary": "An ordered list of steps with `aria-current=\"step\"` on the current one, each step's state stated in words as well as drawn. An indicator only: the caller owns which step is current and what each one renders.",
       "decisions": [
         {
@@ -12119,15 +12193,15 @@
         },
         {
           "decision": "Horizontal collapses to \"Step 2 of 4\" when it does not fit",
-          "why": "A row of four labelled steps does not fit a phone. Below the width the full row needs — a container query, not a viewport breakpoint, because the indicator may sit in a narrow column on a wide screen — it renders the current step's marker, its label and \"Step 2 of 4\", with the list still in the accessibility tree whole. Truncating labels instead would leave a row of ellipses."
+          "why": "A row of four labelled steps does not fit a phone. When the full row does not fit its container it renders the current step's marker, its label and \"Step 2 of 4\", with the list still in the accessibility tree whole. Truncating labels instead would leave a row of ellipses. Whether it fits is measured, not set by a container query or a viewport breakpoint (gate 3, owner decision, docs/decisions/2026-11-gate-1-review.md): the width the row needs depends on its step count and label lengths, so no token threshold fits. A ResizeObserver compares the container's width with a hidden max-content copy of the full row, re-checking on resize and content change and expanding back when there is room; because that copy's width does not depend on which form is showing, collapsing cannot make the row fit and flip it back."
         },
         {
-          "decision": "Proposed primitive: `getStepsProps`",
-          "why": "No primitive exists yet. It is small: derive each step's state from its position against `current` and its `invalid` flag, build each step's accessible name, and decide which are navigable. It still belongs in a primitive, because the native package needs exactly the same derivation."
+          "decision": "Primitive: `getStepsProps`",
+          "why": "Small: derive each step's state from its position against `current` and its `invalid` flag, build each step's accessible name, and decide which are navigable. It belongs in a primitive (`packages/primitives/src/steps.ts`), because the native package needs exactly the same derivation."
         },
         {
           "decision": "Web and native",
-          "why": "Web: a `<nav aria-label>` (only when navigable) around an `<ol aria-label>` of `<li>`, with `aria-current=\"step\"` on the current item and a system Button-styled `<button>` inside each navigable one; markers and connectors are `aria-hidden`. Pointer, touch and keyboard all reach the same buttons. React Native: a `View` with `accessibilityRole=\"list\"`, each step a `View` — or a `Pressable` with `accessibilityRole=\"button\"` when navigable — whose `accessibilityLabel` is the same derived name, and `accessibilityState={{ selected: true }}` on the current step, since native has no `aria-current`. The container query has no native equivalent, so the native package chooses the compact form from the window width instead. No prop is platform-specific. Rata-drawn (decision N5): neither platform has an OS step indicator, so it is drawn from the same recipe as the web. The native implementation ships in the pro tier (decision N6)."
+          "why": "Web: a `<nav aria-label>` (only when navigable) around an `<ol aria-label>` of `<li>`, with `aria-current=\"step\"` on the current item and a system Button-styled `<button>` inside each navigable one; markers and connectors are `aria-hidden`. Pointer, touch and keyboard all reach the same buttons. React Native: a `View` with `accessibilityRole=\"list\"`, each step a `View` — or a `Pressable` with `accessibilityRole=\"button\"` when navigable — whose `accessibilityLabel` is the same derived name, and `accessibilityState={{ selected: true }}` on the current step, since native has no `aria-current`. The web measures the row against its container; the native package chooses the compact form from the window width instead. No prop is platform-specific. Rata-drawn (decision N5): neither platform has an OS step indicator, so it is drawn from the same recipe as the web. The native implementation ships in the pro tier (decision N6)."
         }
       ]
     },
@@ -12141,6 +12215,7 @@
           "connector colour": "theme.border.strong",
           "connector colour, after a completed step": "theme.accent-role.bg",
           "connector inset from each marker": "space.gap.xs",
+          "horizontal: connector minimum length": "space.gap.lg — gate 3 addition, not in the batch-approved recipe: without a floor the connector is zero-length at the row's natural width, which is the width the overflow measurement uses",
           "vertical: gap between steps": "space.stack.md",
           "label font-size": "type.control.size.sm",
           "label colour": "theme.fg.secondary",
@@ -12180,7 +12255,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Steps\n        label=\"Checkout progress\"\n        current={current}\n        steps={CHECKOUT_STEPS}\n        onStepSelect={setCurrent}\n      />"
   },
   {
     "name": "switch",
@@ -12443,10 +12518,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -12458,16 +12535,16 @@
       "visually-hidden"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLDivElement>, \"children\" | \"role\" | \"tabIndex\">",
     "props": [
       {
         "name": "caption",
-        "type": "string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The table's name. Required.",
+        "declared": true,
         "summary": "The table's name. Required.",
         "use": [
           "A noun phrase naming the data: \"Open invoices\", \"Deploys in the last 24 hours\"."
@@ -12480,11 +12557,11 @@
       },
       {
         "name": "hideCaption",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Keeps the caption as the accessible name but hides it visually.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Keeps the caption as the accessible name but hides it visually.",
         "use": [
           "A table directly under a heading that already says the same thing."
@@ -12497,10 +12574,10 @@
       },
       {
         "name": "columns",
-        "type": "TableColumn<Row>[]",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "TableColumn<Row>[]",
+        "description": "The columns, in reading order.",
+        "declared": true,
         "summary": "The columns, in reading order: each with a `key`, a `header`, and optionally a `cell` renderer, `align`, `sortable` and `rowHeader`.",
         "use": [
           "`rowHeader: true` on the column that identifies each record — usually the first — so every cell in the row is announced with it.",
@@ -12516,10 +12593,10 @@
       },
       {
         "name": "rows",
-        "type": "Row[]",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "Row[]",
+        "description": "The records, in the order they are shown.",
+        "declared": true,
         "summary": "The records, in the order they are shown.",
         "use": [
           "Already sorted to match `sort`. The table renders the order it is given."
@@ -12532,10 +12609,10 @@
       },
       {
         "name": "getRowKey",
-        "type": "(row: Row) => string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "(row: Row) => string",
+        "description": "A stable identity for each row.",
+        "declared": true,
         "summary": "A stable identity for each row.",
         "use": [
           "The record's own id."
@@ -12548,11 +12625,11 @@
       },
       {
         "name": "sort",
-        "type": "{ key: string; direction: \"ascending\" | \"descending\" } | null",
         "optional": true,
+        "type": "TableSort | null",
+        "description": "Which column the rows are currently sorted by, if any.",
         "default": "null",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Which column the rows are currently sorted by, if any.",
         "use": [
           "Reflecting the order the caller actually applied — from memory, from the server, from the URL."
@@ -12565,10 +12642,10 @@
       },
       {
         "name": "onSortChange",
-        "type": "(sort: { key: string; direction: \"ascending\" | \"descending\" }) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(sort: TableSort) => void",
+        "description": "Called when the reader asks to sort by a column.",
+        "declared": true,
         "summary": "Called when the reader asks to sort by a column. Required for any column marked `sortable` to render a control.",
         "use": [
           "Updating `sort` and re-ordering, or re-fetching, the rows."
@@ -12581,15 +12658,15 @@
       },
       {
         "name": "density",
-        "type": "\"comfortable\" | \"compact\"",
+        "optional": true,
+        "type": "TableDensity",
+        "description": "How tall each row is.",
+        "default": "\"comfortable\"",
         "values": [
           "comfortable",
           "compact"
         ],
-        "optional": true,
-        "default": "\"comfortable\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "How tall each row is.",
         "use": [
           "`compact` for a dense operational table read by people who live in it."
@@ -12602,10 +12679,10 @@
       },
       {
         "name": "empty",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "What to show in place of the rows when there are none.",
+        "declared": true,
         "summary": "What to show in place of the rows when there are none.",
         "use": [
           "An EmptyState saying why there is nothing here and what to do about it."
@@ -12618,10 +12695,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Extra classes on the scroll region, for placement.",
+        "declared": true,
         "summary": "Extra classes on the scroll region, for placement.",
         "use": [
           "Placing the table in the page's layout."
@@ -12654,6 +12731,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getTableProps",
       "summary": "A real `<table>` with a `<caption>`, `<thead>`, `<th scope>` headers and `aria-sort` on the sorted column, inside a focusable scroll region. Data-driven — `columns` and `rows` — like Breadcrumbs and SideNav, because hand-assembled `<tr>`/`<td>` markup is where scope, header association and sort state go missing. Proposed primitive: `getTableProps` in `packages/primitives/src/table.ts`, owning the sort cycle and the header and cell attributes; it is a proposal, not yet a commitment.",
       "decisions": [
         {
@@ -13240,7 +13318,7 @@
         }
       }
     },
-    "example": "<Text>Choose which events send you an email.</Text>"
+    "example": "<Text>Your plan renews on 1 March.</Text>"
   },
   {
     "name": "text-field",
@@ -13846,10 +13924,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -13857,19 +13937,20 @@
     },
     "dependencies": [
       "state-layer",
-      "icon"
+      "icon",
+      "button"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "children",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The message — one short sentence about what just happened.",
+        "declared": true,
         "summary": "The message — one short sentence about what just happened.",
         "use": [
           "Past tense, naming the thing: \"Invoice sent\", \"3 tokens copied\"."
@@ -13883,16 +13964,16 @@
       },
       {
         "name": "variant",
-        "type": "\"neutral\" | \"success\" | \"danger\"",
+        "optional": true,
+        "type": "ToastVariant",
+        "description": "Whether the outcome says anything about health.",
+        "default": "\"neutral\"",
         "values": [
           "neutral",
           "success",
           "danger"
         ],
-        "optional": true,
-        "default": "\"neutral\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Whether the outcome says anything about health.",
         "use": [
           "`neutral` for almost everything — a confirmation is not a celebration.",
@@ -13907,10 +13988,10 @@
       },
       {
         "name": "action",
-        "type": "{ label: string; onAction: () => void }",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "{ label: string; onAction: () => void }",
+        "description": "One optional action — Undo, View — offered alongside the message.",
+        "declared": true,
         "summary": "One optional action — Undo, View — offered alongside the message.",
         "use": [
           "Undo for a reversible action the reader may have done by mistake."
@@ -13924,11 +14005,11 @@
       },
       {
         "name": "duration",
-        "type": "number | null",
         "optional": true,
+        "type": "number | null",
+        "description": "Milliseconds before the toast leaves on its own, or `null` to stay until dismissed.",
         "default": "6000",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Milliseconds before the toast leaves on its own, or `null` to stay until dismissed.",
         "use": [
           "The default for almost everything.",
@@ -13942,10 +14023,10 @@
       },
       {
         "name": "onDismiss",
-        "type": "() => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "() => void",
+        "description": "Called when the toast leaves — by its timer, its dismiss button, its action, or the stack making room.",
+        "declared": true,
         "summary": "Called when the toast leaves — by timer, by the dismiss button, or by a swipe on native.",
         "use": [
           "Cleaning up state that should not outlive the message."
@@ -13958,11 +14039,11 @@
       },
       {
         "name": "dismissLabel",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "Accessible name for the dismiss button.",
         "default": "\"Dismiss\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accessible name for the dismiss button.",
         "use": [
           "A translated label."
@@ -14088,7 +14169,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Toast>Token path copied</Toast>"
   },
   {
     "name": "toggle-button",
@@ -14750,10 +14831,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -14761,16 +14844,16 @@
     },
     "dependencies": [],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "content",
-        "type": "string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The hint text. Plain text only — a string, so a link or a button cannot be passed.",
+        "declared": true,
         "summary": "The hint text. Plain text only.",
         "use": [
           "A few words: the name of an icon-only control, or one sentence of detail about a labelled one."
@@ -14784,10 +14867,10 @@
       },
       {
         "name": "children",
-        "type": "ReactElement",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactElement",
+        "description": "The one focusable element the tooltip is attached to.",
+        "declared": true,
         "summary": "The one focusable element the tooltip is attached to.",
         "use": [
           "A `Button`, usually an icon-only one, or a link."
@@ -14801,15 +14884,15 @@
       },
       {
         "name": "relationship",
-        "type": "\"label\" | \"description\"",
+        "optional": true,
+        "type": "TooltipRelationship",
+        "description": "Whether the tooltip names the trigger or describes it.",
+        "default": "\"description\"",
         "values": [
           "label",
           "description"
         ],
-        "optional": true,
-        "default": "\"description\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Whether the tooltip names the trigger or describes it.",
         "use": [
           "`label` on an icon-only button, with the button's own `aria-label` set to the same words. Button requires it, and `aria-labelledby` wins over it, so the name is read once.",
@@ -14823,17 +14906,17 @@
       },
       {
         "name": "placement",
-        "type": "\"block-start\" | \"block-end\" | \"inline-start\" | \"inline-end\"",
+        "optional": true,
+        "type": "TooltipPlacement",
+        "description": "Which side of the trigger the tooltip prefers. Anchor positioning flips it near an edge.",
+        "default": "\"block-start\"",
         "values": [
           "block-start",
           "block-end",
           "inline-start",
           "inline-end"
         ],
-        "optional": true,
-        "default": "\"block-start\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Which side of the trigger the tooltip prefers.",
         "use": [
           "`block-end` for a trigger at the top of the viewport, where the default would always flip anyway."
@@ -14866,6 +14949,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getTooltipProps",
       "summary": "A trigger and a short text in the top layer, positioned with CSS anchor positioning — the same machinery as Menu, with no measurement code and no dependency. It is never focusable and never contains anything interactive. Proposed primitive: `getTooltipProps` in `packages/primitives/src/tooltip.ts`, owning the open delay, the hover bridge and Escape; it is a proposal, not yet a commitment.",
       "decisions": [
         {
@@ -14916,7 +15000,7 @@
     },
     "tokens": {
       "base": {
-        "summary": "A small transient chip on an inverse surface, so it reads as a passing hint rather than as a menu or a popover. The inverse surface and its foreground do not exist yet, so the colour lines below are the closest existing tokens and are stand-ins; the measurements, shadow and motion are final.",
+        "summary": "A small transient chip on the inverse surface (theme.bg.inverse with theme.fg.on-inverse), so it reads as a passing hint rather than as a menu or a popover.",
         "tokens": {
           "background": "theme.bg.inverse",
           "color": "theme.fg.on-inverse",
@@ -14935,7 +15019,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Tooltip content=\"Add a payment method to publish\">\n        <Button disabled>Publish</Button>\n      </Tooltip>"
   },
   {
     "name": "top-nav",

@@ -9,10 +9,19 @@
 // The live demos are the one thing this file adds, and they are deliberately
 // the only hand-written part: a contract can say `loading` shows a spinner and
 // refuses clicks, but only a real button can be clicked.
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import {
   Avatar,
+  DateRangePicker,
+  FileUpload,
+  DatePicker,
+  Combobox,
+  Fab,
+  Chip,
+  List,
+  ListItem,
+  BottomNav,
   Badge,
   Breadcrumbs,
   Button,
@@ -21,34 +30,49 @@ import {
   Checkbox,
   Dialog,
   Disclosure,
+  Divider,
+  EmptyState,
   Heading,
   Link,
   Panel,
   Popover,
+  Progress,
   Sheet,
+  Skeleton,
   Menu,
   MenuItem,
   MenuSeparator,
   Notice,
+  Pagination,
   Radio,
   RadioGroup,
   MobileNav,
+  NumberField,
+  PinInput,
   Search,
   SegmentedControl,
   Select,
   SideNav,
+  Slider,
   Tabs,
   TopNav,
   Spinner,
+  Steps,
   Switch,
+  Table,
   Text,
   Textarea,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
+  Toast,
+  Tooltip,
+  useToast,
 } from "@rata/react";
 import type {
   AvatarSize,
+  PickedFile,
+  ComboboxOption,
   BadgeVariant,
   ButtonGroupOrientation,
   DialogSize,
@@ -65,7 +89,10 @@ import type {
   ButtonVariant,
   ToggleButtonSize,
   ToggleButtonVariant,
+  TableSort,
 } from "@rata/react";
+import { addDays, dayOfWeek, todayISO } from "@rata/primitives";
+import type { DateRange } from "@rata/primitives";
 import type { TabsActivation, TabsOrientation } from "@rata/primitives";
 import type { SegmentedControlSize } from "@rata/react";
 import type { IconSize, LucideIcon } from "@rata/icons";
@@ -75,6 +102,9 @@ import {
   User,
   X,
   Trash2,
+  Search as SearchGlyph,
+  Star,
+  Plus,
   Ellipsis,
   Pencil,
   Copy,
@@ -88,10 +118,14 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  FileText,
+  SearchX,
+  Archive,
 } from "@rata/icons";
 import { COMPONENT_TABS, componentPage } from "./routing.js";
 import type { ComponentTab, Page } from "./routing.js";
 import { TableScroll } from "./table-scroll.js";
+import { NARROW, useMediaQuery } from "./use-media-query.js";
 import contractsJson from "../../../docs/components/contracts.json";
 
 export interface ContractProp {
@@ -451,6 +485,87 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     ),
   },
 
+  list: {
+    "A settings group": () => <ListSettingsStage />,
+    "A feed of things, each opening its own page": () => (
+      <div className="pg-wide-specimen">
+        <List label="Recent orders">
+          {[
+            { id: "1042", title: "Order #1042", summary: "3 items · Delivered 2 March" },
+            { id: "1041", title: "Order #1041", summary: "1 item · Out for delivery" },
+            { id: "1040", title: "Order #1040", summary: "2 items · Delivered 18 February" },
+          ].map((order) => (
+            <ListItem key={order.id} href={`#order-${order.id}`} description={order.summary}>
+              {order.title}
+            </ListItem>
+          ))}
+        </List>
+      </div>
+    ),
+  },
+
+  "list-item": {
+    "A row that opens a page": () => (
+      <div className="pg-wide-specimen">
+        <List label="People">
+          <ListItem
+            href="#people-ada"
+            leading={<Avatar name="Ada Lovelace" decorative />}
+            description="Last seen 2 hours ago"
+          >
+            Ada Lovelace
+          </ListItem>
+          <ListItem
+            href="#people-grace"
+            leading={<Avatar name="Grace Hopper" decorative />}
+            description="Online"
+          >
+            Grace Hopper
+          </ListItem>
+        </List>
+      </div>
+    ),
+    "A row with secondary actions": () => <ListItemActionsStage />,
+    "A setting with a switch": () => <ListItemSwitchStage />,
+  },
+
+  divider: {
+    "A change of topic in running content": () => (
+      <div className="pg-block-stack pg-wide-specimen">
+        <Text>Your plan renews on 1 March.</Text>
+        <Divider />
+        <Heading level={4}>Danger zone</Heading>
+      </div>
+    ),
+    "Groups in a toolbar": () => (
+      <div role="toolbar" aria-label="Formatting" className="pg-toolbar">
+        <Button variant="tertiary">Bold</Button>
+        <Button variant="tertiary">Italic</Button>
+        <Divider orientation="vertical" />
+        <Button variant="tertiary">Link</Button>
+      </div>
+    ),
+  },
+
+  "empty-state": {
+    "First use": () => (
+      <EmptyState
+        icon={FileText}
+        title="No invoices yet"
+        description="Invoices you send will appear here, newest first."
+        action={<Button>Create invoice</Button>}
+      />
+    ),
+    "No results after a search": () => (
+      <EmptyState
+        live="polite"
+        icon={SearchX}
+        title="No tokens match ‘brand-teal’"
+        action={<Button variant="secondary">Clear search</Button>}
+      />
+    ),
+  },
+
   disclosure: {
     "One optional section in a form": () => (
       <div className="pg-block-stack">
@@ -563,6 +678,71 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     ),
   },
 
+  "number-field": {
+    "A quantity in a cart": () => (
+      <NumberField className="pg-field" label="Quantity" defaultValue={1} min={1} max={12} />
+    ),
+    Money: () => (
+      <NumberField
+        className="pg-field"
+        label="Budget"
+        defaultValue={1250}
+        formatOptions={{ style: "currency", currency: "EUR" }}
+        step={0.01}
+        stepButtons={false}
+        name="budget"
+      />
+    ),
+    "A value that failed validation": () => (
+      <NumberField
+        className="pg-field"
+        label="Team size"
+        defaultValue={12}
+        min={1}
+        status="invalid"
+        message="Teams on this plan have at most 10 people."
+      />
+    ),
+  },
+
+  "pin-input": {
+    "A code sent by SMS or email": () => (
+      <PinInput
+        label="Verification code"
+        description="We sent it to the number ending 0142."
+        length={6}
+      />
+    ),
+    "A wrong code": () => <PinInputWrongCodeStage />,
+    "A PIN the reader knows": () => <PinInput label="PIN" length={4} purpose="pin" />,
+  },
+
+  slider: {
+    "One value with units": () => (
+      <Slider className="pg-field" label="Volume" defaultValue={40} formatValue={(v) => `${v}%`} />
+    ),
+    "A price range filter": () => (
+      <Slider
+        className="pg-field"
+        label="Price"
+        defaultValue={[0, 500]}
+        max={500}
+        step={10}
+        thumbLabels={["Minimum price", "Maximum price"]}
+        formatValue={(v) => `$${v}`}
+      />
+    ),
+    "A discrete scale with named stops": () => (
+      <Slider
+        className="pg-field"
+        label="Image quality"
+        max={2}
+        defaultValue={1}
+        formatValue={(v) => ["Low", "Medium", "High"][v] ?? String(v)}
+      />
+    ),
+  },
+
   link: {
     "A link in running text": () => (
       <Text>
@@ -618,6 +798,12 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
       </>
     ),
   },
+
+  chip: {
+    "Recipients added to a message": () => <ChipRecipientsStage />,
+    "The active filters above a result list": () => <ChipFilterStage />,
+  },
+
 
   avatar: {
     "A photo with its name beside it": () => (
@@ -772,6 +958,19 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     "Panels that cost something to open": () => <TabsManualStage />,
   },
 
+  "bottom-nav": {
+    "An app's four top-level sections on a phone": () => (
+      <div className="pg-bottom-nav-stage">
+        <Text tone="secondary">The page's content scrolls above the bar.</Text>
+        <BottomNav items={BOTTOM_NAV_SECTIONS} />
+      </div>
+    ),
+    "The same destinations as a TopNav, at a different width": () => (
+      <BottomNavResponsiveStage />
+    ),
+  },
+
+
   "top-nav": {
     "An application banner": () => (
       <TopNav
@@ -914,12 +1113,63 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     "A small filter, controlled": () => <PopoverFilterStage />,
   },
 
+  tooltip: {
+    "Naming an icon-only button": () => (
+      <Tooltip content="Copy token path" relationship="label">
+        <Button variant="tertiary" iconOnly aria-label="Copy token path">
+          <Icon icon={Copy} />
+        </Button>
+      </Tooltip>
+    ),
+    "Explaining why a control is unavailable": () => (
+      <Tooltip content="Add a payment method to publish">
+        <Button disabled>Publish</Button>
+      </Tooltip>
+    ),
+  },
+
+  toast: {
+    "A confirmation that can safely be missed": () => <CopyPathToastExample />,
+    "Undo for something reversible": () => <ArchiveToastExample />,
+  },
+
   notice: {
     "A page-level message that is there when the page loads": () => (
       <Notice variant="warning">This project is read-only while the migration runs.</Notice>
     ),
     "An error that appears after an action, announced correctly": () => <SaveFailureExample />,
     "A dismissible confirmation, with focus handled": () => <InvitesExample />,
+  },
+
+  table: {
+    "A sortable list of records": () => <TableSortStage />,
+    "A table under a heading that already names it": () => (
+      <div className="pg-block-stack">
+        <Heading level={3}>Deploys</Heading>
+        <Table
+          caption="Deploys"
+          hideCaption
+          columns={[
+            { key: "service", header: "Service", rowHeader: true },
+            { key: "when", header: "When" },
+          ]}
+          rows={[] as Array<{ id: string; service: string; when: string }>}
+          getRowKey={(d) => d.id}
+          empty={<Text tone="muted">No deploys yet. They appear here as soon as one starts.</Text>}
+        />
+      </div>
+    ),
+  },
+
+  pagination: {
+    "Paging a table of results": () => <PaginationHashStage />,
+    "With a client-side router": () => <PaginationRouterStage />,
+  },
+
+  steps: {
+    "A checkout": () => <StepsCheckoutStage />,
+    "Going back to fix something": () => <StepsInvalidStage />,
+    "A long form with a table of contents": () => <StepsVerticalStage />,
   },
 
   breadcrumbs: {
@@ -960,6 +1210,129 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     ),
   },
 
+  progress: {
+    "A multi-file upload": () => (
+      <Progress
+        label="Uploading assets"
+        value={3}
+        max={7}
+        valueText="3 of 7 files"
+        className="pg-wide-specimen"
+      />
+    ),
+  },
+
+  skeleton: {
+    "A list whose shape is known": () => (
+      <section aria-busy="true" aria-labelledby="pg-skeleton-activity" className="pg-block-stack pg-wide-specimen">
+        <Heading level={4} id="pg-skeleton-activity">
+          Activity
+        </Heading>
+        <Spinner label="Loading activity" />
+        <Skeleton lines={2} />
+        <Skeleton lines={2} />
+      </section>
+    ),
+  },
+
+  // Each stage is a containing block for `position: fixed` (see .pg-fab-stage),
+  // so the FAB floats in the specimen's corner rather than the page's.
+  fab: {
+    "Creating the thing a list is a list of": () => (
+      <div className="pg-fab-stage">
+        <Fab label="New note" icon={Plus} onClick={() => {}} />
+        <Text tone="secondary">Notes would be listed here, after the FAB in reading order.</Text>
+      </div>
+    ),
+    "A conventional glyph with the label hidden": () => (
+      <div className="pg-fab-stage">
+        <Fab label="Compose" icon={Pencil} labelHidden onClick={() => {}} />
+      </div>
+    ),
+    "Several creation actions behind one FAB": () => (
+      <div className="pg-fab-stage">
+        <Menu label="Add" trigger={<Fab label="Add" icon={Plus} />}>
+          <MenuItem onSelect={() => {}}>Photo</MenuItem>
+          <MenuItem onSelect={() => {}}>Note</MenuItem>
+        </Menu>
+      </div>
+    ),
+  },
+
+
+  combobox: {
+    "Choosing one of many from a local list": () => (
+      <div className="pg-block-stack">
+        <Combobox
+          label="Time zone"
+          placeholder="Type a city"
+          options={TIME_ZONES}
+          name="tz"
+          required
+        />
+      </div>
+    ),
+    "Options fetched as the reader types": () => <ComboboxServerStage />,
+    "Suggestions over an open answer": () => <ComboboxTagStage />,
+  },
+
+  "date-picker": {
+    "A date in the near future": () => (
+      <div className="pg-block-stack">
+        <DatePicker
+          label="Check-in"
+          min={todayISO()}
+          isDateUnavailable={(d) => BOOKED.has(d)}
+          name="checkin"
+          required
+        />
+      </div>
+    ),
+    "A date far in the past": () => (
+      <div className="pg-block-stack">
+        <DatePicker label="Date of birth" max={todayISO()} description="As it appears on your passport." />
+      </div>
+    ),
+    "A typed date that is not allowed": () => <DeliveryDateStage />,
+  },
+
+  "file-upload": {
+    "One required document": () => (
+      <FileUpload
+        label="Proof of address"
+        description="PDF or photo, up to 10 MB."
+        accept="application/pdf,image/*"
+        maxSize={10_000_000}
+        name="proof"
+        required
+      />
+    ),
+    "A refused file": () => <FileUploadRefusedStage />,
+    "Uploads in flight": () => <FileUploadInFlightStage />,
+    "A compact attachment control": () => (
+      <FileUpload label="Attachments" labelHidden multiple dropzone={false} buttonLabel="Attach files" />
+    ),
+  },
+
+  "date-range-picker": {
+    "A stay": () => (
+      <div className="pg-block-stack">
+        <DateRangePicker
+          label="Stay"
+          startLabel="Check-in"
+          endLabel="Check-out"
+          min={todayISO()}
+          isDateUnavailable={(d) => BOOKED.has(d)}
+          startName="checkin"
+          endName="checkout"
+          required
+        />
+      </div>
+    ),
+    "A reporting period": () => <ReportingPeriodStage />,
+    "An end before the start": () => <BackwardsStayStage />,
+  },
+
   spinner: {
     "Standalone region loading": () => <Spinner label="Loading results" />,
     "Inside a button": () => <Button loading>Saving…</Button>,
@@ -979,6 +1352,56 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     ),
   },
 };
+
+/**
+ * Raised from the click handler and handed to the app's one `ToastRegion`
+ * (mounted in main.tsx). Focus stays on the button.
+ */
+function CopyPathToastExample() {
+  const toast = useToast();
+  return (
+    <Button
+      variant="secondary"
+      onClick={() => {
+        void navigator.clipboard?.writeText("color.accent.600").catch(() => {});
+        toast.show(<Toast>Token path copied</Toast>);
+      }}
+    >
+      Copy path
+    </Button>
+  );
+}
+
+/**
+ * The row stays restorable from the list itself, so the toast's Undo is a
+ * shortcut, not the only way back — which is why the default duration holds.
+ */
+function ArchiveToastExample() {
+  const toast = useToast();
+  const [archived, setArchived] = useState(false);
+  return (
+    <span className="pg-example-inline">
+      <Text as="span">{archived ? "Q3 revenue — archived" : "Q3 revenue"}</Text>
+      <Button
+        variant="secondary"
+        onClick={() => {
+          if (archived) {
+            setArchived(false);
+            return;
+          }
+          setArchived(true);
+          toast.show(
+            <Toast action={{ label: "Undo", onAction: () => setArchived(false) }}>
+              Row archived
+            </Toast>
+          );
+        }}
+      >
+        {archived ? "Restore" : "Archive"}
+      </Button>
+    </span>
+  );
+}
 
 /**
  * `loading` is the whole point of this example, and a button frozen in the
@@ -1446,6 +1869,25 @@ function MenuItemStage({
 }
 
 /**
+ * A code the server rejected: controlled, invalid, and cleared — the state
+ * the case describes after a failed attempt. A component for the reason
+ * `RadioStage` gives: it needs useState.
+ */
+function PinInputWrongCodeStage() {
+  const [code, setCode] = useState("");
+  return (
+    <PinInput
+      label="Verification code"
+      length={6}
+      value={code}
+      onValueChange={setCode}
+      status="invalid"
+      message="That code did not match. Check the latest message and try again."
+    />
+  );
+}
+
+/**
  * A Disclosure whose open state something other than the trigger decides.
  *
  * A component rather than an inline render, for the reason `RadioStage` gives:
@@ -1459,6 +1901,195 @@ function MenuItemStage({
  * worth trying: the trigger still reports, and the state above it still owns
  * the answer.
  */
+interface DemoInvoice {
+  id: string;
+  number: string;
+  due: string;
+  amount: number;
+  status: string;
+  overdue: boolean;
+}
+
+const DEMO_INVOICES: DemoInvoice[] = [
+  { id: "204", number: "INV-204", due: "2026-10-28", amount: 120, status: "Overdue", overdue: true },
+  { id: "205", number: "INV-205", due: "2026-11-14", amount: 1840.5, status: "Open", overdue: false },
+  { id: "206", number: "INV-206", due: "2026-11-21", amount: 64.2, status: "Open", overdue: false },
+  { id: "207", number: "INV-207", due: "2026-11-02", amount: 310, status: "Overdue", overdue: true },
+];
+
+/** The caller sorts; the table only reports the request and renders the order it is given. */
+function TableSortStage() {
+  const [sort, setSort] = useState<TableSort | null>({ key: "due", direction: "ascending" });
+  const sorted = [...DEMO_INVOICES].sort((a, b) => {
+    if (sort === null) return 0;
+    const key = sort.key as "due" | "amount";
+    const order = a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0;
+    return sort.direction === "ascending" ? order : -order;
+  });
+  return (
+    <Table
+      caption="Open invoices"
+      columns={[
+        {
+          key: "number",
+          header: "Invoice",
+          rowHeader: true,
+          cell: (inv: DemoInvoice) => <Link href={`#invoice-${inv.id}`}>{inv.number}</Link>,
+        },
+        { key: "due", header: "Due", sortable: true },
+        {
+          key: "amount",
+          header: "Amount",
+          align: "end",
+          sortable: true,
+          cell: (inv: DemoInvoice) => inv.amount.toFixed(2),
+        },
+        {
+          key: "status",
+          header: "Status",
+          cell: (inv: DemoInvoice) => (
+            <Badge variant={inv.overdue ? "danger" : "neutral"}>{inv.status}</Badge>
+          ),
+        },
+      ]}
+      rows={sorted}
+      getRowKey={(inv) => inv.id}
+      sort={sort}
+      onSortChange={setSort}
+    />
+  );
+}
+
+const CHECKOUT_STEPS = [
+  { id: "shipping", label: "Shipping" },
+  { id: "payment", label: "Payment" },
+  { id: "review", label: "Review" },
+];
+
+/**
+ * The caller owns the flow: Continue moves forward, the indicator only goes
+ * back. Narrow the window to see the row collapse to "Step N of M" once it no
+ * longer fits — and expand again when it does.
+ */
+function StepsCheckoutStage() {
+  const [current, setCurrent] = useState("payment");
+  const index = CHECKOUT_STEPS.findIndex((s) => s.id === current);
+  const next = CHECKOUT_STEPS[index + 1];
+  return (
+    <div className="pg-block-stack">
+      <Steps
+        label="Checkout progress"
+        current={current}
+        steps={CHECKOUT_STEPS}
+        onStepSelect={setCurrent}
+      />
+      <Button
+        variant="secondary"
+        onClick={() => next && setCurrent(next.id)}
+        disabled={next === undefined}
+      >
+        Continue
+      </Button>
+    </div>
+  );
+}
+
+/** An earlier answer went stale: the marker says where; the Notice says what. */
+function StepsInvalidStage() {
+  const [current, setCurrent] = useState("review");
+  return (
+    <div className="pg-block-stack">
+      <Steps
+        label="Application progress"
+        current={current}
+        steps={[
+          { id: "details", label: "Your details", invalid: true },
+          { id: "documents", label: "Documents" },
+          { id: "review", label: "Review" },
+        ]}
+        onStepSelect={setCurrent}
+      />
+      <Notice variant="danger" title="Your details need another look">
+        The date of birth no longer matches the uploaded document.
+      </Notice>
+    </div>
+  );
+}
+
+const PROFILE_SECTIONS = [
+  { id: "account", label: "Account", description: "Name and email" },
+  { id: "address", label: "Address", description: "Where we send things" },
+  { id: "preferences", label: "Preferences", description: "Language and notifications" },
+  { id: "confirm", label: "Confirm", description: "Check and finish" },
+];
+
+function StepsVerticalStage() {
+  const [section, setSection] = useState("preferences");
+  return (
+    <Steps
+      label="Profile setup"
+      orientation="vertical"
+      current={section}
+      steps={PROFILE_SECTIONS}
+      onStepSelect={setSection}
+    />
+  );
+}
+
+/**
+ * The page lives in the address, as the contract asks: each link is a real
+ * href (a hash here, so the playground's own route is untouched) and the
+ * stage reads the page back from it. No onPageChange.
+ */
+function readInvoicePage(): number {
+  const match = /^#invoices-page-(\d+)$/.exec(window.location.hash);
+  return match ? Number(match[1]) : 1;
+}
+
+function PaginationHashStage() {
+  const [page, setPage] = useState(readInvoicePage);
+  useEffect(() => {
+    const sync = () => setPage(readInvoicePage());
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
+  return (
+    <Pagination
+      label="Invoice pages"
+      page={page}
+      pageCount={12}
+      href={(p) => `#invoices-page-${p}`}
+    />
+  );
+}
+
+/**
+ * A router intercepts: the href stays real, the default is prevented, and
+ * focus moves to the top of the results so a keyboard user is not left on the
+ * row.
+ */
+function PaginationRouterStage() {
+  const [page, setPage] = useState(5);
+  const resultsRef = useRef<HTMLDivElement>(null);
+  return (
+    <div className="pg-block-stack">
+      <div ref={resultsRef} tabIndex={-1}>
+        <Text>Results, page {page} of 20</Text>
+      </div>
+      <Pagination
+        page={page}
+        pageCount={20}
+        href={(p) => `?page=${p}`}
+        onPageChange={(p, event) => {
+          event.preventDefault();
+          setPage(p);
+          resultsRef.current?.focus();
+        }}
+      />
+    </div>
+  );
+}
+
 function PopoverFilterStage() {
   const [filtering, setFiltering] = useState(false);
   const [status, setStatus] = useState<string | null>("open");
@@ -3074,4 +3705,376 @@ function ComponentThumbnail({ name, status }: { name: string; status?: string })
     );
   }
   return <>{first()}</>;
+}
+
+const BOTTOM_NAV_SECTIONS = [
+  { label: "Home", href: "#home", icon: Star, current: true },
+  { label: "Search", href: "#search", icon: SearchGlyph },
+  { label: "Inbox", href: "#inbox", icon: Settings, badge: { count: 3, label: "3 unread messages" } },
+  { label: "Profile", href: "#profile", icon: User },
+];
+
+/**
+ * The page decides which bar applies, not either component: below
+ * `breakpoint.wide` only the BottomNav is rendered, above it only the TopNav,
+ * so the two landmarks named "Main" are never in the tree together.
+ */
+function BottomNavResponsiveStage() {
+  const narrow = useMediaQuery(NARROW);
+  const sections = BOTTOM_NAV_SECTIONS.map(({ label, href, current }) => ({ label, href, current }));
+  return (
+    <div className="pg-bottom-nav-stage">
+      {!narrow && <TopNav items={sections} brand={<strong className="pg-brand">Ratā</strong>} />}
+      <Text tone="secondary">
+        {narrow ? "Narrow viewport: the BottomNav carries the sections." : "Wide viewport: the TopNav carries them. Narrow the window to swap."}
+      </Text>
+      {narrow && <BottomNav items={BOTTOM_NAV_SECTIONS} />}
+    </div>
+  );
+}
+
+/** A settings group: a heading naming an inset list of a switch row and a link row. */
+function ListSettingsStage() {
+  const [email, setEmail] = useState(true);
+  const headingId = useId();
+  return (
+    <div className="pg-wide-specimen pg-block-stack">
+      <Heading level={4} id={headingId}>
+        Notifications
+      </Heading>
+      <List labelledBy={headingId} appearance="inset">
+        <ListItem
+          trailing={<Switch label="Email" labelHidden checked={email} onCheckedChange={setEmail} />}
+        >
+          Email
+        </ListItem>
+        <ListItem href="#settings-quiet-hours" description="10 pm – 7 am">
+          Quiet hours
+        </ListItem>
+      </List>
+    </div>
+  );
+}
+
+/** Message rows whose archive and delete live in each row's actions menu. */
+function ListItemActionsStage() {
+  const [messages, setMessages] = useState([
+    { id: "42", subject: "Invoice 42", preview: "Your invoice for March is ready." },
+    { id: "43", subject: "Team offsite", preview: "Agenda and travel details inside." },
+  ]);
+  const [log, setLog] = useState<string | null>(null);
+  const drop = (id: string, verb: string) => {
+    const message = messages.find((m) => m.id === id);
+    setMessages((current) => current.filter((m) => m.id !== id));
+    setLog(`${verb} “${message?.subject}”`);
+  };
+  return (
+    <div className="pg-wide-specimen pg-block-stack">
+      <List label="Inbox">
+        {messages.map((message) => (
+          <ListItem
+            key={message.id}
+            href={`#mail-${message.id}`}
+            description={message.preview}
+            actions={[
+              { label: "Archive", icon: Archive, onSelect: () => drop(message.id, "Archived") },
+              {
+                label: "Delete",
+                icon: Trash2,
+                destructive: true,
+                onSelect: () => drop(message.id, "Deleted"),
+              },
+            ]}
+          >
+            {message.subject}
+          </ListItem>
+        ))}
+      </List>
+      {log && <Text tone="secondary">{log}</Text>}
+    </div>
+  );
+}
+
+/** A static settings row whose Switch is its only target. */
+function ListItemSwitchStage() {
+  const [dark, setDark] = useState(false);
+  return (
+    <div className="pg-wide-specimen">
+      <List label="Appearance" appearance="inset">
+        <ListItem
+          trailing={<Switch label="Dark mode" labelHidden checked={dark} onCheckedChange={setDark} />}
+        >
+          Dark mode
+        </ListItem>
+      </List>
+    </div>
+  );
+}
+
+/**
+ * Removing a chip removes the focused button, so the handler moves focus
+ * first — to the next chip's button, or the previous one when the last goes,
+ * or the reset button when none are left. That obligation is the caller's,
+ * per the contract, which is why the stage owns it rather than Chip.
+ */
+function ChipRecipientsStage() {
+  const initial = ["Ada Lovelace", "Bo Nakamura", "Chidi Okonkwo"];
+  const [recipients, setRecipients] = useState(initial);
+  const listRef = useRef<HTMLUListElement>(null);
+  const resetRef = useRef<HTMLButtonElement>(null);
+  const remove = (index: number) => {
+    const buttons = listRef.current?.querySelectorAll<HTMLButtonElement>("button") ?? [];
+    const next = buttons[index + 1] ?? buttons[index - 1] ?? resetRef.current;
+    next?.focus();
+    setRecipients((current) => current.filter((_, i) => i !== index));
+  };
+  return (
+    <div className="pg-block-stack">
+      <ul ref={listRef} role="list" aria-label="Recipients" className="pg-chip-list">
+        {recipients.map((name, i) => (
+          <li key={name}>
+            <Chip onRemove={() => remove(i)}>{name}</Chip>
+          </li>
+        ))}
+      </ul>
+      <Button ref={resetRef} variant="tertiary" size="sm" onClick={() => setRecipients(initial)}>
+        Reset recipients
+      </Button>
+    </div>
+  );
+}
+
+function ChipFilterStage() {
+  const [colour, setColour] = useState<string | null>("Blue");
+  const resetRef = useRef<HTMLButtonElement>(null);
+  return (
+    <div className="pg-block-stack">
+      {colour !== null && (
+        <ul role="list" aria-label="Active filters" className="pg-chip-list">
+          <li>
+            <Chip
+              onRemove={() => {
+                resetRef.current?.focus();
+                setColour(null);
+              }}
+              removeLabel={`Clear colour filter: ${colour}`}
+            >
+              {colour}
+            </Chip>
+          </li>
+        </ul>
+      )}
+      <Button ref={resetRef} variant="tertiary" size="sm" onClick={() => setColour("Blue")}>
+        Reset filters
+      </Button>
+    </div>
+  );
+}
+
+const TIME_ZONES: ComboboxOption[] = [
+  { value: "Pacific/Honolulu", label: "Honolulu" },
+  { value: "America/Los_Angeles", label: "Los Angeles" },
+  { value: "America/Denver", label: "Denver" },
+  { value: "America/Chicago", label: "Chicago" },
+  { value: "America/New_York", label: "New York" },
+  { value: "America/Sao_Paulo", label: "São Paulo" },
+  { value: "Europe/London", label: "London" },
+  { value: "Europe/Lisbon", label: "Lisbon" },
+  { value: "Europe/Paris", label: "Paris" },
+  { value: "Africa/Nairobi", label: "Nairobi" },
+  { value: "Asia/Dubai", label: "Dubai" },
+  { value: "Asia/Colombo", label: "Colombo" },
+  { value: "Asia/Singapore", label: "Singapore" },
+  { value: "Asia/Tokyo", label: "Tokyo" },
+  { value: "Australia/Sydney", label: "Sydney" },
+];
+
+const PEOPLE: ComboboxOption[] = [
+  { value: "u1", label: "Amaya Perera", description: "amaya@example.com" },
+  { value: "u2", label: "Brian Okafor", description: "brian@example.com" },
+  { value: "u3", label: "Chen Wei", description: "wei.chen@example.com" },
+  { value: "u4", label: "Dana Silva", description: "dana@example.com" },
+  { value: "u5", label: "Elif Kaya", description: "elif@example.com", disabled: true },
+];
+
+/** A stand-in server: matches on name or email, answers after a short delay. */
+function ComboboxServerStage() {
+  const [people, setPeople] = useState<ComboboxOption[]>(PEOPLE);
+  const [pending, setPending] = useState(false);
+  const [assignee, setAssignee] = useState<string | null>(null);
+  const request = useRef(0);
+  const fetchPeople = (text: string) => {
+    const ticket = ++request.current;
+    setPending(true);
+    window.setTimeout(() => {
+      if (ticket !== request.current) return;
+      const needle = text.trim().toLowerCase();
+      setPeople(
+        PEOPLE.filter(
+          (p) =>
+            p.label.toLowerCase().includes(needle) ||
+            String(p.description).toLowerCase().includes(needle)
+        )
+      );
+      setPending(false);
+    }, 400);
+  };
+  return (
+    <div className="pg-block-stack">
+      <Combobox
+        label="Assignee"
+        options={people}
+        filter="none"
+        loading={pending}
+        onInputChange={fetchPeople}
+        onValueChange={setAssignee}
+      />
+      <Text role="supporting" tone="muted">
+        Value: {assignee ?? "none"} — try typing an email domain.
+      </Text>
+    </div>
+  );
+}
+
+function ComboboxTagStage() {
+  const [tag, setTag] = useState<string | null>(null);
+  return (
+    <div className="pg-block-stack">
+      <Combobox
+        label="Tag"
+        options={[
+          { value: "design", label: "design" },
+          { value: "tokens", label: "tokens" },
+          { value: "accessibility", label: "accessibility" },
+        ]}
+        allowCustomValue
+        onValueChange={setTag}
+      />
+      <Text role="supporting" tone="muted">
+        Value: {tag ?? "none"}
+      </Text>
+    </div>
+  );
+}
+
+/** Three booked nights from today, as ISO strings like every other date here. */
+const BOOKED = new Set([2, 3, 9].map((days) => addDays(todayISO(), days)));
+
+/** The caller's validation: Sundays are not delivery days, typed or chosen. */
+function DeliveryDateStage() {
+  const [date, setDate] = useState<string | null>(null);
+  const sunday = date !== null && dayOfWeek(date) === 0;
+  return (
+    <div className="pg-block-stack">
+      <DatePicker
+        label="Delivery"
+        value={date}
+        onValueChange={setDate}
+        isDateUnavailable={(d) => dayOfWeek(d) === 0}
+        status={sunday ? "invalid" : "idle"}
+        message={sunday ? "We do not deliver on Sundays. Choose another day." : undefined}
+      />
+      <Text role="supporting" tone="muted">
+        Type a Sunday to see the message; the calendar refuses one.
+      </Text>
+    </div>
+  );
+}
+
+/**
+ * The refused-file case: `onReject` writes the message, Field shows it.
+ * A component for the reason `RadioStage` gives: it needs useState.
+ */
+function FileUploadRefusedStage() {
+  const [error, setError] = useState<string | undefined>(undefined);
+  return (
+    <FileUpload
+      label="Photos"
+      multiple
+      accept="image/*"
+      onValueChange={() => setError(undefined)}
+      onReject={(r) => setError(`${r[0]?.file.name} is not an image.`)}
+      status={error ? "invalid" : "idle"}
+      message={error}
+    />
+  );
+}
+
+/**
+ * Uploads in flight. The component uploads nothing (decision C11), so this
+ * stage plays the app's part with a timer: each new file's `progress` climbs
+ * to 100, and a file named with "fail" in it gets an `error` instead.
+ */
+function FileUploadInFlightStage() {
+  const [files, setFiles] = useState<PickedFile[]>([]);
+  const timers = useRef<number[]>([]);
+  useEffect(() => () => timers.current.forEach((t) => window.clearInterval(t)), []);
+
+  const startUploads = (next: PickedFile[]) => {
+    const known = new Set(files.map((f) => f.file ?? f.name));
+    const fresh = next.filter((f) => !known.has(f.file ?? f.name));
+    setFiles(next.map((f) => (fresh.includes(f) ? { ...f, progress: 0 } : f)));
+    for (const picked of fresh) {
+      const key = picked.file ?? picked.name;
+      const timer = window.setInterval(() => {
+        setFiles((current) =>
+          current.map((f) => {
+            if ((f.file ?? f.name) !== key || f.progress === undefined) return f;
+            if (/fail/i.test(f.name) && f.progress >= 40) {
+              window.clearInterval(timer);
+              return { ...f, progress: undefined, error: "Upload failed. Try again." };
+            }
+            const progress = Math.min(100, f.progress + 20);
+            if (progress === 100) window.clearInterval(timer);
+            return { ...f, progress };
+          })
+        );
+      }, 400);
+      timers.current.push(timer);
+    }
+  };
+
+  return <FileUpload label="Attachments" multiple value={files} onValueChange={startUploads} />;
+}
+
+/** A controlled range, shown as it arrives — one end null while the other is filled. */
+function ReportingPeriodStage() {
+  const [range, setRange] = useState<DateRange>({ start: null, end: null });
+  return (
+    <div className="pg-block-stack">
+      <DateRangePicker
+        label="Period"
+        startLabel="From"
+        endLabel="To"
+        max={todayISO()}
+        value={range}
+        onValueChange={setRange}
+      />
+      <Text role="supporting" tone="muted">
+        Value: {range.start ?? "null"} to {range.end ?? "null"}
+      </Text>
+    </div>
+  );
+}
+
+/** The caller's validation: typed ends are passed through, so the caller says what is wrong. */
+function BackwardsStayStage() {
+  const [range, setRange] = useState<DateRange>(() => ({
+    start: addDays(todayISO(), 7),
+    end: addDays(todayISO(), 3),
+  }));
+  const backwards = range.start !== null && range.end !== null && range.end < range.start;
+  return (
+    <div className="pg-block-stack">
+      <DateRangePicker
+        label="Stay"
+        startLabel="Check-in"
+        endLabel="Check-out"
+        value={range}
+        onValueChange={setRange}
+        status={backwards ? "invalid" : "idle"}
+        message={backwards ? "Check-out must be after check-in." : undefined}
+      />
+    </div>
+  );
 }

@@ -9,10 +9,12 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
@@ -22,7 +24,24 @@
     "state-layer",
     "icon"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/pagination.css",
+      "target": "styles/pagination.css"
+    },
+    {
+      "source": "packages/react/src/pagination.tsx",
+      "target": "components/pagination.tsx"
+    },
+    {
+      "source": "packages/primitives/src/pagination.ts",
+      "target": "lib/pagination.ts"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -31,6 +50,7 @@
         "gap between items": "space.gap.xs",
         "item min-inline-size": "size.control.md",
         "item block-size": "size.control.md",
+        "hit area, on touch": "size.target.min in both dimensions, centred on the drawn item with a ::before (the state layer owns ::after); the item itself stays size.control.md",
         "item padding-inline": "space.1",
         "item font-size": "type.control.size.md",
         "item font-weight": "type.control.weight",
@@ -63,6 +83,7 @@
     }
   },
   "behavior": {
+    "primitive": "getPaginationItems",
     "summary": "A `<nav>` landmark holding a list of links: Previous, a window of page numbers with ellipses, Next. Every page is a real `href`, and a client-side router intercepts through `onPageChange` — the same bargain TopNav and SideNav make with `onClick`. Proposed primitive: `getPaginationItems` in `packages/primitives/src/pagination.ts`, a pure function from `page` and `pageCount` to the list of items; it is a proposal, not yet a commitment.",
     "decisions": [
       {
@@ -86,6 +107,10 @@
         "why": "A page with Breadcrumbs, a TopNav and a Pagination has three navigation landmarks, and three that are all called \"navigation\" are unusable. `label` names this one. Each number link is named \"Page 4\" rather than \"4\", and the current one is marked `aria-current=\"page\"`, so a screen reader announces \"Page 4, current page\"."
       },
       {
+        "decision": "Touch target: size.target.min",
+        "why": "Owner amendment at gate 3 (docs/decisions/2026-11-gate-1-review.md): the page buttons and Previous / Next get a hit area of size.target.min, 48px, on touch — Material's minimum, which also clears Apple's 44pt and WCAG 2.5.5. It sizes where an item can be tapped, never the drawn box, which stays size.control.md so the row keeps its density. Drawn with a ::before, centred on the item, because the composed state layer owns ::after; neighbouring areas overlap across the space.gap.xs gap, and the later item takes a tap there."
+      },
+      {
         "decision": "Web and native",
         "why": "Web: `<nav aria-label>` around a `<ul>` of `<a>` elements, `aria-current=\"page\"` on the current one, `aria-disabled` on an unavailable Previous or Next. React Native has no URLs to link to, so `href` is web-only and `onPageChange` is what drives navigation; it is required there. Each item is a `Pressable` with `accessibilityRole=\"button\"` — on native, changing a page is an action rather than a link — with `accessibilityLabel` \"Page 4\" and `accessibilityState` carrying `selected` for the current page and `disabled` for an unavailable Previous or Next. The row wraps in a `View` with `accessibilityLabel` set from `label`. Rata-drawn (decision N5): there is no OS page-selector control, so each item is a drawn `Pressable`. The native implementation ships in the pro tier (decision N6)."
       }
@@ -93,8 +118,6 @@
   },
   "props": {
     "page": {
-      "type": "number",
-      "required": true,
       "summary": "The current page, counting from 1.",
       "use": [
         "Read from the URL, so the page and the address bar cannot disagree."
@@ -105,8 +128,6 @@
       "a11y": "The matching item is marked `aria-current=\"page\"`."
     },
     "pageCount": {
-      "type": "number",
-      "required": true,
       "summary": "How many pages there are.",
       "use": [
         "The real total, from the result count."
@@ -117,7 +138,6 @@
       "a11y": "With a count of 1 nothing is rendered — a landmark with nowhere to go is noise."
     },
     "href": {
-      "type": "(page: number) => string",
       "summary": "Builds the URL for a page. Web only.",
       "use": [
         "Every web use — a function of the page number that keeps the address's other query parameters intact."
@@ -128,7 +148,6 @@
       "a11y": "Makes each item a real link: middle-click, copy-link and Back all work."
     },
     "onPageChange": {
-      "type": "(page: number, event: { preventDefault(): void }) => void",
       "summary": "Called when the reader picks a page. Intercepts the link for a client-side router; required on React Native.",
       "use": [
         "Calling the router's navigate and `event.preventDefault()`, so the link stays a link but the page does not reload."
@@ -139,8 +158,6 @@
       "a11y": "Move focus to the top of the new results — usually their heading — after the page changes, or a keyboard user is left on a pagination row for content they cannot see."
     },
     "label": {
-      "type": "string",
-      "default": "\"Pagination\"",
       "summary": "Accessible name for the navigation landmark.",
       "use": [
         "Naming what is paged when a page has more than one: \"Invoice pages\"."
@@ -151,7 +168,6 @@
       "a11y": "Becomes the `<nav>`'s `aria-label`."
     },
     "className": {
-      "type": "string",
       "summary": "Extra classes, for placement.",
       "use": [
         "Aligning the row in the page's layout."

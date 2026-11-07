@@ -5,14 +5,16 @@
 
 A rule marking a change of topic within a page, or a separation between groups in a toolbar.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Divider } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `divider` |
 | Family | content |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | — |
 
 ## Behavior
@@ -27,16 +29,18 @@ An `<hr>` when horizontal, a `role="separator"` element when vertical, or an `ar
 
 ## Props
 
+Extends `Omit<HTMLAttributes<HTMLElement>, "children" | "role" | "aria-orientation" | "aria-hidden">`.
+
 | Prop | Type | Default | Summary |
 |---|---|---|---|
-| `orientation?` | `"horizontal" \| "vertical"` | `"horizontal"` | Which way the rule runs. |
+| `orientation?` | `DividerOrientation` | `"horizontal"` | Which way the rule runs. |
 | `decorative?` | `boolean` | `false` | Hides the rule from assistive tech when it marks no real change of topic. |
 | `className?` | `string` | — | Extra classes, for placement. |
 
 ### `orientation`
 
 ```ts
-orientation?: "horizontal" | "vertical" = "horizontal"
+orientation?: DividerOrientation = "horizontal"
 ```
 
 Which way the rule runs.
@@ -128,6 +132,12 @@ A rule between every row of a list.
 ```
 
 Don't. A screen reader hears "separator" between every row, and the list cannot drop the last one cleanly. The list owns its row borders — a Table, or the list's own CSS with `theme.border.default`.
+
+## Real usage in this repo
+
+```tsx
+<Divider />
+```
 
 ## Token recipe
 

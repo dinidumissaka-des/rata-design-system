@@ -5,14 +5,16 @@
 
 What a collection shows when it has nothing in it: why it is empty, and the one thing to do about it.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Emptystate } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `empty-state` |
 | Family | feedback |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | `icon` |
 
 ## Behavior
@@ -30,13 +32,15 @@ A `div` with a title, an optional description and an optional action, rendered w
 
 ## Props
 
+Extends `Omit<HTMLAttributes<HTMLDivElement>, "title" | "role" | "children">`.
+
 | Prop | Type | Default | Summary |
 |---|---|---|---|
 | `title` | `string` | — | What is empty, said plainly. |
 | `description?` | `ReactNode` | — | One or two sentences on why it is empty or what the action will do. |
 | `action?` | `ReactNode` | — | The one way out: a Button or a Link. |
 | `icon?` | `LucideIcon \| false` | — | A glyph marking the area as intentionally empty. Omit for none. |
-| `live?` | `"off" \| "polite" \| "assertive"` | `"off"` | Whether the empty state is announced when it appears. |
+| `live?` | `EmptyStateLive` | `"off"` | Whether the empty state is announced when it appears. |
 | `className?` | `string` | — | Extra classes, for placement. |
 
 ### `title`
@@ -114,7 +118,7 @@ A glyph marking the area as intentionally empty. Omit for none.
 ### `live`
 
 ```ts
-live?: "off" | "polite" | "assertive" = "off"
+live?: EmptyStateLive = "off"
 ```
 
 Whether the empty state is announced when it appears.

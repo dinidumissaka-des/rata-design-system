@@ -10,10 +10,12 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
@@ -22,7 +24,20 @@
   "dependencies": [
     "icon"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/empty-state.css",
+      "target": "styles/empty-state.css"
+    },
+    {
+      "source": "packages/react/src/empty-state.tsx",
+      "target": "components/empty-state.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -84,8 +99,6 @@
   },
   "props": {
     "title": {
-      "type": "string",
-      "required": true,
       "summary": "What is empty, said plainly.",
       "use": [
         "First use: \"No invoices yet\".",
@@ -98,7 +111,6 @@
       "a11y": "Read first, and announced on its own when `live` is set."
     },
     "description": {
-      "type": "ReactNode",
       "summary": "One or two sentences on why it is empty or what the action will do.",
       "use": [
         "What the first item will be for, or which filter is excluding everything."
@@ -108,7 +120,6 @@
       ]
     },
     "action": {
-      "type": "ReactNode",
       "summary": "The one way out: a Button or a Link.",
       "use": [
         "Create the first item; clear the search or filters."
@@ -119,7 +130,6 @@
       "a11y": "A real control, reached by Tab in reading order after the text."
     },
     "icon": {
-      "type": "LucideIcon | false",
       "summary": "A glyph marking the area as intentionally empty. Omit for none.",
       "use": [
         "An icon for the kind of thing that is missing — a file for documents, a search glyph for no results."
@@ -130,8 +140,6 @@
       "a11y": "Always `aria-hidden`; the title carries the meaning."
     },
     "live": {
-      "type": "\"off\" | \"polite\" | \"assertive\"",
-      "default": "\"off\"",
       "summary": "Whether the empty state is announced when it appears.",
       "use": [
         "`polite` for no-results after a search or filter the reader just changed."
@@ -143,7 +151,6 @@
       "a11y": "The same contract as Notice's `live`: a live region announces changes, so this matters only when the empty state arrives after the page did."
     },
     "className": {
-      "type": "string",
       "summary": "Extra classes, for placement.",
       "use": [
         "Positioning it in the space the content would fill."

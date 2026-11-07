@@ -5,19 +5,23 @@
 
 A labelled field for a start and an end date: each typed in the page's locale, or both chosen on one calendar grid.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { DateRangePicker } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `date-range-picker` |
 | Family | inputs |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | `field`, `state-layer`, `icon`, `visually-hidden` |
 
 ## Behavior
 
 Two text inputs — start and end — inside one Field, beside one button opening the same modal calendar dialog DatePicker uses, where the first day chosen is the start and the second the end. Its own contract rather than a mode of DatePicker (decision C10, docs/decisions/2026-11-gate-1-review.md), built on the same calendar-grid primitive. The value is a pair of ISO calendar dates.
+
+Headless contract: `getDateRangePickerProps` in `packages/primitives/src/date-range-picker.ts` — importable from `@rata/primitives` without the React wrapper or any CSS.
 
 - **Its own component, not a `range` prop on DatePicker** — A range changes the value's type, adds a second input with its own name, a preview between the ends, a rule about what an end before the start means, and an announcement for each end. A boolean on DatePicker would change what `value` is depending on another prop — the shape this system refuses everywhere else. The two share the calendar-grid primitive instead, so the date arithmetic, keyboard model and `aria-disabled` handling exist once (decision C10, docs/decisions/2026-11-gate-1-review.md).
 - **The value is `{ start, end }`, each an ISO calendar date or `null`** — DatePicker's reason for ISO strings applies twice over: a stay stored as two `Date`s can lose a night when a server and a browser disagree about the zone. Each end can be `null` on its own, because a reader fills one end before the other and a form needs to see that state to say what is missing. A one-day range — start equal to end — is valid.
@@ -25,10 +29,11 @@ Two text inputs — start and end — inside one Field, beside one button openin
 - **In the calendar, the first choice is the start and the second the end** — Choosing a day with no start, or with both ends set, starts a new range and clears the end; the next choice sets the end and closes the dialog. Choosing a day before the start makes that day the new start rather than an end — reordering behind the reader's back would put the cursor's meaning in the wrong place. After the start is chosen, moving focus or the pointer previews the range up to that day, and the dialog's live hint says "Choose end date".
 - **Typed ends are passed through, never silently reordered** — An end typed before the start is reported as typed: `onValueChange` fires with both values, and the caller's validation reports it through `status` and `message` — the same path a typed unavailable date takes in DatePicker. Swapping them would change a value the reader can see they did not enter.
 - **A range cannot span an unavailable day** — Once a start is chosen, every day after the next unavailable one is unavailable as an end, because a booking across a booked night is not a booking. Those days stay focusable and are announced as unavailable, so the grid's geometry does not lie — DatePicker's rule, unchanged.
-- **Each day's name says where it sits in the range** — Fill and tint are invisible to a screen reader, so the start, the end and the days between append "start date", "end date" and "in range" to their accessible name, and the chosen ends use `aria-selected`. The days between are not `aria-selected`: they were not chosen, and announcing six selected days for one choice of two ends misstates what the reader did.
+- **Each day's name says where it sits in the range** — Fill and tint are invisible to a screen reader, so the start, the end and the days between append "start date", "end date" and "in range" to their accessible name, and the chosen ends' grid cells carry `aria-selected`. The days between are not `aria-selected`: they were not chosen, and announcing six selected days for one choice of two ends misstates what the reader did.
+- **The range preview uses `theme.accent-role.ring` as-is** — The gate-2 recipe asked for the ring "at border.default", but the token is a complete 2px inset box-shadow rather than a colour, so a 1px width was not buildable without a new token. The preview draws the token unchanged on each day from the start to the focused or hovered day: still the selection stroke, still distinct from the focus ring, which is an outline (gate 3, owner decision, docs/decisions/2026-11-gate-1-review.md).
 - **Disabled is `aria-disabled` plus `readOnly`, inherited from Field** — The system rule, on both inputs and the calendar button. And the text field's consequence with it: both values still submit.
 - **Proposed primitive: `getDateRangePickerProps`, over the shared `getCalendarGridProps`** — Neither exists yet. The range primitive adds what the grid lacks — which end the next choice sets, the preview span, the unavailable-span rule and the range-position names — and delegates date arithmetic, the keyboard model and locale handling to the grid DatePicker proposes. Both work on ISO strings only.
-- **Web and native** — Web: a `role="group"` labelled by `label`, holding two text inputs with their own labels, a calendar `<button>` with a click guard, two hidden inputs carrying `startName` and `endName`, and a modal `<dialog>` holding a `<table role="grid">` whose day cells are buttons with `aria-selected` on the ends, `aria-current="date"` on today and `aria-disabled` on unavailable days. Touch, pointer and keyboard share it; only placement changes with width. React Native: the two ends are `Pressable` fields with `accessibilityRole="button"` and the formatted date as `accessibilityValue={{ text }}`, opening one calendar through the core `Modal` as a sheet. Rata-drawn, not the OS control (decision N5): iOS's date picker has no range mode and Android's range picker belongs to the Material library rather than the OS, so native draws the calendar from the same grid primitive and recipe as the web — which is also why the grid is a primitive. Typed entry, `placeholder`, `startName`, `endName` and `size` are web-only. The native implementation ships in the pro tier (decision N6).
+- **Web and native** — Web: a `role="group"` labelled by `label`, holding two text inputs with their own labels, a calendar `<button>` with a click guard, two hidden inputs carrying `startName` and `endName`, and a modal `<dialog>` holding a `<table role="grid">` whose day cells are `role="gridcell"` cells each holding a day button, with `aria-selected` on the ends' cells (ARIA does not support it on `button`), `aria-current="date"` on today and `aria-disabled` on unavailable days. Touch, pointer and keyboard share it; only placement changes with width. React Native: the two ends are `Pressable` fields with `accessibilityRole="button"` and the formatted date as `accessibilityValue={{ text }}`, opening one calendar through the core `Modal` as a sheet. Rata-drawn, not the OS control (decision N5): iOS's date picker has no range mode and Android's range picker belongs to the Material library rather than the OS, so native draws the calendar from the same grid primitive and recipe as the web — which is also why the grid is a primitive. Typed entry, `placeholder`, `startName`, `endName` and `size` are web-only. The native implementation ships in the pro tier (decision N6).
 
 ## Props
 
@@ -48,7 +53,7 @@ Two text inputs — start and end — inside one Field, beside one button openin
 | `placeholder?` | `string` | — | Shown in each empty input. Defaults to the expected format for the page locale. |
 | `startName?` | `string` | — | Form field name for the start. Submits the ISO date, not the displayed text. |
 | `endName?` | `string` | — | Form field name for the end. Submits the ISO date. |
-| `size?` | `"sm" \| "md" \| "lg"` | `"md"` | Control height and inline padding. Text size does not change with it. |
+| `size?` | `DateRangePickerSize` | `"md"` | Control height and inline padding. Text size does not change with it. |
 | `labelHidden?` | `boolean` | `false` | Takes the label off screen while leaving it in the accessibility tree. |
 | `id?` | `string` | — | Stable id for the range field, when something outside needs to point at it. |
 | `status?` | `FieldStatus` | `"idle"` | Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring. |
@@ -145,6 +150,8 @@ onValueChange?: (value: DateRange) => void
 
 Fires with both ends whenever either changes: a day chosen in the calendar, or typed text that parses on blur or Enter.
 
+Source doc: Fires with both ends whenever either changes.
+
 **Use when**
 
 - Validating the pair — an end before the start, a range too long — and setting `status`.
@@ -187,6 +194,8 @@ isDateUnavailable?: (date: string) => boolean
 
 Marks individual dates unchoosable — weekends, holidays, fully booked days.
 
+Source doc: Marks individual dates unchoosable. Runs for every visible day; precompute a set.
+
 **Use when**
 
 - Availability that `min` and `max` cannot express.
@@ -206,6 +215,8 @@ firstDayOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6
 
 Which weekday starts each row of the calendar, 0 being Sunday. Defaults to the page locale's.
 
+Source doc: Which weekday starts each row, 0 being Sunday. Defaults to the page locale's.
+
 **Use when**
 
 - A product whose week is a business rule rather than a locale convention.
@@ -221,6 +232,8 @@ calendarLabel?: string = "Choose dates"
 ```
 
 Accessible name for the button that opens the calendar.
+
+Source doc: Accessible name for the calendar button. The chosen range is appended to it.
 
 **Use when**
 
@@ -256,6 +269,8 @@ startName?: string
 
 Form field name for the start. Submits the ISO date, not the displayed text.
 
+Source doc: Form field name for the start. Submits the ISO date.
+
 **Use when**
 
 - A native form post: `startName="checkin"`.
@@ -277,7 +292,7 @@ Form field name for the end. Submits the ISO date.
 ### `size`
 
 ```ts
-size?: "sm" | "md" | "lg" = "md"
+size?: DateRangePickerSize = "md"
 ```
 
 Control height and inline padding. Text size does not change with it.
@@ -312,6 +327,8 @@ id?: string
 
 Stable id for the range field, when something outside needs to point at it.
 
+Source doc: Stable id for the range field. Defaults to a generated one.
+
 **Use when**
 
 - A form library that addresses fields by id, or an error summary linking to the field it names.
@@ -327,6 +344,8 @@ status?: FieldStatus = "idle"
 ```
 
 Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.
+
+Source doc: Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.
 
 **Use when**
 
@@ -364,6 +383,8 @@ message?: ReactNode
 
 The status-dependent line: the error, the confirmation, or the in-flight note.
 
+Source doc: Status-dependent message under the control.
+
 **Use when**
 
 - What to do about an `invalid` status, in the imperative.
@@ -382,6 +403,8 @@ required?: boolean = false
 
 Marks both ends required, in the label and to assistive technology.
 
+Source doc: Marks both ends required to assistive technology and in the label.
+
 **Use when**
 
 - Fields that genuinely block submission.
@@ -399,6 +422,8 @@ disabled?: boolean = false
 ```
 
 Blocks typing and opening the calendar while keeping both inputs focusable, readable and announced.
+
+Source doc: Blocks typing and opening the calendar while keeping both inputs focusable and announced.
 
 **Use when**
 
@@ -485,6 +510,19 @@ One date, such as a delivery day.
 ```
 
 A single date is DatePicker. A range picker with equal ends is a valid value, but asking for two inputs to get one date is the wrong question.
+
+## Real usage in this repo
+
+```tsx
+<DateRangePicker
+        label="Period"
+        startLabel="From"
+        endLabel="To"
+        max={todayISO()}
+        value={range}
+        onValueChange={setRange}
+      />
+```
 
 ## Token recipe
 
@@ -583,4 +621,4 @@ One day, DatePicker's, plus the three range states. The ends are the filled acce
 | in-range background | `theme.accent-role.subtle` |
 | in-range colour | `theme.fg.primary — verified at AA-text on theme.accent-role.subtle` |
 | in-range border-radius | `radius.none, so consecutive days join into one band; the start and end keep radius.pill on their outer side` |
-| preview (start chosen, end not yet) | `theme.accent-role.ring at border.default as an inset stroke from the start to the focused or hovered day — a selection stroke, distinct from the focus ring` |
+| preview (start chosen, end not yet) | `theme.accent-role.ring as-is (2px) — a complete inset stroke on each day from the start to the focused or hovered day; a selection stroke, distinct from the focus ring` |

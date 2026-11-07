@@ -1,0 +1,88 @@
+/* Pagination — links to the pages of a long, ordered result set.
+   Gate-2 recipe (base / current / unavailable / ellipsis),
+   registry/components/pagination.json.
+
+   Built from the same parts as a SideNav row — control size, control type, the
+   state layer and the current tint — so a page link reads as navigation and
+   not as a button. A <nav> around a <ul> of links: the structure does the
+   accessible work, and the bullets are not part of it. */
+.rata-pagination-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rata-space-gap-xs);
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+  list-style: none;
+  font-family: var(--rata-font-family-sans);
+}
+
+.rata-pagination-list > li {
+  display: flex;
+}
+
+/* base — one control-sized target per page. Tabular figures, so the row does
+   not shift width as the current page moves from 9 to 10. */
+.rata-pagination-item {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: var(--rata-size-control-md);
+  block-size: var(--rata-size-control-md);
+  padding-inline: var(--rata-space-1);
+  border-radius: var(--rata-radius-element);
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-control-size-md);
+  font-weight: var(--rata-type-control-weight);
+  font-variant-numeric: tabular-nums;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* hit area — on touch, at least size.target.min in both dimensions, centred
+   on the drawn item, which keeps its size.control.md box. A ::before, because
+   the composed state layer owns ::after. Neighbouring areas overlap across
+   the space.gap.xs gap; the later item takes a tap that lands in the overlap. */
+@media (pointer: coarse) {
+  .rata-pagination-item::before {
+    content: "";
+    position: absolute;
+    /* Each side reaches out by half the shortfall, or not at all once the
+       item is already that big — centred in either writing direction. */
+    inset-block: min(var(--rata-space-0), calc((100% - var(--rata-size-target-min)) / 2));
+    inset-inline: min(var(--rata-space-0), calc((100% - var(--rata-size-target-min)) / 2));
+  }
+}
+
+.rata-pagination-item:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* current — SideNav's tinted row. The role's subtle step under
+   theme.fg.primary is a verified text pairing; the saturated fill is not
+   used. aria-current carries it for assistive technology. */
+.rata-pagination-item[aria-current="page"] {
+  background: var(--rata-theme-accent-role-subtle);
+  color: var(--rata-theme-fg-primary);
+}
+
+/* unavailable — Previous on the first page, Next on the last. Still present
+   and announced; the state layer already stands down on aria-disabled. */
+.rata-pagination-item[aria-disabled="true"] {
+  opacity: var(--rata-state-disabled-opacity);
+  cursor: default;
+}
+
+/* ellipsis — punctuation in the gap, not a control. Same box as an item so
+   the row keeps its rhythm. */
+.rata-pagination-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: var(--rata-size-control-md);
+  block-size: var(--rata-size-control-md);
+  color: var(--rata-theme-fg-muted);
+  font-size: var(--rata-type-control-size-md);
+}

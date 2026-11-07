@@ -5,14 +5,16 @@
 
 A labelled bar showing how much of a task with a known end is done.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Progress } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `progress` |
 | Family | loading |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | — |
 
 ## Behavior
@@ -30,6 +32,8 @@ A `role="progressbar"` element with `aria-valuenow`, `aria-valuemin`, `aria-valu
 - **Web and native** — Web: a `div` with `role="progressbar"`, `aria-valuenow`, `aria-valuemin="0"`, `aria-valuemax`, `aria-valuetext` when `valueText` is passed, and `aria-labelledby` pointing at the visible label. In forced-colors mode the fill takes the system `Highlight` colour so it stays visible. React Native: a `View` with `accessibilityRole="progressbar"` and `accessibilityValue={{ min: 0, max, now: value, text: valueText }}`, labelled by `accessibilityLabel`. All props work on both; the fill transition is skipped on native when the OS reduce-motion setting is on. Rata-drawn, not the OS progress control (decision N5): React Native core no longer ships one on either platform, and a drawn `View` takes the same tokens as the web bar. The native implementation ships in the pro tier (decision N6).
 
 ## Props
+
+Extends `Omit<HTMLAttributes<HTMLDivElement>, ProgressOwnedAttribute>`.
 
 | Prop | Type | Default | Summary |
 |---|---|---|---|
@@ -148,6 +152,18 @@ A request whose duration nobody knows.
 ```
 
 Don't. A value that is not real is a spinner pretending to know something — use `<Spinner label="Loading invoices" />`. Equally, storage used out of a quota is a meter, not progress.
+
+## Real usage in this repo
+
+```tsx
+<Progress
+        label="Uploading assets"
+        value={3}
+        max={7}
+        valueText="3 of 7 files"
+        className="pg-wide-specimen"
+      />
+```
 
 ## Token recipe
 

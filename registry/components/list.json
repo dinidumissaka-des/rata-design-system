@@ -11,10 +11,12 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
@@ -23,7 +25,20 @@
   "dependencies": [
     "list-item"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/list.css",
+      "target": "styles/list.css"
+    },
+    {
+      "source": "packages/react/src/list.tsx",
+      "target": "components/list.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -32,7 +47,7 @@
         "background": "inherited — the list takes the surface it is placed on, which is what lets it sit edge-to-edge in a page or inside a Sheet",
         "margin": "space.0",
         "padding-inline": "space.0 — rows fill the width, for the reason SideNav's rows do: the whole row is the target",
-        "padding-block": "focus.ring-width plus focus.ring-offset — just enough that the first and last rows' focus rings are not clipped when the list is a scroll container, the device Tabs uses for the same problem",
+        "padding-block": "space.0 — the recipe padded the block edges by focus.ring-width plus focus.ring-offset so the first and last rows' rings survived a scroll container; a row's ring is now drawn inside the row (gate 3, owner decision), so there is nothing to make room for, and padding would stop the first and last rows' state layers short of an inset list's corners",
         "list-style": "none, with role=\"list\" restored — see the web and native decision"
       }
     },
@@ -42,7 +57,7 @@
         "background": "theme.bg.surface",
         "border": "border.default solid theme.border.default",
         "border-radius": "radius.container",
-        "overflow": "clip, so the first and last rows' state layers take the container's corners — with the padding-block above, so the rings still fit inside"
+        "overflow": "clip, so the first and last rows' state layers take the container's corners — a row's focus ring is drawn inside the row, so the clip never cuts it"
       }
     }
   },
@@ -80,13 +95,15 @@
       {
         "decision": "Web and native",
         "why": "On the web it renders `<ul role=\"list\">`, named by `aria-label` or `aria-labelledby` when given one. The explicit role is load-bearing: Safari removes list semantics from a list styled `list-style: none`, which is every list here, and without it VoiceOver stops announcing 'list, 12 items'. On React Native it renders a `View` with `accessibilityRole=\"list\"` for short static lists. A long native list should be a `FlatList` — virtualization is not optional at a few hundred rows on a phone — so the native package is expected to take `data` and `renderItem` where the web takes `children`; that divergence is an open question for the native package's own gate 1. `className` is web-only. Swipe actions live on ListItem, and this component has no gesture of its own. Rata-drawn rows inside the core list views (decision N5): `View` or `FlatList` supplies the scrolling and the list semantics, and no OS table or list styling (UITableView, RecyclerView) is used. The native implementation ships in the pro tier (decision N6)."
+      },
+      {
+        "decision": "A row's focus ring is drawn inside the row, so the list needs no block padding",
+        "why": "Decided at gate 3, owner decision, docs/decisions/2026-11-gate-1-review.md. ListItem draws its ring with a negative offset of focus.ring-offset plus focus.ring-width, so it never reaches the list's edges and neither a scroll container nor the inset appearance's `overflow: clip` can cut it. That removes the only reason for the block padding the gate-2 recipe gave the list, and the padding is space.0: kept, it would also stop the first and last rows' state layers short of an inset list's rounded corners, which the clip exists to give them."
       }
     ]
   },
   "props": {
     "children": {
-      "type": "ReactNode",
-      "required": true,
       "summary": "The rows: ListItem elements, in reading order.",
       "use": [
         "ListItems, and nothing else at the top level."
@@ -97,7 +114,6 @@
       "a11y": "Each ListItem is an `<li>`, so the list's item count is the number of rows a reader hears announced."
     },
     "label": {
-      "type": "string",
       "summary": "Accessible name for the list, when no visible heading names it.",
       "use": [
         "A list with no heading above it whose purpose is not obvious from its rows."
@@ -111,7 +127,6 @@
       "a11y": "Becomes `aria-label` on the `<ul>`."
     },
     "labelledBy": {
-      "type": "string",
       "summary": "Id of a visible element — usually the Heading above the list — that names it.",
       "use": [
         "Every list with a heading directly above it."
@@ -125,8 +140,6 @@
       "a11y": "Becomes `aria-labelledby` on the `<ul>`."
     },
     "dividers": {
-      "type": "boolean",
-      "default": "true",
       "summary": "Whether a rule is drawn between rows.",
       "use": [
         "`false` for a short list of tall rows — each with an avatar and two lines — whose height already separates them."
@@ -136,8 +149,6 @@
       ]
     },
     "appearance": {
-      "type": "\"plain\" | \"inset\"",
-      "default": "\"plain\"",
       "summary": "Edge-to-edge on the page's own surface, or grouped on a rounded surface inside the gutter.",
       "use": [
         "`inset` for a settings screen, where each list is a group of related options under a heading."
@@ -148,7 +159,6 @@
       "a11y": "Visual only."
     },
     "className": {
-      "type": "string",
       "summary": "Extra classes on the `<ul>`, for placement — not for restyling it.",
       "use": [
         "The margin the page wants around the list."

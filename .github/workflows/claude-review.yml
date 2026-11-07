@@ -1,0 +1,103 @@
+name: Claude review
+
+# Claude reviews every non-draft PR from a branch in this repository, posts its
+# findings, and returns a verdict. A deterministic step then decides what
+# happens to the PR — the model never runs a merge command itself:
+#
+#   approve          → GitHub auto-merge is enabled (merge commit). GitHub
+#                      merges only once every required status check passes,
+#                      so CI still has the last word.
+#   request_changes  → auto-merge stays off and the PR waits for a human.
+#
+# Auto-merge is switched OFF at the start of every run, so an approval of an
+# earlier push can never carry over to a later one that has not been reviewed.
+#
+# Setup (once, in GitHub — see .github/CLAUDE-REVIEW.md):
+#   1. Secret CLAUDE_CODE_OAUTH_TOKEN, from `claude setup-token`.
+#   2. Settings → General → "Allow auto-merge".
+#   3. A branch protection rule on main requiring the `build` (CI) and
+#      `review` (this workflow) checks. Without it, auto-merge would merge
+#      immediately instead of waiting for CI.
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review, reopened]
+
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    # Drafts are not ready for review, and PRs from forks get no secrets.
+    if: >-
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write # gh pr merge --auto
+      pull-requests: write # review comments, auto-merge
+      issues: write
+      id-token: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PR_URL: ${{ github.event.pull_request.html_url }}
+    steps:
+      - name: Turn auto-merge off until this push is reviewed
+        run: gh pr merge "$PR_URL" --disable-auto || true
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            You are reviewing a pull request to the Rata design system. Read
+            CLAUDE.md first: it is the standard this PR is held to.
+
+            Review the diff (`gh pr diff ${{ github.event.pull_request.number }}`)
+            for:
+            - Correctness bugs and accessibility regressions.
+            - The gated build order: no component CSS/React for a component
+              whose primitive and per-state token mapping were not approved
+              (see registry/components/<name>.json and docs/decisions/).
+            - Token discipline: no hex/px literals, no palette tokens in
+              components, no hand-written :hover feedback instead of
+              .rata-state-layer, focus via theme.focus-ring on :focus-visible,
+              aria-disabled rather than disabled.
+            - Contracts: props documented in the manifest, no restated
+              type/default for implemented components, generated docs updated.
+            - Commits or files that should not be there (secrets, build output,
+              worktrees, lockfile churn unrelated to the change).
+
+            Do not re-run the CI checks; CI runs them separately. Do not push
+            commits or change files.
+
+            Post inline comments for specific lines with
+            mcp__github_inline_comment__create_inline_comment, then exactly one
+            summary comment with `gh pr comment` that starts with
+            "**Claude review: approve**" or "**Claude review: changes requested**".
+
+            Verdict: "approve" only if you found nothing that must change
+            before merge. Style nits and optional suggestions do not block.
+            Anything you are unsure is safe to merge is "request_changes".
+          claude_args: >-
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
+            --json-schema '{"type":"object","properties":{"verdict":{"type":"string","enum":["approve","request_changes"]},"summary":{"type":"string"}},"required":["verdict","summary"]}'
+
+      - name: Enable auto-merge on approval
+        if: fromJSON(steps.claude.outputs.structured_output).verdict == 'approve'
+        run: gh pr merge "$PR_URL" --auto --merge
+
+      - name: Leave the PR for a human
+        if: fromJSON(steps.claude.outputs.structured_output).verdict != 'approve'
+        run: |
+          echo "Claude requested changes; auto-merge stays off."
+          exit 1

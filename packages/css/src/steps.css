@@ -1,0 +1,243 @@
+/* Steps — where the reader is in a linear multi-step flow.
+   Gate-2 recipe (base / marker / current / navigable),
+   registry/components/steps.json.
+
+   An <ol> of steps; each step is a marker beside its label, with an optional
+   description under the label. Reached steps are buttons when the indicator
+   is navigable. Every step carries the navigable padding (space.1), button or
+   not, so markers line up whichever steps are controls. */
+.rata-steps {
+  position: relative;
+  font-family: var(--rata-font-family-sans);
+}
+
+.rata-steps-list {
+  display: flex;
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+  list-style: none;
+}
+
+/* base — a step: marker in the first column, label centred on it, the
+   description under the label with no gap of its own (line-height leading
+   already separates them). */
+.rata-steps-step {
+  box-sizing: border-box;
+  display: inline-grid;
+  grid-template-columns: auto auto;
+  column-gap: var(--rata-space-gap-sm);
+  row-gap: var(--rata-space-0);
+  align-items: center;
+  flex: none;
+  padding: var(--rata-space-1);
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-control-size-sm);
+  text-align: start;
+}
+
+.rata-steps-label {
+  grid-column: 2;
+  grid-row: 1;
+  color: var(--rata-theme-fg-secondary);
+}
+
+.rata-steps-description {
+  grid-column: 2;
+  grid-row: 2;
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-supporting-size);
+}
+
+/* marker — upcoming by default. Sized from the icon scale: it holds a glyph. */
+.rata-steps-marker {
+  box-sizing: border-box;
+  grid-column: 1;
+  grid-row: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--rata-size-icon-lg);
+  block-size: var(--rata-size-icon-lg);
+  border: var(--rata-border-default) solid var(--rata-theme-border-strong);
+  border-radius: var(--rata-radius-pill);
+  background: var(--rata-theme-bg-surface);
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-control-size-sm);
+  font-weight: var(--rata-type-control-weight);
+  font-variant-numeric: tabular-nums;
+}
+
+/* current — the ring on the marker, the label's tone and weight, and
+   aria-current: never colour alone. */
+.rata-steps-item[aria-current="step"] .rata-steps-marker {
+  border: var(--rata-border-2) solid var(--rata-theme-accent-role-bg);
+  color: var(--rata-theme-accent-role-fg);
+}
+
+.rata-steps-item[aria-current="step"] .rata-steps-label {
+  color: var(--rata-theme-fg-primary);
+  font-weight: var(--rata-type-control-weight);
+}
+
+/* complete — the accent fill, and on it only theme.fg.on-accent. */
+.rata-steps-item[data-status="complete"] .rata-steps-marker {
+  border-color: var(--rata-theme-accent-role-bg);
+  background: var(--rata-theme-accent-role-bg);
+  color: var(--rata-theme-fg-on-accent);
+}
+
+/* invalid — the danger fill with the role's own label token. Never
+   on-accent: it inverts in dark while the status fill does not. Last, so a
+   current step that is also invalid shows the danger marker. */
+.rata-steps-item[data-status="invalid"] .rata-steps-marker {
+  border-color: var(--rata-theme-danger-role-bg);
+  background: var(--rata-theme-danger-role-bg);
+  color: var(--rata-theme-danger-role-on);
+}
+
+/* navigable — the whole step, marker and label, is one button. Hover and
+   press come from the composed state layer. */
+.rata-steps-step--navigable {
+  margin: var(--rata-space-0);
+  border: none;
+  border-radius: var(--rata-radius-inner);
+  background: transparent;
+  font-family: inherit;
+  line-height: inherit;
+  cursor: pointer;
+}
+
+.rata-steps-step--navigable .rata-steps-label {
+  color: var(--rata-theme-fg-primary);
+}
+
+.rata-steps-step--navigable:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* horizontal — one row. Every step after the first grows, and its leading
+   connector takes the growth, so the row spans its container. The connector
+   sits on the marker's centre line, inset space.gap.xs from each marker. */
+.rata-steps--horizontal .rata-steps-list {
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+
+.rata-steps--horizontal .rata-steps-item {
+  display: flex;
+  align-items: flex-start;
+  flex: none;
+}
+
+.rata-steps--horizontal .rata-steps-item + .rata-steps-item {
+  flex: 1 0 auto;
+}
+
+.rata-steps--horizontal .rata-steps-item + .rata-steps-item::before {
+  content: "";
+  flex: 1 1 var(--rata-space-0);
+  /* Not in the recipe: without a floor the connector reaches zero length at
+     the row's natural width, which is exactly the width the row is measured
+     at — so a row that just fits would draw no connectors at all. */
+  min-inline-size: var(--rata-space-gap-lg);
+  block-size: var(--rata-border-2);
+  margin-block-start: calc(var(--rata-space-1) + (var(--rata-size-icon-lg) - var(--rata-border-2)) / 2);
+  margin-inline: var(--rata-space-gap-xs);
+  background: var(--rata-theme-border-strong);
+}
+
+.rata-steps--horizontal .rata-steps-item[data-status="complete"] + .rata-steps-item::before {
+  background: var(--rata-theme-accent-role-bg);
+}
+
+/* vertical — one column, space.stack.md between steps; each step but the
+   last draws its connector down from its marker to the next one. */
+.rata-steps--vertical .rata-steps-list {
+  flex-direction: column;
+  gap: var(--rata-space-stack-md);
+}
+
+.rata-steps--vertical .rata-steps-item {
+  position: relative;
+}
+
+.rata-steps--vertical .rata-steps-item:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: calc(var(--rata-space-1) + (var(--rata-size-icon-lg) - var(--rata-border-2)) / 2);
+  inset-block-start: calc(var(--rata-space-1) + var(--rata-size-icon-lg) + var(--rata-space-gap-xs));
+  inset-block-end: calc(var(--rata-space-gap-xs) - var(--rata-space-stack-md) - var(--rata-space-1));
+  inline-size: var(--rata-border-2);
+  background: var(--rata-theme-border-strong);
+}
+
+.rata-steps--vertical .rata-steps-item[data-status="complete"]::before {
+  background: var(--rata-theme-accent-role-bg);
+}
+
+/* The visible full row is contained in the inline axis, so it never forces
+   its container wider: the root's intrinsic widths come from the yardstick
+   below instead. Only in the full form — compact has one step, and must be
+   sized by it. */
+.rata-steps--horizontal:not([data-compact]) .rata-steps-row > .rata-steps-list {
+  contain: inline-size;
+}
+
+/* The yardstick: every step of the full row laid out at its natural width
+   (wrapping, so no step is squeezed), in a zero-height clipped box. The sum of
+   their widths is the row's natural width whatever the container is — and
+   whichever form is showing. It also hands the root its intrinsic sizes: the
+   whole row as max-content, the widest step as min-content. Never painted,
+   never announced. */
+.rata-steps-measure {
+  block-size: var(--rata-space-0);
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.rata-steps-measure > .rata-steps-list {
+  flex-wrap: wrap;
+}
+
+.rata-steps-measure > .rata-steps-list > .rata-steps-item,
+.rata-steps-measure > .rata-steps-list > .rata-steps-item + .rata-steps-item {
+  flex: none;
+}
+
+/* compact — the horizontal row did not fit: the current step's marker and
+   label, then "Step 2 of 4". The other steps and the descriptions are clipped,
+   not removed, so the list is still announced whole; a clipped step that
+   takes focus is shown again so the focus ring is never on nothing. */
+.rata-steps[data-compact] > .rata-steps-row {
+  display: flex;
+  align-items: center;
+  gap: var(--rata-space-gap-sm);
+}
+
+.rata-steps[data-compact] > .rata-steps-row .rata-steps-item,
+.rata-steps[data-compact] > .rata-steps-row .rata-steps-item + .rata-steps-item {
+  flex: none;
+}
+
+.rata-steps[data-compact] > .rata-steps-row .rata-steps-item::before {
+  content: none;
+}
+
+.rata-steps[data-compact] > .rata-steps-row .rata-steps-item:not([aria-current="step"]):not(:focus-within),
+.rata-steps[data-compact] > .rata-steps-row .rata-steps-description {
+  position: absolute;
+  inline-size: var(--rata-border-1);
+  block-size: var(--rata-border-1);
+  margin: calc(-1 * var(--rata-border-1));
+  padding: var(--rata-space-0);
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.rata-steps-summary {
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-supporting-size);
+}

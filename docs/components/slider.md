@@ -5,19 +5,23 @@
 
 Choose a value, or a range of two, along a bounded track.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Slider } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `slider` |
 | Family | inputs |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | `field`, `state-layer` |
 
 ## Behavior
 
 One or two native range inputs over a drawn track, composed with Field for the label and helper text. APG Slider and Multi-Thumb Slider, with the platform supplying the keyboard model and the touch-screen-reader gestures a scripted slider cannot receive.
+
+Headless contract: `getSliderProps` in `packages/primitives/src/slider.ts` — importable from `@rata/primitives` without the React wrapper or any CSS.
 
 - **It is built on native `<input type="range">`, one per thumb, not a `div role="slider"`** — The APG Slider and Multi-Thumb Slider patterns describe `role="slider"` on any element, and both are satisfied by a native range input, which brings things a div cannot: iOS VoiceOver's swipe-to-adjust, which fires no key events and so never reaches a scripted slider; form participation; and the platform's keyboard model including Home, End and PageUp/PageDown. A range is two inputs sharing a track, each its own tab stop with its own name — which is what the multi-thumb pattern asks for anyway.
 - **The native input is the hit surface; the track and thumb are drawn** — A range input's thumb is a pseudo-element, styled differently in every engine and unable to carry a class. So the input is laid over the drawn track at full size and transparent, receiving every pointer, touch and key event, while the visible thumb is a real element positioned from the value. The hit area is the input's block-size, size.control.sm, independent of the drawn thumb's size — 2.5.8's target minimum met without a thumb that looks swollen.
@@ -272,6 +276,8 @@ id?: string
 ```
 
 Stable id for the slider, when something outside needs to point at it.
+
+Source doc: Stable id for the slider. Defaults to a generated one.
 
 **Use when**
 

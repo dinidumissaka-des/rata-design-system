@@ -31,6 +31,7 @@ export {
   Plus,
   Minus,
   Trash2,
+  Archive,
   Pencil,
   Copy,
   Download,
@@ -78,6 +79,12 @@ export {
   User,
   Calendar,
   Star,
+  // A chosen file's row in FileUpload.
+  File,
+
+  // ── Empty states: the kind of thing that is missing (EmptyState's `icon`)
+  FileText,
+  SearchX,
 
   // ── Foundations. One per token category, for the Foundation overview: a
   // category has no live specimen to show the way a component does, so the

@@ -20,38 +20,38 @@ this path is the honest answer to when it last actually moved.
 |---|---|---|---|---|
 | [avatar](../docs/components/avatar.md) | `@rata/react` | content | latest / latest / future | free |
 | [badge](../docs/components/badge.md) | `@rata/react` | content | latest / latest / future | free |
-| [bottom-nav](../docs/components/bottom-nav.md) | `@rata/react` | navigation | future / future / future | free |
+| [bottom-nav](../docs/components/bottom-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [breadcrumbs](../docs/components/breadcrumbs.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [button](../docs/components/button.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [button-group](../docs/components/button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [card](../docs/components/card.md) | `@rata/react` | content | latest / latest / future | free |
 | [checkbox](../docs/components/checkbox.md) | `@rata/react` | inputs | latest / latest / future | free |
-| [chip](../docs/components/chip.md) | `@rata/react` | inputs | future / future / future | free |
-| [combobox](../docs/components/combobox.md) | `@rata/react` | inputs | future / future / future | free |
-| [date-picker](../docs/components/date-picker.md) | `@rata/react` | inputs | future / future / future | free |
-| [date-range-picker](../docs/components/date-range-picker.md) | `@rata/react` | inputs | future / future / future | free |
+| [chip](../docs/components/chip.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [combobox](../docs/components/combobox.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [date-picker](../docs/components/date-picker.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [date-range-picker](../docs/components/date-range-picker.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [dialog](../docs/components/dialog.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [disclosure](../docs/components/disclosure.md) | `@rata/react` | content | latest / latest / future | free |
-| [divider](../docs/components/divider.md) | `@rata/react` | content | future / future / future | free |
-| [empty-state](../docs/components/empty-state.md) | `@rata/react` | feedback | future / future / future | free |
-| [fab](../docs/components/fab.md) | `@rata/react` | buttons | future / future / future | free |
+| [divider](../docs/components/divider.md) | `@rata/react` | content | latest / latest / future | free |
+| [empty-state](../docs/components/empty-state.md) | `@rata/react` | feedback | latest / latest / future | free |
+| [fab](../docs/components/fab.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [field](../docs/components/field.md) | `@rata/react` | inputs | latest / latest / future | free |
-| [file-upload](../docs/components/file-upload.md) | `@rata/react` | inputs | future / future / future | free |
+| [file-upload](../docs/components/file-upload.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [heading](../docs/components/heading.md) | `@rata/react` | content | latest / latest / future | free |
 | [icon](../docs/components/icon.md) | `@rata/react` | content | latest / latest / future | free |
 | [link](../docs/components/link.md) | `@rata/react` | navigation | latest / latest / future | free |
-| [list](../docs/components/list.md) | `@rata/react` | content | future / future / future | free |
-| [list-item](../docs/components/list-item.md) | `@rata/react` | content | future / future / future | free |
+| [list](../docs/components/list.md) | `@rata/react` | content | latest / latest / future | free |
+| [list-item](../docs/components/list-item.md) | `@rata/react` | content | latest / latest / future | free |
 | [menu](../docs/components/menu.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [menu-item](../docs/components/menu-item.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [mobile-nav](../docs/components/mobile-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [notice](../docs/components/notice.md) | `@rata/react` | feedback | latest / latest / future | free |
-| [number-field](../docs/components/number-field.md) | `@rata/react` | inputs | future / future / future | free |
-| [pagination](../docs/components/pagination.md) | `@rata/react` | navigation | future / future / future | free |
+| [number-field](../docs/components/number-field.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [pagination](../docs/components/pagination.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [panel](../docs/components/panel.md) | `@rata/react` | content | latest / latest / future | free |
-| [pin-input](../docs/components/pin-input.md) | `@rata/react` | inputs | future / future / future | free |
+| [pin-input](../docs/components/pin-input.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [popover](../docs/components/popover.md) | `@rata/react` | overlays | latest / latest / future | free |
-| [progress](../docs/components/progress.md) | `@rata/react` | loading | future / future / future | free |
+| [progress](../docs/components/progress.md) | `@rata/react` | loading | latest / latest / future | free |
 | [radio](../docs/components/radio.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [radio-group](../docs/components/radio-group.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [search](../docs/components/search.md) | `@rata/react` | inputs | latest / latest / future | free |
@@ -59,21 +59,21 @@ this path is the honest answer to when it last actually moved.
 | [select](../docs/components/select.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [sheet](../docs/components/sheet.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [side-nav](../docs/components/side-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
-| [skeleton](../docs/components/skeleton.md) | `@rata/react` | loading | future / future / future | free |
-| [slider](../docs/components/slider.md) | `@rata/react` | inputs | future / future / future | free |
+| [skeleton](../docs/components/skeleton.md) | `@rata/react` | loading | latest / latest / future | free |
+| [slider](../docs/components/slider.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [spinner](../docs/components/spinner.md) | `@rata/react` | loading | latest / latest / future | free |
 | [state-layer](../docs/components/state-layer.md) | `@rata/react` | foundations | latest / na / future | free |
-| [steps](../docs/components/steps.md) | `@rata/react` | navigation | future / future / future | free |
+| [steps](../docs/components/steps.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [switch](../docs/components/switch.md) | `@rata/react` | inputs | latest / latest / future | free |
-| [table](../docs/components/table.md) | `@rata/react` | content | future / future / future | free |
+| [table](../docs/components/table.md) | `@rata/react` | content | latest / latest / future | free |
 | [tabs](../docs/components/tabs.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [text](../docs/components/text.md) | `@rata/react` | content | latest / latest / future | free |
 | [text-field](../docs/components/text-field.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [textarea](../docs/components/textarea.md) | `@rata/react` | inputs | latest / latest / future | free |
-| [toast](../docs/components/toast.md) | `@rata/react` | feedback | future / future / future | free |
+| [toast](../docs/components/toast.md) | `@rata/react` | feedback | latest / latest / future | free |
 | [toggle-button](../docs/components/toggle-button.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [toggle-button-group](../docs/components/toggle-button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
-| [tooltip](../docs/components/tooltip.md) | `@rata/react` | overlays | future / future / future | free |
+| [tooltip](../docs/components/tooltip.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [top-nav](../docs/components/top-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [visually-hidden](../docs/components/visually-hidden.md) | `@rata/react` | foundations | latest / na / na | free |
 
@@ -118,9 +118,18 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/badge.md](../docs/components/badge.md)
 
-### Bottom Nav
+### Bottom Nav (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `items: BottomNavItem[]`
+  The destinations, in the order they are read.
+- `label?: string` — default: `"Main"`
+  Accessible name for the navigation landmark.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<BottomNav items={BOTTOM_NAV_SECTIONS} />
+```
 
 Contract: [docs/components/bottom-nav.md](../docs/components/bottom-nav.md)
 
@@ -249,27 +258,195 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/checkbox.md](../docs/components/checkbox.md)
 
-### Chip
+### Chip (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `children: string`
+  The value, as text.
+- `onRemove: () => void`
+  Called when the reader removes the value — by pressing the button, or by Backspace or Delete while it has focus.
+- `removeLabel?: string` — default: ``Remove ${children}``
+  The remove button's full accessible name.
+- `icon?: LucideIcon`
+  A glyph before the text that says what kind of value it is.
+- `disabled?: boolean` — default: `false`
+  Blocks removal while keeping the button focusable and announced.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Chip onRemove={() => remove(i)}>{name}</Chip>
+```
 
 Contract: [docs/components/chip.md](../docs/components/chip.md)
 
-### Combobox
+### Combobox (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `label: ReactNode`
+  The control's name. Always required — `labelHidden` hides it, nothing removes it.
+- `options: ComboboxOption[]`
+  The choices, in the order they are read.
+- `value?: string | null`
+  Controls the chosen option's `value` from outside. `null` means nothing is chosen.
+- `defaultValue?: string | null` — default: `null`
+  The starting choice when the component owns the state.
+- `onValueChange?: (value: string | null) => void`
+  Fires with the chosen option's value when a choice is committed.
+- `onInputChange?: (text: string) => void`
+  Fires with the text in the box on every edit.
+- `filter?: ComboboxFilter` — default: `"contains"`
+  How typed text narrows `options` locally.
+- `allowCustomValue?: boolean` — default: `false`
+  Accepts text that matches no option as the answer.
+- `loading?: boolean` — default: `false`
+  Options are being fetched. The popup shows a spinner row and the field is busy.
+- `emptyMessage?: ReactNode` — default: `"No matches"`
+  What the popup says when nothing matches.
+- `placeholder?: string`
+  A hint shown while the box is empty.
+- `name?: string`
+  Form field name. Submits the chosen option's `value`, not the text.
+- `size?: ComboboxSize` — default: `"md"`
+  Control height and inline padding. Text size does not change with it.
+- `labelHidden?: boolean` — default: `false`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the combobox. Defaults to a generated one.
+- `status?: FieldStatus` — default: `"idle"`
+  Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `message?: ReactNode`
+  Status-dependent message under the control.
+- `required?: boolean` — default: `false`
+  Marks the field required to assistive technology and in the label.
+- `disabled?: boolean` — default: `false`
+  Blocks choosing while keeping the field focusable, readable and announced.
+- `className?: string`
+  Class for the wrapper — the width the form wants, not a restyle.
+
+Real usage (from `apps/`):
+```tsx
+<Combobox
+          label="Time zone"
+          placeholder="Type a city"
+          options={TIME_ZONES}
+          name="tz"
+          required
+        />
+```
 
 Contract: [docs/components/combobox.md](../docs/components/combobox.md)
 
-### Date Picker
+### Date Picker (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `label: ReactNode`
+  What the date is. Always required — `labelHidden` hides it, nothing removes it.
+- `value?: string | null`
+  Controls the chosen date from outside, as an ISO calendar date. `null` is empty.
+- `defaultValue?: string | null` — default: `null`
+  The starting date when the component owns the state.
+- `onValueChange?: (value: string | null) => void`
+  Fires with the ISO date when a day is chosen, or typed text parses on blur or Enter.
+- `min?: string`
+  The earliest choosable date, as ISO.
+- `max?: string`
+  The latest choosable date, as ISO.
+- `isDateUnavailable?: (date: string) => boolean`
+  Marks individual dates unchoosable. Runs for every visible day; precompute a set.
+- `firstDayOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6`
+  Which weekday starts each row, 0 being Sunday. Defaults to the page locale's.
+- `calendarLabel?: string` — default: `"Choose date"`
+  Accessible name for the calendar button. The chosen date is appended to it.
+- `placeholder?: string`
+  Shown while empty. Defaults to the expected format for the page locale.
+- `name?: string`
+  Form field name. Submits the ISO date, not the displayed text.
+- `size?: DatePickerSize` — default: `"md"`
+  Control height and inline padding. Text size does not change with it.
+- `labelHidden?: boolean` — default: `false`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the date field. Defaults to a generated one.
+- `status?: FieldStatus` — default: `"idle"`
+  Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `message?: ReactNode`
+  Status-dependent message under the control.
+- `required?: boolean` — default: `false`
+  Marks the field required to assistive technology and in the label.
+- `disabled?: boolean` — default: `false`
+  Blocks typing and opening the calendar while keeping the field focusable and announced.
+- `className?: string`
+  Class for the wrapper — the width the form wants, not a restyle.
+
+Real usage (from `apps/`):
+```tsx
+<DatePicker label="Date of birth" max={todayISO()} description="As it appears on your passport." />
+```
 
 Contract: [docs/components/date-picker.md](../docs/components/date-picker.md)
 
-### Date Range Picker
+### Date Range Picker (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `label: ReactNode`
+  What the range is. Always required — `labelHidden` hides it, nothing removes it.
+- `startLabel?: string` — default: `"Start date"`
+  The visible label on the start input.
+- `endLabel?: string` — default: `"End date"`
+  The visible label on the end input.
+- `value?: DateRange`
+  Controls the range from outside: `{ start, end }`, each an ISO calendar date or `null`.
+- `defaultValue?: DateRange` — default: `{ start: null, end: null }`
+  The starting range when the component owns the state.
+- `onValueChange?: (value: DateRange) => void`
+  Fires with both ends whenever either changes.
+- `min?: string`
+  The earliest choosable date for either end, as ISO.
+- `max?: string`
+  The latest choosable date for either end, as ISO.
+- `isDateUnavailable?: (date: string) => boolean`
+  Marks individual dates unchoosable. Runs for every visible day; precompute a set.
+- `firstDayOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6`
+  Which weekday starts each row, 0 being Sunday. Defaults to the page locale's.
+- `calendarLabel?: string` — default: `"Choose dates"`
+  Accessible name for the calendar button. The chosen range is appended to it.
+- `placeholder?: string`
+  Shown in each empty input. Defaults to the expected format for the page locale.
+- `startName?: string`
+  Form field name for the start. Submits the ISO date.
+- `endName?: string`
+  Form field name for the end. Submits the ISO date.
+- `size?: DateRangePickerSize` — default: `"md"`
+  Control height and inline padding. Text size does not change with it.
+- `labelHidden?: boolean` — default: `false`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the range field. Defaults to a generated one.
+- `status?: FieldStatus` — default: `"idle"`
+  Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `message?: ReactNode`
+  Status-dependent message under the control.
+- `required?: boolean` — default: `false`
+  Marks both ends required to assistive technology and in the label.
+- `disabled?: boolean` — default: `false`
+  Blocks typing and opening the calendar while keeping both inputs focusable and announced.
+- `className?: string`
+  Class for the wrapper — the width the form wants, not a restyle.
+
+Real usage (from `apps/`):
+```tsx
+<DateRangePicker
+        label="Period"
+        startLabel="From"
+        endLabel="To"
+        max={todayISO()}
+        value={range}
+        onValueChange={setRange}
+      />
+```
 
 Contract: [docs/components/date-range-picker.md](../docs/components/date-range-picker.md)
 
@@ -352,21 +529,65 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/disclosure.md](../docs/components/disclosure.md)
 
-### Divider
+### Divider (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<HTMLAttributes<HTMLElement>, "children" | "role" | "aria-orientation" | "aria-hidden">`
+
+- `orientation?: DividerOrientation` — default: `"horizontal"`
+  Which way the rule runs.
+- `decorative?: boolean` — default: `false`
+  Hides the rule from assistive tech when it marks no real change of topic.
+- `className?: string`
+  Extra classes, for placement.
+
+Real usage (from `apps/`):
+```tsx
+<Divider />
+```
 
 Contract: [docs/components/divider.md](../docs/components/divider.md)
 
-### Empty state
+### Empty state (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, "title" | "role" | "children">`
+
+- `title: string`
+  What is empty, said plainly.
+- `description?: ReactNode`
+  One or two sentences on why it is empty or what the action will do.
+- `action?: ReactNode`
+  The one way out: a Button or a Link.
+- `icon?: LucideIcon | false`
+  A glyph marking the area as intentionally empty. Omit for none.
+- `live?: EmptyStateLive` — default: `"off"`
+  Whether the empty state is announced when it appears.
+- `className?: string`
+  Extra classes, for placement.
 
 Contract: [docs/components/empty-state.md](../docs/components/empty-state.md)
 
-### FAB
+### FAB (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<ButtonHTMLAttributes<HTMLButtonElement>, "disabled" | "children">`
+
+- `label: string`
+  What the action does, as a verb phrase — shown beside the icon, or used as the accessible name when hidden.
+- `icon: LucideIcon`
+  The glyph, which is always shown.
+- `labelHidden?: boolean` — default: `false`
+  Shows the icon alone, as a circle, with `label` as the accessible name.
+- `placement?: FabPlacement` — default: `"end"`
+  Which bottom corner it floats at — inline-end, or centred.
+- `loading?: boolean`
+  Shows a Spinner in place of the icon and blocks activation, while staying focusable.
+- `disabled?: boolean`
+  Blocks activation while keeping it focusable and announced.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Fab label="Add" icon={Plus} />
+```
 
 Contract: [docs/components/fab.md](../docs/components/fab.md)
 
@@ -396,9 +617,51 @@ Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children">`
 
 Contract: [docs/components/field.md](../docs/components/field.md)
 
-### File Upload
+### File Upload (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `label: ReactNode`
+  What the files are for. Always required — `labelHidden` hides it, nothing removes it.
+- `accept?: string`
+  Which files are allowed, as MIME types and extensions: "image/*,.pdf".
+- `multiple?: boolean` — default: `false`
+  Accepts more than one file.
+- `maxFiles?: number`
+  The most files the list may hold. Only meaningful with `multiple`.
+- `maxSize?: number`
+  The largest file allowed, in bytes.
+- `value?: PickedFile[]`
+  Controls the chosen files from outside, with the caller's per-file `progress` and `error`.
+- `onValueChange?: (files: PickedFile[]) => void`
+  Fires with the whole accepted list whenever a file is added or removed.
+- `onReject?: (rejections: FileRejection[]) => void`
+  Fires with the files that were refused and why.
+- `dropzone?: boolean` — default: `true`
+  Draws a drop target around the button, for dragging files in from the desktop.
+- `buttonLabel?: string`
+  The choose button's text. Defaults to "Choose file", or "Choose files" with `multiple`.
+- `name?: string`
+  Form field name. A native form post submits exactly the listed files.
+- `labelHidden?: boolean` — default: `false`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the file field. Defaults to a generated one.
+- `status?: FieldStatus` — default: `"idle"`
+  Validation lifecycle. Drives `aria-invalid`, `aria-busy`, the message tone and the drop zone's edge.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `message?: ReactNode`
+  Status-dependent message under the control.
+- `required?: boolean` — default: `false`
+  Marks the field required to assistive technology and in the label.
+- `disabled?: boolean` — default: `false`
+  Blocks choosing, dropping and removing while keeping the controls focusable and announced.
+- `className?: string`
+  Class for the wrapper — the width the form wants, not a restyle.
+
+Real usage (from `apps/`):
+```tsx
+<FileUpload label="Attachments" labelHidden multiple dropzone={false} buttonLabel="Attach files" />
+```
 
 Contract: [docs/components/file-upload.md](../docs/components/file-upload.md)
 
@@ -416,7 +679,7 @@ Extends: `Omit<HTMLAttributes<HTMLHeadingElement>, "role">`
 
 Real usage (from `apps/`):
 ```tsx
-<Heading level={4}>Known gaps</Heading>
+<Heading level={3}>Deploys</Heading>
 ```
 
 Contract: [docs/components/heading.md](../docs/components/heading.md)
@@ -459,15 +722,70 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/link.md](../docs/components/link.md)
 
-### List
+### List (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `children: ReactNode`
+  The rows: ListItem elements, in reading order.
+- `label?: string`
+  Accessible name for the list, when no visible heading names it.
+- `labelledBy?: string`
+  Id of a visible element — usually the Heading above the list — that names it.
+- `dividers?: boolean` — default: `true`
+  Whether a rule is drawn between rows.
+- `appearance?: ListAppearance` — default: `"plain"`
+  Edge-to-edge on the page's own surface, or grouped on a rounded surface inside the gutter.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<List label="People">
+          <ListItem
+            href="#people-ada"
+            leading={<Avatar name="Ada Lovelace" decorative />}
+            description="Last seen 2 hours ago"
+          >
+            Ada Lovelace
+          </ListItem>
+          <ListItem
+            href="#people-grace"
+            leading={<Avatar name="Grace Hopper" decorative />}
+            description="Online"
+          >
+            Grace Hopper
+          </ListItem>
+        </List>
+```
 
 Contract: [docs/components/list.md](../docs/components/list.md)
 
-### List Item
+### List Item (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `children: ReactNode`
+  The row's text — what the row is.
+- `description?: ReactNode`
+  A second, secondary line under the text.
+- `leading?: ReactNode`
+  A visual at the start of the row — an Icon or an Avatar.
+- `trailing?: ReactNode`
+  Metadata or one control at the end of the row.
+- `href?: string`
+  Makes the row a link to this address.
+- `onClick?: (event: MouseEvent<HTMLElement>) => void`
+  Makes the row a button, or — with `href` — intercepts the link for client-side routing.
+- `actions?: ListItemAction[]`
+  Secondary commands on this row, shown in a Menu behind a trailing button.
+- `actionsLabel?: string` — default: `"More actions"`
+  The name of the actions trigger, before the row's own text.
+- `disabled?: boolean` — default: `false`
+  Blocks the row's activation and its actions, while keeping both focusable and announced.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<ListItem href="#settings-quiet-hours" description="10 pm – 7 am">
+          Quiet hours
+        </ListItem>
+```
 
 Contract: [docs/components/list-item.md](../docs/components/list-item.md)
 
@@ -489,17 +807,7 @@ Extends: `Omit<`
 
 Real usage (from `apps/`):
 ```tsx
-<Menu
-            label="Account"
-            trigger={
-              <Button iconOnly aria-label="Account" variant="tertiary">
-                <Icon icon={User} />
-              </Button>
-            }
-          >
-            <MenuItem icon={Settings} onSelect={() => {}}>Settings</MenuItem>
-            <MenuItem onSelect={() => {}}>Sign out</MenuItem>
-          </Menu>
+<Menu label="Add" trigger={<Fab label="Add" icon={Plus} />
 ```
 
 Contract: [docs/components/menu.md](../docs/components/menu.md)
@@ -522,7 +830,7 @@ Extends: `Omit<ButtonHTMLAttributes<HTMLButtonElement>, "disabled" | "role" | "o
 
 Real usage (from `apps/`):
 ```tsx
-<MenuItem onSelect={() => {}}>Sign out</MenuItem>
+<MenuItem onSelect={() => {}}>Note</MenuItem>
 ```
 
 Contract: [docs/components/menu-item.md](../docs/components/menu-item.md)
@@ -591,15 +899,83 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/notice.md](../docs/components/notice.md)
 
-### Number Field
+### Number Field (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `label: ReactNode`
+  The quantity's name. Always required — `labelHidden` hides it, nothing removes it.
+- `value?: number | null`
+  Controls the value from outside. `null` is empty, which is different from zero.
+- `defaultValue?: number | null` — default: `null`
+  The starting value when the component owns the state.
+- `onValueChange?: (value: number | null) => void`
+  Fires with the parsed number when the value changes.
+- `min?: number`
+  The lowest allowed value. Typed values below it are clamped on blur.
+- `max?: number`
+  The highest allowed value. Typed values above it are clamped on blur.
+- `step?: number` — default: `1`
+  How far ArrowUp, ArrowDown and the buttons move. PageUp and PageDown move ten steps.
+- `formatOptions?: Intl.NumberFormatOptions`
+  How the value is displayed when the field is not being edited.
+- `stepButtons?: boolean` — default: `true`
+  Renders the decrement and increment buttons at either end.
+- `incrementLabel?: string` — default: `"Increase"`
+  Accessible name for the increment button.
+- `decrementLabel?: string` — default: `"Decrease"`
+  Accessible name for the decrement button.
+- `placeholder?: string`
+  A hint shown while the field is empty.
+- `name?: string`
+  Form field name. Submits the unformatted number as a plain decimal string.
+- `size?: NumberFieldSize` — default: `"md"`
+  Control height and inline padding. Text size does not change with it.
+- `labelHidden?: boolean` — default: `false`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the input. Defaults to a generated one.
+- `status?: FieldStatus` — default: `"idle"`
+  Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `message?: ReactNode`
+  Status-dependent message under the control.
+- `required?: boolean` — default: `false`
+  Marks the field required to assistive technology and in the label.
+- `disabled?: boolean` — default: `false`
+  Blocks editing and stepping while keeping the field focusable, readable and announced.
+- `className?: string`
+  Class for the wrapper — the width the form wants, not a restyle.
+
+Real usage (from `apps/`):
+```tsx
+<NumberField
+        className="pg-field"
+        label="Team size"
+        defaultValue={12}
+        min={1}
+        status="invalid"
+        message="Teams on this plan have at most 10 people."
+      />
+```
 
 Contract: [docs/components/number-field.md](../docs/components/number-field.md)
 
-### Pagination
+### Pagination (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<HTMLAttributes<HTMLElement>, "aria-label" | "children">`
+
+- `page: number`
+  The current page, counting from 1.
+- `pageCount: number`
+  How many pages there are.
+- `href?: (page: number) => string`
+  Builds the URL for a page. Web only.
+- `onPageChange?: (page: number, event: { preventDefault(): void }) => void`
+  Called when the reader picks a page. Intercepts the link for a client-side router.
+- `label?: string` — default: `"Pagination"`
+  Accessible name for the navigation landmark.
+- `className?: string`
+  Extra classes, for placement.
 
 Contract: [docs/components/pagination.md](../docs/components/pagination.md)
 
@@ -637,9 +1013,49 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/panel.md](../docs/components/panel.md)
 
-### Pin Input
+### Pin Input (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `label: ReactNode`
+  What the code is. Always required — `labelHidden` hides it, nothing removes it.
+- `length: number`
+  How many characters the code has. Draws that many boxes and caps the input.
+- `value?: string`
+  Controls the code from outside.
+- `defaultValue?: string` — default: `""`
+  The starting text when the component owns the state.
+- `onValueChange?: (value: string) => void`
+  Fires with the whole code on every change.
+- `onComplete?: (value: string) => void`
+  Fires once when the code reaches `length` characters.
+- `characters?: PinInputCharacters` — default: `"numeric"`
+  Which characters are accepted, and which on-screen keyboard appears.
+- `purpose?: PinInputPurpose` — default: `"one-time-code"`
+  Whether this is a code the reader was sent or a secret they know.
+- `name?: string`
+  Form field name. Submits the code as one string.
+- `size?: PinInputSize` — default: `"lg"`
+  Box size. There is no `sm`.
+- `labelHidden?: boolean` — default: `false`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the code input. Defaults to a generated one.
+- `status?: FieldStatus` — default: `"idle"`
+  Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring on every box.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `message?: ReactNode`
+  Status-dependent message under the control.
+- `required?: boolean` — default: `false`
+  Marks the field required to assistive technology and in the label.
+- `disabled?: boolean` — default: `false`
+  Blocks typing while keeping the input focusable, readable and announced.
+- `className?: string`
+  Class for the wrapper — placement, not a restyle.
+
+Real usage (from `apps/`):
+```tsx
+<PinInput label="PIN" length={4} purpose="pin" />
+```
 
 Contract: [docs/components/pin-input.md](../docs/components/pin-input.md)
 
@@ -678,9 +1094,31 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/popover.md](../docs/components/popover.md)
 
-### Progress
+### Progress (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, ProgressOwnedAttribute>`
+
+- `label: string`
+  What is in progress, shown above the bar.
+- `value: number`
+  How much is done, from 0 to `max`.
+- `max?: number` — default: `100`
+  The value that means done.
+- `valueText?: string`
+  The value in the reader's own units, shown beside the label and announced instead of a percentage.
+- `className?: string`
+  Extra classes, for placement and width.
+
+Real usage (from `apps/`):
+```tsx
+<Progress
+        label="Uploading assets"
+        value={3}
+        max={7}
+        valueText="3 of 7 files"
+        className="pg-wide-specimen"
+      />
+```
 
 Contract: [docs/components/progress.md](../docs/components/progress.md)
 
@@ -928,15 +1366,60 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/side-nav.md](../docs/components/side-nav.md)
 
-### Skeleton
+### Skeleton (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<HTMLAttributes<HTMLSpanElement>, "children" | "aria-hidden">`
+
+- `shape?: SkeletonShape` — default: `"text"`
+  What kind of content it stands in for.
+- `lines?: number` — default: `1`
+  How many lines a `text` skeleton stands in for.
+- `className?: string`
+  Extra classes, for the size of a `block` or `circle` and its placement.
+
+Real usage (from `apps/`):
+```tsx
+<Skeleton lines={2} />
+```
 
 Contract: [docs/components/skeleton.md](../docs/components/skeleton.md)
 
-### Slider
+### Slider (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `label: ReactNode`
+  What the value measures. Always required — `labelHidden` hides it, nothing removes it.
+- `value?: number | [number, number]`
+  Controls the value from outside. A two-element tuple renders two thumbs.
+- `defaultValue?: number | [number, number]` — default: `min`
+  The starting value when the component owns the state. Its shape decides one thumb or two.
+- `onValueChange?: (value: number | [number, number]) => void`
+  Fires continuously while the thumb moves.
+- `onValueCommit?: (value: number | [number, number]) => void`
+  Fires once when an interaction ends: pointer release, a key press, or an assistive-technology adjustment.
+- `min?: number` — default: `0`
+  The lowest value.
+- `max?: number` — default: `100`
+  The highest value.
+- `step?: number` — default: `1`
+  The grid values snap to. Arrow keys move one step, PageUp and PageDown ten.
+- `thumbLabels?: [string, string]`
+  Names for the two thumbs of a range. Required when the value is a tuple.
+- `formatValue?: (value: number) => string`
+  Turns a value into the text shown in the output and announced as `aria-valuetext`.
+- `showValue?: boolean` — default: `true`
+  Renders the current value as visible text beside the label.
+- `name?: string`
+  Form field name. A range submits two values under the same name, lower first.
+- `labelHidden?: boolean` — default: `false`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the slider. Defaults to a generated one.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `disabled?: boolean` — default: `false`
+  Blocks adjustment while keeping the slider focusable, readable and announced.
+- `className?: string`
+  Class for the wrapper — the width the layout wants, not a restyle.
 
 Contract: [docs/components/slider.md](../docs/components/slider.md)
 
@@ -958,9 +1441,32 @@ No standalone React component — "State layer" is CSS-only (see registry descri
 
 Contract: [docs/components/state-layer.md](../docs/components/state-layer.md)
 
-### Steps
+### Steps (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<HTMLAttributes<HTMLElement>, "aria-label" | "children">`
+
+- `label: string`
+  Names the whole sequence: "Checkout progress".
+- `steps: StepItem[]`
+  The steps in order.
+- `current: string`
+  The `id` of the step the reader is on.
+- `onStepSelect?: (id: string) => void`
+  Makes completed steps navigable, and fires with the chosen step's id.
+- `orientation?: "horizontal" | "vertical"` — default: `"horizontal"`
+  Lays the steps out in a row or a column.
+- `className?: string`
+  Class for the root — placement, not a restyle.
+
+Real usage (from `apps/`):
+```tsx
+<Steps
+        label="Checkout progress"
+        current={current}
+        steps={CHECKOUT_STEPS}
+        onStepSelect={setCurrent}
+      />
+```
 
 Contract: [docs/components/steps.md](../docs/components/steps.md)
 
@@ -993,9 +1499,30 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/switch.md](../docs/components/switch.md)
 
-### Table
+### Table (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children" | "role" | "tabIndex">`
+
+- `caption: string`
+  The table's name. Required.
+- `hideCaption?: boolean` — default: `false`
+  Keeps the caption as the accessible name but hides it visually.
+- `columns: TableColumn<Row>[]`
+  The columns, in reading order.
+- `rows: Row[]`
+  The records, in the order they are shown.
+- `getRowKey: (row: Row) => string`
+  A stable identity for each row.
+- `sort?: TableSort | null` — default: `null`
+  Which column the rows are currently sorted by, if any.
+- `onSortChange?: (sort: TableSort) => void`
+  Called when the reader asks to sort by a column.
+- `density?: TableDensity` — default: `"comfortable"`
+  How tall each row is.
+- `empty?: ReactNode`
+  What to show in place of the rows when there are none.
+- `className?: string`
+  Extra classes on the scroll region, for placement.
 
 Contract: [docs/components/table.md](../docs/components/table.md)
 
@@ -1048,7 +1575,7 @@ Extends: `Omit<HTMLAttributes<HTMLElement>, "role">`
 
 Real usage (from `apps/`):
 ```tsx
-<Text>Choose which events send you an email.</Text>
+<Text>Your plan renews on 1 March.</Text>
 ```
 
 Contract: [docs/components/text.md](../docs/components/text.md)
@@ -1119,9 +1646,25 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/textarea.md](../docs/components/textarea.md)
 
-### Toast
+### Toast (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `children: ReactNode`
+  The message — one short sentence about what just happened.
+- `variant?: ToastVariant` — default: `"neutral"`
+  Whether the outcome says anything about health.
+- `action?: { label: string; onAction: () => void }`
+  One optional action — Undo, View — offered alongside the message.
+- `duration?: number | null` — default: `6000`
+  Milliseconds before the toast leaves on its own, or `null` to stay until dismissed.
+- `onDismiss?: () => void`
+  Called when the toast leaves — by its timer, its dismiss button, its action, or the stack making room.
+- `dismissLabel?: string` — default: `"Dismiss"`
+  Accessible name for the dismiss button.
+
+Real usage (from `apps/`):
+```tsx
+<Toast>Token path copied</Toast>
+```
 
 Contract: [docs/components/toast.md](../docs/components/toast.md)
 
@@ -1192,9 +1735,23 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/toggle-button-group.md](../docs/components/toggle-button-group.md)
 
-### Tooltip
+### Tooltip (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `content: string`
+  The hint text. Plain text only — a string, so a link or a button cannot be passed.
+- `children: ReactElement`
+  The one focusable element the tooltip is attached to.
+- `relationship?: TooltipRelationship` — default: `"description"`
+  Whether the tooltip names the trigger or describes it.
+- `placement?: TooltipPlacement` — default: `"block-start"`
+  Which side of the trigger the tooltip prefers. Anchor positioning flips it near an edge.
+
+Real usage (from `apps/`):
+```tsx
+<Tooltip content="Add a payment method to publish">
+        <Button disabled>Publish</Button>
+      </Tooltip>
+```
 
 Contract: [docs/components/tooltip.md](../docs/components/tooltip.md)
 

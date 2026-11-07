@@ -12,10 +12,12 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
@@ -23,9 +25,23 @@
   },
   "dependencies": [
     "state-layer",
-    "icon"
+    "icon",
+    "visually-hidden"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/bottom-nav.css",
+      "target": "styles/bottom-nav.css"
+    },
+    {
+      "source": "packages/react/src/bottom-nav.tsx",
+      "target": "components/bottom-nav.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -131,8 +147,6 @@
   },
   "props": {
     "items": {
-      "type": "BottomNavItem[]",
-      "required": true,
       "summary": "The destinations, in the order they are read: each `{ label: string; href: string; icon: LucideIcon; current?: boolean; badge?: { count?: number; label: string }; onClick?: (event) => void }`.",
       "use": [
         "Three to five top-level sections of the app — the places a reader moves between constantly, from anywhere.",
@@ -147,8 +161,6 @@
       "a11y": "Each item's `label` is its link's accessible name, and the badge's `label` is appended to it. `current` becomes `aria-current=\"page\"`, which is the only cue that is not visual."
     },
     "label": {
-      "type": "string",
-      "default": "\"Main\"",
       "summary": "Accessible name for the navigation landmark.",
       "use": [
         "A different name from any other `<nav>` on the page that is visible at the same time."
@@ -159,7 +171,6 @@
       "a11y": "Becomes `aria-label` on the `<nav>`. The default matches TopNav's, on the expectation that only one of the two is displayed at any width — if both are visible together, name them apart."
     },
     "className": {
-      "type": "string",
       "summary": "Extra classes on the `<nav>`, for placement — not for restyling it.",
       "use": [
         "Hiding it at the widths where the layout shows a rail or a TopNav instead, with `display: none`."

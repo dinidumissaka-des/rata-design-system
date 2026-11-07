@@ -5,19 +5,23 @@
 
 A short, non-interactive text hint that names or describes the control it is attached to, shown on hover and keyboard focus.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Tooltip } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `tooltip` |
 | Family | overlays |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | — |
 
 ## Behavior
 
 A trigger and a short text in the top layer, positioned with CSS anchor positioning — the same machinery as Menu, with no measurement code and no dependency. It is never focusable and never contains anything interactive. Proposed primitive: `getTooltipProps` in `packages/primitives/src/tooltip.ts`, owning the open delay, the hover bridge and Escape; it is a proposal, not yet a commitment.
+
+Headless contract: `getTooltipProps` in `packages/primitives/src/tooltip.ts` — importable from `@rata/primitives` without the React wrapper or any CSS.
 
 - **A tooltip only ever repeats or supplements; it never holds the only copy of anything** — It cannot be relied on to appear. There is no hover on a touchscreen, a reader zoomed to 400% may never see it, and a keyboard user only gets it when they happen to focus that exact control. So nothing a reader needs to complete a task can live only in a tooltip. If the content is essential, it is visible text. If it is supplementary and needs to be reachable on touch, it is a Popover the reader opens on purpose.
 - **Non-interactive content only, and that is the line between Tooltip and Popover** — A tooltip disappears when the pointer leaves and is never in the tab order, so a link or a button inside it is something a keyboard user can see and can never reach. `content` is typed as a string rather than a node, so the type refuses it instead of the contract asking nicely. Anything with a control in it is a Popover.
@@ -37,8 +41,8 @@ A trigger and a short text in the top layer, positioned with CSS anchor position
 |---|---|---|---|
 | `content` | `string` | — | The hint text. Plain text only. |
 | `children` | `ReactElement` | — | The one focusable element the tooltip is attached to. |
-| `relationship?` | `"label" \| "description"` | `"description"` | Whether the tooltip names the trigger or describes it. |
-| `placement?` | `"block-start" \| "block-end" \| "inline-start" \| "inline-end"` | `"block-start"` | Which side of the trigger the tooltip prefers. |
+| `relationship?` | `TooltipRelationship` | `"description"` | Whether the tooltip names the trigger or describes it. |
+| `placement?` | `TooltipPlacement` | `"block-start"` | Which side of the trigger the tooltip prefers. |
 
 ### `content`
 
@@ -47,6 +51,8 @@ content: string
 ```
 
 The hint text. Plain text only.
+
+Source doc: The hint text. Plain text only — a string, so a link or a button cannot be passed.
 
 **Use when**
 
@@ -81,7 +87,7 @@ The one focusable element the tooltip is attached to.
 ### `relationship`
 
 ```ts
-relationship?: "label" | "description" = "description"
+relationship?: TooltipRelationship = "description"
 ```
 
 Whether the tooltip names the trigger or describes it.
@@ -100,10 +106,12 @@ Whether the tooltip names the trigger or describes it.
 ### `placement`
 
 ```ts
-placement?: "block-start" | "block-end" | "inline-start" | "inline-end" = "block-start"
+placement?: TooltipPlacement = "block-start"
 ```
 
 Which side of the trigger the tooltip prefers.
+
+Source doc: Which side of the trigger the tooltip prefers. Anchor positioning flips it near an edge.
 
 **Use when**
 
@@ -157,11 +165,19 @@ A help icon beside a field, whose hint includes a "Learn more" link.
 
 Don't. The link cannot live in a tooltip — it would be visible and unreachable — and the hint would never appear on touch. That is a Popover, opened on purpose by a tap or a press, with a real link inside. Better still, put a short version as the field's own description, where everyone reads it.
 
+## Real usage in this repo
+
+```tsx
+<Tooltip content="Add a payment method to publish">
+        <Button disabled>Publish</Button>
+      </Tooltip>
+```
+
 ## Token recipe
 
 ### base
 
-A small transient chip on an inverse surface, so it reads as a passing hint rather than as a menu or a popover. The inverse surface and its foreground do not exist yet, so the colour lines below are the closest existing tokens and are stand-ins; the measurements, shadow and motion are final.
+A small transient chip on the inverse surface (theme.bg.inverse with theme.fg.on-inverse), so it reads as a passing hint rather than as a menu or a popover.
 
 | Property | Token |
 |---|---|

@@ -9,17 +9,32 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
     }
   },
   "dependencies": [],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/progress.css",
+      "target": "styles/progress.css"
+    },
+    {
+      "source": "packages/react/src/progress.tsx",
+      "target": "components/progress.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -82,8 +97,6 @@
   },
   "props": {
     "label": {
-      "type": "string",
-      "required": true,
       "summary": "What is in progress, shown above the bar.",
       "use": [
         "A noun phrase naming the task: \"Uploading tokens.json\", \"Import\"."
@@ -94,8 +107,6 @@
       "a11y": "The bar's accessible name, wired with `aria-labelledby`."
     },
     "value": {
-      "type": "number",
-      "required": true,
       "summary": "How much is done, from 0 to `max`.",
       "use": [
         "The real count of done units — bytes, files, steps."
@@ -106,8 +117,6 @@
       "a11y": "Becomes `aria-valuenow`. Clamped to the range, so an overshoot does not announce 104 percent."
     },
     "max": {
-      "type": "number",
-      "default": "100",
       "summary": "The value that means done.",
       "use": [
         "The total of whatever `value` counts — `max={7}` for seven files."
@@ -118,7 +127,6 @@
       "a11y": "Becomes `aria-valuemax`."
     },
     "valueText": {
-      "type": "string",
       "summary": "The value in the reader's own units, shown beside the label and announced instead of a percentage.",
       "use": [
         "\"3 of 7 files\", \"12 MB of 40 MB\"."
@@ -129,7 +137,6 @@
       "a11y": "Becomes `aria-valuetext`. Without it, screen readers announce a percentage computed from `value` and `max`."
     },
     "className": {
-      "type": "string",
       "summary": "Extra classes, for placement and width.",
       "use": [
         "Setting the bar's width in the page's layout."
