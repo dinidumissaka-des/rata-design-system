@@ -226,3 +226,5 @@ export type {
   FileUploadProps,
   FileUploadRow,
 } from "./file-upload.js";
+export { getStepsProps } from "./steps.js";
+export type { StepStatus, StepsItemInput, StepsOptions, StepState, StepsState } from "./steps.js";

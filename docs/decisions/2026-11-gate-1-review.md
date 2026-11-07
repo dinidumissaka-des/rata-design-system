@@ -125,3 +125,5 @@ gate 3: the implementer stops and reports it, as Card's C4/L6 collision was.
 Slider's thumb composes the state layer through `[data-hovered]` /
 `[data-pressed]` (decision C9), which extends `state-layer.css` in the same
 change.
+
+Steps (gate 3): collapses by measuring overflow (ResizeObserver), not a container query — the needed width depends on step count and label lengths, so no token threshold fits.

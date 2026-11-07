@@ -63,7 +63,7 @@ this path is the honest answer to when it last actually moved.
 | [slider](../docs/components/slider.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [spinner](../docs/components/spinner.md) | `@rata/react` | loading | latest / latest / future | free |
 | [state-layer](../docs/components/state-layer.md) | `@rata/react` | foundations | latest / na / future | free |
-| [steps](../docs/components/steps.md) | `@rata/react` | navigation | future / future / future | free |
+| [steps](../docs/components/steps.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [switch](../docs/components/switch.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [table](../docs/components/table.md) | `@rata/react` | content | latest / latest / future | free |
 | [tabs](../docs/components/tabs.md) | `@rata/react` | navigation | latest / latest / future | free |
@@ -1329,9 +1329,32 @@ No standalone React component — "State layer" is CSS-only (see registry descri
 
 Contract: [docs/components/state-layer.md](../docs/components/state-layer.md)
 
-### Steps
+### Steps (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<HTMLAttributes<HTMLElement>, "aria-label" | "children">`
+
+- `label: string`
+  Names the whole sequence: "Checkout progress".
+- `steps: StepItem[]`
+  The steps in order.
+- `current: string`
+  The `id` of the step the reader is on.
+- `onStepSelect?: (id: string) => void`
+  Makes completed steps navigable, and fires with the chosen step's id.
+- `orientation?: "horizontal" | "vertical"` — default: `"horizontal"`
+  Lays the steps out in a row or a column.
+- `className?: string`
+  Class for the root — placement, not a restyle.
+
+Real usage (from `apps/`):
+```tsx
+<Steps
+        label="Checkout progress"
+        current={current}
+        steps={CHECKOUT_STEPS}
+        onStepSelect={setCurrent}
+      />
+```
 
 Contract: [docs/components/steps.md](../docs/components/steps.md)
 

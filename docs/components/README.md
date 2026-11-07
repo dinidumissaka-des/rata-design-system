@@ -58,7 +58,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Slider](slider.md) | `slider` | inputs | latest / latest | documented | free |
 | [Loading: Spinner](spinner.md) | `spinner` | loading | latest / latest | documented | free |
 | [State layer](state-layer.md) | `state-layer` | foundations | latest / na | css-only | free |
-| [Steps](steps.md) | `steps` | navigation | future / future | spec | free |
+| [Steps](steps.md) | `steps` | navigation | latest / latest | documented | free |
 | [Switch](switch.md) | `switch` | inputs | latest / latest | documented | free |
 | [Table](table.md) | `table` | content | latest / latest | documented | free |
 | [Tabs](tabs.md) | `tabs` | navigation | latest / latest | documented | free |

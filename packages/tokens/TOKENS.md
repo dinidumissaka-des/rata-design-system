@@ -2942,6 +2942,7 @@ The row or column of steps and the connectors between them.
 | connector colour | `theme.border.strong` |
 | connector colour, after a completed step | `theme.accent-role.bg` |
 | connector inset from each marker | `space.gap.xs` |
+| horizontal: connector minimum length | `space.gap.lg` — gate 3 addition, not in the batch-approved recipe: without a floor the connector is zero-length at the row's natural width, which is the width the overflow measurement uses |
 | vertical: gap between steps | `space.stack.md` |
 | label font-size | `type.control.size.sm` |
 | label colour | `theme.fg.secondary` |

@@ -124,3 +124,5 @@ export { Slider } from "./slider.js";
 export type { SliderProps, SliderValue } from "./slider.js";
 export { FileUpload } from "./file-upload.js";
 export type { FileUploadProps, PickedFile, FileRejection } from "./file-upload.js";
+export { Steps } from "./steps.js";
+export type { StepsProps, StepItem } from "./steps.js";

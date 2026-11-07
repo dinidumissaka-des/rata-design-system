@@ -54,6 +54,7 @@ import {
   Tabs,
   TopNav,
   Spinner,
+  Steps,
   Switch,
   Table,
   Text,
@@ -1116,6 +1117,12 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     "With a client-side router": () => <PaginationRouterStage />,
   },
 
+  steps: {
+    "A checkout": () => <StepsCheckoutStage />,
+    "Going back to fix something": () => <StepsInvalidStage />,
+    "A long form with a table of contents": () => <StepsVerticalStage />,
+  },
+
   breadcrumbs: {
     "A page three levels deep": () => (
       <Breadcrumbs
@@ -1881,6 +1888,82 @@ function TableSortStage() {
       getRowKey={(inv) => inv.id}
       sort={sort}
       onSortChange={setSort}
+    />
+  );
+}
+
+const CHECKOUT_STEPS = [
+  { id: "shipping", label: "Shipping" },
+  { id: "payment", label: "Payment" },
+  { id: "review", label: "Review" },
+];
+
+/**
+ * The caller owns the flow: Continue moves forward, the indicator only goes
+ * back. Narrow the window to see the row collapse to "Step N of M" once it no
+ * longer fits — and expand again when it does.
+ */
+function StepsCheckoutStage() {
+  const [current, setCurrent] = useState("payment");
+  const index = CHECKOUT_STEPS.findIndex((s) => s.id === current);
+  const next = CHECKOUT_STEPS[index + 1];
+  return (
+    <div className="pg-block-stack">
+      <Steps
+        label="Checkout progress"
+        current={current}
+        steps={CHECKOUT_STEPS}
+        onStepSelect={setCurrent}
+      />
+      <Button
+        variant="secondary"
+        onClick={() => next && setCurrent(next.id)}
+        disabled={next === undefined}
+      >
+        Continue
+      </Button>
+    </div>
+  );
+}
+
+/** An earlier answer went stale: the marker says where; the Notice says what. */
+function StepsInvalidStage() {
+  const [current, setCurrent] = useState("review");
+  return (
+    <div className="pg-block-stack">
+      <Steps
+        label="Application progress"
+        current={current}
+        steps={[
+          { id: "details", label: "Your details", invalid: true },
+          { id: "documents", label: "Documents" },
+          { id: "review", label: "Review" },
+        ]}
+        onStepSelect={setCurrent}
+      />
+      <Notice variant="danger" title="Your details need another look">
+        The date of birth no longer matches the uploaded document.
+      </Notice>
+    </div>
+  );
+}
+
+const PROFILE_SECTIONS = [
+  { id: "account", label: "Account", description: "Name and email" },
+  { id: "address", label: "Address", description: "Where we send things" },
+  { id: "preferences", label: "Preferences", description: "Language and notifications" },
+  { id: "confirm", label: "Confirm", description: "Check and finish" },
+];
+
+function StepsVerticalStage() {
+  const [section, setSection] = useState("preferences");
+  return (
+    <Steps
+      label="Profile setup"
+      orientation="vertical"
+      current={section}
+      steps={PROFILE_SECTIONS}
+      onStepSelect={setSection}
     />
   );
 }
