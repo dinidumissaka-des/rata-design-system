@@ -1,0 +1,321 @@
+/* Date picker — THE BOX, the calendar button and the calendar dialog. The
+   label, helper text, message and disabled dimming come from field.css,
+   which this composes; every selector reading `.rata-date-picker[data-…]` is
+   matching the Field root, which carries both classes.
+
+   The calendar is a NATIVE <dialog> opened with showModal(), as Dialog is:
+   the focus trap, the inert page, the top layer, ::backdrop and Escape come
+   from the platform. Only its placement changes with width — a bottom sheet
+   below breakpoint.medium (narrow is the default, per T8), anchored to the
+   field above it. The markup and the keyboard model do not change. */
+
+/* ---- The box: the text field's, with a well for the calendar button ----- */
+
+/* rata-allow: unknown-token — --rata-date-picker-anchor is the per-instance
+   anchor name the component passes in, not a value from the token set: CSS
+   cannot generate a unique ident, and one written here would anchor every
+   calendar on the page to the last field. */
+.rata-date-picker-well {
+  position: relative;
+  display: flex;
+  anchor-name: var(--rata-date-picker-anchor);
+}
+
+.rata-date-picker-input {
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-control-size-md);
+  line-height: var(--rata-type-control-line-height-md);
+  /* So a typed date does not shift as its digits change. */
+  font-variant-numeric: tabular-nums;
+  border: var(--rata-border-default) solid var(--rata-theme-border-strong);
+  border-radius: var(--rata-radius-element);
+  background: var(--rata-theme-bg-surface);
+  color: var(--rata-theme-fg-primary);
+  box-sizing: border-box;
+  inline-size: 100%;
+  transition:
+    border-color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing),
+    box-shadow var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing);
+}
+
+/* The end padding reserves the calendar button's target. */
+.rata-date-picker-input--sm {
+  block-size: var(--rata-size-control-sm);
+  padding-inline-start: var(--rata-space-control-padding-inline-sm);
+  padding-inline-end: calc(var(--rata-space-control-padding-inline-sm) + var(--rata-size-control-sm));
+}
+
+.rata-date-picker-input--md {
+  block-size: var(--rata-size-control-md);
+  padding-inline-start: var(--rata-space-control-padding-inline-md);
+  padding-inline-end: calc(var(--rata-space-control-padding-inline-md) + var(--rata-size-control-sm));
+}
+
+.rata-date-picker-input--lg {
+  block-size: var(--rata-size-control-lg);
+  padding-inline-start: var(--rata-space-control-padding-inline-lg);
+  padding-inline-end: calc(var(--rata-space-control-padding-inline-lg) + var(--rata-size-control-sm));
+}
+
+.rata-date-picker-input::placeholder {
+  color: var(--rata-theme-fg-muted);
+}
+
+/* Idle only, for the reason text-field.css gives. */
+.rata-date-picker[data-status="idle"]:not([data-disabled]) .rata-date-picker-input:hover {
+  box-shadow: inset 0 0 0 var(--rata-border-2) var(--rata-theme-bg-muted);
+}
+
+/* The text field's departure: theme.fg.primary, flush, border darkened to
+   match — so every text box in one form focuses alike. text-field.css
+   records the reasoning. */
+.rata-date-picker-input:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-fg-primary);
+  outline-offset: var(--rata-space-0);
+  border-color: var(--rata-theme-fg-primary);
+}
+
+.rata-date-picker[data-status="validating"] .rata-date-picker-input {
+  box-shadow: var(--rata-theme-accent-role-ring);
+}
+
+.rata-date-picker[data-status="valid"] .rata-date-picker-input {
+  box-shadow: var(--rata-theme-success-role-ring);
+}
+
+.rata-date-picker[data-status="invalid"] .rata-date-picker-input {
+  border-color: var(--rata-theme-danger-role-fg);
+  box-shadow: var(--rata-theme-danger-role-ring);
+}
+
+.rata-date-picker[data-disabled] .rata-date-picker-input {
+  cursor: not-allowed;
+}
+
+/* ---- The calendar button -------------------------------------------------
+   Unlike the combobox's toggle it IS a tab stop — it opens a dialog the
+   keyboard has no other way to reach — so it draws the system ring. */
+.rata-date-picker-trigger {
+  position: absolute;
+  inset-block-start: 50%;
+  translate: 0 -50%;
+  inset-inline-end: var(--rata-space-0-5);
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--rata-size-control-sm);
+  block-size: var(--rata-size-control-sm);
+  padding: var(--rata-space-0);
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-inner);
+  background: transparent;
+  color: var(--rata-theme-fg-secondary);
+  cursor: pointer;
+}
+
+.rata-date-picker-trigger .rata-icon {
+  inline-size: var(--rata-size-icon-text);
+  block-size: var(--rata-size-icon-text);
+}
+
+.rata-date-picker-trigger:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+.rata-date-picker-trigger[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+/* ---- The calendar dialog -------------------------------------------------
+   Narrow first: a bottom sheet at full width, sheet radius on the top
+   corners and modal elevation, because here it does take over the screen. */
+.rata-date-picker-calendar {
+  box-sizing: border-box;
+  /* The UA centres a modal dialog with auto margins and an inset; this one
+     is pinned to the bottom edge instead. */
+  margin: var(--rata-space-0);
+  inset-block-start: auto;
+  inset-block-end: var(--rata-space-0);
+  inset-inline: var(--rata-space-0);
+  inline-size: 100%;
+  max-inline-size: 100%;
+  padding: var(--rata-space-padding-lg);
+  border: var(--rata-border-default) solid var(--rata-theme-border-default);
+  border-start-start-radius: var(--rata-radius-page);
+  border-start-end-radius: var(--rata-radius-page);
+  border-end-start-radius: var(--rata-radius-none);
+  border-end-end-radius: var(--rata-radius-none);
+  background: var(--rata-theme-bg-surface);
+  color: var(--rata-theme-fg-primary);
+  box-shadow: var(--rata-theme-elevation-modal);
+  font-family: var(--rata-font-family-sans);
+}
+
+/* Modal in behaviour at every width, so the scrim applies at every width. */
+.rata-date-picker-calendar::backdrop {
+  background: var(--rata-theme-scrim);
+}
+
+/* Enter only, and only for readers who have not asked for less motion. The
+   close is instant, which is how Menu and Popover avoid the exit-transition
+   trap dialog.css records. */
+@media (prefers-reduced-motion: no-preference) {
+  .rata-date-picker-calendar[open] {
+    animation: rata-date-picker-enter var(--rata-motion-overlay-duration)
+      var(--rata-motion-easing-enter);
+  }
+}
+
+@keyframes rata-date-picker-enter {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Wide: anchored to the field with anchor positioning, at overlay elevation —
+   it reads as part of the form rather than a takeover. */
+@media (--rata-medium) {
+  /* rata-allow: unknown-token — the per-instance anchor name again, read
+     here by the dialog that is placed against it. */
+  .rata-date-picker-calendar {
+    position-anchor: var(--rata-date-picker-anchor);
+    position-area: block-end span-inline-end;
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+    inset: auto;
+    margin: var(--rata-space-0);
+    margin-block-start: var(--rata-space-gap-xs);
+    inline-size: auto;
+    max-inline-size: calc(100vw - var(--rata-space-padding-lg));
+    padding: var(--rata-space-padding-sm);
+    border-radius: var(--rata-radius-container);
+    box-shadow: var(--rata-theme-elevation-overlay);
+  }
+
+  /* No anchor positioning: the UA's own centred modal, which is never
+     clipped and never off-screen. Every behaviour is identical. */
+  @supports not (anchor-name: --rata-date-picker-anchor) {
+    .rata-date-picker-calendar {
+      inset: var(--rata-space-0);
+      margin: auto;
+    }
+  }
+}
+
+.rata-date-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-block-end: var(--rata-space-stack-2xs);
+}
+
+.rata-date-picker-month {
+  margin: var(--rata-space-0);
+  font-size: var(--rata-type-control-size-md);
+  font-weight: var(--rata-type-control-weight);
+  line-height: var(--rata-type-control-line-height-md);
+  color: var(--rata-theme-fg-primary);
+}
+
+.rata-date-picker-nav {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--rata-size-control-sm);
+  block-size: var(--rata-size-control-sm);
+  padding: var(--rata-space-0);
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-inner);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.rata-date-picker-nav:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+.rata-date-picker-grid {
+  border-collapse: collapse;
+  border-spacing: var(--rata-space-0);
+  margin-inline: auto;
+}
+
+.rata-date-picker-weekday {
+  padding: var(--rata-space-0);
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-supporting-size);
+  font-weight: var(--rata-type-supporting-weight);
+  line-height: var(--rata-type-supporting-line-height);
+  text-align: center;
+}
+
+.rata-date-picker-cell {
+  padding: var(--rata-space-0);
+  text-align: center;
+}
+
+/* ---- One day: a button in a grid cell ----------------------------------
+   Narrow first, at size.control.lg — a thumb's target. */
+.rata-date-picker-day {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--rata-size-control-lg);
+  block-size: var(--rata-size-control-lg);
+  padding: var(--rata-space-0);
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-pill);
+  background: transparent;
+  color: var(--rata-theme-fg-primary);
+  font-family: inherit;
+  font-size: var(--rata-type-control-size-sm);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+@media (--rata-medium) {
+  .rata-date-picker-day {
+    inline-size: var(--rata-size-control-md);
+    block-size: var(--rata-size-control-md);
+  }
+}
+
+/* Shown so the rows are whole weeks, and still choosable. */
+.rata-date-picker-day[data-outside-month] {
+  color: var(--rata-theme-fg-muted);
+}
+
+/* Tone and weight, not a ring — a ring is the selection and validation
+   stroke in this system. */
+.rata-date-picker-day[data-today] {
+  color: var(--rata-theme-accent-role-fg);
+  font-weight: var(--rata-type-control-weight);
+}
+
+/* The chosen day. on-accent is the only foreground permitted on that fill,
+   so this outranks today's and outside-the-month's colours on purpose. The
+   selection itself is aria-selected on the cell — see the primitive. */
+.rata-date-picker-cell[aria-selected="true"] .rata-date-picker-day {
+  background: var(--rata-theme-accent-role-bg);
+  color: var(--rata-theme-fg-on-accent);
+}
+
+/* Kept on the selected day too, at the full offset: at 0 on a filled
+   accent the ring would vanish into the fill. */
+.rata-date-picker-day:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* Focusable and announced, refused when chosen. The line-through means the
+   state is not carried by dimming alone. */
+.rata-date-picker-day[aria-disabled="true"] {
+  opacity: var(--rata-state-disabled-opacity);
+  text-decoration: line-through;
+  cursor: not-allowed;
+}

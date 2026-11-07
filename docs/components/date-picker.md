@@ -5,19 +5,23 @@
 
 A labelled field for one calendar date: typed in the page's locale, or chosen from a calendar grid.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { DatePicker } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `date-picker` |
 | Family | inputs |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | `field`, `state-layer`, `icon`, `visually-hidden` |
 
 ## Behavior
 
 A text input that parses a locale-formatted date, beside a button opening the APG Date Picker Dialog — a modal with a keyboard-navigable grid of days. Composed with Field. The value is an ISO calendar date, which is the only representation of a date with no time zone in it.
+
+Headless contract: `getDatePickerProps` in `packages/primitives/src/date-picker.ts` — importable from `@rata/primitives` without the React wrapper or any CSS.
 
 - **The value is an ISO calendar date string, never a `Date`** — A `Date` is an instant: midnight on 1 November in Colombo is still 31 October in New York, so a birthday stored as a `Date` moves by a day when a server, a browser and a time zone disagree — the commonest date-picker bug there is. "2026-11-01" has no time and no zone, sorts as text, round-trips through JSON and forms unchanged, and is what `<input type="date">` itself uses as its value.
 - **Typing is the primary path; the calendar is help** — Someone entering a date of birth, or a date they are reading off a document, types it faster than they can page back forty years. So the field is a text input that parses the page locale's numeric format — the same format the placeholder shows — and the calendar button sits beside it. Parsing happens on blur and Enter, not per keystroke, for the reason Number Field gives.
@@ -45,7 +49,7 @@ A text input that parses a locale-formatted date, beside a button opening the AP
 | `calendarLabel?` | `string` | `"Choose date"` | Accessible name for the button that opens the calendar. |
 | `placeholder?` | `string` | — | Shown while empty. Defaults to the expected format for the page locale. |
 | `name?` | `string` | — | Form field name. Submits the ISO date, not the displayed text. |
-| `size?` | `"sm" \| "md" \| "lg"` | `"md"` | Control height and inline padding. Text size does not change with it. |
+| `size?` | `DatePickerSize` | `"md"` | Control height and inline padding. Text size does not change with it. |
 | `labelHidden?` | `boolean` | `false` | Takes the label off screen while leaving it in the accessibility tree. |
 | `id?` | `string` | — | Stable id for the date field, when something outside needs to point at it. |
 | `status?` | `FieldStatus` | `"idle"` | Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring. |
@@ -81,6 +85,8 @@ value?: string | null
 
 Controls the chosen date from outside, as an ISO calendar date: "2026-11-01". `null` is empty.
 
+Source doc: Controls the chosen date from outside, as an ISO calendar date. `null` is empty.
+
 **Use when**
 
 - A form library, or a return date bound to a departure date.
@@ -113,6 +119,8 @@ onValueChange?: (value: string | null) => void
 ```
 
 Fires with the ISO date when a day is chosen in the calendar, or typed text parses on blur or Enter.
+
+Source doc: Fires with the ISO date when a day is chosen, or typed text parses on blur or Enter.
 
 **Use when**
 
@@ -156,6 +164,8 @@ isDateUnavailable?: (date: string) => boolean
 
 Marks individual dates unchoosable — weekends, holidays, fully booked days.
 
+Source doc: Marks individual dates unchoosable. Runs for every visible day; precompute a set.
+
 **Use when**
 
 - Availability that `min` and `max` cannot express.
@@ -175,6 +185,8 @@ firstDayOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6
 
 Which weekday starts each row of the calendar, 0 being Sunday. Defaults to the page locale's.
 
+Source doc: Which weekday starts each row, 0 being Sunday. Defaults to the page locale's.
+
 **Use when**
 
 - A product whose week is a business rule rather than a locale convention.
@@ -190,6 +202,8 @@ calendarLabel?: string = "Choose date"
 ```
 
 Accessible name for the button that opens the calendar.
+
+Source doc: Accessible name for the calendar button. The chosen date is appended to it.
 
 **Use when**
 
@@ -234,7 +248,7 @@ Form field name. Submits the ISO date, not the displayed text.
 ### `size`
 
 ```ts
-size?: "sm" | "md" | "lg" = "md"
+size?: DatePickerSize = "md"
 ```
 
 Control height and inline padding. Text size does not change with it.
@@ -269,6 +283,8 @@ id?: string
 
 Stable id for the date field, when something outside needs to point at it.
 
+Source doc: Stable id for the date field. Defaults to a generated one.
+
 **Use when**
 
 - A form library that addresses fields by id, or an error summary linking to the field it names.
@@ -284,6 +300,8 @@ status?: FieldStatus = "idle"
 ```
 
 Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.
+
+Source doc: Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.
 
 **Use when**
 
@@ -321,6 +339,8 @@ message?: ReactNode
 
 The status-dependent line: the error, the confirmation, or the in-flight note.
 
+Source doc: Status-dependent message under the control.
+
 **Use when**
 
 - What to do about an `invalid` status, in the imperative.
@@ -339,6 +359,8 @@ required?: boolean = false
 
 Marks the field required, in the label and to assistive technology.
 
+Source doc: Marks the field required to assistive technology and in the label.
+
 **Use when**
 
 - Fields that genuinely block submission.
@@ -356,6 +378,8 @@ disabled?: boolean = false
 ```
 
 Blocks typing and opening the calendar while keeping the field focusable, readable and announced.
+
+Source doc: Blocks typing and opening the calendar while keeping the field focusable and announced.
 
 **Use when**
 
@@ -437,6 +461,12 @@ A stay with a check-in and a check-out.
 ```
 
 Workable, but it is not a range: the second calendar cannot show the stay, and each end validates alone. A range is DateRangePicker, which is a spec with no code behind it yet (decision C10) — say so rather than wiring two of these together and calling it one.
+
+## Real usage in this repo
+
+```tsx
+<DatePicker label="Date of birth" max={todayISO()} description="As it appears on your passport." />
+```
 
 ## Token recipe
 

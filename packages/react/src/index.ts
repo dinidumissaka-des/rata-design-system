@@ -71,6 +71,8 @@ export { Tooltip } from "./tooltip.js";
 export type { TooltipProps, TooltipPlacement, TooltipRelationship } from "./tooltip.js";
 export { Toast, ToastRegion, useToast } from "./toast.js";
 export type { ToastProps, ToastVariant, ToastRegionProps, ToastApi } from "./toast.js";
+export { DatePicker } from "./date-picker.js";
+export type { DatePickerProps, DatePickerSize } from "./date-picker.js";
 export { Combobox } from "./combobox.js";
 export type { ComboboxProps, ComboboxOption, ComboboxSize, ComboboxFilter } from "./combobox.js";
 export { Notice } from "./notice.js";

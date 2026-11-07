@@ -71,6 +71,46 @@ export type {
   ComboboxListboxProps,
   ComboboxOptionProps,
 } from "./combobox.js";
+export {
+  getDatePickerProps,
+  resolveDateText,
+  getCalendarGridProps,
+  addDays,
+  addMonths,
+  addYears,
+  dayOfWeek,
+  daysInMonth,
+  endOfWeek,
+  formatDayNumber,
+  formatLongDate,
+  formatMonthYear,
+  formatNumericDate,
+  isISODate,
+  isUnavailable,
+  localeFirstDayOfWeek,
+  monthOf,
+  monthWeeks,
+  numericDateFormat,
+  numericDatePlaceholder,
+  parseDateText,
+  parseISODate,
+  startOfWeek,
+  toISODate,
+  todayISO,
+  weekdayNames,
+} from "./date-picker.js";
+export type {
+  DatePickerOptions,
+  DatePickerProps,
+  DatePickerKeyEvent,
+  DatePickerCloseReason,
+  AvailabilityOptions,
+  CalendarCellProps,
+  CalendarDayProps,
+  CalendarGridOptions,
+  CalendarGridProps,
+  CalendarKeyEvent,
+} from "./date-picker.js";
 export { getSearchProps } from "./search.js";
 export type { SearchOptions, SearchProps, SearchKeyEvent } from "./search.js";
 export { getTabsProps } from "./tabs.js";

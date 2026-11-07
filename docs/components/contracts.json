@@ -2341,10 +2341,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -2357,16 +2359,16 @@
       "visually-hidden"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "label",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "What the date is. Always required — `labelHidden` hides it, nothing removes it.",
+        "declared": true,
         "summary": "What the date is. Always required — `labelHidden` hides it, nothing removes it.",
         "use": [
           "The event the date belongs to: \"Departure\", \"Date of birth\"."
@@ -2379,10 +2381,10 @@
       },
       {
         "name": "value",
-        "type": "string | null",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string | null",
+        "description": "Controls the chosen date from outside, as an ISO calendar date. `null` is empty.",
+        "declared": true,
         "summary": "Controls the chosen date from outside, as an ISO calendar date: \"2026-11-01\". `null` is empty.",
         "use": [
           "A form library, or a return date bound to a departure date."
@@ -2398,11 +2400,11 @@
       },
       {
         "name": "defaultValue",
-        "type": "string | null",
         "optional": true,
+        "type": "string | null",
+        "description": "The starting date when the component owns the state.",
         "default": "null",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The starting date when the component owns the state.",
         "use": [
           "A genuine default the reader would usually keep, such as today for a log entry."
@@ -2415,10 +2417,10 @@
       },
       {
         "name": "onValueChange",
-        "type": "(value: string | null) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(value: string | null) => void",
+        "description": "Fires with the ISO date when a day is chosen, or typed text parses on blur or Enter.",
+        "declared": true,
         "summary": "Fires with the ISO date when a day is chosen in the calendar, or typed text parses on blur or Enter.",
         "use": [
           "Reading a date without parsing a string in your locale."
@@ -2431,10 +2433,10 @@
       },
       {
         "name": "min",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The earliest choosable date, as ISO.",
+        "declared": true,
         "summary": "The earliest choosable date, as ISO.",
         "use": [
           "A booking that cannot start in the past: today's date."
@@ -2445,10 +2447,10 @@
       },
       {
         "name": "max",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The latest choosable date, as ISO.",
+        "declared": true,
         "summary": "The latest choosable date, as ISO.",
         "use": [
           "A date of birth: today, at the latest."
@@ -2459,10 +2461,10 @@
       },
       {
         "name": "isDateUnavailable",
-        "type": "(date: string) => boolean",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(date: string) => boolean",
+        "description": "Marks individual dates unchoosable. Runs for every visible day; precompute a set.",
+        "declared": true,
         "summary": "Marks individual dates unchoosable — weekends, holidays, fully booked days.",
         "use": [
           "Availability that `min` and `max` cannot express."
@@ -2476,10 +2478,10 @@
       },
       {
         "name": "firstDayOfWeek",
-        "type": "0 | 1 | 2 | 3 | 4 | 5 | 6",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "0 | 1 | 2 | 3 | 4 | 5 | 6",
+        "description": "Which weekday starts each row, 0 being Sunday. Defaults to the page locale's.",
+        "declared": true,
         "summary": "Which weekday starts each row of the calendar, 0 being Sunday. Defaults to the page locale's.",
         "use": [
           "A product whose week is a business rule rather than a locale convention."
@@ -2492,11 +2494,11 @@
       },
       {
         "name": "calendarLabel",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "Accessible name for the calendar button. The chosen date is appended to it.",
         "default": "\"Choose date\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accessible name for the button that opens the calendar.",
         "use": [
           "Translating it."
@@ -2509,10 +2511,10 @@
       },
       {
         "name": "placeholder",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Shown while empty. Defaults to the expected format for the page locale.",
+        "declared": true,
         "summary": "Shown while empty. Defaults to the expected format for the page locale.",
         "use": [
           "Leaving the default. It is generated from the same format the parser accepts, so the hint cannot disagree with the parser."
@@ -2525,10 +2527,10 @@
       },
       {
         "name": "name",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Form field name. Submits the ISO date, not the displayed text.",
+        "declared": true,
         "summary": "Form field name. Submits the ISO date, not the displayed text.",
         "use": [
           "A native form post, where the server should receive \"2026-11-01\" regardless of the reader's locale."
@@ -2539,16 +2541,16 @@
       },
       {
         "name": "size",
-        "type": "\"sm\" | \"md\" | \"lg\"",
+        "optional": true,
+        "type": "DatePickerSize",
+        "description": "Control height and inline padding. Text size does not change with it.",
+        "default": "\"md\"",
         "values": [
           "sm",
           "md",
           "lg"
         ],
-        "optional": true,
-        "default": "\"md\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Control height and inline padding. Text size does not change with it.",
         "use": [
           "Matching whatever the control sits beside."
@@ -2559,11 +2561,11 @@
       },
       {
         "name": "labelHidden",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Takes the label off screen while leaving it in the accessibility tree.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Takes the label off screen while leaving it in the accessibility tree.",
         "use": [
           "A control whose meaning is already carried by a heading or column header directly above it."
@@ -2576,10 +2578,10 @@
       },
       {
         "name": "id",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Stable id for the date field. Defaults to a generated one.",
+        "declared": true,
         "summary": "Stable id for the date field, when something outside needs to point at it.",
         "use": [
           "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -2592,11 +2594,11 @@
       },
       {
         "name": "status",
-        "type": "FieldStatus",
         "optional": true,
+        "type": "FieldStatus",
+        "description": "Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.",
         "default": "\"idle\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
         "use": [
           "`invalid` with a `message` saying what to do about it."
@@ -2609,10 +2611,10 @@
       },
       {
         "name": "description",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Persistent helper text under the control.",
+        "declared": true,
         "summary": "Persistent helper text under the control.",
         "use": [
           "The constraint before the reader picks: \"Any weekday in the next 30 days.\""
@@ -2625,10 +2627,10 @@
       },
       {
         "name": "message",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Status-dependent message under the control.",
+        "declared": true,
         "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
         "use": [
           "What to do about an `invalid` status, in the imperative."
@@ -2641,11 +2643,11 @@
       },
       {
         "name": "required",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Marks the field required to assistive technology and in the label.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Marks the field required, in the label and to assistive technology.",
         "use": [
           "Fields that genuinely block submission."
@@ -2658,11 +2660,11 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Blocks typing and opening the calendar while keeping the field focusable and announced.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Blocks typing and opening the calendar while keeping the field focusable, readable and announced.",
         "use": [
           "A date fixed by an earlier choice that should still be readable."
@@ -2675,10 +2677,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Class for the wrapper — the width the form wants, not a restyle.",
+        "declared": true,
         "summary": "Class for the wrapper — the width the form wants, not a restyle.",
         "use": [
           "A measure that fits the formatted date. A full-width date field looks like it wants a sentence."
@@ -2715,6 +2717,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getDatePickerProps",
       "summary": "A text input that parses a locale-formatted date, beside a button opening the APG Date Picker Dialog — a modal with a keyboard-navigable grid of days. Composed with Field. The value is an ISO calendar date, which is the only representation of a date with no time zone in it.",
       "decisions": [
         {
@@ -2840,7 +2843,7 @@
         }
       }
     },
-    "example": null
+    "example": "<DatePicker label=\"Date of birth\" max={todayISO()} description=\"As it appears on your passport.\" />"
   },
   {
     "name": "date-range-picker",
