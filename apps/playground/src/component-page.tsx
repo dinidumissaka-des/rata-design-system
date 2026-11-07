@@ -3708,10 +3708,10 @@ function ComponentThumbnail({ name, status }: { name: string; status?: string })
 }
 
 const BOTTOM_NAV_SECTIONS = [
-  { label: "Home", href: "#", icon: Star, current: true },
-  { label: "Search", href: "#", icon: SearchGlyph },
-  { label: "Inbox", href: "#", icon: Settings, badge: { count: 3, label: "3 unread messages" } },
-  { label: "Profile", href: "#", icon: User },
+  { label: "Home", href: "#home", icon: Star, current: true },
+  { label: "Search", href: "#search", icon: SearchGlyph },
+  { label: "Inbox", href: "#inbox", icon: Settings, badge: { count: 3, label: "3 unread messages" } },
+  { label: "Profile", href: "#profile", icon: User },
 ];
 
 /**
