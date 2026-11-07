@@ -13,6 +13,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import {
   Avatar,
+  DateRangePicker,
   FileUpload,
   DatePicker,
   Combobox,
@@ -91,6 +92,7 @@ import type {
   TableSort,
 } from "@rata/react";
 import { addDays, dayOfWeek, todayISO } from "@rata/primitives";
+import type { DateRange } from "@rata/primitives";
 import type { TabsActivation, TabsOrientation } from "@rata/primitives";
 import type { SegmentedControlSize } from "@rata/react";
 import type { IconSize, LucideIcon } from "@rata/icons";
@@ -1310,6 +1312,25 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     "A compact attachment control": () => (
       <FileUpload label="Attachments" labelHidden multiple dropzone={false} buttonLabel="Attach files" />
     ),
+  },
+
+  "date-range-picker": {
+    "A stay": () => (
+      <div className="pg-block-stack">
+        <DateRangePicker
+          label="Stay"
+          startLabel="Check-in"
+          endLabel="Check-out"
+          min={todayISO()}
+          isDateUnavailable={(d) => BOOKED.has(d)}
+          startName="checkin"
+          endName="checkout"
+          required
+        />
+      </div>
+    ),
+    "A reporting period": () => <ReportingPeriodStage />,
+    "An end before the start": () => <BackwardsStayStage />,
   },
 
   spinner: {
@@ -4014,4 +4035,46 @@ function FileUploadInFlightStage() {
   };
 
   return <FileUpload label="Attachments" multiple value={files} onValueChange={startUploads} />;
+}
+
+/** A controlled range, shown as it arrives — one end null while the other is filled. */
+function ReportingPeriodStage() {
+  const [range, setRange] = useState<DateRange>({ start: null, end: null });
+  return (
+    <div className="pg-block-stack">
+      <DateRangePicker
+        label="Period"
+        startLabel="From"
+        endLabel="To"
+        max={todayISO()}
+        value={range}
+        onValueChange={setRange}
+      />
+      <Text role="supporting" tone="muted">
+        Value: {range.start ?? "null"} to {range.end ?? "null"}
+      </Text>
+    </div>
+  );
+}
+
+/** The caller's validation: typed ends are passed through, so the caller says what is wrong. */
+function BackwardsStayStage() {
+  const [range, setRange] = useState<DateRange>(() => ({
+    start: addDays(todayISO(), 7),
+    end: addDays(todayISO(), 3),
+  }));
+  const backwards = range.start !== null && range.end !== null && range.end < range.start;
+  return (
+    <div className="pg-block-stack">
+      <DateRangePicker
+        label="Stay"
+        startLabel="Check-in"
+        endLabel="Check-out"
+        value={range}
+        onValueChange={setRange}
+        status={backwards ? "invalid" : "idle"}
+        message={backwards ? "Check-out must be after check-in." : undefined}
+      />
+    </div>
+  );
 }

@@ -39,10 +39,10 @@ before writing a prop you haven't used in this repo before.
 
 **Component names are `kebab-case` and match the registry exactly**
 (`button`, `state-layer`, `text-field`) — check `npm run ui -- list` before
-typing one from memory. `table` is the name most often reached for that is
-not in the registry at all; `card` is, as of its gate-3 ship. Which
-entries are in the `future` state changes every time one ships, so this file
-deliberately doesn't name them: `npm run ui -- list` is the only current
+typing one from memory — `card`, `table` and `link` are all real entries,
+and a name that isn't listed is not a component, however familiar it sounds.
+Which entries are in the `future` state changes every time one ships, so this
+file deliberately doesn't name them: `npm run ui -- list` is the only current
 answer. A `future` entry is a contract approved at gate 1 with no code behind
 it, and its page says **spec** before any implementation exists.
 
