@@ -44,6 +44,7 @@ import {
   RadioGroup,
   MobileNav,
   NumberField,
+  PinInput,
   Search,
   SegmentedControl,
   Select,
@@ -649,6 +650,18 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
         message="Teams on this plan have at most 10 people."
       />
     ),
+  },
+
+  "pin-input": {
+    "A code sent by SMS or email": () => (
+      <PinInput
+        label="Verification code"
+        description="We sent it to the number ending 0142."
+        length={6}
+      />
+    ),
+    "A wrong code": () => <PinInputWrongCodeStage />,
+    "A PIN the reader knows": () => <PinInput label="PIN" length={4} purpose="pin" />,
   },
 
   link: {
@@ -1730,6 +1743,25 @@ function MenuItemStage({
         {children}
       </MenuItem>
     </Menu>
+  );
+}
+
+/**
+ * A code the server rejected: controlled, invalid, and cleared — the state
+ * the case describes after a failed attempt. A component for the reason
+ * `RadioStage` gives: it needs useState.
+ */
+function PinInputWrongCodeStage() {
+  const [code, setCode] = useState("");
+  return (
+    <PinInput
+      label="Verification code"
+      length={6}
+      value={code}
+      onValueChange={setCode}
+      status="invalid"
+      message="That code did not match. Check the latest message and try again."
+    />
   );
 }
 

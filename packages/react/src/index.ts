@@ -118,3 +118,5 @@ export type {
 } from "./table.js";
 export { NumberField } from "./number-field.js";
 export type { NumberFieldProps, NumberFieldSize } from "./number-field.js";
+export { PinInput } from "./pin-input.js";
+export type { PinInputProps, PinInputSize, PinInputCharacters, PinInputPurpose } from "./pin-input.js";

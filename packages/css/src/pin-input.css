@@ -1,0 +1,124 @@
+/* rata-allow: missing-focus-ring — the same deliberate departure text-field.css
+   records at length: the active box focuses in theme.fg.primary rather than
+   theme.focus-ring, so this reads as a text box and every text box in a form
+   focuses alike. The ring is drawn on the box at the caret, because the real
+   control lies over the boxes and is transparent. */
+
+/* Pin input — the row of boxes and the transparent control over them, and
+   nothing around them. Label, helper text, message and disabled dimming come
+   from field.css; every selector reading `.rata-pin-input[data-status=…]` is
+   matching the Field root, which carries both classes. */
+.rata-pin-input-well {
+  position: relative;
+  display: inline-flex;
+  align-self: flex-start;
+}
+
+.rata-pin-input-boxes {
+  display: flex;
+  gap: var(--rata-space-gap-sm);
+}
+
+/* Each box is the text field's box in miniature. */
+.rata-pin-input-box {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: var(--rata-border-default) solid var(--rata-theme-border-strong);
+  border-radius: var(--rata-radius-element);
+  background: var(--rata-theme-bg-surface);
+  color: var(--rata-theme-fg-primary);
+  /* Every character the same width, so a 1 and an 8 sit centred alike. */
+  font-family: var(--rata-font-family-mono);
+  font-size: var(--rata-type-control-size-lg);
+  line-height: var(--rata-type-control-line-height-lg);
+}
+
+/* Sizes — a control step used as a width, the way Dialog measures itself in
+   controls. There is no sm: a code box smaller than a control is a target
+   smaller than a fingertip. */
+.rata-pin-input--md .rata-pin-input-box {
+  inline-size: var(--rata-size-control-md);
+  block-size: var(--rata-size-control-lg);
+}
+
+.rata-pin-input--lg .rata-pin-input-box {
+  inline-size: var(--rata-size-control-lg);
+  block-size: calc(var(--rata-size-control-lg) + var(--rata-space-2));
+}
+
+/* A masked character: a dot, drawn with a spacing step for a mark rather
+   than a glyph — the reasoning Switch's thumb follows. */
+.rata-pin-input-dot {
+  inline-size: var(--rata-space-2);
+  block-size: var(--rata-space-2);
+  border-radius: var(--rata-radius-pill);
+  background: currentColor;
+}
+
+/* The control lies over every box at full size, so a tap anywhere lands in
+   it. Transparent rather than hidden: it is the one thing a screen reader,
+   autofill and the keyboard deal with. */
+.rata-pin-input-control {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+  border: none;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  font-size: var(--rata-type-control-size-lg);
+  opacity: 0;
+}
+
+/* The box at the caret while the control is focused: the text field's focus
+   departure — an outline flush with the border, which darkens to match. */
+.rata-pin-input-box[data-state="active"] {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-fg-primary);
+  outline-offset: var(--rata-space-0);
+  border-color: var(--rata-theme-fg-primary);
+}
+
+/* The caret: border.2 wide, centred in the active empty box. */
+.rata-pin-input-box[data-caret]::after {
+  content: "";
+  inline-size: var(--rata-border-2);
+  block-size: 1em;
+  background: var(--rata-theme-fg-primary);
+}
+
+/* Blinking only where motion is welcome; steady otherwise. */
+@media (prefers-reduced-motion: no-preference) {
+  .rata-pin-input-box[data-caret]::after {
+    animation: rata-pin-input-caret calc(2 * var(--rata-motion-duration-slow)) step-end infinite;
+  }
+}
+
+@keyframes rata-pin-input-caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---- Validation: the ring is on every box, because the code is wrong as a
+   whole, not one digit of it. */
+.rata-pin-input[data-status="validating"] .rata-pin-input-box {
+  box-shadow: var(--rata-theme-accent-role-ring);
+}
+
+.rata-pin-input[data-status="valid"] .rata-pin-input-box {
+  box-shadow: var(--rata-theme-success-role-ring);
+}
+
+.rata-pin-input[data-status="invalid"] .rata-pin-input-box {
+  box-shadow: var(--rata-theme-danger-role-ring);
+}
+
+.rata-pin-input[data-disabled] .rata-pin-input-control {
+  cursor: not-allowed;
+}

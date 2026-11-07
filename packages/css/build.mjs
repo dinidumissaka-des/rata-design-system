@@ -34,6 +34,8 @@ const ORDER = [
   "select.css",
   // After text-field: composes Field and redraws the text field's box, with two step wells.
   "number-field.css",
+  // After text-field: composes Field and draws the text field's box once per character.
+  "pin-input.css",
   "search.css",
   "checkbox.css",
   // After checkbox: radio shares its construction and overrides the shape.

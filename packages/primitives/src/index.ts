@@ -188,3 +188,13 @@ export type {
   NumberFieldStepButtonProps,
   NumberFieldKeyEvent,
 } from "./number-field.js";
+export { getPinInputProps, filterCode } from "./pin-input.js";
+export type {
+  PinInputOptions,
+  PinInputProps,
+  PinInputBox,
+  PinInputBoxState,
+  PinInputCharacters,
+  PinInputPurpose,
+  PinInputPasteEvent,
+} from "./pin-input.js";

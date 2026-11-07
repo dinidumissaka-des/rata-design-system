@@ -8493,10 +8493,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -8507,16 +8509,16 @@
       "visually-hidden"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "label",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "What the code is. Always required — `labelHidden` hides it, nothing removes it.",
+        "declared": true,
         "summary": "What the code is. Always required — `labelHidden` hides it, nothing removes it.",
         "use": [
           "Where the code came from, when that is the useful part: \"Code from your authenticator app\"."
@@ -8529,10 +8531,10 @@
       },
       {
         "name": "length",
-        "type": "number",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "number",
+        "description": "How many characters the code has. Draws that many boxes and caps the input.",
+        "declared": true,
         "summary": "How many characters the code has. Draws that many boxes and caps the input.",
         "use": [
           "The exact length the server sends — usually 6 for a one-time code, 4 to 8 for a PIN."
@@ -8545,10 +8547,10 @@
       },
       {
         "name": "value",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Controls the code from outside.",
+        "declared": true,
         "summary": "Controls the code from outside.",
         "use": [
           "Clearing the field after a failed attempt."
@@ -8563,11 +8565,11 @@
       },
       {
         "name": "defaultValue",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "The starting text when the component owns the state.",
         "default": "\"\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The starting text when the component owns the state.",
         "use": [
           "Almost never. A pre-filled one-time code is a code someone else already read."
@@ -8580,10 +8582,10 @@
       },
       {
         "name": "onValueChange",
-        "type": "(value: string) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(value: string) => void",
+        "description": "Fires with the whole code on every change.",
+        "declared": true,
         "summary": "Fires with the whole code on every change.",
         "use": [
           "Tracking a partial code, to enable a submit button only when it is complete."
@@ -8594,10 +8596,10 @@
       },
       {
         "name": "onComplete",
-        "type": "(value: string) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(value: string) => void",
+        "description": "Fires once when the code reaches `length` characters.",
+        "declared": true,
         "summary": "Fires once when the code reaches `length` characters.",
         "use": [
           "Starting verification — the commonest reason for this component's existence is to save the reader a tap."
@@ -8610,15 +8612,15 @@
       },
       {
         "name": "characters",
-        "type": "\"numeric\" | \"alphanumeric\"",
+        "optional": true,
+        "type": "PinInputCharacters",
+        "description": "Which characters are accepted, and which on-screen keyboard appears.",
+        "default": "\"numeric\"",
         "values": [
           "numeric",
           "alphanumeric"
         ],
-        "optional": true,
-        "default": "\"numeric\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Which characters are accepted, and which on-screen keyboard appears.",
         "use": [
           "`alphanumeric` for codes like recovery keys that mix letters and digits."
@@ -8631,15 +8633,15 @@
       },
       {
         "name": "purpose",
-        "type": "\"one-time-code\" | \"pin\"",
+        "optional": true,
+        "type": "PinInputPurpose",
+        "description": "Whether this is a code the reader was sent or a secret they know.",
+        "default": "\"one-time-code\"",
         "values": [
           "one-time-code",
           "pin"
         ],
-        "optional": true,
-        "default": "\"one-time-code\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Whether this is a code the reader was sent or a secret they know.",
         "use": [
           "`one-time-code` for SMS and email codes — the browser and the OS offer to fill it from the message.",
@@ -8653,10 +8655,10 @@
       },
       {
         "name": "name",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Form field name. Submits the code as one string.",
+        "declared": true,
         "summary": "Form field name. Submits the code as one string.",
         "use": [
           "A native form post."
@@ -8667,15 +8669,15 @@
       },
       {
         "name": "size",
-        "type": "\"md\" | \"lg\"",
+        "optional": true,
+        "type": "PinInputSize",
+        "description": "Box size. There is no `sm`.",
+        "default": "\"lg\"",
         "values": [
           "md",
           "lg"
         ],
-        "optional": true,
-        "default": "\"lg\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Box size. There is no `sm`: a code box smaller than a control is a target smaller than a fingertip.",
         "use": [
           "`md` inside a dense dialog where six large boxes do not fit."
@@ -8686,11 +8688,11 @@
       },
       {
         "name": "labelHidden",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Takes the label off screen while leaving it in the accessibility tree.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Takes the label off screen while leaving it in the accessibility tree.",
         "use": [
           "A control whose meaning is already carried by a heading or column header directly above it."
@@ -8703,10 +8705,10 @@
       },
       {
         "name": "id",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Stable id for the code input. Defaults to a generated one.",
+        "declared": true,
         "summary": "Stable id for the code input, when something outside needs to point at it.",
         "use": [
           "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -8719,11 +8721,11 @@
       },
       {
         "name": "status",
-        "type": "FieldStatus",
         "optional": true,
+        "type": "FieldStatus",
+        "description": "Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring on every box.",
         "default": "\"idle\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
         "use": [
           "`invalid` with a `message` saying what to do about it."
@@ -8736,10 +8738,10 @@
       },
       {
         "name": "description",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Persistent helper text under the control.",
+        "declared": true,
         "summary": "Persistent helper text under the control.",
         "use": [
           "A constraint the reader needs before they answer."
@@ -8752,10 +8754,10 @@
       },
       {
         "name": "message",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Status-dependent message under the control.",
+        "declared": true,
         "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
         "use": [
           "What to do about an `invalid` status, in the imperative."
@@ -8768,11 +8770,11 @@
       },
       {
         "name": "required",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Marks the field required to assistive technology and in the label.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Marks the field required, in the label and to assistive technology.",
         "use": [
           "Fields that genuinely block submission."
@@ -8785,11 +8787,11 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Blocks typing while keeping the input focusable, readable and announced.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Blocks typing while keeping the input focusable, readable and announced.",
         "use": [
           "While a verification request is in flight, alongside `status=\"validating\"`."
@@ -8802,10 +8804,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Class for the wrapper — placement, not a restyle.",
+        "declared": true,
         "summary": "Class for the wrapper — placement, not a restyle.",
         "use": [
           "Centring the boxes in a verification screen."
@@ -8842,6 +8844,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getPinInputProps",
       "summary": "A single labelled text input, capped at `length`, rendered as a row of boxes it lies over. Composed with Field for the label, helper text and validation. Autofill, paste and Backspace are the platform's, because there is only one input.",
       "decisions": [
         {
@@ -8900,7 +8903,7 @@
         }
       }
     },
-    "example": null
+    "example": "<PinInput label=\"PIN\" length={4} purpose=\"pin\" />"
   },
   {
     "name": "popover",

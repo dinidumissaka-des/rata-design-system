@@ -5,19 +5,23 @@
 
 A fixed-length code entered into one input drawn as boxes — one-time codes and PINs.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { PinInput } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `pin-input` |
 | Family | inputs |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | `field`, `visually-hidden` |
 
 ## Behavior
 
 A single labelled text input, capped at `length`, rendered as a row of boxes it lies over. Composed with Field for the label, helper text and validation. Autofill, paste and Backspace are the platform's, because there is only one input.
+
+Headless contract: `getPinInputProps` in `packages/primitives/src/pin-input.ts` — importable from `@rata/primitives` without the React wrapper or any CSS.
 
 - **One input, with the boxes drawn — never one input per box** — Six inputs is how most code fields are built and it breaks four things at once: SMS and email autofill (`autocomplete="one-time-code"`) fills one input, not six; paste lands in the first box only unless every box intercepts it; a screen reader announces six unlabelled edit fields; and Backspace across boxes has to be reimplemented and is usually wrong at the boundaries. One input gets all four from the platform. The boxes are an `aria-hidden` rendering of its value, with the caret position drawn as the active box.
 - **No APG pattern applies, so it is a text input and says so** — There is no WAI-ARIA pattern for a segmented code, and inventing a composite role would announce something no reader has learned. It is a labelled `textbox` with `maxLength`, `inputmode` and `autocomplete` — which is what it is.
@@ -38,10 +42,10 @@ A single labelled text input, capped at `length`, rendered as a row of boxes it 
 | `defaultValue?` | `string` | `""` | The starting text when the component owns the state. |
 | `onValueChange?` | `(value: string) => void` | — | Fires with the whole code on every change. |
 | `onComplete?` | `(value: string) => void` | — | Fires once when the code reaches `length` characters. |
-| `characters?` | `"numeric" \| "alphanumeric"` | `"numeric"` | Which characters are accepted, and which on-screen keyboard appears. |
-| `purpose?` | `"one-time-code" \| "pin"` | `"one-time-code"` | Whether this is a code the reader was sent or a secret they know. |
+| `characters?` | `PinInputCharacters` | `"numeric"` | Which characters are accepted, and which on-screen keyboard appears. |
+| `purpose?` | `PinInputPurpose` | `"one-time-code"` | Whether this is a code the reader was sent or a secret they know. |
 | `name?` | `string` | — | Form field name. Submits the code as one string. |
-| `size?` | `"md" \| "lg"` | `"lg"` | Box size. There is no `sm`: a code box smaller than a control is a target smaller than a fingertip. |
+| `size?` | `PinInputSize` | `"lg"` | Box size. There is no `sm`: a code box smaller than a control is a target smaller than a fingertip. |
 | `labelHidden?` | `boolean` | `false` | Takes the label off screen while leaving it in the accessibility tree. |
 | `id?` | `string` | — | Stable id for the code input, when something outside needs to point at it. |
 | `status?` | `FieldStatus` | `"idle"` | Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring. |
@@ -150,7 +154,7 @@ Fires once when the code reaches `length` characters.
 ### `characters`
 
 ```ts
-characters?: "numeric" | "alphanumeric" = "numeric"
+characters?: PinInputCharacters = "numeric"
 ```
 
 Which characters are accepted, and which on-screen keyboard appears.
@@ -168,7 +172,7 @@ Which characters are accepted, and which on-screen keyboard appears.
 ### `purpose`
 
 ```ts
-purpose?: "one-time-code" | "pin" = "one-time-code"
+purpose?: PinInputPurpose = "one-time-code"
 ```
 
 Whether this is a code the reader was sent or a secret they know.
@@ -199,10 +203,12 @@ Form field name. Submits the code as one string.
 ### `size`
 
 ```ts
-size?: "md" | "lg" = "lg"
+size?: PinInputSize = "lg"
 ```
 
 Box size. There is no `sm`: a code box smaller than a control is a target smaller than a fingertip.
+
+Source doc: Box size. There is no `sm`.
 
 **Use when**
 
@@ -234,6 +240,8 @@ id?: string
 
 Stable id for the code input, when something outside needs to point at it.
 
+Source doc: Stable id for the code input. Defaults to a generated one.
+
 **Use when**
 
 - A form library that addresses fields by id, or an error summary linking to the field it names.
@@ -249,6 +257,8 @@ status?: FieldStatus = "idle"
 ```
 
 Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.
+
+Source doc: Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring on every box.
 
 **Use when**
 
@@ -286,6 +296,8 @@ message?: ReactNode
 
 The status-dependent line: the error, the confirmation, or the in-flight note.
 
+Source doc: Status-dependent message under the control.
+
 **Use when**
 
 - What to do about an `invalid` status, in the imperative.
@@ -303,6 +315,8 @@ required?: boolean = false
 ```
 
 Marks the field required, in the label and to assistive technology.
+
+Source doc: Marks the field required to assistive technology and in the label.
 
 **Use when**
 
@@ -397,6 +411,12 @@ A recovery key of 24 characters in groups.
 ```
 
 Don't. Twenty-four boxes do not fit a phone and nobody types a key that long one box at a time. It is a `TextField` the reader pastes into.
+
+## Real usage in this repo
+
+```tsx
+<PinInput label="PIN" length={4} purpose="pin" />
+```
 
 ## Token recipe
 

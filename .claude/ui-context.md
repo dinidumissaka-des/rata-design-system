@@ -49,7 +49,7 @@ this path is the honest answer to when it last actually moved.
 | [number-field](../docs/components/number-field.md) | `@rata/react` | inputs | future / future / future | free |
 | [pagination](../docs/components/pagination.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [panel](../docs/components/panel.md) | `@rata/react` | content | latest / latest / future | free |
-| [pin-input](../docs/components/pin-input.md) | `@rata/react` | inputs | future / future / future | free |
+| [pin-input](../docs/components/pin-input.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [popover](../docs/components/popover.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [progress](../docs/components/progress.md) | `@rata/react` | loading | latest / latest / future | free |
 | [radio](../docs/components/radio.md) | `@rata/react` | inputs | latest / latest / future | free |
@@ -804,9 +804,49 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/panel.md](../docs/components/panel.md)
 
-### Pin Input
+### Pin Input (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `label: ReactNode`
+  What the code is. Always required — `labelHidden` hides it, nothing removes it.
+- `length: number`
+  How many characters the code has. Draws that many boxes and caps the input.
+- `value?: string`
+  Controls the code from outside.
+- `defaultValue?: string` — default: `""`
+  The starting text when the component owns the state.
+- `onValueChange?: (value: string) => void`
+  Fires with the whole code on every change.
+- `onComplete?: (value: string) => void`
+  Fires once when the code reaches `length` characters.
+- `characters?: PinInputCharacters` — default: `"numeric"`
+  Which characters are accepted, and which on-screen keyboard appears.
+- `purpose?: PinInputPurpose` — default: `"one-time-code"`
+  Whether this is a code the reader was sent or a secret they know.
+- `name?: string`
+  Form field name. Submits the code as one string.
+- `size?: PinInputSize` — default: `"lg"`
+  Box size. There is no `sm`.
+- `labelHidden?: boolean` — default: `false`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the code input. Defaults to a generated one.
+- `status?: FieldStatus` — default: `"idle"`
+  Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring on every box.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `message?: ReactNode`
+  Status-dependent message under the control.
+- `required?: boolean` — default: `false`
+  Marks the field required to assistive technology and in the label.
+- `disabled?: boolean` — default: `false`
+  Blocks typing while keeping the input focusable, readable and announced.
+- `className?: string`
+  Class for the wrapper — placement, not a restyle.
+
+Real usage (from `apps/`):
+```tsx
+<PinInput label="PIN" length={4} purpose="pin" />
+```
 
 Contract: [docs/components/pin-input.md](../docs/components/pin-input.md)
 

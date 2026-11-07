@@ -44,7 +44,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Number Field](number-field.md) | `number-field` | inputs | future / future | spec | free |
 | [Pagination](pagination.md) | `pagination` | navigation | latest / latest | documented | free |
 | [Panel](panel.md) | `panel` | content | latest / latest | documented | free |
-| [Pin Input](pin-input.md) | `pin-input` | inputs | future / future | spec | free |
+| [Pin Input](pin-input.md) | `pin-input` | inputs | latest / latest | documented | free |
 | [Popover](popover.md) | `popover` | overlays | latest / latest | documented | free |
 | [Progress](progress.md) | `progress` | loading | latest / latest | documented | free |
 | [Radio](radio.md) | `radio` | inputs | latest / latest | documented | free |

@@ -12,10 +12,12 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
@@ -25,7 +27,24 @@
     "field",
     "visually-hidden"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/pin-input.css",
+      "target": "styles/pin-input.css"
+    },
+    {
+      "source": "packages/react/src/pin-input.tsx",
+      "target": "components/pin-input.tsx"
+    },
+    {
+      "source": "packages/primitives/src/pin-input.ts",
+      "target": "lib/pin-input.ts"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -50,6 +69,7 @@
     }
   },
   "behavior": {
+    "primitive": "getPinInputProps",
     "summary": "A single labelled text input, capped at `length`, rendered as a row of boxes it lies over. Composed with Field for the label, helper text and validation. Autofill, paste and Backspace are the platform's, because there is only one input.",
     "decisions": [
       {
@@ -88,8 +108,6 @@
   },
   "props": {
     "label": {
-      "type": "ReactNode",
-      "required": true,
       "summary": "What the code is. Always required — `labelHidden` hides it, nothing removes it.",
       "use": [
         "Where the code came from, when that is the useful part: \"Code from your authenticator app\"."
@@ -100,8 +118,6 @@
       "a11y": "Bound to the single input by Field, so it is the accessible name. The boxes are `aria-hidden` and add nothing to it."
     },
     "length": {
-      "type": "number",
-      "required": true,
       "summary": "How many characters the code has. Draws that many boxes and caps the input.",
       "use": [
         "The exact length the server sends — usually 6 for a one-time code, 4 to 8 for a PIN."
@@ -112,7 +128,6 @@
       "a11y": "Becomes the input's `maxLength`, and is stated in the description chain as \"6 characters\" so a reader who cannot see the boxes knows how many to type."
     },
     "value": {
-      "type": "string",
       "summary": "Controls the code from outside.",
       "use": [
         "Clearing the field after a failed attempt."
@@ -125,8 +140,6 @@
       ]
     },
     "defaultValue": {
-      "type": "string",
-      "default": "\"\"",
       "summary": "The starting text when the component owns the state.",
       "use": [
         "Almost never. A pre-filled one-time code is a code someone else already read."
@@ -136,14 +149,12 @@
       ]
     },
     "onValueChange": {
-      "type": "(value: string) => void",
       "summary": "Fires with the whole code on every change.",
       "use": [
         "Tracking a partial code, to enable a submit button only when it is complete."
       ]
     },
     "onComplete": {
-      "type": "(value: string) => void",
       "summary": "Fires once when the code reaches `length` characters.",
       "use": [
         "Starting verification — the commonest reason for this component's existence is to save the reader a tap."
@@ -153,8 +164,6 @@
       ]
     },
     "characters": {
-      "type": "\"numeric\" | \"alphanumeric\"",
-      "default": "\"numeric\"",
       "summary": "Which characters are accepted, and which on-screen keyboard appears.",
       "use": [
         "`alphanumeric` for codes like recovery keys that mix letters and digits."
@@ -165,8 +174,6 @@
       "a11y": "Characters outside the set are dropped rather than rejected with an error, and a paste is filtered the same way — so a pasted \"123-456\" becomes \"123456\"."
     },
     "purpose": {
-      "type": "\"one-time-code\" | \"pin\"",
-      "default": "\"one-time-code\"",
       "summary": "Whether this is a code the reader was sent or a secret they know.",
       "use": [
         "`one-time-code` for SMS and email codes — the browser and the OS offer to fill it from the message.",
@@ -178,23 +185,18 @@
       "a11y": "`pin` renders the input as `type=\"password\"`, so a screen reader says \"bullet\" rather than reading the digits aloud."
     },
     "name": {
-      "type": "string",
       "summary": "Form field name. Submits the code as one string.",
       "use": [
         "A native form post."
       ]
     },
     "size": {
-      "type": "\"md\" | \"lg\"",
-      "default": "\"lg\"",
       "summary": "Box size. There is no `sm`: a code box smaller than a control is a target smaller than a fingertip.",
       "use": [
         "`md` inside a dense dialog where six large boxes do not fit."
       ]
     },
     "labelHidden": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Takes the label off screen while leaving it in the accessibility tree.",
       "use": [
         "A control whose meaning is already carried by a heading or column header directly above it."
@@ -205,7 +207,6 @@
       "a11y": "Field's, unchanged: the label element is still rendered and still bound. Only the pixels go."
     },
     "id": {
-      "type": "string",
       "summary": "Stable id for the code input, when something outside needs to point at it.",
       "use": [
         "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -215,8 +216,6 @@
       ]
     },
     "status": {
-      "type": "FieldStatus",
-      "default": "\"idle\"",
       "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
       "use": [
         "`invalid` with a `message` saying what to do about it."
@@ -227,7 +226,6 @@
       "a11y": "Field's, unchanged."
     },
     "description": {
-      "type": "ReactNode",
       "summary": "Persistent helper text under the control.",
       "use": [
         "A constraint the reader needs before they answer."
@@ -238,7 +236,6 @@
       "a11y": "Joins `aria-describedby` ahead of the message, so a constraint is heard before a failure."
     },
     "message": {
-      "type": "ReactNode",
       "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
       "use": [
         "What to do about an `invalid` status, in the imperative."
@@ -249,8 +246,6 @@
       "a11y": "Announced politely rather than as an alert, because it is already in `aria-describedby`."
     },
     "required": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Marks the field required, in the label and to assistive technology.",
       "use": [
         "Fields that genuinely block submission."
@@ -261,8 +256,6 @@
       "a11y": "`aria-required` on the control; the rendered marker is `aria-hidden`."
     },
     "disabled": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Blocks typing while keeping the input focusable, readable and announced.",
       "use": [
         "While a verification request is in flight, alongside `status=\"validating\"`."
@@ -273,7 +266,6 @@
       "a11y": "`aria-disabled` plus `readOnly` from Field."
     },
     "className": {
-      "type": "string",
       "summary": "Class for the wrapper — placement, not a restyle.",
       "use": [
         "Centring the boxes in a verification screen."
