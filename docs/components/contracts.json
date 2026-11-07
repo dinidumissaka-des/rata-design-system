@@ -11283,10 +11283,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -11294,22 +11296,22 @@
     },
     "dependencies": [],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLSpanElement>, \"children\" | \"aria-hidden\">",
     "props": [
       {
         "name": "shape",
-        "type": "\"text\" | \"block\" | \"circle\"",
+        "optional": true,
+        "type": "SkeletonShape",
+        "description": "What kind of content it stands in for.",
+        "default": "\"text\"",
         "values": [
           "text",
           "block",
           "circle"
         ],
-        "optional": true,
-        "default": "\"text\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "What kind of content it stands in for.",
         "use": [
           "`text` for lines of running text — sized from the type scale.",
@@ -11324,11 +11326,11 @@
       },
       {
         "name": "lines",
-        "type": "number",
         "optional": true,
+        "type": "number",
+        "description": "How many lines a `text` skeleton stands in for.",
         "default": "1",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "How many lines a `text` skeleton stands in for.",
         "use": [
           "The usual line count of what replaces it — 3 for a summary, 1 for a title."
@@ -11341,10 +11343,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Extra classes, for the size of a `block` or `circle` and its placement.",
+        "declared": true,
         "summary": "Extra classes, for the size of a `block` or `circle` and its placement.",
         "use": [
           "Taking the size of the thing it replaces, from the same layout rule that sizes that thing."
@@ -11427,7 +11429,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Skeleton lines={2} />"
   },
   {
     "name": "slider",

@@ -27,6 +27,7 @@ import {
   Panel,
   Popover,
   Sheet,
+  Skeleton,
   Menu,
   MenuItem,
   MenuSeparator,
@@ -1004,6 +1005,19 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
         <Switch label="Email digest" labelHidden defaultChecked />
         <Switch label="Push digest" labelHidden />
       </span>
+    ),
+  },
+
+  skeleton: {
+    "A list whose shape is known": () => (
+      <section aria-busy="true" aria-labelledby="pg-skeleton-activity" className="pg-block-stack pg-wide-specimen">
+        <Heading level={4} id="pg-skeleton-activity">
+          Activity
+        </Heading>
+        <Spinner label="Loading activity" />
+        <Skeleton lines={2} />
+        <Skeleton lines={2} />
+      </section>
     ),
   },
 

@@ -5,14 +5,16 @@
 
 A placeholder in the shape of content that is about to load, so the layout does not jump when it arrives.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Skeleton } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `skeleton` |
 | Family | loading |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | — |
 
 ## Behavior
@@ -27,16 +29,18 @@ An `aria-hidden` block. The region that is loading — not the skeleton — carr
 
 ## Props
 
+Extends `Omit<HTMLAttributes<HTMLSpanElement>, "children" | "aria-hidden">`.
+
 | Prop | Type | Default | Summary |
 |---|---|---|---|
-| `shape?` | `"text" \| "block" \| "circle"` | `"text"` | What kind of content it stands in for. |
+| `shape?` | `SkeletonShape` | `"text"` | What kind of content it stands in for. |
 | `lines?` | `number` | `1` | How many lines a `text` skeleton stands in for. |
 | `className?` | `string` | — | Extra classes, for the size of a `block` or `circle` and its placement. |
 
 ### `shape`
 
 ```ts
-shape?: "text" | "block" | "circle" = "text"
+shape?: SkeletonShape = "text"
 ```
 
 What kind of content it stands in for.
@@ -117,6 +121,12 @@ A Save button waiting on the server.
 ```
 
 Don't. The control already exists and its shape is not in question — that is `<Button loading>`, which keeps the button focusable and announced while it works.
+
+## Real usage in this repo
+
+```tsx
+<Skeleton lines={2} />
+```
 
 ## Token recipe
 

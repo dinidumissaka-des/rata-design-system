@@ -10,17 +10,32 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
     }
   },
   "dependencies": [],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/skeleton.css",
+      "target": "styles/skeleton.css"
+    },
+    {
+      "source": "packages/react/src/skeleton.tsx",
+      "target": "components/skeleton.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -81,8 +96,6 @@
   },
   "props": {
     "shape": {
-      "type": "\"text\" | \"block\" | \"circle\"",
-      "default": "\"text\"",
       "summary": "What kind of content it stands in for.",
       "use": [
         "`text` for lines of running text — sized from the type scale.",
@@ -95,8 +108,6 @@
       "a11y": "Visual only. Every shape is `aria-hidden`."
     },
     "lines": {
-      "type": "number",
-      "default": "1",
       "summary": "How many lines a `text` skeleton stands in for.",
       "use": [
         "The usual line count of what replaces it — 3 for a summary, 1 for a title."
@@ -106,7 +117,6 @@
       ]
     },
     "className": {
-      "type": "string",
       "summary": "Extra classes, for the size of a `block` or `circle` and its placement.",
       "use": [
         "Taking the size of the thing it replaces, from the same layout rule that sizes that thing."

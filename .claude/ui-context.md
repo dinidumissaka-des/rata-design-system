@@ -59,7 +59,7 @@ this path is the honest answer to when it last actually moved.
 | [select](../docs/components/select.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [sheet](../docs/components/sheet.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [side-nav](../docs/components/side-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
-| [skeleton](../docs/components/skeleton.md) | `@rata/react` | loading | future / future / future | free |
+| [skeleton](../docs/components/skeleton.md) | `@rata/react` | loading | latest / latest / future | free |
 | [slider](../docs/components/slider.md) | `@rata/react` | inputs | future / future / future | free |
 | [spinner](../docs/components/spinner.md) | `@rata/react` | loading | latest / latest / future | free |
 | [state-layer](../docs/components/state-layer.md) | `@rata/react` | foundations | latest / na / future | free |
@@ -953,9 +953,21 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/side-nav.md](../docs/components/side-nav.md)
 
-### Skeleton
+### Skeleton (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<HTMLAttributes<HTMLSpanElement>, "children" | "aria-hidden">`
+
+- `shape?: SkeletonShape` — default: `"text"`
+  What kind of content it stands in for.
+- `lines?: number` — default: `1`
+  How many lines a `text` skeleton stands in for.
+- `className?: string`
+  Extra classes, for the size of a `block` or `circle` and its placement.
+
+Real usage (from `apps/`):
+```tsx
+<Skeleton lines={2} />
+```
 
 Contract: [docs/components/skeleton.md](../docs/components/skeleton.md)
 

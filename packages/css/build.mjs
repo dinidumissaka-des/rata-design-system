@@ -12,6 +12,8 @@ const require = createRequire(import.meta.url);
 const ORDER = [
   "state-layer.css",
   "spinner.css",
+  // Beside spinner, the other loading placeholder; it composes nothing.
+  "skeleton.css",
   "button.css",
   "button-group.css",
   "toggle-button.css",

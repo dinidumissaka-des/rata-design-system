@@ -82,6 +82,8 @@ export { TopNav } from "./top-nav.js";
 export type { TopNavProps, TopNavItem, TopNavSubItem } from "./top-nav.js";
 export { Search } from "./search.js";
 export type { SearchProps, SearchSize } from "./search.js";
+export { Skeleton } from "./skeleton.js";
+export type { SkeletonProps, SkeletonShape } from "./skeleton.js";
 export { Spinner } from "./spinner.js";
 export type { SpinnerProps } from "./spinner.js";
 export { cx } from "./cx.js";
