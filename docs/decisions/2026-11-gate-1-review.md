@@ -129,3 +129,4 @@ change.
 Steps (gate 3): collapses by measuring overflow (ResizeObserver), not a container query — the needed width depends on step count and label lengths, so no token threshold fits.
 
 Pagination (gate 3): buttons get size.target.min hit areas — owner amendment.
+List/ListItem (gate 3): a row's focus ring is drawn inside the row (negative offset), so a clipped inset List never cuts it.

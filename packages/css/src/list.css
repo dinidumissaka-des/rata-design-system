@@ -1,0 +1,42 @@
+/* List — a vertical stack of ListItems.
+
+   Every value is the gate-2 recipe in registry/components/list.json. The list
+   draws almost nothing itself: the rows own their padding, their dividers and
+   their states; the list owns only the surface they sit on. */
+.rata-list {
+  box-sizing: border-box;
+  margin: var(--rata-space-0);
+  /* Rows fill the width, for the reason SideNav's rows do: the whole row is
+     the target. */
+  padding-inline: var(--rata-space-0);
+  /* No block padding. The recipe padded the block edges so the first and last
+     rows' rings survived a clipping container; a row's ring is now drawn
+     inside the row (gate 3, owner decision), so there is nothing left to
+     make room for — and padding here would stop the first and last rows'
+     state layers short of an inset list's corners. */
+  padding-block: var(--rata-space-0);
+  /* role="list" is restored in the markup: Safari drops list semantics from
+     a list styled this way. */
+  list-style: none;
+}
+
+/* Inset — the grouped settings look: a rounded surface inside the gutter. */
+.rata-list--inset {
+  background: var(--rata-theme-bg-surface);
+  border: var(--rata-border-default) solid var(--rata-theme-border-default);
+  border-radius: var(--rata-radius-container);
+  /* The first and last rows' state layers take the container's corners. Row
+     focus rings are drawn inside the row, so this never cuts one. */
+  overflow: clip;
+}
+
+/* Already inside the page's gutter: no safe-area inset to clear. */
+.rata-list--inset > .rata-list-item {
+  --rata-list-item-edge-start: var(--rata-space-padding-md);
+  --rata-list-item-edge-end: var(--rata-space-padding-md);
+}
+
+/* dividers={false}: the rows draw the rule, the list only tells them not to. */
+.rata-list--undivided > .rata-list-item > .rata-list-item-main {
+  border-block-start: none;
+}

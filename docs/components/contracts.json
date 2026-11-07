@@ -5976,10 +5976,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -5989,16 +5991,16 @@
       "list-item"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "children",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The rows: ListItem elements, in reading order.",
+        "declared": true,
         "summary": "The rows: ListItem elements, in reading order.",
         "use": [
           "ListItems, and nothing else at the top level."
@@ -6011,10 +6013,10 @@
       },
       {
         "name": "label",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Accessible name for the list, when no visible heading names it.",
+        "declared": true,
         "summary": "Accessible name for the list, when no visible heading names it.",
         "use": [
           "A list with no heading above it whose purpose is not obvious from its rows."
@@ -6029,10 +6031,10 @@
       },
       {
         "name": "labelledBy",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Id of a visible element — usually the Heading above the list — that names it.",
+        "declared": true,
         "summary": "Id of a visible element — usually the Heading above the list — that names it.",
         "use": [
           "Every list with a heading directly above it."
@@ -6047,11 +6049,11 @@
       },
       {
         "name": "dividers",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Whether a rule is drawn between rows.",
         "default": "true",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Whether a rule is drawn between rows.",
         "use": [
           "`false` for a short list of tall rows — each with an avatar and two lines — whose height already separates them."
@@ -6064,15 +6066,15 @@
       },
       {
         "name": "appearance",
-        "type": "\"plain\" | \"inset\"",
+        "optional": true,
+        "type": "ListAppearance",
+        "description": "Edge-to-edge on the page's own surface, or grouped on a rounded surface inside the gutter.",
+        "default": "\"plain\"",
         "values": [
           "plain",
           "inset"
         ],
-        "optional": true,
-        "default": "\"plain\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Edge-to-edge on the page's own surface, or grouped on a rounded surface inside the gutter.",
         "use": [
           "`inset` for a settings screen, where each list is a group of related options under a heading."
@@ -6085,10 +6087,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
+        "type": "string",
         "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Extra classes on the `<ul>`, for placement — not for restyling it.",
         "use": [
           "The margin the page wants around the list."
@@ -6154,6 +6156,10 @@
         {
           "decision": "Web and native",
           "why": "On the web it renders `<ul role=\"list\">`, named by `aria-label` or `aria-labelledby` when given one. The explicit role is load-bearing: Safari removes list semantics from a list styled `list-style: none`, which is every list here, and without it VoiceOver stops announcing 'list, 12 items'. On React Native it renders a `View` with `accessibilityRole=\"list\"` for short static lists. A long native list should be a `FlatList` — virtualization is not optional at a few hundred rows on a phone — so the native package is expected to take `data` and `renderItem` where the web takes `children`; that divergence is an open question for the native package's own gate 1. `className` is web-only. Swipe actions live on ListItem, and this component has no gesture of its own. Rata-drawn rows inside the core list views (decision N5): `View` or `FlatList` supplies the scrolling and the list semantics, and no OS table or list styling (UITableView, RecyclerView) is used. The native implementation ships in the pro tier (decision N6)."
+        },
+        {
+          "decision": "A row's focus ring is drawn inside the row, so the list needs no block padding",
+          "why": "Decided at gate 3, owner decision, docs/decisions/2026-11-gate-1-review.md. ListItem draws its ring with a negative offset of focus.ring-offset plus focus.ring-width, so it never reaches the list's edges and neither a scroll container nor the inset appearance's `overflow: clip` can cut it. That removes the only reason for the block padding the gate-2 recipe gave the list, and the padding is space.0: kept, it would also stop the first and last rows' state layers short of an inset list's rounded corners, which the clip exists to give them."
         }
       ]
     },
@@ -6164,7 +6170,7 @@
           "background": "inherited — the list takes the surface it is placed on, which is what lets it sit edge-to-edge in a page or inside a Sheet",
           "margin": "space.0",
           "padding-inline": "space.0 — rows fill the width, for the reason SideNav's rows do: the whole row is the target",
-          "padding-block": "focus.ring-width plus focus.ring-offset — just enough that the first and last rows' focus rings are not clipped when the list is a scroll container, the device Tabs uses for the same problem",
+          "padding-block": "space.0 — the recipe padded the block edges by focus.ring-width plus focus.ring-offset so the first and last rows' rings survived a scroll container; a row's ring is now drawn inside the row (gate 3, owner decision), so there is nothing to make room for, and padding would stop the first and last rows' state layers short of an inset list's corners",
           "list-style": "none, with role=\"list\" restored — see the web and native decision"
         }
       },
@@ -6174,11 +6180,11 @@
           "background": "theme.bg.surface",
           "border": "border.default solid theme.border.default",
           "border-radius": "radius.container",
-          "overflow": "clip, so the first and last rows' state layers take the container's corners — with the padding-block above, so the rings still fit inside"
+          "overflow": "clip, so the first and last rows' state layers take the container's corners — a row's focus ring is drawn inside the row, so the clip never cuts it"
         }
       }
     },
-    "example": null
+    "example": "<List label=\"People\">\n          <ListItem\n            href=\"#people-ada\"\n            leading={<Avatar name=\"Ada Lovelace\" decorative />}\n            description=\"Last seen 2 hours ago\"\n          >\n            Ada Lovelace\n          </ListItem>\n          <ListItem\n            href=\"#people-grace\"\n            leading={<Avatar name=\"Grace Hopper\" decorative />}\n            description=\"Online\"\n          >\n            Grace Hopper\n          </ListItem>\n        </List>"
   },
   {
     "name": "list-item",
@@ -6188,10 +6194,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -6205,16 +6213,16 @@
       "button"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "children",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The row's text — what the row is.",
+        "declared": true,
         "summary": "The row's text — what the row is.",
         "use": [
           "A short label: a name, a title, a setting."
@@ -6227,10 +6235,10 @@
       },
       {
         "name": "description",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "A second, secondary line under the text.",
+        "declared": true,
         "summary": "A second, secondary line under the text.",
         "use": [
           "The value of a setting ('10 pm – 7 am'), a message preview, a file's size and date."
@@ -6243,10 +6251,10 @@
       },
       {
         "name": "leading",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "A visual at the start of the row — an Icon or an Avatar.",
+        "declared": true,
         "summary": "A visual at the start of the row — an Icon or an Avatar.",
         "use": [
           "An Avatar for a person, an Icon for a kind of thing.",
@@ -6260,10 +6268,10 @@
       },
       {
         "name": "trailing",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Metadata or one control at the end of the row.",
+        "declared": true,
         "summary": "Metadata or one control at the end of the row.",
         "use": [
           "A Badge, a count, a timestamp.",
@@ -6278,10 +6286,10 @@
       },
       {
         "name": "href",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Makes the row a link to this address.",
+        "declared": true,
         "summary": "Makes the row a link to this address.",
         "use": [
           "A row that opens the thing it describes."
@@ -6294,10 +6302,10 @@
       },
       {
         "name": "onClick",
-        "type": "(event: MouseEvent<HTMLElement>) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(event: MouseEvent<HTMLElement>) => void",
+        "description": "Makes the row a button, or — with `href` — intercepts the link for client-side routing.",
+        "declared": true,
         "summary": "Makes the row a button, or — with `href` — intercepts the link for client-side routing.",
         "use": [
           "A row that opens a Sheet or a Dialog in place.",
@@ -6311,10 +6319,10 @@
       },
       {
         "name": "actions",
-        "type": "ListItemAction[]",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ListItemAction[]",
+        "description": "Secondary commands on this row, shown in a Menu behind a trailing button.",
+        "declared": true,
         "summary": "Secondary commands on this row — `{ label: string; icon?: LucideIcon; destructive?: boolean; onSelect: () => void }` each — shown in a Menu behind a trailing button.",
         "use": [
           "Archive, rename, share, delete — what a mobile app would put behind a swipe."
@@ -6328,11 +6336,11 @@
       },
       {
         "name": "actionsLabel",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "The name of the actions trigger, before the row's own text.",
         "default": "\"More actions\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The visible-to-assistive-technology name of the actions trigger, before the row's own text.",
         "use": [
           "A translated string."
@@ -6345,10 +6353,11 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "boolean",
+        "description": "Blocks the row's activation and its actions, while keeping both focusable and announced.",
+        "default": "false",
+        "declared": true,
         "summary": "Blocks the row's activation and its actions, while keeping both focusable and announced.",
         "use": [
           "A row that exists but cannot be opened right now — a file still uploading."
@@ -6361,10 +6370,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
+        "type": "string",
         "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Extra classes on the `<li>`, for placement — not for restyling it.",
         "use": [
           "Rare. The row's spacing and states are the component's."
@@ -6442,12 +6451,16 @@
           "why": "The hit area is size.target.min, 48px, on every platform — Material's minimum, which also clears Apple's 44pt and WCAG 2.5.5. It sizes where the control can be tapped, never the drawn box. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md)."
         },
         {
-          "decision": "Open: the focus ring at a list's inline edges",
-          "why": "An edge-to-edge row's ring sits outside the row, by `focus.ring-offset`, which is outside the list's inline edges. List pads its block edges so the first and last rings survive a scroll container, but padding the inline edges would inset every row from the page's edge and undo 'edge-to-edge'. Either the rule is that an edge-to-edge list is never an overflow-clipping container, or a row's ring is drawn inset (a negative offset of `focus.ring-width` plus `focus.ring-offset`) — which keeps the gap and the width this system requires but moves the ring inside the target. That choice belongs at gate 2."
+          "decision": "The focus ring is drawn inside the row",
+          "why": "Decided at gate 3, owner decision, docs/decisions/2026-11-gate-1-review.md. An edge-to-edge row's ring at a positive focus.ring-offset sits outside the list's inline edges, where an overflow-clipping container — the inset List's `overflow: clip`, or any scroll container — cuts it, and padding the inline edges would undo 'edge-to-edge'. So the ring is drawn on the `<li>` while its link or button is `:focus-visible`, with `outline-offset: calc(-1 * (focus.ring-offset + focus.ring-width))`: still theme.focus-ring at focus.ring-width with the focus.ring-offset gap, but inside the target the reader is about to activate. The link's or button's own ring is suppressed only where the row draws it, so a browser without `:has()` keeps it. The actions trigger keeps the ordinary outside ring; it sits inside the row's padding, so nothing clips it."
         },
         {
           "decision": "Web and native",
           "why": "On the web it renders `<li>`, with an `<a href>` or `<button type=\"button\">` over the text when interactive, `aria-describedby` to the description, and `aria-disabled` when disabled. The actions trigger is an icon-only Button with `aria-haspopup=\"menu\"` opening a Menu. On React Native it renders a `View` (or a `Pressable` with `accessibilityRole=\"link\"` or `\"button\"` when interactive), `accessibilityHint` from the description, and `accessibilityState={{ disabled }}`. `actions` become the row's `accessibilityActions`, with `onAccessibilityAction` dispatching to each `onSelect` — so VoiceOver's actions rotor and TalkBack's actions menu reach them from the row itself — and the visible trailing button remains for touch. A future swipe reveals the same array on both platforms. Web-only: `href`, `onClick` (a DOM `MouseEvent`) and `className`; the native package takes `onPress` in their place. No prop is native-only. Rata-drawn (decision N5): the row is a drawn `View` or `Pressable` from the same recipe, not an OS table cell. The native implementation ships in the pro tier (decision N6)."
+        },
+        {
+          "decision": "The stretched hit area is the target's ::before; the state layer keeps the row's ::after",
+          "why": "Decided at gate 3. An interactive row composes .rata-state-layer on the `<li>`, and the layer owns that element's `::after` — a second `::after` rule on the row would merge with it and inherit its zero opacity. So the stretch is drawn by the link or button's own `::before`, positioned against the `<li>` (which the layer positions), and the two pseudo-elements sit on different elements. The actions trigger is a Button, positioned by its own state layer and later in source order, so it paints above the stretch without a z-index."
         }
       ]
     },
@@ -6482,8 +6495,8 @@
       "interactive": {
         "summary": "A row with `href` or `onClick`. The link or button is stretched over the whole row, so the whole row is the target.",
         "tokens": {
-          "hover / press": "compose the .rata-state-layer class on the row",
-          "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible — drawn around the row, which is the target the reader is about to activate",
+          "hover / press": "compose the .rata-state-layer class on the row, driven by the link or button's own :hover / :active through :has(), so pointing at the actions trigger does not tint the row",
+          "focus ring": "theme.focus-ring at focus.ring-width on :focus-visible, drawn on the row while its link or button is focused, INSIDE it: outline-offset is calc(-1 * (focus.ring-offset + focus.ring-width)), so the gap and width are kept and an inset List's overflow: clip never cuts it (gate 3, owner decision)",
           "disclosure chevron": "size.icon.sm, theme.fg.muted — decorative, and shown only for href rows, since it promises a new page",
           "disabled": "state.disabled-opacity, on aria-disabled"
         }
@@ -6500,7 +6513,7 @@
         }
       }
     },
-    "example": null
+    "example": "<ListItem href=\"#settings-quiet-hours\" description=\"10 pm – 7 am\">\n          Quiet hours\n        </ListItem>"
   },
   {
     "name": "menu",

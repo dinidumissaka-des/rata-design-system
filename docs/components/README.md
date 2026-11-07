@@ -35,8 +35,8 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Heading](heading.md) | `heading` | content | latest / latest | documented | free |
 | [Icon](icon.md) | `icon` | content | latest / latest | documented | free |
 | [Link](link.md) | `link` | navigation | latest / latest | documented | free |
-| [List](list.md) | `list` | content | future / future | spec | free |
-| [List Item](list-item.md) | `list-item` | content | future / future | spec | free |
+| [List](list.md) | `list` | content | latest / latest | documented | free |
+| [List Item](list-item.md) | `list-item` | content | latest / latest | documented | free |
 | [Menu](menu.md) | `menu` | overlays | latest / latest | documented | free |
 | [MenuItem](menu-item.md) | `menu-item` | overlays | latest / latest | documented | free |
 | [MobileNav](mobile-nav.md) | `mobile-nav` | navigation | latest / latest | documented | free |

@@ -11,10 +11,12 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
@@ -27,7 +29,20 @@
     "menu-item",
     "button"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/list-item.css",
+      "target": "styles/list-item.css"
+    },
+    {
+      "source": "packages/react/src/list-item.tsx",
+      "target": "components/list-item.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -60,8 +75,8 @@
     "interactive": {
       "summary": "A row with `href` or `onClick`. The link or button is stretched over the whole row, so the whole row is the target.",
       "tokens": {
-        "hover / press": "compose the .rata-state-layer class on the row",
-        "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible — drawn around the row, which is the target the reader is about to activate",
+        "hover / press": "compose the .rata-state-layer class on the row, driven by the link or button's own :hover / :active through :has(), so pointing at the actions trigger does not tint the row",
+        "focus ring": "theme.focus-ring at focus.ring-width on :focus-visible, drawn on the row while its link or button is focused, INSIDE it: outline-offset is calc(-1 * (focus.ring-offset + focus.ring-width)), so the gap and width are kept and an inset List's overflow: clip never cuts it (gate 3, owner decision)",
         "disclosure chevron": "size.icon.sm, theme.fg.muted — decorative, and shown only for href rows, since it promises a new page",
         "disabled": "state.disabled-opacity, on aria-disabled"
       }
@@ -118,19 +133,21 @@
         "why": "The hit area is size.target.min, 48px, on every platform — Material's minimum, which also clears Apple's 44pt and WCAG 2.5.5. It sizes where the control can be tapped, never the drawn box. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md)."
       },
       {
-        "decision": "Open: the focus ring at a list's inline edges",
-        "why": "An edge-to-edge row's ring sits outside the row, by `focus.ring-offset`, which is outside the list's inline edges. List pads its block edges so the first and last rings survive a scroll container, but padding the inline edges would inset every row from the page's edge and undo 'edge-to-edge'. Either the rule is that an edge-to-edge list is never an overflow-clipping container, or a row's ring is drawn inset (a negative offset of `focus.ring-width` plus `focus.ring-offset`) — which keeps the gap and the width this system requires but moves the ring inside the target. That choice belongs at gate 2."
+        "decision": "The focus ring is drawn inside the row",
+        "why": "Decided at gate 3, owner decision, docs/decisions/2026-11-gate-1-review.md. An edge-to-edge row's ring at a positive focus.ring-offset sits outside the list's inline edges, where an overflow-clipping container — the inset List's `overflow: clip`, or any scroll container — cuts it, and padding the inline edges would undo 'edge-to-edge'. So the ring is drawn on the `<li>` while its link or button is `:focus-visible`, with `outline-offset: calc(-1 * (focus.ring-offset + focus.ring-width))`: still theme.focus-ring at focus.ring-width with the focus.ring-offset gap, but inside the target the reader is about to activate. The link's or button's own ring is suppressed only where the row draws it, so a browser without `:has()` keeps it. The actions trigger keeps the ordinary outside ring; it sits inside the row's padding, so nothing clips it."
       },
       {
         "decision": "Web and native",
         "why": "On the web it renders `<li>`, with an `<a href>` or `<button type=\"button\">` over the text when interactive, `aria-describedby` to the description, and `aria-disabled` when disabled. The actions trigger is an icon-only Button with `aria-haspopup=\"menu\"` opening a Menu. On React Native it renders a `View` (or a `Pressable` with `accessibilityRole=\"link\"` or `\"button\"` when interactive), `accessibilityHint` from the description, and `accessibilityState={{ disabled }}`. `actions` become the row's `accessibilityActions`, with `onAccessibilityAction` dispatching to each `onSelect` — so VoiceOver's actions rotor and TalkBack's actions menu reach them from the row itself — and the visible trailing button remains for touch. A future swipe reveals the same array on both platforms. Web-only: `href`, `onClick` (a DOM `MouseEvent`) and `className`; the native package takes `onPress` in their place. No prop is native-only. Rata-drawn (decision N5): the row is a drawn `View` or `Pressable` from the same recipe, not an OS table cell. The native implementation ships in the pro tier (decision N6)."
+      },
+      {
+        "decision": "The stretched hit area is the target's ::before; the state layer keeps the row's ::after",
+        "why": "Decided at gate 3. An interactive row composes .rata-state-layer on the `<li>`, and the layer owns that element's `::after` — a second `::after` rule on the row would merge with it and inherit its zero opacity. So the stretch is drawn by the link or button's own `::before`, positioned against the `<li>` (which the layer positions), and the two pseudo-elements sit on different elements. The actions trigger is a Button, positioned by its own state layer and later in source order, so it paints above the stretch without a z-index."
       }
     ]
   },
   "props": {
     "children": {
-      "type": "ReactNode",
-      "required": true,
       "summary": "The row's text — what the row is.",
       "use": [
         "A short label: a name, a title, a setting."
@@ -141,7 +158,6 @@
       "a11y": "The accessible name of the row's link or button, and the only thing in it."
     },
     "description": {
-      "type": "ReactNode",
       "summary": "A second, secondary line under the text.",
       "use": [
         "The value of a setting ('10 pm – 7 am'), a message preview, a file's size and date."
@@ -152,7 +168,6 @@
       "a11y": "Joined by `aria-describedby`: read on focus, kept out of the name."
     },
     "leading": {
-      "type": "ReactNode",
       "summary": "A visual at the start of the row — an Icon or an Avatar.",
       "use": [
         "An Avatar for a person, an Icon for a kind of thing.",
@@ -164,7 +179,6 @@
       "a11y": "Should be decorative — an Icon with no `label`, an Avatar with `decorative` — because the row's text already names it."
     },
     "trailing": {
-      "type": "ReactNode",
       "summary": "Metadata or one control at the end of the row.",
       "use": [
         "A Badge, a count, a timestamp.",
@@ -177,7 +191,6 @@
       "a11y": "Read after the row's text, in DOM order. A control placed here needs its own accessible name; a Switch's `label` can repeat the row's text with `labelHidden`."
     },
     "href": {
-      "type": "string",
       "summary": "Makes the row a link to this address.",
       "use": [
         "A row that opens the thing it describes."
@@ -188,7 +201,6 @@
       "a11y": "Renders an `<a>`, so the row is in the links list and announced as a link."
     },
     "onClick": {
-      "type": "(event: MouseEvent<HTMLElement>) => void",
       "summary": "Makes the row a button, or — with `href` — intercepts the link for client-side routing.",
       "use": [
         "A row that opens a Sheet or a Dialog in place.",
@@ -200,7 +212,6 @@
       "a11y": "Alone, renders a `<button type=\"button\">`, activated by Enter and Space. With `href`, it stays a link."
     },
     "actions": {
-      "type": "ListItemAction[]",
       "summary": "Secondary commands on this row — `{ label: string; icon?: LucideIcon; destructive?: boolean; onSelect: () => void }` each — shown in a Menu behind a trailing button.",
       "use": [
         "Archive, rename, share, delete — what a mobile app would put behind a swipe."
@@ -212,8 +223,6 @@
       "a11y": "The trigger is named '`actionsLabel`, <row text>'. Each action becomes a MenuItem, and `destructive` becomes MenuItem's `destructive`."
     },
     "actionsLabel": {
-      "type": "string",
-      "default": "\"More actions\"",
       "summary": "The visible-to-assistive-technology name of the actions trigger, before the row's own text.",
       "use": [
         "A translated string."
@@ -224,7 +233,6 @@
       "a11y": "One part of the trigger's `aria-labelledby`; the row's text is the other."
     },
     "disabled": {
-      "type": "boolean",
       "summary": "Blocks the row's activation and its actions, while keeping both focusable and announced.",
       "use": [
         "A row that exists but cannot be opened right now — a file still uploading."
@@ -235,7 +243,6 @@
       "a11y": "`aria-disabled`, not the `disabled` attribute, on the link or button and the actions trigger."
     },
     "className": {
-      "type": "string",
       "summary": "Extra classes on the `<li>`, for placement — not for restyling it.",
       "use": [
         "Rare. The row's spacing and states are the component's."

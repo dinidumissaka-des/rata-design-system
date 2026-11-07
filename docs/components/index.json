@@ -112,12 +112,12 @@
   {
     "name": "list",
     "title": "List",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "list-item",
     "title": "List Item",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "menu",

@@ -18,6 +18,8 @@ import {
   Combobox,
   Fab,
   Chip,
+  List,
+  ListItem,
   BottomNav,
   Badge,
   Breadcrumbs,
@@ -116,6 +118,7 @@ import {
   AlignRight,
   FileText,
   SearchX,
+  Archive,
 } from "@rata/icons";
 import { COMPONENT_TABS, componentPage } from "./routing.js";
 import type { ComponentTab, Page } from "./routing.js";
@@ -478,6 +481,50 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
         <TextField label="Billing email" />
       </Card>
     ),
+  },
+
+  list: {
+    "A settings group": () => <ListSettingsStage />,
+    "A feed of things, each opening its own page": () => (
+      <div className="pg-wide-specimen">
+        <List label="Recent orders">
+          {[
+            { id: "1042", title: "Order #1042", summary: "3 items · Delivered 2 March" },
+            { id: "1041", title: "Order #1041", summary: "1 item · Out for delivery" },
+            { id: "1040", title: "Order #1040", summary: "2 items · Delivered 18 February" },
+          ].map((order) => (
+            <ListItem key={order.id} href={`#order-${order.id}`} description={order.summary}>
+              {order.title}
+            </ListItem>
+          ))}
+        </List>
+      </div>
+    ),
+  },
+
+  "list-item": {
+    "A row that opens a page": () => (
+      <div className="pg-wide-specimen">
+        <List label="People">
+          <ListItem
+            href="#people-ada"
+            leading={<Avatar name="Ada Lovelace" decorative />}
+            description="Last seen 2 hours ago"
+          >
+            Ada Lovelace
+          </ListItem>
+          <ListItem
+            href="#people-grace"
+            leading={<Avatar name="Grace Hopper" decorative />}
+            description="Online"
+          >
+            Grace Hopper
+          </ListItem>
+        </List>
+      </div>
+    ),
+    "A row with secondary actions": () => <ListItemActionsStage />,
+    "A setting with a switch": () => <ListItemSwitchStage />,
   },
 
   divider: {
@@ -3661,6 +3708,84 @@ function BottomNavResponsiveStage() {
         {narrow ? "Narrow viewport: the BottomNav carries the sections." : "Wide viewport: the TopNav carries them. Narrow the window to swap."}
       </Text>
       {narrow && <BottomNav items={BOTTOM_NAV_SECTIONS} />}
+    </div>
+  );
+}
+
+/** A settings group: a heading naming an inset list of a switch row and a link row. */
+function ListSettingsStage() {
+  const [email, setEmail] = useState(true);
+  const headingId = useId();
+  return (
+    <div className="pg-wide-specimen pg-block-stack">
+      <Heading level={4} id={headingId}>
+        Notifications
+      </Heading>
+      <List labelledBy={headingId} appearance="inset">
+        <ListItem
+          trailing={<Switch label="Email" labelHidden checked={email} onCheckedChange={setEmail} />}
+        >
+          Email
+        </ListItem>
+        <ListItem href="#settings-quiet-hours" description="10 pm – 7 am">
+          Quiet hours
+        </ListItem>
+      </List>
+    </div>
+  );
+}
+
+/** Message rows whose archive and delete live in each row's actions menu. */
+function ListItemActionsStage() {
+  const [messages, setMessages] = useState([
+    { id: "42", subject: "Invoice 42", preview: "Your invoice for March is ready." },
+    { id: "43", subject: "Team offsite", preview: "Agenda and travel details inside." },
+  ]);
+  const [log, setLog] = useState<string | null>(null);
+  const drop = (id: string, verb: string) => {
+    const message = messages.find((m) => m.id === id);
+    setMessages((current) => current.filter((m) => m.id !== id));
+    setLog(`${verb} “${message?.subject}”`);
+  };
+  return (
+    <div className="pg-wide-specimen pg-block-stack">
+      <List label="Inbox">
+        {messages.map((message) => (
+          <ListItem
+            key={message.id}
+            href={`#mail-${message.id}`}
+            description={message.preview}
+            actions={[
+              { label: "Archive", icon: Archive, onSelect: () => drop(message.id, "Archived") },
+              {
+                label: "Delete",
+                icon: Trash2,
+                destructive: true,
+                onSelect: () => drop(message.id, "Deleted"),
+              },
+            ]}
+          >
+            {message.subject}
+          </ListItem>
+        ))}
+      </List>
+      {log && <Text tone="secondary">{log}</Text>}
+    </div>
+  );
+}
+
+/** A static settings row whose Switch is its only target. */
+function ListItemSwitchStage() {
+  const [dark, setDark] = useState(false);
+  return (
+    <div className="pg-wide-specimen">
+      <List label="Appearance" appearance="inset">
+        <ListItem
+          trailing={<Switch label="Dark mode" labelHidden checked={dark} onCheckedChange={setDark} />}
+        >
+          Dark mode
+        </ListItem>
+      </List>
     </div>
   );
 }

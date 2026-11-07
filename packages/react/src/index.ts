@@ -126,3 +126,7 @@ export { FileUpload } from "./file-upload.js";
 export type { FileUploadProps, PickedFile, FileRejection } from "./file-upload.js";
 export { Steps } from "./steps.js";
 export type { StepsProps, StepItem } from "./steps.js";
+export { List } from "./list.js";
+export type { ListProps, ListAppearance } from "./list.js";
+export { ListItem } from "./list-item.js";
+export type { ListItemProps, ListItemAction } from "./list-item.js";

@@ -31,6 +31,7 @@ export {
   Plus,
   Minus,
   Trash2,
+  Archive,
   Pencil,
   Copy,
   Download,

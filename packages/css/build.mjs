@@ -59,6 +59,11 @@ const ORDER = [
   // Same reasoning as card: after typography and state-layer, before the
   // badges, links and buttons its cells hold, so their own rules win.
   "table.css",
+  // After button and icon, whose sizes and colour the actions trigger and the
+  // leading glyph override; list after list-item, because the inset list
+  // resets the rows' safe-area edges at equal specificity to their RTL rule.
+  "list-item.css",
+  "list.css",
   "badge.css",
   // After badge: the removable value is read beside the static label it is not.
   "chip.css",

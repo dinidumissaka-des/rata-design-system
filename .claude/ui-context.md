@@ -40,8 +40,8 @@ this path is the honest answer to when it last actually moved.
 | [heading](../docs/components/heading.md) | `@rata/react` | content | latest / latest / future | free |
 | [icon](../docs/components/icon.md) | `@rata/react` | content | latest / latest / future | free |
 | [link](../docs/components/link.md) | `@rata/react` | navigation | latest / latest / future | free |
-| [list](../docs/components/list.md) | `@rata/react` | content | future / future / future | free |
-| [list-item](../docs/components/list-item.md) | `@rata/react` | content | future / future / future | free |
+| [list](../docs/components/list.md) | `@rata/react` | content | latest / latest / future | free |
+| [list-item](../docs/components/list-item.md) | `@rata/react` | content | latest / latest / future | free |
 | [menu](../docs/components/menu.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [menu-item](../docs/components/menu-item.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [mobile-nav](../docs/components/mobile-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
@@ -665,15 +665,70 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/link.md](../docs/components/link.md)
 
-### List
+### List (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `children: ReactNode`
+  The rows: ListItem elements, in reading order.
+- `label?: string`
+  Accessible name for the list, when no visible heading names it.
+- `labelledBy?: string`
+  Id of a visible element — usually the Heading above the list — that names it.
+- `dividers?: boolean` — default: `true`
+  Whether a rule is drawn between rows.
+- `appearance?: ListAppearance` — default: `"plain"`
+  Edge-to-edge on the page's own surface, or grouped on a rounded surface inside the gutter.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<List label="People">
+          <ListItem
+            href="#people-ada"
+            leading={<Avatar name="Ada Lovelace" decorative />}
+            description="Last seen 2 hours ago"
+          >
+            Ada Lovelace
+          </ListItem>
+          <ListItem
+            href="#people-grace"
+            leading={<Avatar name="Grace Hopper" decorative />}
+            description="Online"
+          >
+            Grace Hopper
+          </ListItem>
+        </List>
+```
 
 Contract: [docs/components/list.md](../docs/components/list.md)
 
-### List Item
+### List Item (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `children: ReactNode`
+  The row's text — what the row is.
+- `description?: ReactNode`
+  A second, secondary line under the text.
+- `leading?: ReactNode`
+  A visual at the start of the row — an Icon or an Avatar.
+- `trailing?: ReactNode`
+  Metadata or one control at the end of the row.
+- `href?: string`
+  Makes the row a link to this address.
+- `onClick?: (event: MouseEvent<HTMLElement>) => void`
+  Makes the row a button, or — with `href` — intercepts the link for client-side routing.
+- `actions?: ListItemAction[]`
+  Secondary commands on this row, shown in a Menu behind a trailing button.
+- `actionsLabel?: string` — default: `"More actions"`
+  The name of the actions trigger, before the row's own text.
+- `disabled?: boolean` — default: `false`
+  Blocks the row's activation and its actions, while keeping both focusable and announced.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<ListItem href="#settings-quiet-hours" description="10 pm – 7 am">
+          Quiet hours
+        </ListItem>
+```
 
 Contract: [docs/components/list-item.md](../docs/components/list-item.md)
 
