@@ -36,6 +36,8 @@ const ORDER = [
   "number-field.css",
   // After text-field: composes Field and draws the text field's box once per character.
   "pin-input.css",
+  // After field: re-lays Field's root as a grid so the value sits beside the label.
+  "slider.css",
   "search.css",
   "checkbox.css",
   // After checkbox: radio shares its construction and overrides the shape.

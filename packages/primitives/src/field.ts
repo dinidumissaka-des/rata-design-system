@@ -50,8 +50,11 @@ export interface FieldParts {
   label: {
     htmlFor: string;
     /**
-     * `<id>-label`, so something besides the control can be named by the
-     * same element — a combobox's listbox, a date picker's calendar dialog.
+     * `<id>-label` (see fieldLabelId), so something besides the control can be
+     * named by the same element — a combobox's listbox, a date picker's calendar
+     * dialog — and so a control that is a GROUP (a two-thumb slider, a file
+     * chooser) can name itself with `aria-labelledby`: a label's `for` reaches a
+     * single labelable element, and a group is not one.
      */
     id: string;
   };
@@ -74,6 +77,11 @@ export interface FieldControlProps {
   "aria-disabled": true | undefined;
   "aria-busy": true | undefined;
   readOnly: true | undefined;
+}
+
+/** The label's id, derived from the field's — the same rule as the description and message ids. */
+export function fieldLabelId(id: string): string {
+  return `${id}-label`;
 }
 
 export function getFieldProps(options: FieldOptions): FieldParts {
@@ -103,7 +111,7 @@ export function getFieldProps(options: FieldOptions): FieldParts {
     },
     label: {
       htmlFor: id,
-      id: `${id}-label`,
+      id: fieldLabelId(id),
     },
     input: {
       id,

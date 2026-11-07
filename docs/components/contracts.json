@@ -11467,10 +11467,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -11481,16 +11483,16 @@
       "state-layer"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "label",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "What the value measures. Always required — `labelHidden` hides it, nothing removes it.",
+        "declared": true,
         "summary": "What the value measures. Always required — `labelHidden` hides it, nothing removes it.",
         "use": [
           "The quantity, with its unit when the output does not carry one: \"Volume\", \"Max price (USD)\"."
@@ -11503,10 +11505,10 @@
       },
       {
         "name": "value",
-        "type": "number | [number, number]",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "number | [number, number]",
+        "description": "Controls the value from outside. A two-element tuple renders two thumbs.",
+        "declared": true,
         "summary": "Controls the value from outside. A two-element tuple renders two thumbs.",
         "use": [
           "A filter that other controls also write to, or a value persisted elsewhere."
@@ -11522,11 +11524,11 @@
       },
       {
         "name": "defaultValue",
-        "type": "number | [number, number]",
         "optional": true,
+        "type": "number | [number, number]",
+        "description": "The starting value when the component owns the state. Its shape decides one thumb or two.",
         "default": "min",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The starting value when the component owns the state. Its shape decides one thumb or two.",
         "use": [
           "`[min, max]` for a range filter that starts unconstrained."
@@ -11541,10 +11543,10 @@
       },
       {
         "name": "onValueChange",
-        "type": "(value: number | [number, number]) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(value: number | [number, number]) => void",
+        "description": "Fires continuously while the thumb moves.",
+        "declared": true,
         "summary": "Fires continuously while the thumb moves.",
         "use": [
           "Updating the visible output and anything cheap that should track the thumb."
@@ -11557,10 +11559,10 @@
       },
       {
         "name": "onValueCommit",
-        "type": "(value: number | [number, number]) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(value: number | [number, number]) => void",
+        "description": "Fires once when an interaction ends: pointer release, a key press, or an assistive-technology adjustment.",
+        "declared": true,
         "summary": "Fires once when an interaction ends: pointer release, a key press, or an assistive-technology adjustment.",
         "use": [
           "Re-running a query or saving a preference — anything expensive enough that it should happen once per decision."
@@ -11573,11 +11575,11 @@
       },
       {
         "name": "min",
-        "type": "number",
         "optional": true,
+        "type": "number",
+        "description": "The lowest value.",
         "default": "0",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The lowest value.",
         "use": [
           "The real floor of the quantity, not a guess at the usual one."
@@ -11588,11 +11590,11 @@
       },
       {
         "name": "max",
-        "type": "number",
         "optional": true,
+        "type": "number",
+        "description": "The highest value.",
         "default": "100",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The highest value.",
         "use": [
           "The real ceiling. If there is none, this is the wrong control — a slider needs both ends to mean anything; use `NumberField`."
@@ -11603,11 +11605,11 @@
       },
       {
         "name": "step",
-        "type": "number",
         "optional": true,
+        "type": "number",
+        "description": "The grid values snap to. Arrow keys move one step, PageUp and PageDown ten.",
         "default": "1",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The grid values snap to. Arrow keys move one step, PageUp and PageDown ten.",
         "use": [
           "A step that makes every reachable value meaningful — a price filter in 5s, not in cents."
@@ -11620,10 +11622,10 @@
       },
       {
         "name": "thumbLabels",
-        "type": "[string, string]",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "[string, string]",
+        "description": "Names for the two thumbs of a range. Required when the value is a tuple.",
+        "declared": true,
         "summary": "Names for the two thumbs of a range. Required when the value is a tuple.",
         "use": [
           "\"Minimum price\" and \"Maximum price\" — each thumb is its own control and needs its own name."
@@ -11636,10 +11638,10 @@
       },
       {
         "name": "formatValue",
-        "type": "(value: number) => string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(value: number) => string",
+        "description": "Turns a value into the text shown in the output and announced as `aria-valuetext`.",
+        "declared": true,
         "summary": "Turns a value into the text shown in the output and announced as `aria-valuetext`.",
         "use": [
           "Units and currency: `(v) => `$${v}``, or `Intl.NumberFormat` for the page's locale.",
@@ -11653,11 +11655,11 @@
       },
       {
         "name": "showValue",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Renders the current value as visible text beside the label.",
         "default": "true",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Renders the current value as visible text beside the label.",
         "use": [
           "Almost always. A slider without a number is a guess, and touch makes it a worse one — the finger covers the thumb."
@@ -11670,10 +11672,10 @@
       },
       {
         "name": "name",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Form field name. A range submits two values under the same name, lower first.",
+        "declared": true,
         "summary": "Form field name. A range submits two values under the same name, lower first.",
         "use": [
           "A native form post or `FormData`."
@@ -11684,11 +11686,11 @@
       },
       {
         "name": "labelHidden",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Takes the label off screen while leaving it in the accessibility tree.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Takes the label off screen while leaving it in the accessibility tree.",
         "use": [
           "A control whose meaning is already carried by a heading or column header directly above it."
@@ -11701,10 +11703,10 @@
       },
       {
         "name": "id",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Stable id for the slider. Defaults to a generated one.",
+        "declared": true,
         "summary": "Stable id for the slider, when something outside needs to point at it.",
         "use": [
           "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -11717,10 +11719,10 @@
       },
       {
         "name": "description",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Persistent helper text under the control.",
+        "declared": true,
         "summary": "Persistent helper text under the control.",
         "use": [
           "What the value affects, when the label alone does not say: \"Applies to new uploads only.\""
@@ -11733,11 +11735,11 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Blocks adjustment while keeping the slider focusable, readable and announced.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Blocks adjustment while keeping the slider focusable, readable and announced.",
         "use": [
           "A setting that depends on another being on."
@@ -11750,10 +11752,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Class for the wrapper — the width the layout wants, not a restyle.",
+        "declared": true,
         "summary": "Class for the wrapper — the width the layout wants, not a restyle.",
         "use": [
           "The inline size of the track, which is the layout's decision."
@@ -11792,6 +11794,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getSliderProps",
       "summary": "One or two native range inputs over a drawn track, composed with Field for the label and helper text. APG Slider and Multi-Thumb Slider, with the platform supplying the keyboard model and the touch-screen-reader gestures a scripted slider cannot receive.",
       "decisions": [
         {

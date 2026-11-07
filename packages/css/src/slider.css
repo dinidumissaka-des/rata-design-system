@@ -1,0 +1,187 @@
+/* Slider — the label row, the drawn track and thumbs, and the transparent
+   native range controls over them. Label, helper text and disabled dimming
+   come from field.css; the root carries both classes.
+
+   The drawn track and thumb are decoration: the native control lies over
+   them at full size, transparent, and receives every pointer, touch and key
+   event. Its hit area is size.control.sm regardless of the drawn thumb.
+
+   Positions arrive from the component as fractions (0–1) in four custom
+   properties — --rata-slider-start / -end for the fill, -position for a
+   thumb, -split for the line between two thumbs' hit areas. They are
+   per-instance plumbing, not tokens, and each rule reading one says so. */
+
+/* The label and the visible value share the first row. */
+.rata-slider {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+}
+
+.rata-slider > * {
+  grid-column: 1 / -1;
+}
+
+.rata-slider > .rata-field-label {
+  grid-column: 1;
+}
+
+.rata-slider-output {
+  grid-row: 1;
+  grid-column: 2;
+  color: var(--rata-theme-fg-secondary);
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-control-size-sm);
+  /* So the number does not shift width as it changes. */
+  font-variant-numeric: tabular-nums;
+}
+
+.rata-slider > .rata-slider-output {
+  grid-column: 2;
+}
+
+/* The hit area: the native controls' height, and so the touch target. A
+   horizontal drag adjusts while a vertical swipe still scrolls the page. */
+.rata-slider-control {
+  position: relative;
+  display: block;
+  block-size: var(--rata-size-control-sm);
+  touch-action: pan-y;
+}
+
+.rata-slider-track {
+  position: absolute;
+  inset-inline: var(--rata-space-0);
+  inset-block-start: 50%;
+  translate: 0 -50%;
+  block-size: var(--rata-size-track);
+  border-radius: var(--rata-radius-pill);
+  /* The boundary tone tuned to the 3:1 WCAG 1.4.11 asks of a control — the
+     empty track says how far the value can still go, so it has to be seen. */
+  background: var(--rata-theme-border-strong);
+  pointer-events: none;
+}
+
+/* rata-allow: unknown-token — --rata-slider-start and --rata-slider-end are
+   the fill's extent the component passes in, not values from the token set.
+   The thumb's centre travels from half a thumb in at each end, as the native
+   control's does, so the fill is measured on that same line. */
+.rata-slider-fill {
+  position: absolute;
+  inset-block: var(--rata-space-0);
+  inset-inline-start: calc(
+    var(--rata-slider-start) * (100% - var(--rata-size-icon-md)) + var(--rata-size-icon-md) / 2
+  );
+  inline-size: calc(
+    (var(--rata-slider-end) - var(--rata-slider-start)) * (100% - var(--rata-size-icon-md))
+  );
+  border-radius: inherit;
+  background: var(--rata-theme-accent-role-bg);
+}
+
+/* A single thumb's fill starts at the track's own start. */
+/* rata-allow: unknown-token — the fill's end the component passes in. */
+.rata-slider:not(.rata-slider--range) .rata-slider-fill {
+  inset-inline-start: var(--rata-space-0);
+  inline-size: calc(
+    var(--rata-slider-end) * (100% - var(--rata-size-icon-md)) + var(--rata-size-icon-md) / 2
+  );
+}
+
+/* The rail a thumb rides: the track less one thumb, moved by transform —
+   never by a layout property — so the thumb follows the finger without
+   reflow, and with no transition, because a thumb that lags reads as broken. */
+/* rata-allow: unknown-token — --rata-slider-position is the thumb's place
+   along the track, passed in by the component. */
+.rata-slider-rail {
+  position: absolute;
+  inset-block: var(--rata-space-0);
+  inset-inline-start: var(--rata-space-0);
+  inline-size: calc(100% - var(--rata-size-icon-md));
+  display: flex;
+  align-items: center;
+  transform: translateX(calc(var(--rata-slider-position) * 100%));
+  pointer-events: none;
+}
+
+/* rata-allow: unknown-token — the same per-instance position, mirrored. */
+.rata-slider-rail:dir(rtl) {
+  transform: translateX(calc(var(--rata-slider-position) * -100%));
+}
+
+/* The drawn handle: surface-filled with an accent edge, so it reads against
+   both the fill and the empty track. Hover and press come from the state
+   layer it composes, triggered by the data attributes the primitive sets. */
+.rata-slider-thumb {
+  box-sizing: border-box;
+  inline-size: var(--rata-size-icon-md);
+  block-size: var(--rata-size-icon-md);
+  border: var(--rata-border-2) solid var(--rata-theme-accent-role-bg);
+  border-radius: var(--rata-radius-pill);
+  background: var(--rata-theme-bg-surface);
+  box-shadow: var(--rata-theme-elevation-raised);
+}
+
+/* The native control: full size over the track, transparent, the hit
+   surface. Its own thumb is sized to the drawn one, so the two travel the
+   same line from end to end. */
+.rata-slider-range {
+  position: absolute;
+  inset: var(--rata-space-0);
+  inline-size: 100%;
+  block-size: 100%;
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+  appearance: none;
+  background: transparent;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.rata-slider-range::-webkit-slider-thumb {
+  appearance: none;
+  inline-size: var(--rata-size-icon-md);
+  block-size: var(--rata-size-icon-md);
+}
+
+.rata-slider-range::-moz-range-thumb {
+  inline-size: var(--rata-size-icon-md);
+  block-size: var(--rata-size-icon-md);
+  border: none;
+}
+
+/* Two thumbs share one track, so the hit area is split halfway between
+   them: a press on either side moves the nearer thumb there, which is the
+   alternative to dragging WCAG 2.5.7 asks for. clip-path is physical, so it
+   is mirrored under rtl. */
+/* rata-allow: unknown-token — --rata-slider-split is the halfway line the
+   component passes in. */
+.rata-slider-range--start {
+  clip-path: inset(0 calc((1 - var(--rata-slider-split)) * 100%) 0 0);
+}
+
+/* rata-allow: unknown-token — the same halfway line. */
+.rata-slider-range--end {
+  clip-path: inset(0 0 0 calc(var(--rata-slider-split) * 100%));
+}
+
+/* rata-allow: unknown-token — the same halfway line, mirrored. */
+.rata-slider-range--start:dir(rtl) {
+  clip-path: inset(0 0 0 calc((1 - var(--rata-slider-split)) * 100%));
+}
+
+/* rata-allow: unknown-token — the same halfway line, mirrored. */
+.rata-slider-range--end:dir(rtl) {
+  clip-path: inset(0 calc(var(--rata-slider-split) * 100%) 0 0);
+}
+
+/* Focus is drawn on the thumb the focused control moves. */
+.rata-slider-range:focus-visible + .rata-slider-rail > .rata-slider-thumb {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* Dimmed by Field on the root; what is left here is the pointer. */
+.rata-slider[data-disabled] .rata-slider-range {
+  cursor: not-allowed;
+}

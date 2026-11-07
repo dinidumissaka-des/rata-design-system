@@ -120,3 +120,5 @@ export { NumberField } from "./number-field.js";
 export type { NumberFieldProps, NumberFieldSize } from "./number-field.js";
 export { PinInput } from "./pin-input.js";
 export type { PinInputProps, PinInputSize, PinInputCharacters, PinInputPurpose } from "./pin-input.js";
+export { Slider } from "./slider.js";
+export type { SliderProps, SliderValue } from "./slider.js";

@@ -49,6 +49,7 @@ import {
   SegmentedControl,
   Select,
   SideNav,
+  Slider,
   Tabs,
   TopNav,
   Spinner,
@@ -662,6 +663,32 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     ),
     "A wrong code": () => <PinInputWrongCodeStage />,
     "A PIN the reader knows": () => <PinInput label="PIN" length={4} purpose="pin" />,
+  },
+
+  slider: {
+    "One value with units": () => (
+      <Slider className="pg-field" label="Volume" defaultValue={40} formatValue={(v) => `${v}%`} />
+    ),
+    "A price range filter": () => (
+      <Slider
+        className="pg-field"
+        label="Price"
+        defaultValue={[0, 500]}
+        max={500}
+        step={10}
+        thumbLabels={["Minimum price", "Maximum price"]}
+        formatValue={(v) => `$${v}`}
+      />
+    ),
+    "A discrete scale with named stops": () => (
+      <Slider
+        className="pg-field"
+        label="Image quality"
+        max={2}
+        defaultValue={1}
+        formatValue={(v) => ["Low", "Medium", "High"][v] ?? String(v)}
+      />
+    ),
   },
 
   link: {

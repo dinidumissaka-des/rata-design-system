@@ -134,7 +134,7 @@ export type {
 } from "./segmented-control.js";
 export { getSwitchProps } from "./switch.js";
 export type { SwitchOptions, SwitchProps } from "./switch.js";
-export { getFieldProps } from "./field.js";
+export { getFieldProps, fieldLabelId } from "./field.js";
 export type { FieldOptions, FieldParts, FieldControlProps, FieldStatus } from "./field.js";
 // The names this primitive had while TextField was its only consumer.
 export { getTextFieldProps } from "./field.js";
@@ -198,3 +198,12 @@ export type {
   PinInputPurpose,
   PinInputPasteEvent,
 } from "./pin-input.js";
+export { getSliderProps, snapToStep } from "./slider.js";
+export type {
+  SliderOptions,
+  SliderProps,
+  SliderThumb,
+  SliderInputProps,
+  SliderKeyEvent,
+  SliderValue,
+} from "./slider.js";
