@@ -36,7 +36,7 @@ this path is the honest answer to when it last actually moved.
 | [empty-state](../docs/components/empty-state.md) | `@rata/react` | feedback | latest / latest / future | free |
 | [fab](../docs/components/fab.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [field](../docs/components/field.md) | `@rata/react` | inputs | latest / latest / future | free |
-| [file-upload](../docs/components/file-upload.md) | `@rata/react` | inputs | future / future / future | free |
+| [file-upload](../docs/components/file-upload.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [heading](../docs/components/heading.md) | `@rata/react` | content | latest / latest / future | free |
 | [icon](../docs/components/icon.md) | `@rata/react` | content | latest / latest / future | free |
 | [link](../docs/components/link.md) | `@rata/react` | navigation | latest / latest / future | free |
@@ -560,9 +560,51 @@ Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children">`
 
 Contract: [docs/components/field.md](../docs/components/field.md)
 
-### File Upload
+### File Upload (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `label: ReactNode`
+  What the files are for. Always required — `labelHidden` hides it, nothing removes it.
+- `accept?: string`
+  Which files are allowed, as MIME types and extensions: "image/*,.pdf".
+- `multiple?: boolean` — default: `false`
+  Accepts more than one file.
+- `maxFiles?: number`
+  The most files the list may hold. Only meaningful with `multiple`.
+- `maxSize?: number`
+  The largest file allowed, in bytes.
+- `value?: PickedFile[]`
+  Controls the chosen files from outside, with the caller's per-file `progress` and `error`.
+- `onValueChange?: (files: PickedFile[]) => void`
+  Fires with the whole accepted list whenever a file is added or removed.
+- `onReject?: (rejections: FileRejection[]) => void`
+  Fires with the files that were refused and why.
+- `dropzone?: boolean` — default: `true`
+  Draws a drop target around the button, for dragging files in from the desktop.
+- `buttonLabel?: string`
+  The choose button's text. Defaults to "Choose file", or "Choose files" with `multiple`.
+- `name?: string`
+  Form field name. A native form post submits exactly the listed files.
+- `labelHidden?: boolean` — default: `false`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the file field. Defaults to a generated one.
+- `status?: FieldStatus` — default: `"idle"`
+  Validation lifecycle. Drives `aria-invalid`, `aria-busy`, the message tone and the drop zone's edge.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `message?: ReactNode`
+  Status-dependent message under the control.
+- `required?: boolean` — default: `false`
+  Marks the field required to assistive technology and in the label.
+- `disabled?: boolean` — default: `false`
+  Blocks choosing, dropping and removing while keeping the controls focusable and announced.
+- `className?: string`
+  Class for the wrapper — the width the form wants, not a restyle.
+
+Real usage (from `apps/`):
+```tsx
+<FileUpload label="Attachments" labelHidden multiple dropzone={false} buttonLabel="Attach files" />
+```
 
 Contract: [docs/components/file-upload.md](../docs/components/file-upload.md)
 

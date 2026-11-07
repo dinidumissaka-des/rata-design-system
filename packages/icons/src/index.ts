@@ -78,6 +78,8 @@ export {
   User,
   Calendar,
   Star,
+  // A chosen file's row in FileUpload.
+  File,
 
   // ── Empty states: the kind of thing that is missing (EmptyState's `icon`)
   FileText,

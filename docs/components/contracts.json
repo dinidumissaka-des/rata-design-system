@@ -4990,10 +4990,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -5007,16 +5009,16 @@
       "visually-hidden"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "label",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "What the files are for. Always required — `labelHidden` hides it, nothing removes it.",
+        "declared": true,
         "summary": "What the files are for. Always required — `labelHidden` hides it, nothing removes it.",
         "use": [
           "The document being asked for: \"Proof of address\", \"Attachments\"."
@@ -5029,10 +5031,10 @@
       },
       {
         "name": "accept",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Which files are allowed, as MIME types and extensions: \"image/*,.pdf\".",
+        "declared": true,
         "summary": "Which files are allowed, as MIME types and extensions: \"image/*,.pdf\".",
         "use": [
           "MIME types first — they are the part that works on every platform, including native."
@@ -5045,11 +5047,11 @@
       },
       {
         "name": "multiple",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Accepts more than one file.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accepts more than one file.",
         "use": [
           "Attachments, a photo set."
@@ -5062,10 +5064,10 @@
       },
       {
         "name": "maxFiles",
-        "type": "number",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "number",
+        "description": "The most files the list may hold. Only meaningful with `multiple`.",
+        "declared": true,
         "summary": "The most files the list may hold. Only meaningful with `multiple`.",
         "use": [
           "A real limit on the receiving side."
@@ -5078,10 +5080,10 @@
       },
       {
         "name": "maxSize",
-        "type": "number",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "number",
+        "description": "The largest file allowed, in bytes.",
+        "declared": true,
         "summary": "The largest file allowed, in bytes.",
         "use": [
           "The server's real limit, so a reader learns it before a long upload fails."
@@ -5094,10 +5096,10 @@
       },
       {
         "name": "value",
-        "type": "PickedFile[]",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "PickedFile[]",
+        "description": "Controls the chosen files from outside, with the caller's per-file `progress` and `error`.",
+        "declared": true,
         "summary": "Controls the chosen files from outside. Each is `{ name, size, type }` plus the platform's handle — `file` on web, `uri` on native — and, optionally, `progress` (0–100) and `error`, which the caller's uploader sets and the row displays.",
         "use": [
           "A form library, or restoring a selection after a validation round-trip.",
@@ -5112,10 +5114,10 @@
       },
       {
         "name": "onValueChange",
-        "type": "(files: PickedFile[]) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(files: PickedFile[]) => void",
+        "description": "Fires with the whole accepted list whenever a file is added or removed.",
+        "declared": true,
         "summary": "Fires with the whole accepted list whenever a file is added or removed.",
         "use": [
           "Starting an upload per file, or enabling a submit button."
@@ -5128,10 +5130,10 @@
       },
       {
         "name": "onReject",
-        "type": "(rejections: FileRejection[]) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(rejections: FileRejection[]) => void",
+        "description": "Fires with the files that were refused and why.",
+        "declared": true,
         "summary": "Fires with the files that were refused and why: `{ file, reason: \"type\" | \"size\" | \"count\" }`.",
         "use": [
           "Setting `status=\"invalid\"` and a `message` that names the file and the rule it broke."
@@ -5144,11 +5146,11 @@
       },
       {
         "name": "dropzone",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Draws a drop target around the button, for dragging files in from the desktop.",
         "default": "true",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Draws a drop target around the button, for dragging files in from the desktop.",
         "use": [
           "Turning it off in a compact row — a reply box's attachment control — where a large target would dominate."
@@ -5161,11 +5163,10 @@
       },
       {
         "name": "buttonLabel",
-        "type": "string",
         "optional": true,
-        "default": "\"Choose file\" — \"Choose files\" with `multiple`",
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The choose button's text. Defaults to \"Choose file\", or \"Choose files\" with `multiple`.",
+        "declared": true,
         "summary": "The choose button's text.",
         "use": [
           "Naming the kind of file: \"Choose photos\"."
@@ -5178,10 +5179,10 @@
       },
       {
         "name": "name",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Form field name. A native form post submits exactly the listed files.",
+        "declared": true,
         "summary": "Form field name. A native form post submits exactly the listed files.",
         "use": [
           "A plain `multipart/form-data` form."
@@ -5192,11 +5193,11 @@
       },
       {
         "name": "labelHidden",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Takes the label off screen while leaving it in the accessibility tree.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Takes the label off screen while leaving it in the accessibility tree.",
         "use": [
           "A control whose meaning is already carried by a heading or column header directly above it."
@@ -5209,10 +5210,10 @@
       },
       {
         "name": "id",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Stable id for the file field. Defaults to a generated one.",
+        "declared": true,
         "summary": "Stable id for the file field, when something outside needs to point at it.",
         "use": [
           "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -5225,11 +5226,11 @@
       },
       {
         "name": "status",
-        "type": "FieldStatus",
         "optional": true,
+        "type": "FieldStatus",
+        "description": "Validation lifecycle. Drives `aria-invalid`, `aria-busy`, the message tone and the drop zone's edge.",
         "default": "\"idle\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
         "use": [
           "`invalid` with a `message` saying what to do about it."
@@ -5242,10 +5243,10 @@
       },
       {
         "name": "description",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Persistent helper text under the control.",
+        "declared": true,
         "summary": "Persistent helper text under the control.",
         "use": [
           "The limits, in words, before the reader picks: \"PDF or JPEG, up to 10 MB.\""
@@ -5258,10 +5259,10 @@
       },
       {
         "name": "message",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Status-dependent message under the control.",
+        "declared": true,
         "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
         "use": [
           "What to do about an `invalid` status, in the imperative."
@@ -5274,11 +5275,11 @@
       },
       {
         "name": "required",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Marks the field required to assistive technology and in the label.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Marks the field required, in the label and to assistive technology.",
         "use": [
           "Fields that genuinely block submission."
@@ -5291,11 +5292,11 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Blocks choosing, dropping and removing while keeping the controls focusable and announced.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Blocks choosing, dropping and removing while keeping the controls focusable and announced.",
         "use": [
           "While uploads are in flight, if the form cannot accept changes to the set."
@@ -5308,10 +5309,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Class for the wrapper — the width the form wants, not a restyle.",
+        "declared": true,
         "summary": "Class for the wrapper — the width the form wants, not a restyle.",
         "use": [
           "The measure the form decides."
@@ -5354,6 +5355,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getFileUploadProps",
       "summary": "A visually hidden native file input opened by a Button, an optional drop zone around it, and a list of the chosen files with a remove control each — composed with Field. It validates and holds a selection; it does not upload.",
       "decisions": [
         {
@@ -5456,7 +5458,7 @@
         }
       }
     },
-    "example": null
+    "example": "<FileUpload label=\"Attachments\" labelHidden multiple dropzone={false} buttonLabel=\"Attach files\" />"
   },
   {
     "name": "heading",

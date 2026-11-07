@@ -207,3 +207,22 @@ export type {
   SliderKeyEvent,
   SliderValue,
 } from "./slider.js";
+export {
+  getFileUploadProps,
+  validateFiles,
+  matchesAccept,
+  toPickedFile,
+  focusAfterRemoval,
+  formatFileSize,
+  describeAccept,
+  fileUploadAnnouncements,
+} from "./file-upload.js";
+export type {
+  PickedFile,
+  FileRejection,
+  FileRejectionReason,
+  FileConstraints,
+  FileUploadOptions,
+  FileUploadProps,
+  FileUploadRow,
+} from "./file-upload.js";

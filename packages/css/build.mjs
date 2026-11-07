@@ -38,6 +38,8 @@ const ORDER = [
   "pin-input.css",
   // After field: re-lays Field's root as a grid so the value sits beside the label.
   "slider.css",
+  // After field and button: composes both, and styles only the zone and rows around them.
+  "file-upload.css",
   "search.css",
   "checkbox.css",
   // After checkbox: radio shares its construction and overrides the shape.

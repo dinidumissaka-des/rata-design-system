@@ -31,7 +31,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Empty state](empty-state.md) | `empty-state` | feedback | latest / latest | documented | free |
 | [FAB](fab.md) | `fab` | buttons | latest / latest | documented | free |
 | [Field](field.md) | `field` | inputs | latest / latest | documented | free |
-| [File Upload](file-upload.md) | `file-upload` | inputs | future / future | spec | free |
+| [File Upload](file-upload.md) | `file-upload` | inputs | latest / latest | documented | free |
 | [Heading](heading.md) | `heading` | content | latest / latest | documented | free |
 | [Icon](icon.md) | `icon` | content | latest / latest | documented | free |
 | [Link](link.md) | `link` | navigation | latest / latest | documented | free |

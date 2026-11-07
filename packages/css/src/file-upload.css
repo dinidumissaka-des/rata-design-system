@@ -1,0 +1,180 @@
+/* File upload — the drop zone around the choose control, and the list of
+   chosen files. Label, helper text, message and disabled dimming come from
+   field.css; every selector reading `.rata-file-upload[data-status=…]` is
+   matching the Field root, which carries both classes. The choose control is
+   the system's own and brings its own styles; the native file control is
+   visually hidden by .rata-visually-hidden. */
+
+.rata-file-upload-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-stack-sm);
+}
+
+/* ---- Drop zone -----------------------------------------------------------
+   A dashed edge says "put something here" without looking like a field that
+   needs typing into. Strong, so the edge meets the 3:1 WCAG 1.4.11 asks of a
+   control boundary. It has no role and no tab stop: the choose control
+   inside it is always the way in. */
+.rata-file-upload-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--rata-space-stack-xs);
+  padding: var(--rata-space-padding-lg);
+  border: var(--rata-border-2) dashed var(--rata-theme-border-strong);
+  border-radius: var(--rata-radius-container);
+  background: var(--rata-theme-bg-subtle);
+}
+
+.rata-file-upload-dropzone[data-dragging] {
+  border-color: var(--rata-theme-accent-role-bg);
+  background: var(--rata-theme-accent-role-subtle);
+}
+
+/* The text field's error edge, so a field that refused a file looks like any
+   other invalid field. */
+.rata-file-upload[data-status="invalid"] .rata-file-upload-dropzone {
+  border-color: var(--rata-theme-danger-role-fg);
+}
+
+/* Shown only where dragging is possible: phones have no files to drag. */
+.rata-file-upload-hint {
+  display: none;
+  margin: var(--rata-space-0);
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-supporting-size);
+  line-height: var(--rata-type-supporting-line-height);
+}
+
+@media (pointer: fine) {
+  .rata-file-upload-hint {
+    display: block;
+  }
+}
+
+/* ---- File list -----------------------------------------------------------
+   Bordered rows rather than a table: two facts per file and one action. */
+.rata-file-upload-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-stack-xs);
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+  list-style: none;
+}
+
+.rata-file-upload-row {
+  display: flex;
+  align-items: center;
+  gap: var(--rata-space-gap-xs);
+  box-sizing: border-box;
+  min-block-size: var(--rata-size-control-md);
+  padding-inline: var(--rata-space-padding-sm);
+  border: var(--rata-border-default) solid var(--rata-theme-border-default);
+  border-radius: var(--rata-radius-element);
+  background: var(--rata-theme-bg-surface);
+}
+
+/* The failed row only: the field's error edge. */
+.rata-file-upload-row[data-error] {
+  border-color: var(--rata-theme-danger-role-fg);
+}
+
+.rata-file-upload-row-icon {
+  flex: none;
+  inline-size: var(--rata-size-icon-text);
+  block-size: var(--rata-size-icon-text);
+  color: var(--rata-theme-fg-secondary);
+}
+
+.rata-file-upload-row-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--rata-space-stack-2xs);
+  min-inline-size: var(--rata-space-0);
+  padding-block: var(--rata-space-stack-2xs);
+}
+
+.rata-file-upload-row-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--rata-space-gap-xs);
+  min-inline-size: var(--rata-space-0);
+}
+
+.rata-file-upload-row-name {
+  overflow: hidden;
+  color: var(--rata-theme-fg-primary);
+  font-size: var(--rata-type-control-size-md);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rata-file-upload-row-size {
+  flex: none;
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-supporting-size);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Progress's status track and fill: this bar reports and cannot be adjusted.
+   space.1 is Progress's placeholder thickness, as the approved recipe
+   states. */
+.rata-file-upload-progress {
+  display: block;
+  overflow: hidden;
+  block-size: var(--rata-space-1);
+  border-radius: var(--rata-radius-pill);
+  background: var(--rata-theme-bg-muted);
+}
+
+.rata-file-upload-progress-fill {
+  display: block;
+  block-size: 100%;
+  border-radius: inherit;
+  background: var(--rata-theme-accent-role-bg);
+}
+
+/* The role's text colour on the row's surface, never its saturated bg. */
+.rata-file-upload-row-error {
+  margin: var(--rata-space-0);
+  color: var(--rata-theme-danger-role-fg);
+  font-size: var(--rata-type-supporting-size);
+  line-height: var(--rata-type-supporting-line-height);
+}
+
+/* ---- Remove control ------------------------------------------------------
+   Search's clear and Dialog's dismiss: currentColor on a transparent
+   background, hover and press from the state layer it composes. */
+.rata-file-upload-remove {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--rata-size-control-sm);
+  block-size: var(--rata-size-control-sm);
+  padding: var(--rata-space-0);
+  border: none;
+  border-radius: var(--rata-radius-inner);
+  background: transparent;
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-control-size-md);
+  cursor: pointer;
+}
+
+.rata-file-upload-remove:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* Not while the whole field is disabled — Field already dims the root, and
+   dimming twice compounds. */
+.rata-file-upload:not([data-disabled]) .rata-file-upload-remove[aria-disabled="true"] {
+  opacity: var(--rata-state-disabled-opacity);
+}
+
+.rata-file-upload-remove[aria-disabled="true"] {
+  cursor: not-allowed;
+}
