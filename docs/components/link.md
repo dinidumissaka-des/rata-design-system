@@ -5,14 +5,16 @@
 
 A navigation to another page or place, styled either inside running text or standing on its own.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Link } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `link` |
 | Family | navigation |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | `state-layer`, `icon`, `visually-hidden` |
 
 ## Behavior
@@ -29,11 +31,13 @@ An `<a href>`, always. No primitive: the platform already owns a link's keyboard
 
 ## Props
 
+Extends `Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "children">`.
+
 | Prop | Type | Default | Summary |
 |---|---|---|---|
 | `href` | `string` | — | Where the link goes. |
 | `children` | `ReactNode` | — | The link text — the name of where it goes. |
-| `variant?` | `"inline" \| "standalone"` | `"inline"` | Whether the link sits inside running text or on its own. |
+| `variant?` | `LinkVariant` | `"inline"` | Whether the link sits inside running text or on its own. |
 | `newTab?` | `boolean` | `false` | Opens the link in a new tab, and says so. |
 | `className?` | `string` | — | Extra classes, for placement. |
 
@@ -76,7 +80,7 @@ The link text — the name of where it goes.
 ### `variant`
 
 ```ts
-variant?: "inline" | "standalone" = "inline"
+variant?: LinkVariant = "inline"
 ```
 
 Whether the link sits inside running text or on its own.
@@ -168,6 +172,12 @@ Text that should trigger an action, such as "Resend code".
 ```
 
 Don't. Nothing is navigated to, so it is a button: `<Button variant="tertiary" onClick={resend}>Resend code</Button>`, activated by Space as well as Enter and announced as what it is.
+
+## Real usage in this repo
+
+```tsx
+<Link href="#contrast-report">contrast report</Link>
+```
 
 ## Token recipe
 

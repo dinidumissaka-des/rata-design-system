@@ -55,6 +55,9 @@ const ORDER = [
   // overlap rather than to coexist with them.
   "sheet.css",
   "panel.css",
+  // Near the end: a link sits inside other components' text, and its colour and
+  // underline must win over the type rules of whatever it lands in.
+  "link.css",
   // Last on purpose: a class whose job is to hide must not lose the cascade
   // to a component rule that happens to set position or padding.
   "visually-hidden.css",

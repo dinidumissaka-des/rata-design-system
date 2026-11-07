@@ -21,6 +21,7 @@ import {
   Dialog,
   Disclosure,
   Heading,
+  Link,
   Panel,
   Sheet,
   Menu,
@@ -522,6 +523,30 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
             { value: "prod", label: "Production" },
           ]}
         />
+      </div>
+    ),
+  },
+
+  link: {
+    "A link in running text": () => (
+      <Text>
+        Contrast is verified per brand — see the{" "}
+        <Link href="#contrast-report">contrast report</Link>.
+      </Text>
+    ),
+    "A standalone link with a client-side router": () => (
+      <div className="pg-block-stack">
+        <Link
+          variant="standalone"
+          href="#invoices"
+          onClick={(event) => event.preventDefault()}
+        >
+          View all invoices
+        </Link>
+        <Text role="supporting" tone="muted">
+          The click is intercepted here, the way a router would; the href stays
+          real for middle-click and copy-link.
+        </Text>
       </div>
     ),
   },

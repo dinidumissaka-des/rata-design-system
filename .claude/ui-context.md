@@ -39,7 +39,7 @@ this path is the honest answer to when it last actually moved.
 | [file-upload](../docs/components/file-upload.md) | `@rata/react` | inputs | future / future / future | free |
 | [heading](../docs/components/heading.md) | `@rata/react` | content | latest / latest / future | free |
 | [icon](../docs/components/icon.md) | `@rata/react` | content | latest / latest / future | free |
-| [link](../docs/components/link.md) | `@rata/react` | navigation | future / future / future | free |
+| [link](../docs/components/link.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [list](../docs/components/list.md) | `@rata/react` | content | future / future / future | free |
 | [list-item](../docs/components/list-item.md) | `@rata/react` | content | future / future / future | free |
 | [menu](../docs/components/menu.md) | `@rata/react` | overlays | latest / latest / future | free |
@@ -417,9 +417,24 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/icon.md](../docs/components/icon.md)
 
-### Link
+### Link (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "children">`
+
+- `href: string`
+  Where the link goes.
+- `children: ReactNode`
+  The link text — the name of where it goes.
+- `variant?: LinkVariant` — default: `"inline"`
+  Whether the link sits inside running text or on its own.
+- `newTab?: boolean` — default: `false`
+  Opens the link in a new tab, and says so.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Link href="#contrast-report">contrast report</Link>
+```
 
 Contract: [docs/components/link.md](../docs/components/link.md)
 

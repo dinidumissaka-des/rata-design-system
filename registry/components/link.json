@@ -10,10 +10,12 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
@@ -24,7 +26,20 @@
     "icon",
     "visually-hidden"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/link.css",
+      "target": "styles/link.css"
+    },
+    {
+      "source": "packages/react/src/link.tsx",
+      "target": "components/link.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "inline": {
@@ -97,8 +112,6 @@
   },
   "props": {
     "href": {
-      "type": "string",
-      "required": true,
       "summary": "Where the link goes.",
       "use": [
         "A real URL, even inside a single-page app — the router intercepts `onClick`, and the address stays usable for new tabs and copying."
@@ -109,8 +122,6 @@
       "a11y": "A link without an `href` is not a link to the accessibility tree, which is why this is required."
     },
     "children": {
-      "type": "ReactNode",
-      "required": true,
       "summary": "The link text — the name of where it goes.",
       "use": [
         "Text that makes sense out of context: \"View invoice INV-204\"."
@@ -121,8 +132,6 @@
       "a11y": "Becomes the link's accessible name."
     },
     "variant": {
-      "type": "\"inline\" | \"standalone\"",
-      "default": "\"inline\"",
       "summary": "Whether the link sits inside running text or on its own.",
       "use": [
         "`inline` inside a sentence.",
@@ -134,8 +143,6 @@
       "a11y": "`inline` is always underlined, which is the non-colour cue WCAG 1.4.1 requires inside text."
     },
     "newTab": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Opens the link in a new tab, and says so.",
       "use": [
         "A link out of a task the reader must not lose — help docs opened from the middle of a form."
@@ -146,7 +153,6 @@
       "a11y": "Adds a glyph and visually-hidden \"(opens in a new tab)\", plus `target=\"_blank\"` and `rel=\"noopener noreferrer\"`. Web only."
     },
     "className": {
-      "type": "string",
       "summary": "Extra classes, for placement.",
       "use": [
         "Spacing a standalone link in its row."

@@ -34,7 +34,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [File Upload](file-upload.md) | `file-upload` | inputs | future / future | spec | free |
 | [Heading](heading.md) | `heading` | content | latest / latest | documented | free |
 | [Icon](icon.md) | `icon` | content | latest / latest | documented | free |
-| [Link](link.md) | `link` | navigation | future / future | spec | free |
+| [Link](link.md) | `link` | navigation | latest / latest | documented | free |
 | [List](list.md) | `list` | content | future / future | spec | free |
 | [List Item](list-item.md) | `list-item` | content | future / future | spec | free |
 | [Menu](menu.md) | `menu` | overlays | latest / latest | documented | free |

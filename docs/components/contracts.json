@@ -5736,10 +5736,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -5751,16 +5753,16 @@
       "visually-hidden"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<AnchorHTMLAttributes<HTMLAnchorElement>, \"href\" | \"children\">",
     "props": [
       {
         "name": "href",
-        "type": "string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Where the link goes.",
+        "declared": true,
         "summary": "Where the link goes.",
         "use": [
           "A real URL, even inside a single-page app — the router intercepts `onClick`, and the address stays usable for new tabs and copying."
@@ -5773,10 +5775,10 @@
       },
       {
         "name": "children",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The link text — the name of where it goes.",
+        "declared": true,
         "summary": "The link text — the name of where it goes.",
         "use": [
           "Text that makes sense out of context: \"View invoice INV-204\"."
@@ -5789,15 +5791,15 @@
       },
       {
         "name": "variant",
-        "type": "\"inline\" | \"standalone\"",
+        "optional": true,
+        "type": "LinkVariant",
+        "description": "Whether the link sits inside running text or on its own.",
+        "default": "\"inline\"",
         "values": [
           "inline",
           "standalone"
         ],
-        "optional": true,
-        "default": "\"inline\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Whether the link sits inside running text or on its own.",
         "use": [
           "`inline` inside a sentence.",
@@ -5811,11 +5813,11 @@
       },
       {
         "name": "newTab",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Opens the link in a new tab, and says so.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Opens the link in a new tab, and says so.",
         "use": [
           "A link out of a task the reader must not lose — help docs opened from the middle of a form."
@@ -5828,10 +5830,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
+        "type": "string",
         "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Extra classes, for placement.",
         "use": [
           "Spacing a standalone link in its row."
@@ -5932,7 +5934,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Link href=\"#contrast-report\">contrast report</Link>"
   },
   {
     "name": "list",

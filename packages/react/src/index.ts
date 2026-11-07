@@ -32,6 +32,8 @@ export { Text } from "./text.js";
 export type { TextProps, TextElement, TextRole, TextTone } from "./text.js";
 export { Disclosure } from "./disclosure.js";
 export type { DisclosureProps, DisclosureHeadingLevel } from "./disclosure.js";
+export { Link } from "./link.js";
+export type { LinkProps, LinkVariant } from "./link.js";
 export { Badge } from "./badge.js";
 export type { BadgeProps, BadgeVariant } from "./badge.js";
 export { Breadcrumbs } from "./breadcrumbs.js";
