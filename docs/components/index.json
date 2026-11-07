@@ -32,7 +32,7 @@
   {
     "name": "card",
     "title": "Card",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "checkbox",
@@ -107,7 +107,7 @@
   {
     "name": "link",
     "title": "Link",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "list",
@@ -162,7 +162,7 @@
   {
     "name": "popover",
     "title": "Popover",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "progress",

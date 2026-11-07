@@ -1,0 +1,102 @@
+/* Card — a bordered surface holding one self-contained item among several.
+
+   Every value below is the gate-2 recipe in registry/components/card.json,
+   tagged with the decision it renders (C1–C7). Nothing here reads the element
+   name: a `div`, `article`, `section` or `li` card is drawn identically,
+   because `as` is a semantic choice, not a visual one. */
+
+/* C1 — outlined, at rest. */
+.rata-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-stack-sm);
+  /* The grid or stack the cards sit in owns the gap between them
+     (space.grid.gap), so the card carries no margin and no width. */
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-padding-md);
+  background: var(--rata-theme-bg-surface);
+  color: var(--rata-theme-fg-primary);
+  border: var(--rata-border-default) solid var(--rata-theme-border-default);
+  border-radius: var(--rata-radius-container);
+  /* `li` cards sit in the page's own list; the marker is the list's. */
+  list-style: none;
+}
+
+/* C2 — raised. The border is kept, so a raised card is the same size as an
+   outlined one and its edge does not depend on a shadow alone, which is
+   faint on a dark canvas. */
+.rata-card--raised {
+  box-shadow: var(--rata-theme-elevation-raised);
+}
+
+/* C3 — full-bleed media. The media cancels the card's padding rather than the
+   card dropping it, and the card's own radius clips it, so the media needs no
+   radius of its own. The flex gap gives space.stack.sm below it. Clipping is
+   scoped to cards that have media, so the state layer's bleed over the border
+   is not cut off on every other card. */
+.rata-card--media {
+  overflow: clip;
+}
+
+.rata-card-media {
+  margin-inline: calc(-1 * var(--rata-space-padding-md));
+  margin-block-start: calc(-1 * var(--rata-space-padding-md));
+}
+
+.rata-card-media > :is(img, video, svg, picture, canvas) {
+  display: block;
+  inline-size: 100%;
+}
+
+/* C4 — the linked card's stretched hit area. A ::after on the heading's link
+   (C7: the inline Link variant, which has no state layer and no position of
+   its own), inset on every side of the card. The card's position comes from
+   .rata-state-layer, so the stretch is bounded by the card. The card's own
+   ::after belongs to the state layer — the two pseudo-elements sit on
+   different elements, so they never collide. */
+.rata-card :is(h1, h2, h3, h4, h5, h6) a[href]::after {
+  content: "";
+  position: absolute;
+  inset: var(--rata-space-0);
+}
+
+/* C4 — hover and press. The card composes .rata-state-layer, but the layer's
+   own :hover and :active would tint the card when the pointer is over a
+   secondary action, or over a card with no link at all. So the layer is
+   driven by the link instead, through :has(). */
+.rata-card.rata-state-layer:hover::after,
+.rata-card.rata-state-layer:active::after {
+  opacity: 0;
+}
+
+.rata-card.rata-state-layer:has(:is(h1, h2, h3, h4, h5, h6) a[href]:hover)::after {
+  opacity: var(--rata-state-hover-opacity);
+}
+
+.rata-card.rata-state-layer:has(:is(h1, h2, h3, h4, h5, h6) a[href]:active)::after {
+  opacity: var(--rata-state-press-opacity);
+}
+
+/* C5 — focus. The ring is drawn around the card, the target the reader is
+   about to activate, while the link matches :focus-visible. The link's own
+   ring is moved, never removed: it is suppressed only inside a card that
+   draws it, so a browser without :has() keeps the link's ring. */
+.rata-card:has(:is(h1, h2, h3, h4, h5, h6) a[href]:focus-visible) {
+  outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+.rata-card:has(:is(h1, h2, h3, h4, h5, h6) a[href]:focus-visible)
+  :is(h1, h2, h3, h4, h5, h6)
+  a[href]:focus-visible {
+  outline-color: transparent;
+}
+
+/* C6 — secondary actions. Positioned and later in source order than the
+   heading, so they paint above the stretched area without a z-index and stay
+   separately clickable and focusable. Zero specificity, so a component that
+   positions its own control (a visually hidden native input, say) wins. */
+:where(.rata-card)
+  :where(:is(a[href], button, input, select, textarea, summary, [tabindex]):not(:is(h1, h2, h3, h4, h5, h6) a)) {
+  position: relative;
+}

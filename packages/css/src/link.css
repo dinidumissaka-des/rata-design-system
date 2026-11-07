@@ -1,0 +1,48 @@
+/* Link: an `<a href>` styled inside running text (inline) or on its own
+   (standalone). Gate-2 recipe L1–L7, registry/components/link.json.
+
+   No visited colour, by decision C4: `:visited` gets no rule here. */
+
+.rata-link {
+  color: var(--rata-theme-accent-role-fg);
+  cursor: pointer;
+}
+
+/* L3 / L7 — the same ring on both variants. `box-decoration-break: clone`
+   gives a link broken across lines a ring on each line instead of one ring
+   open at the break. */
+.rata-link:focus-visible {
+  outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+  border-radius: var(--rata-radius-inner);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* L1 — inline rest. Always underlined: the non-colour cue WCAG 1.4.1 needs
+   inside text. Font is inherited from the sentence, so nothing is set.
+   L2 — hover/press: deliberately no rule. The underline is already the
+   affordance, and the state layer would paint a box behind a phrase that
+   wraps across lines. */
+.rata-link--inline {
+  text-decoration-line: underline;
+  text-decoration-thickness: var(--rata-border-1);
+  text-underline-offset: var(--rata-space-0-5);
+}
+
+/* L5 — standalone rest. No underline, so it gets a box for the state layer
+   (L6, composed in the markup). Font size is inherited from where it sits. */
+.rata-link--standalone {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  font-weight: var(--rata-type-control-weight);
+  padding-inline: var(--rata-space-1);
+  border-radius: var(--rata-radius-inner);
+}
+
+/* L4 — the new-tab glyph. Sized by the Icon's own `rata-icon--text` step
+   (size.icon.text); this only sets the gap before it. */
+.rata-link-new-tab-icon {
+  margin-inline-start: var(--rata-space-gap-xs);
+}

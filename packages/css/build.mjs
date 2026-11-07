@@ -36,6 +36,9 @@ const ORDER = [
   // element-agnostic and neither should win over a component's own type rules.
   "heading.css",
   "text.css",
+  // After typography, which a card holds but never restyles; before the
+  // controls that sit inside one, so their own rules win any tie.
+  "card.css",
   "badge.css",
   "avatar.css",
   "disclosure.css",
@@ -49,12 +52,17 @@ const ORDER = [
   "notice.css",
   // After notice: both are surfaces, and the menu sits above one.
   "menu.css",
+  // After menu: the same top-layer surface and anchoring, read beside it.
+  "popover.css",
   "dialog.css",
   // After dialog: Sheet is the same native-modal construction with different
   // geometry, and its rules are written to replace dialog.css's where they
   // overlap rather than to coexist with them.
   "sheet.css",
   "panel.css",
+  // Near the end: a link sits inside other components' text, and its colour and
+  // underline must win over the type rules of whatever it lands in.
+  "link.css",
   // Last on purpose: a class whose job is to hide must not lose the cascade
   // to a component rule that happens to set position or padding.
   "visually-hidden.css",

@@ -24,7 +24,7 @@ this path is the honest answer to when it last actually moved.
 | [breadcrumbs](../docs/components/breadcrumbs.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [button](../docs/components/button.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [button-group](../docs/components/button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
-| [card](../docs/components/card.md) | `@rata/react` | content | future / future / future | free |
+| [card](../docs/components/card.md) | `@rata/react` | content | latest / latest / future | free |
 | [checkbox](../docs/components/checkbox.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [chip](../docs/components/chip.md) | `@rata/react` | inputs | future / future / future | free |
 | [combobox](../docs/components/combobox.md) | `@rata/react` | inputs | future / future / future | free |
@@ -39,7 +39,7 @@ this path is the honest answer to when it last actually moved.
 | [file-upload](../docs/components/file-upload.md) | `@rata/react` | inputs | future / future / future | free |
 | [heading](../docs/components/heading.md) | `@rata/react` | content | latest / latest / future | free |
 | [icon](../docs/components/icon.md) | `@rata/react` | content | latest / latest / future | free |
-| [link](../docs/components/link.md) | `@rata/react` | navigation | future / future / future | free |
+| [link](../docs/components/link.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [list](../docs/components/list.md) | `@rata/react` | content | future / future / future | free |
 | [list-item](../docs/components/list-item.md) | `@rata/react` | content | future / future / future | free |
 | [menu](../docs/components/menu.md) | `@rata/react` | overlays | latest / latest / future | free |
@@ -50,7 +50,7 @@ this path is the honest answer to when it last actually moved.
 | [pagination](../docs/components/pagination.md) | `@rata/react` | navigation | future / future / future | free |
 | [panel](../docs/components/panel.md) | `@rata/react` | content | latest / latest / future | free |
 | [pin-input](../docs/components/pin-input.md) | `@rata/react` | inputs | future / future / future | free |
-| [popover](../docs/components/popover.md) | `@rata/react` | overlays | future / future / future | free |
+| [popover](../docs/components/popover.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [progress](../docs/components/progress.md) | `@rata/react` | loading | future / future / future | free |
 | [radio](../docs/components/radio.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [radio-group](../docs/components/radio-group.md) | `@rata/react` | inputs | latest / latest / future | free |
@@ -189,9 +189,30 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/button-group.md](../docs/components/button-group.md)
 
-### Card
+### Card (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `HTMLAttributes<HTMLElement>`
+
+- `children: ReactNode`
+  The card's content.
+- `as?: CardElement`
+  Which element the card is, because that depends on what is in it.
+- `variant?: CardVariant` — default: `"outlined"`
+  How the card's edge is drawn: a border, or the resting-card shadow.
+- `media?: ReactNode`
+  An image or preview shown flush with the card's top edge, above the content.
+- `className?: string`
+  Extra classes, for placement in a grid — not for restyling the card.
+
+Real usage (from `apps/`):
+```tsx
+<Card as="section" aria-labelledby="pg-card-billing">
+        <Heading level={4} id="pg-card-billing">
+          Billing
+        </Heading>
+        <TextField label="Billing email" />
+      </Card>
+```
 
 Contract: [docs/components/card.md](../docs/components/card.md)
 
@@ -417,9 +438,24 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/icon.md](../docs/components/icon.md)
 
-### Link
+### Link (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "children">`
+
+- `href: string`
+  Where the link goes.
+- `children: ReactNode`
+  The link text — the name of where it goes.
+- `variant?: LinkVariant` — default: `"inline"`
+  Whether the link sits inside running text or on its own.
+- `newTab?: boolean` — default: `false`
+  Opens the link in a new tab, and says so.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Link href="#billing">Learn more</Link>
+```
 
 Contract: [docs/components/link.md](../docs/components/link.md)
 
@@ -607,9 +643,38 @@ No React implementation yet (status: future). There is nothing to look up — do
 
 Contract: [docs/components/pin-input.md](../docs/components/pin-input.md)
 
-### Popover
+### Popover (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `trigger: ReactElement`
+- `title: string`
+  The popover's name, shown at its top. A styled label, not a heading.
+- `children: ReactNode`
+  The content: short text, a link, a few fields.
+- `open?: boolean`
+  Whether the popover is showing. Makes the component controlled.
+- `defaultOpen?: boolean`
+  Starting state for an uncontrolled popover. Conflicts with `open`.
+- `onOpenChange?: (open: boolean) => void`
+  Called whenever it asks to open or close — trigger, Escape, light-dismiss or Tab out.
+- `placement?: PopoverPlacement` — default: `"block-end"`
+  Which side of the trigger it prefers. Anchor positioning flips it near an edge.
+- `initialFocus?: RefObject<HTMLElement | null>`
+  Focused on open, when the first focusable element is the wrong place to start.
+
+Real usage (from `apps/`):
+```tsx
+<Popover
+        title="Billing email"
+        trigger={
+          <Button variant="tertiary" iconOnly aria-label="About billing email">
+            <Icon icon={Info} />
+          </Button>
+        }
+      >
+        <Text>Invoices and receipts go here, not to your login email.</Text>
+        <Link href="#billing">Learn more</Link>
+      </Popover>
+```
 
 Contract: [docs/components/popover.md](../docs/components/popover.md)
 
@@ -635,7 +700,7 @@ Extends: `Omit<`
 
 Real usage (from `apps/`):
 ```tsx
-<Radio value="annual" label="Annual" />
+<Radio value="open" label="Open" />
 ```
 
 Contract: [docs/components/radio.md](../docs/components/radio.md)
@@ -1015,7 +1080,7 @@ Extends: `Omit<`
 
 Real usage (from `apps/`):
 ```tsx
-<TextField label="Retry limit" description="How many times to try again." />
+<TextField label="Billing email" />
 ```
 
 Contract: [docs/components/text-field.md](../docs/components/text-field.md)

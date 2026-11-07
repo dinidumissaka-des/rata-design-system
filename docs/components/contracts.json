@@ -1048,51 +1048,55 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
       }
     },
-    "dependencies": [],
+    "dependencies": [
+      "state-layer"
+    ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "HTMLAttributes<HTMLElement>",
     "props": [
       {
         "name": "children",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The card's content.",
+        "declared": true,
         "summary": "The card's content.",
         "use": [
           "One self-contained item: a heading and its body, a metric and its caption, a group of related settings."
         ],
         "dont": [
           "Another Card. A card inside a card is a section wearing two borders — use a Divider or a heading inside the one card.",
-          "A dense list of records. That is a Table, and a table inside a card is a table that has lost its edge-to-edge alignment for no reason."
+          "A dense list of records. That is a Table, and a table inside a card is a table that has lost its edge-to-edge alignment for no reason.",
+          "A `variant=\"standalone\"` Link in the card's heading. The standalone variant composes `.rata-state-layer`, which already owns the link's `::after` and makes the link `position: relative` — the stretched hit area would be trapped inside the link, its clicks swallowed, and a second hover tint stacked on the card's. Use the inline Link, the default."
         ],
         "conflicts": [],
-        "a11y": "Read in document order. If the card is a `section`, its first heading should name it through `aria-labelledby`. A Link inside the card's heading is stretched over the whole card, so put the card's one destination there and nowhere else."
+        "a11y": "Read in document order. If the card is a `section`, its first heading should name it through `aria-labelledby`. An inline Link inside the card's heading is stretched over the whole card, so put the card's one destination there and nowhere else."
       },
       {
         "name": "as",
-        "type": "\"div\" | \"article\" | \"section\" | \"li\"",
+        "optional": true,
+        "type": "CardElement",
+        "description": "Which element the card is, because that depends on what is in it.",
         "values": [
           "div",
           "article",
           "section",
           "li"
         ],
-        "optional": true,
-        "default": "\"div\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Which element the card is, because that depends on what is in it.",
         "use": [
           "`li` for every card in a gallery or a grid of peers, inside a `<ul>` the page renders.",
@@ -1108,15 +1112,15 @@
       },
       {
         "name": "variant",
-        "type": "\"outlined\" | \"raised\"",
+        "optional": true,
+        "type": "CardVariant",
+        "description": "How the card's edge is drawn: a border, or the resting-card shadow.",
+        "default": "\"outlined\"",
         "values": [
           "outlined",
           "raised"
         ],
-        "optional": true,
-        "default": "\"outlined\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "How the card's edge is drawn: a border, or the resting-card shadow.",
         "use": [
           "`outlined` for cards that are peers in one plane — a gallery, a dashboard, a settings page. Almost always.",
@@ -1131,10 +1135,10 @@
       },
       {
         "name": "media",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "An image or preview shown flush with the card's top edge, above the content.",
+        "declared": true,
         "summary": "An image or preview shown flush with the card's top edge, above the content.",
         "use": [
           "A thumbnail in a gallery card, a chart preview in a dashboard widget."
@@ -1148,10 +1152,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Extra classes, for placement in a grid — not for restyling the card.",
+        "declared": true,
         "summary": "Extra classes, for placement in a grid — not for restyling the card.",
         "use": [
           "Spanning grid columns, or aligning the card inside the page's layout."
@@ -1173,8 +1177,8 @@
       {
         "case": "A whole card that goes somewhere",
         "when": "A gallery where each card opens its own page, and pressing anywhere on the card should open it.",
-        "example": "<ul className=\"project-grid\">\n  {projects.map((p) => (\n    <Card as=\"li\" key={p.id} media={<img src={p.preview} alt=\"\" />}>\n      <Heading level={3}>\n        <Link variant=\"standalone\" href={`/projects/${p.id}`}>{p.name}</Link>\n      </Heading>\n      <Text tone=\"secondary\">{p.summary}</Text>\n    </Card>\n  ))}\n</ul>",
-        "notes": "No `href` or `onClick` on the Card: the Link in the heading is the control, and the card stretches its hit area over the whole card and shows its hover and focus. The link's name is the project's name, not every word in the card, and each card is one tab stop. A secondary action — a Menu button, say — placed after the heading sits above the stretched area, so pressing it does not also open the project."
+        "example": "<ul className=\"project-grid\">\n  {projects.map((p) => (\n    <Card as=\"li\" key={p.id} media={<img src={p.preview} alt=\"\" />}>\n      <Heading level={3}>\n        <Link href={`/projects/${p.id}`}>{p.name}</Link>\n      </Heading>\n      <Text tone=\"secondary\">{p.summary}</Text>\n    </Card>\n  ))}\n</ul>",
+        "notes": "No `href` or `onClick` on the Card: the inline Link in the heading is the control — not `variant=\"standalone\"`, whose state layer would trap the stretched hit area inside the link, and the card stretches its hit area over the whole card and shows its hover and focus. The link's name is the project's name, not every word in the card, and each card is one tab stop. A secondary action — a Menu button, say — placed after the heading sits above the stretched area, so pressing it does not also open the project."
       },
       {
         "case": "A titled group of settings",
@@ -1223,6 +1227,10 @@
         {
           "decision": "Gate 2: every state's token mapping is approved",
           "why": "Approved state by state — C1 outlined rest, C2 raised (border kept), C3 full-bleed media, C4 linked hover/press via the state layer, C5 linked focus drawn around the card, C6 secondary actions above the stretched link. The focus ring is moved to the card, never removed: it is suppressed on the link only where the card's :has() rule can draw it instead (gate 2, docs/decisions/2026-11-gate-1-review.md)."
+        },
+        {
+          "decision": "A linked card's heading uses the inline Link",
+          "why": "Decided at gate 3 (decision C7, docs/decisions/2026-11-gate-1-review.md). C4 stretches the heading link's hit area with its `::after`. A standalone Link composes `.rata-state-layer`, whose `::after` is already the link's hover tint and whose `position: relative` makes the link the containing block: the stretched area would be trapped inside the link instead of covering the card, the layer's `pointer-events: none` would swallow its clicks, and the link's own tint would stack on the card's. The inline Link has no state layer and no position of its own, so nothing collides — and its underline is drawn on the heading text, while the card draws the hover, press and focus."
         }
       ]
     },
@@ -1258,14 +1266,14 @@
         "summary": "A whole-card link through a stretched heading link (C4–C6).",
         "tokens": {
           "card position": "relative, so the link's stretched pseudo-element is bounded by the card (C4)",
-          "stretched hit area": "a ::after on the heading's link, inset space.0 on every side of the card. The card's own ::after belongs to the state layer — the two pseudo-elements sit on different elements, so they never collide (C4)",
+          "stretched hit area": "a ::after on the heading's link — the inline Link variant (C7) — inset space.0 on every side of the card. The card's own ::after belongs to the state layer — the two pseudo-elements sit on different elements, so they never collide (C4)",
           "hover / press": "compose the .rata-state-layer class on the card, driven by :has() on the link's :hover and :active (C4)",
           "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, drawn around the card while the link matches :focus-visible; the link's own outline is suppressed only inside a card that draws it, so a browser without :has() keeps the link's ring (C5)",
           "secondary actions": "position: relative and later in source order than the heading, so they paint above the stretched area without a z-index and stay separately clickable and focusable (C6)"
         }
       }
     },
-    "example": null
+    "example": "<Card as=\"section\" aria-labelledby=\"pg-card-billing\">\n        <Heading level={4} id=\"pg-card-billing\">\n          Billing\n        </Heading>\n        <TextField label=\"Billing email\" />\n      </Card>"
   },
   {
     "name": "checkbox",
@@ -5736,10 +5744,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -5751,16 +5761,16 @@
       "visually-hidden"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<AnchorHTMLAttributes<HTMLAnchorElement>, \"href\" | \"children\">",
     "props": [
       {
         "name": "href",
-        "type": "string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Where the link goes.",
+        "declared": true,
         "summary": "Where the link goes.",
         "use": [
           "A real URL, even inside a single-page app — the router intercepts `onClick`, and the address stays usable for new tabs and copying."
@@ -5773,10 +5783,10 @@
       },
       {
         "name": "children",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The link text — the name of where it goes.",
+        "declared": true,
         "summary": "The link text — the name of where it goes.",
         "use": [
           "Text that makes sense out of context: \"View invoice INV-204\"."
@@ -5789,15 +5799,15 @@
       },
       {
         "name": "variant",
-        "type": "\"inline\" | \"standalone\"",
+        "optional": true,
+        "type": "LinkVariant",
+        "description": "Whether the link sits inside running text or on its own.",
+        "default": "\"inline\"",
         "values": [
           "inline",
           "standalone"
         ],
-        "optional": true,
-        "default": "\"inline\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Whether the link sits inside running text or on its own.",
         "use": [
           "`inline` inside a sentence.",
@@ -5811,11 +5821,11 @@
       },
       {
         "name": "newTab",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Opens the link in a new tab, and says so.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Opens the link in a new tab, and says so.",
         "use": [
           "A link out of a task the reader must not lose — help docs opened from the middle of a form."
@@ -5824,14 +5834,14 @@
           "Every external link, by habit. Opening a new tab takes Back away; the reader can choose a new tab themselves."
         ],
         "conflicts": [],
-        "a11y": "Adds a glyph and visually-hidden \"(opens in a new tab)\", plus `target=\"_blank\"` and `rel=\"noopener noreferrer\"`. Web only."
+        "a11y": "Adds a glyph and visually-hidden \"(opens in new tab)\", plus `target=\"_blank\"` and `rel=\"noopener noreferrer\"`. Web only."
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
+        "type": "string",
         "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Extra classes, for placement.",
         "use": [
           "Spacing a standalone link in its row."
@@ -5880,7 +5890,7 @@
         },
         {
           "decision": "`newTab` exists so the warning cannot be forgotten",
-          "why": "WCAG 3.2.5 asks that a change of context be predictable, and a link that silently opens a new tab breaks Back for the reader who did not expect it. `newTab` sets `target=\"_blank\"` and `rel=\"noopener noreferrer\"` together, and adds a glyph plus visually-hidden \"(opens in a new tab)\" so it is announced. Passing `target=\"_blank\"` by hand gets none of that, which is the reason this is a prop rather than an attribute the caller remembers."
+          "why": "WCAG 3.2.5 asks that a change of context be predictable, and a link that silently opens a new tab breaks Back for the reader who did not expect it. `newTab` sets `target=\"_blank\"` and `rel=\"noopener noreferrer\"` together, and adds a glyph plus visually-hidden \"(opens in new tab)\" so it is announced. Passing `target=\"_blank\"` by hand gets none of that, which is the reason this is a prop rather than an attribute the caller remembers."
         },
         {
           "decision": "No visited colour",
@@ -5932,7 +5942,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Link href=\"#billing\">Learn more</Link>"
   },
   {
     "name": "list",
@@ -8872,10 +8882,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -8883,16 +8895,16 @@
     },
     "dependencies": [],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "trigger",
-        "type": "ReactElement",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactElement",
+        "description": "",
+        "declared": true,
         "summary": "The control that opens and closes the popover.",
         "use": [
           "A `Button` — including an icon-only help button, which is how a toggletip is built."
@@ -8906,10 +8918,10 @@
       },
       {
         "name": "title",
-        "type": "string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The popover's name, shown at its top. A styled label, not a heading.",
+        "declared": true,
         "summary": "The popover's name, shown at its top.",
         "use": [
           "A noun phrase naming what is inside: \"Date range\", \"Share link\"."
@@ -8922,10 +8934,10 @@
       },
       {
         "name": "children",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The content: short text, a link, a few fields.",
+        "declared": true,
         "summary": "The content: short text, a link, a few fields.",
         "use": [
           "A filter with two or three controls, a help text with a \"Learn more\" link, a copyable link."
@@ -8939,10 +8951,10 @@
       },
       {
         "name": "open",
-        "type": "boolean",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "boolean",
+        "description": "Whether the popover is showing. Makes the component controlled.",
+        "declared": true,
         "summary": "Whether the popover is showing. Makes the component controlled.",
         "use": [
           "Opening it from somewhere other than the trigger, or closing it after a submit inside it."
@@ -8957,11 +8969,10 @@
       },
       {
         "name": "defaultOpen",
-        "type": "boolean",
         "optional": true,
-        "default": "false",
-        "description": null,
-        "declared": false,
+        "type": "boolean",
+        "description": "Starting state for an uncontrolled popover. Conflicts with `open`.",
+        "declared": true,
         "summary": "Starting state for an uncontrolled popover.",
         "use": [
           "Almost never. A popover open before the reader asked covers what they came to see."
@@ -8976,10 +8987,10 @@
       },
       {
         "name": "onOpenChange",
-        "type": "(open: boolean) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(open: boolean) => void",
+        "description": "Called whenever it asks to open or close — trigger, Escape, light-dismiss or Tab out.",
+        "declared": true,
         "summary": "Called whenever the popover asks to open or close — trigger, Escape, light-dismiss or Tab out.",
         "use": [
           "Keeping `open` in step, or saving a filter's draft when it closes."
@@ -8992,17 +9003,17 @@
       },
       {
         "name": "placement",
-        "type": "\"block-start\" | \"block-end\" | \"inline-start\" | \"inline-end\"",
+        "optional": true,
+        "type": "PopoverPlacement",
+        "description": "Which side of the trigger it prefers. Anchor positioning flips it near an edge.",
+        "default": "\"block-end\"",
         "values": [
           "block-start",
           "block-end",
           "inline-start",
           "inline-end"
         ],
-        "optional": true,
-        "default": "\"block-end\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Which side of the trigger the popover prefers.",
         "use": [
           "`block-start` for a trigger near the bottom of the viewport."
@@ -9015,10 +9026,10 @@
       },
       {
         "name": "initialFocus",
-        "type": "RefObject<HTMLElement | null>",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "RefObject<HTMLElement | null>",
+        "description": "Focused on open, when the first focusable element is the wrong place to start.",
+        "declared": true,
         "summary": "The element to focus on open, when the first focusable one is the wrong place to start.",
         "use": [
           "The input in a popover whose first focusable element is a link in its help text."
@@ -9051,6 +9062,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getPopoverProps",
       "summary": "A non-modal `role=\"dialog\"` carrying `popover=\"auto\"`, positioned against its trigger with CSS anchor positioning — the same top-layer and anchoring machinery as Menu, including the per-instance anchor name. It moves focus in when opened, does not trap it, and returns it to the trigger on Escape. Proposed primitive: `getPopoverProps` in `packages/primitives/src/popover.ts`, sharing Menu's open/close reporting; it is a proposal, not yet a commitment.",
       "decisions": [
         {
@@ -9120,7 +9132,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Popover\n        title=\"Billing email\"\n        trigger={\n          <Button variant=\"tertiary\" iconOnly aria-label=\"About billing email\">\n            <Icon icon={Info} />\n          </Button>\n        }\n      >\n        <Text>Invoices and receipts go here, not to your login email.</Text>\n        <Link href=\"#billing\">Learn more</Link>\n      </Popover>"
   },
   {
     "name": "progress",
@@ -9444,7 +9456,7 @@
         }
       }
     },
-    "example": "<Radio value=\"annual\" label=\"Annual\" />"
+    "example": "<Radio value=\"open\" label=\"Open\" />"
   },
   {
     "name": "radio-group",
@@ -13526,7 +13538,7 @@
         }
       }
     },
-    "example": "<TextField label=\"Retry limit\" description=\"How many times to try again.\" />"
+    "example": "<TextField label=\"Billing email\" />"
   },
   {
     "name": "textarea",

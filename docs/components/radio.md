@@ -118,7 +118,7 @@ Everything that makes this a radio comes from the group: the shared name, the ex
 ## Real usage in this repo
 
 ```tsx
-<Radio value="annual" label="Annual" />
+<Radio value="open" label="Open" />
 ```
 
 ## Token recipe

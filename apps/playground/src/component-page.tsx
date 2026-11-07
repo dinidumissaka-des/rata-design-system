@@ -17,11 +17,14 @@ import {
   Breadcrumbs,
   Button,
   ButtonGroup,
+  Card,
   Checkbox,
   Dialog,
   Disclosure,
   Heading,
+  Link,
   Panel,
+  Popover,
   Sheet,
   Menu,
   MenuItem,
@@ -78,6 +81,7 @@ import {
   Upload,
   Download,
   CircleAlert,
+  Info,
   ChevronLeft,
   ChevronRight,
   Bold,
@@ -414,6 +418,39 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     ),
   },
 
+  card: {
+    "A gallery of peer items": () => (
+      <ul className="pg-card-grid">
+        {["Invoice", "Proposal", "Changelog"].map((name) => (
+          <Card as="li" key={name} media={<div className="pg-card-preview" aria-hidden="true" />}>
+            <Heading level={4}>{name}</Heading>
+            <Text tone="secondary">A starting point for a new {name.toLowerCase()}.</Text>
+          </Card>
+        ))}
+      </ul>
+    ),
+    "A whole card that goes somewhere": () => (
+      <ul className="pg-card-grid">
+        {["Atlas", "Beacon"].map((name) => (
+          <Card as="li" key={name} media={<div className="pg-card-preview" aria-hidden="true" />}>
+            <Heading level={4}>
+              <Link href={`#project-${name.toLowerCase()}`}>{name}</Link>
+            </Heading>
+            <Text tone="secondary">Open the {name} project.</Text>
+          </Card>
+        ))}
+      </ul>
+    ),
+    "A titled group of settings": () => (
+      <Card as="section" aria-labelledby="pg-card-billing">
+        <Heading level={4} id="pg-card-billing">
+          Billing
+        </Heading>
+        <TextField label="Billing email" />
+      </Card>
+    ),
+  },
+
   disclosure: {
     "One optional section in a form": () => (
       <div className="pg-block-stack">
@@ -522,6 +559,30 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
             { value: "prod", label: "Production" },
           ]}
         />
+      </div>
+    ),
+  },
+
+  link: {
+    "A link in running text": () => (
+      <Text>
+        Contrast is verified per brand — see the{" "}
+        <Link href="#contrast-report">contrast report</Link>.
+      </Text>
+    ),
+    "A standalone link with a client-side router": () => (
+      <div className="pg-block-stack">
+        <Link
+          variant="standalone"
+          href="#invoices"
+          onClick={(event) => event.preventDefault()}
+        >
+          View all invoices
+        </Link>
+        <Text role="supporting" tone="muted">
+          The click is intercepted here, the way a router would; the href stays
+          real for middle-click and copy-link.
+        </Text>
       </div>
     ),
   },
@@ -834,6 +895,23 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
         <MenuItem destructive icon={Trash2} onSelect={() => {}}>Delete</MenuItem>
       </Menu>
     ),
+  },
+
+  popover: {
+    "A toggletip: help that has to work on touch": () => (
+      <Popover
+        title="Billing email"
+        trigger={
+          <Button variant="tertiary" iconOnly aria-label="About billing email">
+            <Icon icon={Info} />
+          </Button>
+        }
+      >
+        <Text>Invoices and receipts go here, not to your login email.</Text>
+        <Link href="#billing">Learn more</Link>
+      </Popover>
+    ),
+    "A small filter, controlled": () => <PopoverFilterStage />,
   },
 
   notice: {
@@ -1381,6 +1459,24 @@ function MenuItemStage({
  * worth trying: the trigger still reports, and the state above it still owns
  * the answer.
  */
+function PopoverFilterStage() {
+  const [filtering, setFiltering] = useState(false);
+  const [status, setStatus] = useState<string | null>("open");
+  return (
+    <Popover
+      title="Status"
+      trigger={<Button variant="secondary">Status</Button>}
+      open={filtering}
+      onOpenChange={setFiltering}
+    >
+      <RadioGroup label="Status" value={status} onValueChange={setStatus}>
+        <Radio value="open" label="Open" />
+        <Radio value="closed" label="Closed" />
+      </RadioGroup>
+    </Popover>
+  );
+}
+
 function DisclosureStage() {
   const [open, setOpen] = useState(true);
   return (

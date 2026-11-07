@@ -1,0 +1,150 @@
+/* Popover — a non-modal, titled surface anchored to a trigger.
+
+   THE SAME MACHINERY AS MENU (see menu.css for the long version): the
+   `popover` attribute puts the surface in the browser's top layer, which is
+   the whole of its stacking — no z-index — and CSS anchor positioning places
+   it against the trigger and flips it near a viewport edge. No measurement
+   code, no dependency.
+
+   The mapping is gate 2's, P1–P6 in registry/components/popover.json:
+     P1  Menu's surface             P4  enter: fade + rise, reduced-motion off
+     P2  the title, a styled label  P5  exit: none — closes instantly
+     P3  size and position          P6  no ring of its own */
+
+/* The trigger is whatever the caller passed, so this adds only the anchor
+   name. Passed in per instance because `anchor-name` is a global ident: one
+   hard-coded name anchors every popover on a page to the last trigger. */
+/* rata-allow: unknown-token — not a design token but component plumbing: CSS
+   cannot generate a unique ident, so the component passes one in. */
+.rata-popover-trigger {
+  anchor-name: var(--rata-popover-anchor);
+}
+
+/* rata-allow: unknown-token — --rata-popover-anchor is the per-instance anchor
+   name the component passes in, not a value from the token set. */
+.rata-popover {
+  box-sizing: border-box;
+  /* P1 — Menu's surface. The popover attribute's UA styles (a border,
+     padding and margin of their own) are replaced, not added to. */
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-padding-sm);
+  border: var(--rata-border-default) solid var(--rata-theme-border-default);
+  border-radius: var(--rata-radius-container);
+  background: var(--rata-theme-bg-surface);
+  color: var(--rata-theme-fg-primary);
+  box-shadow: var(--rata-theme-elevation-overlay);
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-body-size);
+  line-height: var(--rata-type-body-line-height);
+
+  /* P3 — the TEXT is bounded by the compact measure, so the box is that plus
+     its padding; and never wider than the viewport less padding.lg. */
+  max-inline-size: min(
+    calc(var(--rata-size-measure-compact) + var(--rata-space-padding-sm) * 2),
+    calc(100vw - var(--rata-space-padding-lg))
+  );
+
+  /* P3 — gap.xs from the trigger, on whichever side `placement` prefers.
+     The flip fallbacks mirror the margin with the position, so the gap
+     follows the popover when it flips. */
+  position-anchor: var(--rata-popover-anchor);
+  position: absolute;
+  position-area: block-end span-inline-end;
+  position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  margin-block-start: var(--rata-space-gap-xs);
+}
+
+.rata-popover--block-start {
+  position-area: block-start span-inline-end;
+  margin-block-start: var(--rata-space-0);
+  margin-block-end: var(--rata-space-gap-xs);
+}
+
+.rata-popover--inline-end {
+  position-area: inline-end span-block-end;
+  position-try-fallbacks: flip-inline, flip-block, flip-block flip-inline;
+  margin-block-start: var(--rata-space-0);
+  margin-inline-start: var(--rata-space-gap-xs);
+}
+
+.rata-popover--inline-start {
+  position-area: inline-start span-block-end;
+  position-try-fallbacks: flip-inline, flip-block, flip-block flip-inline;
+  margin-block-start: var(--rata-space-0);
+  margin-inline-end: var(--rata-space-gap-xs);
+}
+
+/* `popover` elements are display:none until shown, so the open state needs
+   no class of its own. Only `display` lives here — every other property is on
+   the base rule, so nothing reverts out of step with it.
+
+   P5: there is no exit transition, and no `allow-discrete` holding `display`.
+   That is the bug Dialog shipped and fixed; closing instantly is how Menu
+   avoids it too. */
+.rata-popover:popover-open {
+  display: block;
+}
+
+/* P4 — enter only, and only for readers who have not asked for less motion.
+   Keyframes rather than a transition, so there is nothing to run in reverse. */
+@media (prefers-reduced-motion: no-preference) {
+  .rata-popover:popover-open {
+    animation: rata-popover-enter var(--rata-motion-overlay-duration)
+      var(--rata-motion-easing-enter);
+  }
+}
+
+@keyframes rata-popover-enter {
+  from {
+    opacity: 0;
+    /* A short rise, not a scale: scaling text makes it crawl. */
+    translate: 0 calc(-1 * var(--rata-space-1));
+  }
+}
+
+/* P2 — the title. A styled paragraph, never a heading: the page's outline is
+   still live behind a non-modal surface, and the popover cannot know what
+   level it sits under. */
+.rata-popover-title {
+  margin: var(--rata-space-0);
+  margin-block-end: var(--rata-space-stack-xs);
+  font-size: var(--rata-type-body-size);
+  font-weight: var(--rata-type-label-weight);
+  color: var(--rata-theme-fg-primary);
+}
+
+/* P6 — deliberately no :focus-visible rule here. The popover itself never
+   takes focus; it moves to the first control inside (or `initialFocus`), and
+   each control draws its own ring. The trigger keeps its own ring too. */
+
+/* Engines without anchor positioning. A top-layer element's containing block
+   is the viewport, so CSS alone cannot put it beside its trigger here — the
+   same gap Menu documents. It falls back to a small centred surface: never
+   clipped, never off-screen, and every behaviour identical. */
+@supports not (anchor-name: --rata-popover-anchor) {
+  .rata-popover,
+  .rata-popover--block-start,
+  .rata-popover--inline-end,
+  .rata-popover--inline-start {
+    position: fixed;
+    inset: auto;
+    margin: var(--rata-space-0);
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    translate: -50% -50%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .rata-popover:popover-open {
+      /* The rise implies growing out of a trigger, which this placement does
+         not do. Fade only. */
+      animation-name: rata-popover-enter-centred;
+    }
+  }
+}
+
+@keyframes rata-popover-enter-centred {
+  from {
+    opacity: 0;
+  }
+}

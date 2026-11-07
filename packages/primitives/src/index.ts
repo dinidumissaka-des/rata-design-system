@@ -36,6 +36,20 @@ export type {
   MenuCloseReason,
   MenuKeyEvent,
 } from "./menu.js";
+export {
+  getPopoverProps,
+  popoverCloseReasonForFocus,
+  popoverReturnsFocus,
+} from "./popover.js";
+export type {
+  PopoverOptions,
+  PopoverProps,
+  PopoverTriggerProps,
+  PopoverSurfaceProps,
+  PopoverCloseReason,
+  PopoverFocusDestination,
+  PopoverKeyEvent,
+} from "./popover.js";
 export { getSearchProps } from "./search.js";
 export type { SearchOptions, SearchProps, SearchKeyEvent } from "./search.js";
 export { getTabsProps } from "./tabs.js";

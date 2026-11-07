@@ -5,19 +5,23 @@
 
 A non-modal, titled surface anchored to a trigger, holding a small piece of interactive content the reader opened on purpose.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Popover } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `popover` |
 | Family | overlays |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | — |
 
 ## Behavior
 
 A non-modal `role="dialog"` carrying `popover="auto"`, positioned against its trigger with CSS anchor positioning — the same top-layer and anchoring machinery as Menu, including the per-instance anchor name. It moves focus in when opened, does not trap it, and returns it to the trigger on Escape. Proposed primitive: `getPopoverProps` in `packages/primitives/src/popover.ts`, sharing Menu's open/close reporting; it is a proposal, not yet a commitment.
+
+Headless contract: `getPopoverProps` in `packages/primitives/src/popover.ts` — importable from `@rata/primitives` without the React wrapper or any CSS.
 
 - **Popover, Menu, Dialog and Tooltip are four components because they are four contracts** — A Menu is a list of actions with arrow-key navigation and `role="menu"` — putting a text field in one breaks both. A Dialog is modal: the page goes inert and focus is trapped, which is right for a decision that blocks the task and wrong for a filter you glance at. A Tooltip is never focusable and holds nothing interactive. A Popover is the remaining case: a small, non-modal surface the reader opens on purpose, which may contain anything a short form can — a date range, a colour picker, a share link with a copy button, a help text with a "Learn more" link. Each of these differs in focus behaviour, keyboard contract and ARIA role; one component with modes would be four components wearing one name.
 - **Focus moves in on open, is not trapped, and returns to the trigger on Escape** — The reader opened it to use it, so focus goes to the first focusable element, or to `initialFocus` when the first one is the wrong place to start. It is not trapped because the popover is not modal — the page behind it is still live, and Tab past the last control leaves the popover and closes it, the same way Tab leaves a Menu. Escape returns focus to the trigger, because that is where the reader was. Light-dismiss by clicking elsewhere is the exception, as in Menu: the reader chose a new place, and taking focus back would undo it.
@@ -35,9 +39,9 @@ A non-modal `role="dialog"` carrying `popover="auto"`, positioned against its tr
 | `title` | `string` | — | The popover's name, shown at its top. |
 | `children` | `ReactNode` | — | The content: short text, a link, a few fields. |
 | `open?` | `boolean` | — | Whether the popover is showing. Makes the component controlled. |
-| `defaultOpen?` | `boolean` | `false` | Starting state for an uncontrolled popover. |
+| `defaultOpen?` | `boolean` | — | Starting state for an uncontrolled popover. |
 | `onOpenChange?` | `(open: boolean) => void` | — | Called whenever the popover asks to open or close — trigger, Escape, light-dismiss or Tab out. |
-| `placement?` | `"block-start" \| "block-end" \| "inline-start" \| "inline-end"` | `"block-end"` | Which side of the trigger the popover prefers. |
+| `placement?` | `PopoverPlacement` | `"block-end"` | Which side of the trigger the popover prefers. |
 | `initialFocus?` | `RefObject<HTMLElement \| null>` | — | The element to focus on open, when the first focusable one is the wrong place to start. |
 
 ### `trigger`
@@ -66,6 +70,8 @@ title: string
 ```
 
 The popover's name, shown at its top.
+
+Source doc: The popover's name, shown at its top. A styled label, not a heading.
 
 **Use when**
 
@@ -119,10 +125,12 @@ Whether the popover is showing. Makes the component controlled.
 ### `defaultOpen`
 
 ```ts
-defaultOpen?: boolean = false
+defaultOpen?: boolean
 ```
 
 Starting state for an uncontrolled popover.
+
+Source doc: Starting state for an uncontrolled popover. Conflicts with `open`.
 
 **Use when**
 
@@ -142,6 +150,8 @@ onOpenChange?: (open: boolean) => void
 
 Called whenever the popover asks to open or close — trigger, Escape, light-dismiss or Tab out.
 
+Source doc: Called whenever it asks to open or close — trigger, Escape, light-dismiss or Tab out.
+
 **Use when**
 
 - Keeping `open` in step, or saving a filter's draft when it closes.
@@ -153,10 +163,12 @@ Called whenever the popover asks to open or close — trigger, Escape, light-dis
 ### `placement`
 
 ```ts
-placement?: "block-start" | "block-end" | "inline-start" | "inline-end" = "block-end"
+placement?: PopoverPlacement = "block-end"
 ```
 
 Which side of the trigger the popover prefers.
+
+Source doc: Which side of the trigger it prefers. Anchor positioning flips it near an edge.
 
 **Use when**
 
@@ -175,6 +187,8 @@ initialFocus?: RefObject<HTMLElement | null>
 ```
 
 The element to focus on open, when the first focusable one is the wrong place to start.
+
+Source doc: Focused on open, when the first focusable element is the wrong place to start.
 
 **Use when**
 
@@ -241,6 +255,22 @@ Rename, Duplicate and Delete for a row.
 ```
 
 Don't. A list of actions is a Menu — arrow keys, typeahead, focus returned after a choice, `role="menu"`. A popover of buttons is a menu with none of that.
+
+## Real usage in this repo
+
+```tsx
+<Popover
+        title="Billing email"
+        trigger={
+          <Button variant="tertiary" iconOnly aria-label="About billing email">
+            <Icon icon={Info} />
+          </Button>
+        }
+      >
+        <Text>Invoices and receipts go here, not to your login email.</Text>
+        <Link href="#billing">Learn more</Link>
+      </Popover>
+```
 
 ## Token recipe
 

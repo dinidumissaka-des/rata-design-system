@@ -19,7 +19,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Breadcrumbs](breadcrumbs.md) | `breadcrumbs` | navigation | latest / latest | documented | free |
 | [Button](button.md) | `button` | buttons | latest / latest | documented | free |
 | [Button Group](button-group.md) | `button-group` | buttons | latest / latest | documented | free |
-| [Card](card.md) | `card` | content | future / future | spec | free |
+| [Card](card.md) | `card` | content | latest / latest | documented | free |
 | [Checkbox](checkbox.md) | `checkbox` | inputs | latest / latest | documented | free |
 | [Chip](chip.md) | `chip` | inputs | future / future | spec | free |
 | [Combobox](combobox.md) | `combobox` | inputs | future / future | spec | free |
@@ -34,7 +34,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [File Upload](file-upload.md) | `file-upload` | inputs | future / future | spec | free |
 | [Heading](heading.md) | `heading` | content | latest / latest | documented | free |
 | [Icon](icon.md) | `icon` | content | latest / latest | documented | free |
-| [Link](link.md) | `link` | navigation | future / future | spec | free |
+| [Link](link.md) | `link` | navigation | latest / latest | documented | free |
 | [List](list.md) | `list` | content | future / future | spec | free |
 | [List Item](list-item.md) | `list-item` | content | future / future | spec | free |
 | [Menu](menu.md) | `menu` | overlays | latest / latest | documented | free |
@@ -45,7 +45,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Pagination](pagination.md) | `pagination` | navigation | future / future | spec | free |
 | [Panel](panel.md) | `panel` | content | latest / latest | documented | free |
 | [Pin Input](pin-input.md) | `pin-input` | inputs | future / future | spec | free |
-| [Popover](popover.md) | `popover` | overlays | future / future | spec | free |
+| [Popover](popover.md) | `popover` | overlays | latest / latest | documented | free |
 | [Progress](progress.md) | `progress` | loading | future / future | spec | free |
 | [Radio](radio.md) | `radio` | inputs | latest / latest | documented | free |
 | [Radio Group](radio-group.md) | `radio-group` | inputs | latest / latest | documented | free |
