@@ -17,6 +17,9 @@ const ORDER = [
   // With the loading indicators; a status bar that composes nothing.
   "progress.css",
   "button.css",
+  // After button: the same primary pair, and its `position: fixed` must win
+  // over the state layer's `position: relative`.
+  "fab.css",
   "button-group.css",
   "toggle-button.css",
   // After toggle-button: the attached bar overrides the radius each option sets.

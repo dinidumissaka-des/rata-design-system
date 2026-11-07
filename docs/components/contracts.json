@@ -4404,10 +4404,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -4420,16 +4422,16 @@
       "icon"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<ButtonHTMLAttributes<HTMLButtonElement>, \"disabled\" | \"children\">",
     "props": [
       {
         "name": "label",
-        "type": "string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "What the action does, as a verb phrase — shown beside the icon, or used as the accessible name when hidden.",
+        "declared": true,
         "summary": "What the action does, as a verb phrase — shown beside the icon, or used as the accessible name when hidden.",
         "use": [
           "A short imperative: 'Compose', 'New invoice', 'Add photo'."
@@ -4442,10 +4444,10 @@
       },
       {
         "name": "icon",
-        "type": "LucideIcon",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "LucideIcon",
+        "description": "The glyph, which is always shown.",
+        "declared": true,
         "summary": "The glyph, which is always shown.",
         "use": [
           "A glyph that means the action on its own — a plus for create, a pencil for compose."
@@ -4458,11 +4460,11 @@
       },
       {
         "name": "labelHidden",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Shows the icon alone, as a circle, with `label` as the accessible name.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Shows the icon alone, as a circle, with `label` as the accessible name.",
         "use": [
           "An action so conventional on its screen that the glyph explains it — the plus on a list of notes."
@@ -4475,15 +4477,15 @@
       },
       {
         "name": "placement",
-        "type": "\"end\" | \"center\"",
+        "optional": true,
+        "type": "FabPlacement",
+        "description": "Which bottom corner it floats at — inline-end, or centred.",
+        "default": "\"end\"",
         "values": [
           "end",
           "center"
         ],
-        "optional": true,
-        "default": "\"end\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Which bottom corner it floats at — inline-end, or centred.",
         "use": [
           "`center` when the screen's content is symmetrical and the action belongs to all of it, such as a camera's shutter."
@@ -4496,10 +4498,10 @@
       },
       {
         "name": "loading",
-        "type": "boolean",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "boolean",
+        "description": "Shows a Spinner in place of the icon and blocks activation, while staying focusable.",
+        "declared": true,
         "summary": "Shows a Spinner in place of the icon and blocks activation, while staying focusable.",
         "use": [
           "The action's request is in flight and a second press would send it twice."
@@ -4514,10 +4516,10 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "boolean",
+        "description": "Blocks activation while keeping it focusable and announced.",
+        "declared": true,
         "summary": "Blocks activation while keeping it focusable and announced.",
         "use": [
           "The action exists on this screen but cannot run yet, and the reader should be able to find out it exists."
@@ -4532,10 +4534,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
+        "type": "string",
         "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Extra classes, for placement adjustments — not for restyling it.",
         "use": [
           "Hiding it at widths where the action lives in a toolbar instead."
@@ -4619,6 +4621,10 @@
         {
           "decision": "Web and native",
           "why": "On the web it renders `<button type=\"button\">`, position fixed, with `aria-label={label}` only when `labelHidden` is set — otherwise the visible text is the name, and the icon is `aria-hidden`. While `loading` it carries `aria-disabled=\"true\"` and `aria-busy=\"true\"`. On React Native it renders a `Pressable` with `accessibilityRole=\"button\"`, `accessibilityLabel={label}`, and `accessibilityState={{ disabled, busy: loading }}`, absolutely positioned inside the screen and offset by `useSafeAreaInsets()`. Web-only: `className`, and the BottomNav clearance, which is a CSS `:has()` rule — a native screen knows its tab bar's height from the navigator and offsets by that instead. No prop is native-only. There is no gesture. Rata-drawn (decision N5): iOS has no floating action button and Android's is a Material library component rather than an OS control, so it is a drawn `Pressable` from the same recipe on both. The native implementation ships in the pro tier (decision N6)."
+        },
+        {
+          "decision": "BottomNav publishes the clearance; the FAB reads it",
+          "why": "Decided at gate 3. The recipe's clearance rule is ':root:has(.rata-bottom-nav)' adding the bar's block size. Written in fab.css, that selector names BottomNav's class, so the FAB would depend on a component it works without and 'rata add fab' would install it. So bottom-nav.css sets '--rata-bottom-nav-block-size' on ':root:has(.rata-bottom-nav)', summed from the tokens it draws the bar with, and fab.css adds 'var(--rata-bottom-nav-block-size, space.0)' to its safe-area offset. Same condition, same sum, and the sum sits beside the bar it measures. The bar's size includes its own safe-area padding, so on a notched phone the FAB clears the bar by space.padding.md plus the inset. That is the recipe's sum taken literally. A BottomNav hidden with 'display: none' still matches ':has()', so the FAB keeps the clearance at widths where the bar is hidden."
         }
       ]
     },
@@ -4657,7 +4663,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Fab label=\"Add\" icon={Plus} />"
   },
   {
     "name": "field",
@@ -6710,7 +6716,7 @@
         }
       }
     },
-    "example": "<Menu\n            label=\"Account\"\n            trigger={\n              <Button iconOnly aria-label=\"Account\" variant=\"tertiary\">\n                <Icon icon={User} />\n              </Button>\n            }\n          >\n            <MenuItem icon={Settings} onSelect={() => {}}>Settings</MenuItem>\n            <MenuItem onSelect={() => {}}>Sign out</MenuItem>\n          </Menu>"
+    "example": "<Menu label=\"Add\" trigger={<Fab label=\"Add\" icon={Plus} />"
   },
   {
     "name": "menu-item",
@@ -6938,7 +6944,7 @@
         }
       }
     },
-    "example": "<MenuItem onSelect={() => {}}>Sign out</MenuItem>"
+    "example": "<MenuItem onSelect={() => {}}>Note</MenuItem>"
   },
   {
     "name": "mobile-nav",

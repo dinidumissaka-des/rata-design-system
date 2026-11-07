@@ -1,0 +1,121 @@
+/* FAB — the one primary action of a screen, floating over its content.
+
+   Every value below is the gate-2 recipe in registry/components/fab.json
+   (batch approval, docs/decisions/2026-11-gate-1-review.md): Button's primary
+   pair, held to a corner of the viewport's safe area. */
+
+/* base */
+.rata-fab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rata-space-gap-sm);
+  box-sizing: border-box;
+  block-size: var(--rata-size-target-min);
+  padding-block: var(--rata-space-0);
+  padding-inline: var(--rata-space-control-padding-inline-lg);
+  margin: var(--rata-space-0);
+  border: var(--rata-space-0);
+  /* One radius: the hidden-label FAB is a circle and the labelled one a pill,
+     so the two are visibly the same control. */
+  border-radius: var(--rata-radius-pill);
+  background: var(--rata-theme-accent-role-bg);
+  color: var(--rata-theme-fg-on-accent);
+  box-shadow: var(--rata-theme-elevation-floating);
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-control-size-md);
+  line-height: var(--rata-type-control-line-height-md);
+  font-weight: var(--rata-type-control-weight);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    opacity var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing),
+    box-shadow var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing);
+
+  /* placement — fixed, measured from the safe area rather than the edge.
+     Overrides the state layer's `position: relative`, which this file loads
+     after; a fixed box is still the containing block the layer's ::after
+     needs. */
+  position: fixed;
+  inset-inline-end: max(
+    var(--rata-space-padding-md),
+    calc(env(safe-area-inset-right) + var(--rata-space-padding-md))
+  );
+  /* inset-block-end is set below, with the BottomNav clearance. */
+  /* Above page content and below the top layer: a Dialog, Sheet or Menu
+     opened from it covers it, because the top layer is above every z-index. */
+  z-index: var(--rata-layer-floating);
+}
+
+/* In a right-to-left page the inline end is the left edge, so the inset that
+   keeps it clear of a notch is the left one. */
+.rata-fab:dir(rtl) {
+  inset-inline-end: max(
+    var(--rata-space-padding-md),
+    calc(env(safe-area-inset-left) + var(--rata-space-padding-md))
+  );
+}
+
+/* Label hidden — inline-size equal to the block-size, so it is a circle. */
+.rata-fab--label-hidden {
+  inline-size: var(--rata-size-target-min);
+  padding-inline: var(--rata-space-0);
+}
+
+/* placement center — inset-inline-start 50% with a translate of half its own
+   inline size, in place of inset-inline-end. */
+.rata-fab--center {
+  inset-inline-end: auto;
+  inset-inline-start: 50%;
+  translate: -50% 0;
+}
+
+/* Its own rule, not a selector list with the one above: an engine without
+   :dir() would drop the whole list, centre placement included. It also has to
+   out-rank `.rata-fab:dir(rtl)`'s inset-inline-end. */
+.rata-fab--center:dir(rtl) {
+  inset-inline-end: auto;
+  translate: 50% 0;
+}
+
+/* Clearance above a BottomNav: the bar's own block size is added when one is
+   on the page. bottom-nav.css publishes that size as
+   --rata-bottom-nav-block-size on `:root:has(.rata-bottom-nav)`, summed from
+   the tokens it draws the bar with, so nothing is measured at runtime and the
+   sum cannot drift from the bar. Read here with a zero fallback rather than
+   matched with :has() here, so a FAB installed without a BottomNav carries
+   no rule naming a component it does not depend on. */
+/* rata-allow: unknown-token — --rata-bottom-nav-block-size is BottomNav's
+   published bar height, a sum of tokens, not a token itself. */
+.rata-fab {
+  inset-block-end: calc(
+    max(
+        var(--rata-space-padding-md),
+        calc(env(safe-area-inset-bottom) + var(--rata-space-padding-md))
+      ) + var(--rata-bottom-nav-block-size, var(--rata-space-0))
+  );
+}
+
+/* The glyph, and the Spinner that replaces it while loading, at one size, so
+   the FAB does not change size while its action is pending. */
+.rata-fab .rata-spinner {
+  inline-size: var(--rata-size-icon-lg);
+  block-size: var(--rata-size-icon-lg);
+}
+
+/* Hover and press come from .rata-state-layer, composed in the markup; the
+   fill never swaps. Focus is never offset 0: this is a filled accent control. */
+.rata-fab:focus-visible {
+  outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+.rata-fab[aria-disabled="true"] {
+  opacity: var(--rata-state-disabled-opacity);
+  cursor: not-allowed;
+}
+
+.rata-fab[data-loading] {
+  cursor: progress;
+}

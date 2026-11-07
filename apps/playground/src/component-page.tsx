@@ -24,6 +24,7 @@ import {
   Disclosure,
   Divider,
   EmptyState,
+  Fab,
   Heading,
   Link,
   Panel,
@@ -88,6 +89,7 @@ import {
   Trash2,
   Ellipsis,
   Pencil,
+  Plus,
   Copy,
   Upload,
   Download,
@@ -1082,6 +1084,27 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
         <Skeleton lines={2} />
         <Skeleton lines={2} />
       </section>
+  // Each stage is a containing block for `position: fixed` (see .pg-fab-stage),
+  // so the FAB floats in the specimen's corner rather than the page's.
+  fab: {
+    "Creating the thing a list is a list of": () => (
+      <div className="pg-fab-stage">
+        <Fab label="New note" icon={Plus} onClick={() => {}} />
+        <Text tone="secondary">Notes would be listed here, after the FAB in reading order.</Text>
+      </div>
+    ),
+    "A conventional glyph with the label hidden": () => (
+      <div className="pg-fab-stage">
+        <Fab label="Compose" icon={Pencil} labelHidden onClick={() => {}} />
+      </div>
+    ),
+    "Several creation actions behind one FAB": () => (
+      <div className="pg-fab-stage">
+        <Menu label="Add" trigger={<Fab label="Add" icon={Plus} />}>
+          <MenuItem onSelect={() => {}}>Photo</MenuItem>
+          <MenuItem onSelect={() => {}}>Note</MenuItem>
+        </Menu>
+      </div>
     ),
   },
 

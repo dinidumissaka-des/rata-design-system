@@ -1703,3 +1703,18 @@ code {
   padding: var(--rata-space-0);
   list-style: none;
 }
+
+/* A FAB specimen's frame. `contain: layout` makes the stage the containing
+   block for the FAB's `position: fixed`, so it floats in this box's corner
+   instead of over the playground. The height is room for one FAB and its
+   offset, summed from the same tokens fab.css uses. */
+.pg-fab-stage {
+  position: relative;
+  contain: layout;
+  inline-size: 100%;
+  min-block-size: calc(var(--rata-size-target-min) + var(--rata-space-padding-md) * 2);
+  padding: var(--rata-space-padding-md);
+  box-sizing: border-box;
+  border: var(--rata-border-default) dashed var(--rata-theme-border-default);
+  border-radius: var(--rata-radius-container);
+}

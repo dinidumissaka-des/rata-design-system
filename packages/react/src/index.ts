@@ -1,5 +1,7 @@
 export { Button } from "./button.js";
 export type { ButtonProps, ButtonSize, ButtonVariant } from "./button.js";
+export { Fab } from "./fab.js";
+export type { FabProps, FabPlacement } from "./fab.js";
 export { ButtonGroup } from "./button-group.js";
 export type { ButtonGroupProps, ButtonGroupOrientation } from "./button-group.js";
 export { ToggleButton } from "./toggle-button.js";
