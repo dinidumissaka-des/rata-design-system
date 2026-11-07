@@ -1,0 +1,151 @@
+/* Tooltip — a short, non-interactive hint on an inverse chip, attached to one
+   focusable trigger.
+
+   THE SAME MACHINERY AS POPOVER (see popover.css and menu.css): the `popover`
+   attribute (`hint` where supported, `manual` otherwise) puts the chip in the
+   top layer, which is the whole of its stacking — no z-index — and CSS anchor
+   positioning places it against the trigger and flips it near a viewport
+   edge. No measurement code, no dependency.
+
+   The mapping is gate 2's `tokens.base` in registry/components/tooltip.json:
+   the inverse surface (decision C3), size.measure.tight for the text, and
+   motion.overlay.duration both ways. The open delay (motion.delay.hint on
+   pointer hover, none on keyboard focus) is a timing decision, so the
+   component reads the token and owns the clock; nothing here delays. */
+
+/* The trigger is whatever the caller passed, so this adds only the anchor
+   name. Passed in per instance because `anchor-name` is a global ident. */
+/* rata-allow: unknown-token — not a design token but component plumbing: CSS
+   cannot generate a unique ident, so the component passes one in. */
+.rata-tooltip-trigger {
+  anchor-name: var(--rata-tooltip-anchor);
+}
+
+/* rata-allow: unknown-token — --rata-tooltip-anchor is the per-instance anchor
+   name the component passes in, not a value from the token set. */
+.rata-tooltip {
+  /* content-box on purpose: the measure bounds the TEXT, as the recipe says,
+     and the padding sits outside it. */
+  box-sizing: content-box;
+  /* The popover attribute's UA styles (a border, padding, margin and Canvas
+     background of their own) are replaced, not added to. */
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-1) var(--rata-space-2);
+  /* No border — the inverse surface separates itself from the page. */
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-element);
+  background: var(--rata-theme-bg-inverse);
+  color: var(--rata-theme-fg-on-inverse);
+  box-shadow: var(--rata-theme-elevation-overlay);
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-supporting-size);
+  line-height: var(--rata-type-supporting-line-height);
+  max-inline-size: var(--rata-size-measure-tight);
+  overflow-wrap: break-word;
+
+  /* gap.xs from the trigger, on whichever side `placement` prefers, centred
+     on it. The flip fallback mirrors the margin with the position, so the gap
+     follows the chip when it flips. block-start is the default. */
+  position-anchor: var(--rata-tooltip-anchor);
+  position: absolute;
+  position-area: block-start;
+  justify-self: anchor-center;
+  position-try-fallbacks: flip-block, flip-inline;
+  margin-block-end: var(--rata-space-gap-xs);
+}
+
+.rata-tooltip--block-end {
+  position-area: block-end;
+  margin-block-end: var(--rata-space-0);
+  margin-block-start: var(--rata-space-gap-xs);
+}
+
+.rata-tooltip--inline-start {
+  position-area: inline-start;
+  justify-self: normal;
+  align-self: anchor-center;
+  position-try-fallbacks: flip-inline, flip-block;
+  margin-block-end: var(--rata-space-0);
+  margin-inline-end: var(--rata-space-gap-xs);
+}
+
+.rata-tooltip--inline-end {
+  position-area: inline-end;
+  justify-self: normal;
+  align-self: anchor-center;
+  position-try-fallbacks: flip-inline, flip-block;
+  margin-block-end: var(--rata-space-0);
+  margin-inline-start: var(--rata-space-gap-xs);
+}
+
+/* The hover bridge (WCAG 1.4.13, hoverable). The chip sits gap.xs away from
+   the trigger, and a pointer crossing that gap would otherwise be over the
+   page for a moment and close it. This invisible margin, as wide as the gap
+   and on every side so it survives a flip, keeps the pointer "on the chip"
+   for the whole crossing. It paints nothing. */
+.rata-tooltip::before {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--rata-space-gap-xs));
+}
+
+/* `popover` elements are display:none until shown, so the open state needs
+   no class of its own. Only `display` lives here — every layout property is
+   on the base rule, so nothing reverts out of step with it during the exit
+   (the trap dialog.css records). */
+.rata-tooltip:popover-open {
+  display: block;
+}
+
+/* Enter and exit, both motion.overlay.duration, and only for readers who have
+   not asked for less motion. Animating to and from display:none needs
+   `allow-discrete` on `display` AND `overlay` — without the second the chip
+   drops out of the top layer the instant it starts closing and fades behind
+   the page — and @starting-style for the enter's from-state. A fade only: a
+   rise implies a direction, and the chip can be on any side. */
+@media (prefers-reduced-motion: no-preference) {
+  .rata-tooltip {
+    transition:
+      opacity var(--rata-motion-overlay-duration) var(--rata-motion-easing-exit),
+      display var(--rata-motion-overlay-duration) allow-discrete,
+      overlay var(--rata-motion-overlay-duration) allow-discrete;
+    opacity: 0;
+    /* While it fades out it is still in the top layer; it must not catch
+       the pointer that just left it. Restored while open, below. */
+    pointer-events: none;
+  }
+
+  .rata-tooltip:popover-open {
+    opacity: 1;
+    transition-timing-function: var(--rata-motion-easing-enter);
+    pointer-events: auto;
+  }
+
+  /* Last, so it wins over the open rule for the one frame it applies to. */
+  @starting-style {
+    .rata-tooltip:popover-open {
+      opacity: 0;
+    }
+  }
+}
+
+/* Deliberately no :focus-visible rule. The chip is never focusable and holds
+   nothing focusable; the trigger keeps its own ring. */
+
+/* Engines without anchor positioning. A top-layer element's containing block
+   is the viewport, so CSS alone cannot put it beside its trigger — the same
+   gap Popover and Menu document. It falls back to a small centred chip: never
+   clipped, never off-screen, and every behaviour identical. */
+@supports not (anchor-name: --rata-tooltip-anchor) {
+  .rata-tooltip,
+  .rata-tooltip--block-end,
+  .rata-tooltip--inline-start,
+  .rata-tooltip--inline-end {
+    position: fixed;
+    inset: auto;
+    margin: var(--rata-space-0);
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    translate: -50% -50%;
+  }
+}

@@ -69,6 +69,8 @@ const ORDER = [
   "menu.css",
   // After menu: the same top-layer surface and anchoring, read beside it.
   "popover.css",
+  // After popover: the same top-layer anchoring, on an inverse chip instead.
+  "tooltip.css",
   "dialog.css",
   // After dialog: Sheet is the same native-modal construction with different
   // geometry, and its rules are written to replace dialog.css's where they

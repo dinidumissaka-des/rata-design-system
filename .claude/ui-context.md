@@ -73,7 +73,7 @@ this path is the honest answer to when it last actually moved.
 | [toast](../docs/components/toast.md) | `@rata/react` | feedback | future / future / future | free |
 | [toggle-button](../docs/components/toggle-button.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [toggle-button-group](../docs/components/toggle-button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
-| [tooltip](../docs/components/tooltip.md) | `@rata/react` | overlays | future / future / future | free |
+| [tooltip](../docs/components/tooltip.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [top-nav](../docs/components/top-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [visually-hidden](../docs/components/visually-hidden.md) | `@rata/react` | foundations | latest / na / na | free |
 
@@ -1285,9 +1285,23 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/toggle-button-group.md](../docs/components/toggle-button-group.md)
 
-### Tooltip
+### Tooltip (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `content: string`
+  The hint text. Plain text only — a string, so a link or a button cannot be passed.
+- `children: ReactElement`
+  The one focusable element the tooltip is attached to.
+- `relationship?: TooltipRelationship` — default: `"description"`
+  Whether the tooltip names the trigger or describes it.
+- `placement?: TooltipPlacement` — default: `"block-start"`
+  Which side of the trigger the tooltip prefers. Anchor positioning flips it near an edge.
+
+Real usage (from `apps/`):
+```tsx
+<Tooltip content="Add a payment method to publish">
+        <Button disabled>Publish</Button>
+      </Tooltip>
+```
 
 Contract: [docs/components/tooltip.md](../docs/components/tooltip.md)
 

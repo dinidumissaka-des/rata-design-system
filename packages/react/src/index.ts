@@ -61,6 +61,8 @@ export { Popover } from "./popover.js";
 export type { PopoverProps, PopoverPlacement } from "./popover.js";
 export { EmptyState } from "./empty-state.js";
 export type { EmptyStateProps, EmptyStateLive } from "./empty-state.js";
+export { Tooltip } from "./tooltip.js";
+export type { TooltipProps, TooltipPlacement, TooltipRelationship } from "./tooltip.js";
 export { Notice } from "./notice.js";
 export type { NoticeProps, NoticeVariant, NoticeLive } from "./notice.js";
 export { MobileNav } from "./mobile-nav.js";

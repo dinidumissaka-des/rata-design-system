@@ -91,3 +91,23 @@ export type {
   TableSortButtonProps,
   TableCellProps,
 } from "./table.js";
+export {
+  getTooltipProps,
+  tooltipInitialState,
+  tooltipIsOpen,
+  tooltipOpenIsDelayed,
+  tooltipReducer,
+  tooltipShowsForPointer,
+} from "./tooltip.js";
+export type {
+  TooltipOptions,
+  TooltipProps,
+  TooltipTriggerProps,
+  TooltipSurfaceProps,
+  TooltipRelationship,
+  TooltipFocusModality,
+  TooltipPointerDestination,
+  TooltipEvent,
+  TooltipState,
+  TooltipKeyEvent,
+} from "./tooltip.js";

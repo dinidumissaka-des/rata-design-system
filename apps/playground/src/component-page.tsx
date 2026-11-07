@@ -52,6 +52,7 @@ import {
   TextField,
   ToggleButton,
   ToggleButtonGroup,
+  Tooltip,
 } from "@rata/react";
 import type {
   AvatarSize,
@@ -958,6 +959,21 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
       </Popover>
     ),
     "A small filter, controlled": () => <PopoverFilterStage />,
+  },
+
+  tooltip: {
+    "Naming an icon-only button": () => (
+      <Tooltip content="Copy token path" relationship="label">
+        <Button variant="tertiary" iconOnly aria-label="Copy token path">
+          <Icon icon={Copy} />
+        </Button>
+      </Tooltip>
+    ),
+    "Explaining why a control is unavailable": () => (
+      <Tooltip content="Add a payment method to publish">
+        <Button disabled>Publish</Button>
+      </Tooltip>
+    ),
   },
 
   notice: {

@@ -14764,10 +14764,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -14775,16 +14777,16 @@
     },
     "dependencies": [],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "content",
-        "type": "string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The hint text. Plain text only — a string, so a link or a button cannot be passed.",
+        "declared": true,
         "summary": "The hint text. Plain text only.",
         "use": [
           "A few words: the name of an icon-only control, or one sentence of detail about a labelled one."
@@ -14798,10 +14800,10 @@
       },
       {
         "name": "children",
-        "type": "ReactElement",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactElement",
+        "description": "The one focusable element the tooltip is attached to.",
+        "declared": true,
         "summary": "The one focusable element the tooltip is attached to.",
         "use": [
           "A `Button`, usually an icon-only one, or a link."
@@ -14815,15 +14817,15 @@
       },
       {
         "name": "relationship",
-        "type": "\"label\" | \"description\"",
+        "optional": true,
+        "type": "TooltipRelationship",
+        "description": "Whether the tooltip names the trigger or describes it.",
+        "default": "\"description\"",
         "values": [
           "label",
           "description"
         ],
-        "optional": true,
-        "default": "\"description\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Whether the tooltip names the trigger or describes it.",
         "use": [
           "`label` on an icon-only button, with the button's own `aria-label` set to the same words. Button requires it, and `aria-labelledby` wins over it, so the name is read once.",
@@ -14837,17 +14839,17 @@
       },
       {
         "name": "placement",
-        "type": "\"block-start\" | \"block-end\" | \"inline-start\" | \"inline-end\"",
+        "optional": true,
+        "type": "TooltipPlacement",
+        "description": "Which side of the trigger the tooltip prefers. Anchor positioning flips it near an edge.",
+        "default": "\"block-start\"",
         "values": [
           "block-start",
           "block-end",
           "inline-start",
           "inline-end"
         ],
-        "optional": true,
-        "default": "\"block-start\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Which side of the trigger the tooltip prefers.",
         "use": [
           "`block-end` for a trigger at the top of the viewport, where the default would always flip anyway."
@@ -14880,6 +14882,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getTooltipProps",
       "summary": "A trigger and a short text in the top layer, positioned with CSS anchor positioning — the same machinery as Menu, with no measurement code and no dependency. It is never focusable and never contains anything interactive. Proposed primitive: `getTooltipProps` in `packages/primitives/src/tooltip.ts`, owning the open delay, the hover bridge and Escape; it is a proposal, not yet a commitment.",
       "decisions": [
         {
@@ -14949,7 +14952,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Tooltip content=\"Add a payment method to publish\">\n        <Button disabled>Publish</Button>\n      </Tooltip>"
   },
   {
     "name": "top-nav",
