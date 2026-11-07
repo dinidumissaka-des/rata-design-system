@@ -1,0 +1,44 @@
+/* Empty state — what a collection shows when it has nothing in it.
+
+   Every value below is the gate-2 recipe in registry/components/empty-state.json.
+   Centred text in the space the content would have filled, with no box: an
+   empty state replaces content, so it sits on the content's surface and has
+   no background, border or radius of its own. */
+
+.rata-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  max-inline-size: var(--rata-size-measure-compact);
+  margin-inline: auto;
+  padding-block: var(--rata-space-padding-lg);
+  text-align: center;
+}
+
+/* size.icon.lg comes from the Icon's own `lg` step; only the colour and the
+   gap below it are set here. */
+.rata-empty-state-icon {
+  color: var(--rata-theme-fg-muted);
+  margin-block-end: var(--rata-space-stack-sm);
+}
+
+/* A styled paragraph, not a heading: the section around it already has one. */
+.rata-empty-state-title {
+  margin: var(--rata-space-0);
+  font-size: var(--rata-type-large-size);
+  font-weight: var(--rata-type-heading-weight);
+  line-height: var(--rata-type-large-line-height);
+  color: var(--rata-theme-fg-primary);
+}
+
+.rata-empty-state-description {
+  margin: var(--rata-space-0);
+  margin-block-start: var(--rata-space-stack-2xs);
+  font-size: var(--rata-type-body-size);
+  color: var(--rata-theme-fg-secondary);
+}
+
+.rata-empty-state-action {
+  margin-block-start: var(--rata-space-stack-md);
+}

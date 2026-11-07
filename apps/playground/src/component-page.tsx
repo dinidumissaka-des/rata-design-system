@@ -22,6 +22,7 @@ import {
   Dialog,
   Disclosure,
   Divider,
+  EmptyState,
   Heading,
   Link,
   Panel,
@@ -94,6 +95,8 @@ import {
   AlignLeft,
   AlignCenter,
   AlignRight,
+  FileText,
+  SearchX,
 } from "@rata/icons";
 import { COMPONENT_TABS, componentPage } from "./routing.js";
 import type { ComponentTab, Page } from "./routing.js";
@@ -472,6 +475,25 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
         <Divider orientation="vertical" />
         <Button variant="tertiary">Link</Button>
       </div>
+    ),
+  },
+
+  "empty-state": {
+    "First use": () => (
+      <EmptyState
+        icon={FileText}
+        title="No invoices yet"
+        description="Invoices you send will appear here, newest first."
+        action={<Button>Create invoice</Button>}
+      />
+    ),
+    "No results after a search": () => (
+      <EmptyState
+        live="polite"
+        icon={SearchX}
+        title="No tokens match ‘brand-teal’"
+        action={<Button variant="secondary">Clear search</Button>}
+      />
     ),
   },
 

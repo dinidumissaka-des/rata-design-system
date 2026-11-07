@@ -79,6 +79,10 @@ export {
   Calendar,
   Star,
 
+  // ── Empty states: the kind of thing that is missing (EmptyState's `icon`)
+  FileText,
+  SearchX,
+
   // ── Foundations. One per token category, for the Foundation overview: a
   // category has no live specimen to show the way a component does, so the
   // glyph is what makes the tile recognisable. Added here rather than imported

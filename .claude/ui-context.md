@@ -33,7 +33,7 @@ this path is the honest answer to when it last actually moved.
 | [dialog](../docs/components/dialog.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [disclosure](../docs/components/disclosure.md) | `@rata/react` | content | latest / latest / future | free |
 | [divider](../docs/components/divider.md) | `@rata/react` | content | latest / latest / future | free |
-| [empty-state](../docs/components/empty-state.md) | `@rata/react` | feedback | future / future / future | free |
+| [empty-state](../docs/components/empty-state.md) | `@rata/react` | feedback | latest / latest / future | free |
 | [fab](../docs/components/fab.md) | `@rata/react` | buttons | future / future / future | free |
 | [field](../docs/components/field.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [file-upload](../docs/components/file-upload.md) | `@rata/react` | inputs | future / future / future | free |
@@ -370,9 +370,22 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/divider.md](../docs/components/divider.md)
 
-### Empty state
+### Empty state (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, "title" | "role" | "children">`
+
+- `title: string`
+  What is empty, said plainly.
+- `description?: ReactNode`
+  One or two sentences on why it is empty or what the action will do.
+- `action?: ReactNode`
+  The one way out: a Button or a Link.
+- `icon?: LucideIcon | false`
+  A glyph marking the area as intentionally empty. Omit for none.
+- `live?: EmptyStateLive` — default: `"off"`
+  Whether the empty state is announced when it appears.
+- `className?: string`
+  Extra classes, for placement.
 
 Contract: [docs/components/empty-state.md](../docs/components/empty-state.md)
 

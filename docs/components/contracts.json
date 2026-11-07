@@ -4188,10 +4188,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -4201,16 +4203,16 @@
       "icon"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLDivElement>, \"title\" | \"role\" | \"children\">",
     "props": [
       {
         "name": "title",
-        "type": "string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "What is empty, said plainly.",
+        "declared": true,
         "summary": "What is empty, said plainly.",
         "use": [
           "First use: \"No invoices yet\".",
@@ -4225,10 +4227,10 @@
       },
       {
         "name": "description",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "One or two sentences on why it is empty or what the action will do.",
+        "declared": true,
         "summary": "One or two sentences on why it is empty or what the action will do.",
         "use": [
           "What the first item will be for, or which filter is excluding everything."
@@ -4241,10 +4243,10 @@
       },
       {
         "name": "action",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The one way out: a Button or a Link.",
+        "declared": true,
         "summary": "The one way out: a Button or a Link.",
         "use": [
           "Create the first item; clear the search or filters."
@@ -4257,10 +4259,10 @@
       },
       {
         "name": "icon",
-        "type": "LucideIcon | false",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "LucideIcon | false",
+        "description": "A glyph marking the area as intentionally empty. Omit for none.",
+        "declared": true,
         "summary": "A glyph marking the area as intentionally empty. Omit for none.",
         "use": [
           "An icon for the kind of thing that is missing — a file for documents, a search glyph for no results."
@@ -4273,16 +4275,16 @@
       },
       {
         "name": "live",
-        "type": "\"off\" | \"polite\" | \"assertive\"",
+        "optional": true,
+        "type": "EmptyStateLive",
+        "description": "Whether the empty state is announced when it appears.",
+        "default": "\"off\"",
         "values": [
           "off",
           "polite",
           "assertive"
         ],
-        "optional": true,
-        "default": "\"off\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Whether the empty state is announced when it appears.",
         "use": [
           "`polite` for no-results after a search or filter the reader just changed."
@@ -4296,10 +4298,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Extra classes, for placement.",
+        "declared": true,
         "summary": "Extra classes, for placement.",
         "use": [
           "Positioning it in the space the content would fill."
