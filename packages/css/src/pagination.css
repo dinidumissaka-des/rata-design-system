@@ -40,6 +40,21 @@
   cursor: pointer;
 }
 
+/* hit area — on touch, at least size.target.min in both dimensions, centred
+   on the drawn item, which keeps its size.control.md box. A ::before, because
+   the composed state layer owns ::after. Neighbouring areas overlap across
+   the space.gap.xs gap; the later item takes a tap that lands in the overlap. */
+@media (pointer: coarse) {
+  .rata-pagination-item::before {
+    content: "";
+    position: absolute;
+    /* Each side reaches out by half the shortfall, or not at all once the
+       item is already that big — centred in either writing direction. */
+    inset-block: min(var(--rata-space-0), calc((100% - var(--rata-size-target-min)) / 2));
+    inset-inline: min(var(--rata-space-0), calc((100% - var(--rata-size-target-min)) / 2));
+  }
+}
+
 .rata-pagination-item:focus-visible {
   outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
   outline-offset: var(--rata-focus-ring-offset);

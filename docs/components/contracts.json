@@ -8196,6 +8196,10 @@
           "why": "A page with Breadcrumbs, a TopNav and a Pagination has three navigation landmarks, and three that are all called \"navigation\" are unusable. `label` names this one. Each number link is named \"Page 4\" rather than \"4\", and the current one is marked `aria-current=\"page\"`, so a screen reader announces \"Page 4, current page\"."
         },
         {
+          "decision": "Touch target: size.target.min",
+          "why": "Owner amendment at gate 3 (docs/decisions/2026-11-gate-1-review.md): the page buttons and Previous / Next get a hit area of size.target.min, 48px, on touch — Material's minimum, which also clears Apple's 44pt and WCAG 2.5.5. It sizes where an item can be tapped, never the drawn box, which stays size.control.md so the row keeps its density. Drawn with a ::before, centred on the item, because the composed state layer owns ::after; neighbouring areas overlap across the space.gap.xs gap, and the later item takes a tap there."
+        },
+        {
           "decision": "Web and native",
           "why": "Web: `<nav aria-label>` around a `<ul>` of `<a>` elements, `aria-current=\"page\"` on the current one, `aria-disabled` on an unavailable Previous or Next. React Native has no URLs to link to, so `href` is web-only and `onPageChange` is what drives navigation; it is required there. Each item is a `Pressable` with `accessibilityRole=\"button\"` — on native, changing a page is an action rather than a link — with `accessibilityLabel` \"Page 4\" and `accessibilityState` carrying `selected` for the current page and `disabled` for an unavailable Previous or Next. The row wraps in a `View` with `accessibilityLabel` set from `label`. Rata-drawn (decision N5): there is no OS page-selector control, so each item is a drawn `Pressable`. The native implementation ships in the pro tier (decision N6)."
         }
@@ -8208,6 +8212,7 @@
           "gap between items": "space.gap.xs",
           "item min-inline-size": "size.control.md",
           "item block-size": "size.control.md",
+          "hit area, on touch": "size.target.min in both dimensions, centred on the drawn item with a ::before (the state layer owns ::after); the item itself stays size.control.md",
           "item padding-inline": "space.1",
           "item font-size": "type.control.size.md",
           "item font-weight": "type.control.weight",

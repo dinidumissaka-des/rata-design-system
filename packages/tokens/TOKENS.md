@@ -2394,6 +2394,7 @@ A row of control-sized targets. Built from the same parts as a SideNav row — s
 | gap between items | `space.gap.xs` |
 | item min-inline-size | `size.control.md` |
 | item block-size | `size.control.md` |
+| hit area, on touch | `size.target.min` in both dimensions, centred on the drawn item with a ::before (the state layer owns ::after); the item itself stays `size.control.md` |
 | item padding-inline | `space.1` |
 | item font-size | `type.control.size.md` |
 | item font-weight | `type.control.weight` |

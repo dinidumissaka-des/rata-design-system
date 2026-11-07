@@ -127,3 +127,5 @@ Slider's thumb composes the state layer through `[data-hovered]` /
 change.
 
 Steps (gate 3): collapses by measuring overflow (ResizeObserver), not a container query — the needed width depends on step count and label lengths, so no token threshold fits.
+
+Pagination (gate 3): buttons get size.target.min hit areas — owner amendment.
