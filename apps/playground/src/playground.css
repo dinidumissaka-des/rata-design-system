@@ -120,6 +120,7 @@ code {
    appeared, with the rail's 6-control column eating two thirds of a phone
    viewport and pushing every page into horizontal scroll. Source order is the
    whole rule here: keep this block last. */
+/* 60rem is breakpoint.wide — see NARROW in src/use-media-query.ts. */
 @media (max-width: 60rem) {
   .pg-drawer-trigger {
     display: inline-flex;
@@ -917,6 +918,7 @@ code {
    bug whichever one you are looking at — and this was the second. The 60px
    band between the two was real: the rail had already given way to the drawer
    while the prop rows were still three columns wide. */
+/* 60rem is breakpoint.wide — see NARROW in src/use-media-query.ts. */
 @media (max-width: 60rem) {
   .pg-prop-row {
     grid-template-columns: minmax(0, 1fr);
@@ -1373,6 +1375,7 @@ code {
   color: var(--rata-theme-fg-secondary);
 }
 
+/* 60rem is breakpoint.wide — see NARROW in src/use-media-query.ts. */
 @media (max-width: 60rem) {
   .pg-showcase {
     min-block-size: 14rem;

@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
+import { tokens } from "@rata/tokens";
 
 /**
  * Subscribe to a media query.
  *
- * This lives in the app rather than in `@rata/react` on purpose. There are no
- * breakpoint tokens in this system, deliberately: where a rail stops fitting
- * depends on the rail's width and the page around it, which is the page's
- * knowledge. SideNav and MobileNav both say so in their contracts — neither
- * decides when it applies — so the playground owns its own breakpoint, and
- * this is where it reads it.
+ * This lives in the app rather than in `@rata/react` on purpose: where a rail
+ * stops fitting depends on the rail's width and the page around it, which is
+ * the page's knowledge. SideNav and MobileNav both say so in their contracts —
+ * neither decides when it applies. The page reads the threshold from the
+ * `breakpoint.*` tokens, and decides itself which one it switches at.
  */
 export function useMediaQuery(query: string): boolean {
   // Read during the first render rather than in an effect. An effect-only
@@ -33,11 +33,15 @@ export function useMediaQuery(query: string): boolean {
 }
 
 /**
- * The one breakpoint this app has, stated once.
+ * The one breakpoint this app has, stated once: below `breakpoint.wide`.
  *
- * `60rem` is where the shell already changes hands — the side rail gives way
- * to MobileNav's drawer in `playground.css`. The token inspector changes from
- * a Panel to a Sheet at the same width, because a layout with two breakpoints
- * in it reads as a bug whichever one you are looking at.
+ * That is where the shell already changes hands — the side rail gives way to
+ * MobileNav's drawer in `playground.css`. The token inspector changes from a
+ * Panel to a Sheet at the same width, because a layout with two breakpoints in
+ * it reads as a bug whichever one you are looking at.
+ *
+ * `playground.css` is bundled by Vite, not by `@rata/css`, so it cannot use
+ * the `(--rata-wide)` custom media and repeats the value in its `@media`
+ * rules; each says so. This constant is the source the JavaScript reads.
  */
-export const NARROW = "(max-width: 60rem)";
+export const NARROW = `(max-width: ${tokens.breakpoint.wide})`;
