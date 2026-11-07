@@ -9147,10 +9147,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -9158,16 +9160,16 @@
     },
     "dependencies": [],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLDivElement>, ProgressOwnedAttribute>",
     "props": [
       {
         "name": "label",
-        "type": "string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "What is in progress, shown above the bar.",
+        "declared": true,
         "summary": "What is in progress, shown above the bar.",
         "use": [
           "A noun phrase naming the task: \"Uploading tokens.json\", \"Import\"."
@@ -9180,10 +9182,10 @@
       },
       {
         "name": "value",
-        "type": "number",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "number",
+        "description": "How much is done, from 0 to `max`.",
+        "declared": true,
         "summary": "How much is done, from 0 to `max`.",
         "use": [
           "The real count of done units — bytes, files, steps."
@@ -9196,11 +9198,11 @@
       },
       {
         "name": "max",
-        "type": "number",
         "optional": true,
+        "type": "number",
+        "description": "The value that means done.",
         "default": "100",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The value that means done.",
         "use": [
           "The total of whatever `value` counts — `max={7}` for seven files."
@@ -9213,10 +9215,10 @@
       },
       {
         "name": "valueText",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The value in the reader's own units, shown beside the label and announced instead of a percentage.",
+        "declared": true,
         "summary": "The value in the reader's own units, shown beside the label and announced instead of a percentage.",
         "use": [
           "\"3 of 7 files\", \"12 MB of 40 MB\"."
@@ -9229,10 +9231,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Extra classes, for placement and width.",
+        "declared": true,
         "summary": "Extra classes, for placement and width.",
         "use": [
           "Setting the bar's width in the page's layout."
@@ -9317,7 +9319,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Progress\n        label=\"Uploading assets\"\n        value={3}\n        max={7}\n        valueText=\"3 of 7 files\"\n        className=\"pg-wide-specimen\"\n      />"
   },
   {
     "name": "radio",

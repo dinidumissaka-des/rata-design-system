@@ -26,6 +26,7 @@ import {
   Link,
   Panel,
   Popover,
+  Progress,
   Sheet,
   Skeleton,
   Menu,
@@ -1005,6 +1006,18 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
         <Switch label="Email digest" labelHidden defaultChecked />
         <Switch label="Push digest" labelHidden />
       </span>
+    ),
+  },
+
+  progress: {
+    "A multi-file upload": () => (
+      <Progress
+        label="Uploading assets"
+        value={3}
+        max={7}
+        valueText="3 of 7 files"
+        className="pg-wide-specimen"
+      />
     ),
   },
 

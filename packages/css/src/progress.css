@@ -1,0 +1,60 @@
+/* Progress — a labelled bar showing how much of a task with a known end is
+   done.
+
+   Every value below is the gate-2 recipe in registry/components/progress.json.
+   The track is the recessed well theme.bg.muted is documented for, because a
+   progress bar reports status and is not a control; the fill is
+   theme.accent-role.bg, a verified AA-nontext pairing on that track. */
+
+.rata-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rata-space-stack-2xs);
+}
+
+/* The label row: what is in progress, and the amount in the reader's units. */
+.rata-progress-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.rata-progress-label {
+  font-size: var(--rata-type-body-size);
+  color: var(--rata-theme-fg-primary);
+}
+
+.rata-progress-value {
+  font-size: var(--rata-type-supporting-size);
+  color: var(--rata-theme-fg-secondary);
+}
+
+.rata-progress-track {
+  block-size: var(--rata-size-track);
+  background: var(--rata-theme-bg-muted);
+  border-radius: var(--rata-radius-pill);
+  overflow: clip;
+}
+
+/* The width is the value, set inline by the component as a percentage. */
+.rata-progress-fill {
+  block-size: 100%;
+  background: var(--rata-theme-accent-role-bg);
+  border-radius: var(--rata-radius-pill);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rata-progress-fill {
+    transition: inline-size var(--rata-motion-duration-medium) var(--rata-motion-easing-standard);
+  }
+}
+
+/* Forced colours drop author backgrounds, which would leave the fill
+   invisible; the system Highlight colour keeps it on screen. */
+@media (forced-colors: active) {
+  .rata-progress-fill {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+}

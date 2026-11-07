@@ -14,6 +14,8 @@ const ORDER = [
   "spinner.css",
   // Beside spinner, the other loading placeholder; it composes nothing.
   "skeleton.css",
+  // With the loading indicators; a status bar that composes nothing.
+  "progress.css",
   "button.css",
   "button-group.css",
   "toggle-button.css",

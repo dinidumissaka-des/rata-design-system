@@ -51,7 +51,7 @@ this path is the honest answer to when it last actually moved.
 | [panel](../docs/components/panel.md) | `@rata/react` | content | latest / latest / future | free |
 | [pin-input](../docs/components/pin-input.md) | `@rata/react` | inputs | future / future / future | free |
 | [popover](../docs/components/popover.md) | `@rata/react` | overlays | latest / latest / future | free |
-| [progress](../docs/components/progress.md) | `@rata/react` | loading | future / future / future | free |
+| [progress](../docs/components/progress.md) | `@rata/react` | loading | latest / latest / future | free |
 | [radio](../docs/components/radio.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [radio-group](../docs/components/radio-group.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [search](../docs/components/search.md) | `@rata/react` | inputs | latest / latest / future | free |
@@ -703,9 +703,31 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/popover.md](../docs/components/popover.md)
 
-### Progress
+### Progress (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, ProgressOwnedAttribute>`
+
+- `label: string`
+  What is in progress, shown above the bar.
+- `value: number`
+  How much is done, from 0 to `max`.
+- `max?: number` — default: `100`
+  The value that means done.
+- `valueText?: string`
+  The value in the reader's own units, shown beside the label and announced instead of a percentage.
+- `className?: string`
+  Extra classes, for placement and width.
+
+Real usage (from `apps/`):
+```tsx
+<Progress
+        label="Uploading assets"
+        value={3}
+        max={7}
+        valueText="3 of 7 files"
+        className="pg-wide-specimen"
+      />
+```
 
 Contract: [docs/components/progress.md](../docs/components/progress.md)
 
