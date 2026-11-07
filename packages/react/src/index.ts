@@ -40,6 +40,8 @@ export { Link } from "./link.js";
 export type { LinkProps, LinkVariant } from "./link.js";
 export { Badge } from "./badge.js";
 export type { BadgeProps, BadgeVariant } from "./badge.js";
+export { Chip } from "./chip.js";
+export type { ChipProps } from "./chip.js";
 export { Breadcrumbs } from "./breadcrumbs.js";
 export type { BreadcrumbsProps, BreadcrumbsItem } from "./breadcrumbs.js";
 export { Checkbox } from "./checkbox.js";

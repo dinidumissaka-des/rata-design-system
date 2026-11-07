@@ -1693,3 +1693,13 @@ code {
   aspect-ratio: 16 / 9;
   background: var(--rata-theme-bg-muted);
 }
+
+/* A set of Chips: the list owns the gap between them, the chips own none. */
+.pg-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rata-space-gap-xs);
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+  list-style: none;
+}

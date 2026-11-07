@@ -1,0 +1,85 @@
+/* Chip — a value the reader added, with a control to remove it.
+
+   Every value below is the gate-2 recipe in registry/components/chip.json
+   (batch approval, docs/decisions/2026-11-gate-1-review.md). The chip itself
+   is not interactive; its one control is the remove button. */
+
+/* base — an outlined value on the secondary role, so it reads as something
+   the reader can act on rather than as a status (a Badge is filled). */
+.rata-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rata-space-gap-xs);
+  box-sizing: border-box;
+  block-size: var(--rata-size-control-sm);
+  max-inline-size: 100%;
+  /* The remove control sits in the end padding's place. */
+  padding-inline-start: var(--rata-space-control-padding-inline-sm);
+  padding-inline-end: var(--rata-space-1);
+  background: var(--rata-theme-secondary-role-bg);
+  color: var(--rata-theme-secondary-role-fg);
+  border: var(--rata-border-default) solid var(--rata-theme-secondary-role-border);
+  border-radius: var(--rata-radius-element);
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-control-size-sm);
+  font-weight: var(--rata-type-label-weight);
+  line-height: var(--rata-type-control-line-height-sm);
+  vertical-align: middle;
+}
+
+/* Long values truncate at the container's width. The full value stays the
+   remove button's name and the chip's `title`. */
+.rata-chip-text {
+  min-inline-size: var(--rata-space-0);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The kind-of-value glyph, sized by Icon's own `rata-icon--text` step
+   (size.icon.text). Nothing to set here. */
+
+/* disabled — on the whole chip, so the value and its control dim together. */
+.rata-chip--disabled {
+  opacity: var(--rata-state-disabled-opacity);
+}
+
+/* remove — visibly small, so the chip stays a chip. */
+.rata-chip-remove {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  inline-size: var(--rata-size-icon-md);
+  block-size: var(--rata-size-icon-md);
+  padding: var(--rata-space-0);
+  margin: var(--rata-space-0);
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-pill);
+  background: transparent;
+  color: var(--rata-theme-fg-secondary);
+  font: inherit;
+  cursor: pointer;
+}
+
+.rata-chip-remove[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+/* The hit area: size.target.min in both dimensions, centred on the visible
+   circle. A ::before, because the remove button composes .rata-state-layer
+   and the layer owns ::after — two rules on one ::after would merge. The
+   layer's `position: relative` is what this is centred against: an equal
+   (negative) inset on every side makes the box size.target.min square in
+   either writing direction. */
+.rata-chip-remove::before {
+  content: "";
+  position: absolute;
+  inset: calc((100% - var(--rata-size-target-min)) / 2);
+}
+
+.rata-chip-remove:focus-visible {
+  outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}

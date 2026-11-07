@@ -19,6 +19,7 @@ import {
   ButtonGroup,
   Card,
   Checkbox,
+  Chip,
   Dialog,
   Disclosure,
   Divider,
@@ -666,6 +667,11 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
         </Badge>
       </>
     ),
+  },
+
+  chip: {
+    "Recipients added to a message": () => <ChipRecipientsStage />,
+    "The active filters above a result list": () => <ChipFilterStage />,
   },
 
   avatar: {
@@ -1737,6 +1743,62 @@ function PaginationRouterStage() {
           resultsRef.current?.focus();
         }}
       />
+/**
+ * Removing a chip removes the focused button, so the handler moves focus
+ * first — to the next chip's button, or the previous one when the last goes,
+ * or the reset button when none are left. That obligation is the caller's,
+ * per the contract, which is why the stage owns it rather than Chip.
+ */
+function ChipRecipientsStage() {
+  const initial = ["Ada Lovelace", "Bo Nakamura", "Chidi Okonkwo"];
+  const [recipients, setRecipients] = useState(initial);
+  const listRef = useRef<HTMLUListElement>(null);
+  const resetRef = useRef<HTMLButtonElement>(null);
+  const remove = (index: number) => {
+    const buttons = listRef.current?.querySelectorAll<HTMLButtonElement>("button") ?? [];
+    const next = buttons[index + 1] ?? buttons[index - 1] ?? resetRef.current;
+    next?.focus();
+    setRecipients((current) => current.filter((_, i) => i !== index));
+  };
+  return (
+    <div className="pg-block-stack">
+      <ul ref={listRef} role="list" aria-label="Recipients" className="pg-chip-list">
+        {recipients.map((name, i) => (
+          <li key={name}>
+            <Chip onRemove={() => remove(i)}>{name}</Chip>
+          </li>
+        ))}
+      </ul>
+      <Button ref={resetRef} variant="tertiary" size="sm" onClick={() => setRecipients(initial)}>
+        Reset recipients
+      </Button>
+    </div>
+  );
+}
+
+function ChipFilterStage() {
+  const [colour, setColour] = useState<string | null>("Blue");
+  const resetRef = useRef<HTMLButtonElement>(null);
+  return (
+    <div className="pg-block-stack">
+      {colour !== null && (
+        <ul role="list" aria-label="Active filters" className="pg-chip-list">
+          <li>
+            <Chip
+              onRemove={() => {
+                resetRef.current?.focus();
+                setColour(null);
+              }}
+              removeLabel={`Clear colour filter: ${colour}`}
+            >
+              {colour}
+            </Chip>
+          </li>
+        </ul>
+      )}
+      <Button ref={resetRef} variant="tertiary" size="sm" onClick={() => setColour("Blue")}>
+        Reset filters
+      </Button>
     </div>
   );
 }

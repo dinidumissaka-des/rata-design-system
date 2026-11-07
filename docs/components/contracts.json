@@ -1563,10 +1563,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -1577,16 +1579,16 @@
       "icon"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "children",
-        "type": "string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The value, as text.",
+        "declared": true,
         "summary": "The value, as text.",
         "use": [
           "A recipient's name or address, a filter's value, a tag."
@@ -1599,10 +1601,10 @@
       },
       {
         "name": "onRemove",
-        "type": "() => void",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "() => void",
+        "description": "Called when the reader removes the value — by pressing the button, or by Backspace or Delete while it has focus.",
+        "declared": true,
         "summary": "Called when the reader removes the value — by pressing the button, or by Backspace or Delete while it has focus.",
         "use": [
           "Removing the value from the caller's state, and moving focus in the same handler: to the next chip's remove button, or to the field the chips belong to."
@@ -1616,11 +1618,11 @@
       },
       {
         "name": "removeLabel",
-        "type": "string",
         "optional": true,
-        "default": "\"Remove \" + children",
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The remove button's full accessible name.",
+        "default": "`Remove ${children}`",
+        "declared": true,
         "summary": "The remove button's full accessible name.",
         "use": [
           "A translated phrase, in whatever word order the language needs: `removeLabel={t(\"remove\", { name })}`."
@@ -1633,10 +1635,10 @@
       },
       {
         "name": "icon",
-        "type": "LucideIcon",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "LucideIcon",
+        "description": "A glyph before the text that says what kind of value it is.",
+        "declared": true,
         "summary": "A glyph before the text that says what kind of value it is.",
         "use": [
           "A mail glyph on an address that is not a known contact, beside chips that are."
@@ -1649,10 +1651,11 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "boolean",
+        "description": "Blocks removal while keeping the button focusable and announced.",
+        "default": "false",
+        "declared": true,
         "summary": "Blocks removal while keeping the button focusable and announced.",
         "use": [
           "A value the reader cannot remove right now — a required recipient, a filter locked by a permission."
@@ -1665,10 +1668,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
+        "type": "string",
         "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Extra classes, for placement — not for restyling it.",
         "use": [
           "Rare. A set of chips gets its gap from the list that holds them."
@@ -1780,7 +1783,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Chip onRemove={() => remove(i)}>{name}</Chip>"
   },
   {
     "name": "combobox",

@@ -11,10 +11,12 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
@@ -24,7 +26,20 @@
     "state-layer",
     "icon"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/chip.css",
+      "target": "styles/chip.css"
+    },
+    {
+      "source": "packages/react/src/chip.tsx",
+      "target": "components/chip.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -102,8 +117,6 @@
   },
   "props": {
     "children": {
-      "type": "string",
-      "required": true,
       "summary": "The value, as text.",
       "use": [
         "A recipient's name or address, a filter's value, a tag."
@@ -114,8 +127,6 @@
       "a11y": "Read as plain text, and appended to the remove button's default name."
     },
     "onRemove": {
-      "type": "() => void",
-      "required": true,
       "summary": "Called when the reader removes the value — by pressing the button, or by Backspace or Delete while it has focus.",
       "use": [
         "Removing the value from the caller's state, and moving focus in the same handler: to the next chip's remove button, or to the field the chips belong to."
@@ -127,8 +138,6 @@
       "a11y": "The caller owns where focus goes next — see the decision on focus after removal."
     },
     "removeLabel": {
-      "type": "string",
-      "default": "\"Remove \" + children",
       "summary": "The remove button's full accessible name.",
       "use": [
         "A translated phrase, in whatever word order the language needs: `removeLabel={t(\"remove\", { name })}`."
@@ -139,7 +148,6 @@
       "a11y": "Becomes the button's `aria-label`, and on native the label of the `delete` accessibility action."
     },
     "icon": {
-      "type": "LucideIcon",
       "summary": "A glyph before the text that says what kind of value it is.",
       "use": [
         "A mail glyph on an address that is not a known contact, beside chips that are."
@@ -150,7 +158,6 @@
       "a11y": "Decorative — `aria-hidden`. If the kind of value matters, say it in the text."
     },
     "disabled": {
-      "type": "boolean",
       "summary": "Blocks removal while keeping the button focusable and announced.",
       "use": [
         "A value the reader cannot remove right now — a required recipient, a filter locked by a permission."
@@ -161,7 +168,6 @@
       "a11y": "`aria-disabled` on the remove button, not the `disabled` attribute, so it stays in the tab order and is announced as unavailable."
     },
     "className": {
-      "type": "string",
       "summary": "Extra classes, for placement — not for restyling it.",
       "use": [
         "Rare. A set of chips gets its gap from the list that holds them."

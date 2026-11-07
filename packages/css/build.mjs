@@ -49,6 +49,8 @@ const ORDER = [
   // badges, links and buttons its cells hold, so their own rules win.
   "table.css",
   "badge.css",
+  // After badge: the removable value is read beside the static label it is not.
+  "chip.css",
   "avatar.css",
   "disclosure.css",
   "breadcrumbs.css",

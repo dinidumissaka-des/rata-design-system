@@ -26,7 +26,7 @@ this path is the honest answer to when it last actually moved.
 | [button-group](../docs/components/button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [card](../docs/components/card.md) | `@rata/react` | content | latest / latest / future | free |
 | [checkbox](../docs/components/checkbox.md) | `@rata/react` | inputs | latest / latest / future | free |
-| [chip](../docs/components/chip.md) | `@rata/react` | inputs | future / future / future | free |
+| [chip](../docs/components/chip.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [combobox](../docs/components/combobox.md) | `@rata/react` | inputs | future / future / future | free |
 | [date-picker](../docs/components/date-picker.md) | `@rata/react` | inputs | future / future / future | free |
 | [date-range-picker](../docs/components/date-range-picker.md) | `@rata/react` | inputs | future / future / future | free |
@@ -249,9 +249,24 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/checkbox.md](../docs/components/checkbox.md)
 
-### Chip
+### Chip (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `children: string`
+  The value, as text.
+- `onRemove: () => void`
+  Called when the reader removes the value — by pressing the button, or by Backspace or Delete while it has focus.
+- `removeLabel?: string` — default: ``Remove ${children}``
+  The remove button's full accessible name.
+- `icon?: LucideIcon`
+  A glyph before the text that says what kind of value it is.
+- `disabled?: boolean` — default: `false`
+  Blocks removal while keeping the button focusable and announced.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Chip onRemove={() => remove(i)}>{name}</Chip>
+```
 
 Contract: [docs/components/chip.md](../docs/components/chip.md)
 

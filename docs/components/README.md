@@ -21,7 +21,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Button Group](button-group.md) | `button-group` | buttons | latest / latest | documented | free |
 | [Card](card.md) | `card` | content | latest / latest | documented | free |
 | [Checkbox](checkbox.md) | `checkbox` | inputs | latest / latest | documented | free |
-| [Chip](chip.md) | `chip` | inputs | future / future | spec | free |
+| [Chip](chip.md) | `chip` | inputs | latest / latest | documented | free |
 | [Combobox](combobox.md) | `combobox` | inputs | future / future | spec | free |
 | [Date Picker](date-picker.md) | `date-picker` | inputs | future / future | spec | free |
 | [Date Range Picker](date-range-picker.md) | `date-range-picker` | inputs | future / future | spec | free |
