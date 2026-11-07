@@ -114,6 +114,10 @@ export const baseTheme = defineTheme({
     "theme.elevation.raised": ["{elevation.low}", "{elevation.low-strong}"],
     "theme.elevation.overlay": ["{elevation.med}", "{elevation.med-strong}"],
     "theme.elevation.modal": ["{elevation.high}", "{elevation.high-strong}"],
+    // A persistent control over scrolling content (FAB, bottom-nav). Same
+    // primitive as overlay today; a separate role so a theme can move one
+    // without the other.
+    "theme.elevation.floating": ["{elevation.med}", "{elevation.med-strong}"],
 
     // Control text. The generated scale has no notion of "text sized to sit
     // inside a size.control.* box", so the three control sizes map onto the

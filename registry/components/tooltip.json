@@ -1,0 +1,167 @@
+{
+  "name": "tooltip",
+  "title": "Tooltip",
+  "description": "A short, non-interactive text hint that names or describes the control it is attached to, shown on hover and keyboard focus.",
+  "family": "overlays",
+  "alsoKnownAs": [
+    "hint",
+    "infotip"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "A small transient chip on an inverse surface, so it reads as a passing hint rather than as a menu or a popover. The inverse surface and its foreground do not exist yet, so the colour lines below are the closest existing tokens and are stand-ins; the measurements, shadow and motion are final.",
+      "tokens": {
+        "background": "theme.bg.inverse",
+        "color": "theme.fg.on-inverse",
+        "border": "none — the inverse surface separates itself from the page",
+        "box-shadow": "theme.elevation.overlay",
+        "border-radius": "radius.element",
+        "padding-block": "space.1",
+        "padding-inline": "space.2",
+        "font-size": "type.supporting.size",
+        "line-height": "type.supporting.line-height",
+        "max-inline-size": "size.measure.tight",
+        "gap from the trigger": "space.gap.xs",
+        "enter transition": "motion.overlay.duration with motion.easing.enter",
+        "exit transition": "motion.overlay.duration with motion.easing.exit",
+        "open delay": "motion.delay.hint on pointer hover; none on keyboard focus"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "A trigger and a short text in the top layer, positioned with CSS anchor positioning — the same machinery as Menu, with no measurement code and no dependency. It is never focusable and never contains anything interactive. Proposed primitive: `getTooltipProps` in `packages/primitives/src/tooltip.ts`, owning the open delay, the hover bridge and Escape; it is a proposal, not yet a commitment.",
+    "decisions": [
+      {
+        "decision": "A tooltip only ever repeats or supplements; it never holds the only copy of anything",
+        "why": "It cannot be relied on to appear. There is no hover on a touchscreen, a reader zoomed to 400% may never see it, and a keyboard user only gets it when they happen to focus that exact control. So nothing a reader needs to complete a task can live only in a tooltip. If the content is essential, it is visible text. If it is supplementary and needs to be reachable on touch, it is a Popover the reader opens on purpose."
+      },
+      {
+        "decision": "Non-interactive content only, and that is the line between Tooltip and Popover",
+        "why": "A tooltip disappears when the pointer leaves and is never in the tab order, so a link or a button inside it is something a keyboard user can see and can never reach. `content` is typed as a string rather than a node, so the type refuses it instead of the contract asking nicely. Anything with a control in it is a Popover."
+      },
+      {
+        "decision": "`relationship` says whether the tooltip is the control's name or a description of it",
+        "why": "The two are wired differently and getting it wrong is audible. For an icon-only button the tooltip text IS the name, so it is wired with `aria-labelledby`. The button still carries an `aria-label` with the same words — Button's contract requires one on every `iconOnly` button, and it is the name that survives wherever the tooltip is not mounted — and because `aria-labelledby` takes precedence over `aria-label`, the name is read once, not twice. For a labelled control the tooltip adds detail, so it is wired with `aria-describedby` and announced after the name. A tooltip that repeats an `aria-label` as a description is read twice; one that names a control that already has a name is ignored. The caller knows which it is, so it is a prop rather than a guess."
+      },
+      {
+        "decision": "It meets WCAG 1.4.13: dismissible, hoverable, persistent",
+        "why": "Escape closes it without moving focus, so a reader who summoned it by accident can get rid of it without losing their place. The pointer can travel from the trigger onto the tooltip without it closing, so a magnified reader can move over it to read it. It stays until the pointer leaves both, focus leaves the trigger, or Escape is pressed — never on a timer."
+      },
+      {
+        "decision": "Touch: it does not appear, by design",
+        "why": "There is no hover on touch, and the two common substitutes are both worse. Showing on tap would hijack the tap that was meant to activate the control. Showing on long-press collides with the platform's own long-press — text selection, context menus, and on mobile web the browser's link preview. So on a touch pointer the tooltip stays hidden; the accessible name or description is still wired, so VoiceOver and TalkBack users still hear it, and the rule above — nothing essential in a tooltip — is what makes hiding it safe. A pen hover, where the platform reports one, does show it."
+      },
+      {
+        "decision": "It works on an `aria-disabled` control, which is one more reason this system does not use `disabled`",
+        "why": "A natively disabled button receives no pointer or focus events, so the most useful tooltip there is — \"why can't I press this?\" — cannot be shown on it. Because disabled controls here stay focusable and hoverable, the tooltip appears on them like any other control, and `relationship=\"description\"` is how the reason gets announced."
+      },
+      {
+        "decision": "An inverse surface, not Menu's",
+        "why": "Approved at gate 1 (decision C3, docs/decisions/2026-11-gate-1-review.md). A tooltip is the one overlay that never holds a control and is never opened on purpose, and an inverse chip says so at a glance: it cannot be mistaken for a Menu or a Popover opened from the neighbouring control, both of which are surfaces the reader acts in. The cost is a new pairing — an inverse background and a foreground verified against it in both schemes and in every brand — which is why it goes through the design-tokens skill rather than into this recipe as a palette value."
+      },
+      {
+        "decision": "Surface: theme.bg.inverse with theme.fg.on-inverse",
+        "why": "The tooltip inverts the scheme (decision C3): a small dark chip on a light page, a light one on a dark page, which reads as transient and needs no border. The pair is generated in the expander, documented as tooltip-only, and verified at 12.88:1 (light) and 13.3:1 (dark). Settled by the token interview (docs/decisions/2026-11-gate-1-review.md)."
+      },
+      {
+        "decision": "Open delay: motion.delay.hint",
+        "why": "A pointer resting on the trigger opens the tooltip after motion.delay.hint, which points at motion.duration.medium-max (280ms today) so it follows the motion seed. The user chose the shorter step over slow-min. Keyboard focus opens it immediately — focus is never a passing pointer. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md)."
+      },
+      {
+        "decision": "Line length: size.measure.tight",
+        "why": "A tooltip's text is bounded at size.measure.tight, 32ch. It is in ch, so it scales with the text rather than with a control size; a hint that needs more than that is a Popover. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md)."
+      },
+      {
+        "decision": "Web and native",
+        "why": "Web: the trigger is the caller's element, cloned to receive `aria-labelledby` or `aria-describedby`; the tooltip is a `role=\"tooltip\"` element carrying the `popover` attribute (`hint` where supported, `manual` otherwise) so it renders in the top layer without a portal. React Native has no hover and no tooltip core component, so nothing is drawn: with `relationship=\"label\"` the text becomes the trigger's `accessibilityLabel`, and with `relationship=\"description\"` it becomes its `accessibilityHint` — which is what both platform screen readers read after the name. `placement` is web-only. The native behaviour is the touch behaviour above, followed through: the information still reaches assistive tech, and nothing is drawn that a finger cannot dismiss. Neither OS control nor Rata-drawn (decision N5): nothing is drawn on native, and the platform screen reader is what delivers the text. The native implementation ships in the pro tier (decision N6)."
+      }
+    ]
+  },
+  "props": {
+    "content": {
+      "type": "string",
+      "required": true,
+      "summary": "The hint text. Plain text only.",
+      "use": [
+        "A few words: the name of an icon-only control, or one sentence of detail about a labelled one."
+      ],
+      "dont": [
+        "Anything the reader needs to finish the task. It will not appear on touch — make it visible text instead.",
+        "A link, a button or formatting. Interactive content belongs in a Popover; the type is a string so it cannot be passed."
+      ],
+      "a11y": "Becomes the trigger's accessible name or description, per `relationship`."
+    },
+    "children": {
+      "type": "ReactElement",
+      "required": true,
+      "summary": "The one focusable element the tooltip is attached to.",
+      "use": [
+        "A `Button`, usually an icon-only one, or a link."
+      ],
+      "dont": [
+        "Plain text, an icon or a `div`. A tooltip on something unfocusable cannot be reached by keyboard at all — if the text needs explaining, explain it in visible text.",
+        "A trigger that already opens a Menu or Popover on hover. Two overlays from one control compete."
+      ],
+      "a11y": "Cloned to receive the ARIA reference and the hover, focus and Escape handlers. It must be focusable, or the tooltip is pointer-only."
+    },
+    "relationship": {
+      "type": "\"label\" | \"description\"",
+      "default": "\"description\"",
+      "summary": "Whether the tooltip names the trigger or describes it.",
+      "use": [
+        "`label` on an icon-only button, with the button's own `aria-label` set to the same words. Button requires it, and `aria-labelledby` wins over it, so the name is read once.",
+        "`description` on a control that already has a name, to add detail — including why an `aria-disabled` control is unavailable."
+      ],
+      "dont": [
+        "`description` with the same text as the control's `aria-label`. It is read twice."
+      ],
+      "a11y": "`label` wires `aria-labelledby`; `description` wires `aria-describedby`. On React Native these become `accessibilityLabel` and `accessibilityHint`."
+    },
+    "placement": {
+      "type": "\"block-start\" | \"block-end\" | \"inline-start\" | \"inline-end\"",
+      "default": "\"block-start\"",
+      "summary": "Which side of the trigger the tooltip prefers.",
+      "use": [
+        "`block-end` for a trigger at the top of the viewport, where the default would always flip anyway."
+      ],
+      "dont": [
+        "Using it to keep the tooltip on screen. Anchor positioning already flips it near an edge; this states a preference, not a guarantee."
+      ],
+      "a11y": "Visual only. Logical, so `inline-start` is the left in a left-to-right document and the right in a right-to-left one. Web only."
+    }
+  },
+  "usage": [
+    {
+      "case": "Naming an icon-only button",
+      "when": "A toolbar of icon-only controls, where the tooltip text is the only name each one has.",
+      "example": "<Tooltip content=\"Copy token path\" relationship=\"label\">\n  <Button variant=\"tertiary\" iconOnly aria-label=\"Copy token path\">\n    <Icon icon={Copy} />\n  </Button>\n</Tooltip>",
+      "notes": "`relationship=\"label\"` makes the tooltip the button's name. The `aria-label` stays, with the same words, because Button requires it on every `iconOnly` button; `aria-labelledby` takes precedence, so it is announced once. On touch the tooltip never draws, but the name is still wired, so a screen-reader user hears \"Copy token path, button\" either way."
+    },
+    {
+      "case": "Explaining why a control is unavailable",
+      "when": "A button that is `aria-disabled` until something else is done.",
+      "example": "<Tooltip content=\"Add a payment method to publish\">\n  <Button disabled>Publish</Button>\n</Tooltip>",
+      "notes": "This works only because disabled Buttons in this system are `aria-disabled` and stay focusable and hoverable — a native `disabled` button gets no events, so its tooltip could never show. The reason must also be somewhere visible on the page, because a touch user will never see this."
+    },
+    {
+      "case": "Reaching for the wrong component",
+      "when": "A help icon beside a field, whose hint includes a \"Learn more\" link.",
+      "example": "<Tooltip content=\"Used for invoices. Learn more\">\n  <Button variant=\"tertiary\" iconOnly aria-label=\"About billing email\">\n    <Icon icon={CircleHelp} />\n  </Button>\n</Tooltip>",
+      "notes": "Don't. The link cannot live in a tooltip — it would be visible and unreachable — and the hint would never appear on touch. That is a Popover, opened on purpose by a tap or a press, with a real link inside. Better still, put a short version as the field's own description, where everyone reads it."
+    }
+  ]
+}

@@ -5,7 +5,8 @@
   "description": "Framework-free component CSS built on @rata/tokens. Usable with plain HTML; consumed by every framework wrapper.",
   "exports": {
     "./index.css": "./dist/index.css",
-    "./components/*": "./dist/components/*"
+    "./components/*": "./dist/components/*",
+    "./custom-media.css": "./dist/custom-media.css"
   },
   "files": [
     "dist"

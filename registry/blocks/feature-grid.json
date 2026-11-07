@@ -1,0 +1,229 @@
+{
+  "$schema": "./schema.json",
+  "name": "feature-grid",
+  "title": "Feature grid",
+  "kind": "block",
+  "surface": [
+    "website"
+  ],
+  "category": "marketing",
+  "description": "A titled band of three to nine features, each an icon, a short heading and one sentence, in a grid that reflows by itself.",
+  "alsoKnownAs": [
+    "features",
+    "benefits",
+    "value props"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "na"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "stacked",
+    "container": "list",
+    "summary": "Intro above, items below as a <ul> grid. Items are not Cards: a feature is a sentence with an icon, not a widget, and a box around each one adds edges without adding meaning."
+  },
+  "regions": [
+    {
+      "name": "intro",
+      "element": "header",
+      "purpose": "Section heading and optional lede.",
+      "contains": [
+        "heading",
+        "text"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "medium": "fill",
+        "wide": "min(calc(var(--rata-size-control-lg) * 20), 100%)"
+      }
+    },
+    {
+      "name": "items",
+      "element": "ul",
+      "purpose": "The features.",
+      "contains": [
+        "icon",
+        "heading",
+        "text",
+        "link"
+      ],
+      "budget": {
+        "narrow": "1 column",
+        "medium": "auto-fill",
+        "wide": "auto-fill, track minimum min(calc(var(--rata-size-control-lg) * 9), 100%)"
+      },
+      "collapse": "auto-fill: the column count follows the space, down to one."
+    }
+  ],
+  "components": [
+    {
+      "name": "heading",
+      "for": "Section heading (base) and each feature's heading (base+1).",
+      "region": "intro"
+    },
+    {
+      "name": "text",
+      "for": "Lede and feature descriptions.",
+      "region": "items"
+    },
+    {
+      "name": "icon",
+      "for": "Each feature's glyph, decorative.",
+      "region": "items"
+    },
+    {
+      "name": "link",
+      "for": "Optional \"Learn more\" per feature.",
+      "region": "items",
+      "optional": true
+    },
+    {
+      "name": "card",
+      "for": "Future cards variant only, for navigable feature tiles.",
+      "region": "items",
+      "optional": true
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "link",
+      "for": "Per-feature \"Learn more\" links.",
+      "blocking": false,
+      "interim": "Ships without per-item links; the slot is added when Link lands."
+    },
+    {
+      "component": "card",
+      "for": "A future `variant=\"cards\"` for feature tiles that are themselves navigable.",
+      "blocking": false,
+      "interim": "Only the plain list variant ships. No <div className=\"card\"> stand-in."
+    }
+  ],
+  "slots": {
+    "headingLevel": {
+      "summary": "The outline level of the section heading; everything below it steps down from here.",
+      "type": "1 | 2 | 3 | 4 | 5 | 6",
+      "required": true,
+      "use": [
+        "The level the surrounding page gives this block — a template passes it explicitly."
+      ],
+      "dont": [
+        "Choosing a level for its visual size. Size is the Heading component's `role`, a separate decision."
+      ],
+      "a11y": "No default, for the reason Heading's `level` has none: only the caller knows the depth, and a skipped level breaks heading navigation for the whole page."
+    },
+    "title": {
+      "summary": "Section heading.",
+      "type": "ReactNode",
+      "required": true
+    },
+    "lede": {
+      "summary": "One sentence under the heading.",
+      "type": "ReactNode",
+      "required": false
+    },
+    "items": {
+      "summary": "The features.",
+      "type": "Array<{ icon: LucideIcon; title: ReactNode; description: ReactNode; href?: string }>",
+      "required": true,
+      "dont": [
+        "Fewer than three — that is a sentence in the hero. More than nine — split into two bands with their own headings."
+      ]
+    }
+  },
+  "behavior": {
+    "summary": "Static composition. The grid is intrinsic: no breakpoint is involved.",
+    "decisions": [
+      {
+        "decision": "Items are a list, not a set of Cards",
+        "why": "CLAUDE.md's frame table: Card is for widgets and galleries. A feature is prose; boxing it adds four edges per item and no affordance, and a box that is not clickable reads as though it should be."
+      },
+      {
+        "decision": "auto-fill grid with the playground gallery's tile minimum",
+        "why": "That precedent already solved \"count follows the space\" without breakpoint tokens, including the min(…, 100%) guard against overflow at the narrowest widths."
+      },
+      {
+        "decision": "Icons are decorative",
+        "why": "The feature heading names the feature; an icon with its own label would be read twice."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "section",
+        "role": "region",
+        "label": "aria-labelledby the block's own heading (the section heading)"
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": "base",
+        "content": "Section heading",
+        "region": "intro"
+      },
+      {
+        "level": "base+1",
+        "content": "Feature title",
+        "region": "items",
+        "repeats": true
+      }
+    ],
+    "obligations": [
+      "Icons are aria-hidden; the item's heading carries the meaning."
+    ]
+  },
+  "responsive": {
+    "strategy": "intrinsic",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "One column."
+      },
+      {
+        "at": "wide",
+        "change": "As many columns as the track minimum allows — typically three."
+      }
+    ]
+  },
+  "native": {
+    "applies": false,
+    "reason": "Website-only by decision B3 (gate-1 review, docs/decisions/2026-11-gate-1-review.md): marketing blocks and templates ship on the web only and get no native version. Marketing composition. A native app is reached after install, so there is nothing to persuade or convert; the equivalent content in-app is an onboarding or paywall screen, which is a different block with different obligations."
+  },
+  "tokens": {
+    "band padding-block": "space.section",
+    "band padding-inline": "space.page.gutter",
+    "gap intro → items": "space.section",
+    "grid gap": "space.gap.lg (columns), space.stack.lg (rows)",
+    "item gap icon → title → description": "space.stack.xs",
+    "icon size": "size.icon.lg",
+    "grid track minimum": "min(calc(var(--rata-size-control-lg) * 9), 100%)"
+  },
+  "tokenGaps": [
+    {
+      "need": "A page content max-inline-size (container width) for marketing bands",
+      "interim": "The band's content box is capped at calc(var(--rata-size-control-lg) * 32) and centred with auto inline margins; the playground's own column cap is a literal with a comment saying there is no measure token. The container max-width token is sent to the design-tokens interview (gate-1 review); this multiplier is the interim until it lands."
+    },
+    {
+      "need": "A section-band vertical padding step larger than space.section for marketing rhythm",
+      "interim": "padding-block uses var(--rata-space-section) top and bottom. space.section is the only page-rhythm step and was sized for docs pages, not full-bleed marketing bands."
+    },
+    {
+      "need": "A grid gutter role (column and row gap between tiles)",
+      "interim": "gap: var(--rata-space-gap-lg) between tiles, var(--rata-space-stack-lg) between rows when they wrap. space.gap.* is documented for inline items, not grid gutters."
+    }
+  ],
+  "openQuestions": [
+    "Should the icon sit in a tinted circle (theme.accent-role.subtle)? That is a new visual treatment and would need its own token recipe approval."
+  ]
+}

@@ -1,0 +1,196 @@
+{
+  "$schema": "./schema.json",
+  "name": "cta-band",
+  "title": "Call-to-action band",
+  "kind": "block",
+  "surface": [
+    "website"
+  ],
+  "category": "marketing",
+  "description": "A full-bleed band near the end of a page: one heading, one sentence, one or two actions.",
+  "alsoKnownAs": [
+    "cta",
+    "call to action",
+    "conversion band"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "na"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "full-width",
+    "container": "section",
+    "summary": "Full-bleed background, content centred within the container width."
+  },
+  "regions": [
+    {
+      "name": "content",
+      "element": "div",
+      "purpose": "Heading, sentence, actions.",
+      "contains": [
+        "heading",
+        "text",
+        "button-group",
+        "button",
+        "link"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "min(calc(var(--rata-size-control-lg) * 20), 100%)"
+      }
+    }
+  ],
+  "components": [
+    {
+      "name": "heading",
+      "for": "The prompt.",
+      "region": "content"
+    },
+    {
+      "name": "text",
+      "for": "One supporting sentence.",
+      "region": "content"
+    },
+    {
+      "name": "button-group",
+      "for": "The actions.",
+      "region": "content"
+    },
+    {
+      "name": "button",
+      "for": "Action that acts in place.",
+      "region": "content",
+      "optional": true
+    },
+    {
+      "name": "link",
+      "for": "Action that navigates (the usual case).",
+      "region": "content"
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "link",
+      "for": "Navigating actions.",
+      "blocking": true
+    }
+  ],
+  "slots": {
+    "headingLevel": {
+      "summary": "The outline level of the band's heading; everything below it steps down from here.",
+      "type": "1 | 2 | 3 | 4 | 5 | 6",
+      "required": true,
+      "use": [
+        "The level the surrounding page gives this block — a template passes it explicitly."
+      ],
+      "dont": [
+        "Choosing a level for its visual size. Size is the Heading component's `role`, a separate decision."
+      ],
+      "a11y": "No default, for the reason Heading's `level` has none: only the caller knows the depth, and a skipped level breaks heading navigation for the whole page."
+    },
+    "title": {
+      "summary": "The prompt.",
+      "type": "ReactNode",
+      "required": true
+    },
+    "description": {
+      "summary": "One sentence.",
+      "type": "ReactNode",
+      "required": false
+    },
+    "primaryAction": {
+      "summary": "The action.",
+      "type": "{ label: string; href: string }",
+      "required": true
+    },
+    "secondaryAction": {
+      "summary": "Optional softer path.",
+      "type": "{ label: string; href: string }",
+      "required": false
+    },
+    "tone": {
+      "summary": "Band background.",
+      "type": "\"subtle\" | \"accent\"",
+      "default": "\"subtle\"",
+      "required": false,
+      "dont": [
+        "\"accent\" when the primary button is also accent — an accent button on an accent band has no edge. The accent tone uses theme.accent-role.subtle with fg.primary text, never the saturated bg."
+      ]
+    }
+  },
+  "behavior": {
+    "summary": "Static composition.",
+    "decisions": [
+      {
+        "decision": "The accent tone is the role's subtle step, not its fill",
+        "why": "theme.accent-role.subtle with theme.fg.primary is a verified text pairing; a saturated accent band would need theme.fg.on-accent for every word and a differently-styled button on top of it, which is a new treatment."
+      },
+      {
+        "decision": "It is a band, not a Card",
+        "why": "It spans the page; a Card is a bounded widget inside one."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "section",
+        "role": "region",
+        "label": "aria-labelledby the block's own heading (the band's heading)"
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": "base",
+        "content": "Prompt",
+        "region": "content"
+      }
+    ],
+    "obligations": [
+      "Action names must make sense out of context (\"Start your free trial\", not \"Click here\")."
+    ]
+  },
+  "responsive": {
+    "strategy": "intrinsic",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "Actions stack full-width."
+      }
+    ]
+  },
+  "native": {
+    "applies": false,
+    "reason": "Website-only by decision B3 (gate-1 review, docs/decisions/2026-11-gate-1-review.md): marketing blocks and templates ship on the web only and get no native version. Marketing composition. A native app is reached after install, so there is nothing to persuade or convert; the equivalent content in-app is an onboarding or paywall screen, which is a different block with different obligations."
+  },
+  "tokens": {
+    "band background (subtle)": "theme.bg.subtle",
+    "band background (accent)": "theme.accent-role.subtle",
+    "text on band": "theme.fg.primary",
+    "band padding-block": "space.section",
+    "band padding-inline": "space.page.gutter",
+    "content stack": "space.stack.md",
+    "text → actions gap": "space.stack.lg"
+  },
+  "tokenGaps": [
+    {
+      "need": "A section-band vertical padding step larger than space.section for marketing rhythm",
+      "interim": "padding-block uses var(--rata-space-section) top and bottom. space.section is the only page-rhythm step and was sized for docs pages, not full-bleed marketing bands."
+    },
+    {
+      "need": "A page content max-inline-size (container width) for marketing bands",
+      "interim": "The band's content box is capped at calc(var(--rata-size-control-lg) * 32) and centred with auto inline margins; the playground's own column cap is a literal with a comment saying there is no measure token. The container max-width token is sent to the design-tokens interview (gate-1 review); this multiplier is the interim until it lands."
+    }
+  ]
+}

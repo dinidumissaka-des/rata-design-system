@@ -1,0 +1,26 @@
+{
+  "$contract": "layer",
+  "$summary": "Page-level stacking order: which kind of surface paints over which.",
+  "tokens": {
+    "layer": {
+      "layer": "base",
+      "summary": "z-index for page-level surfaces that are not in the browser's top layer, in the order they stack.",
+      "use": [
+        "z-index of a sticky header or toolbar (layer.sticky), a FAB or bottom-nav (layer.floating), a non-modal overlay that cannot use the Popover API (layer.overlay), the toast region (layer.toast)."
+      ],
+      "dont": [
+        "Lifting a focused or hovered item over its siblings inside one component — keep the local z-index: 1 for that; it is not a page-level decision.",
+        "Dialog or Sheet. Both open with showModal() into the browser's top layer, which paints above every z-index, so they need none — giving them one is a sign they were rendered with the open attribute instead."
+      ],
+      "scale": {
+        "sticky": "100. Sticky headers and toolbars that stay put while the page scrolls.",
+        "floating": "200. Persistent controls over content — the FAB, bottom-nav. Pairs with theme.elevation.floating.",
+        "overlay": "300. Transient surfaces anchored to a trigger, where the Popover API's top layer is unavailable.",
+        "toast": "400. The toast region — above everything on the page so a status message is never covered, below the top layer so a modal dialog still owns the screen."
+      },
+      "notes": [
+        "Steps are ordinal × 100, leaving room between them without inviting a 101. Native renders in tree order and ignores these; the native build emits them for Android's elevation ordering only."
+      ]
+    }
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "name": "divider",
+  "title": "Divider",
+  "description": "A rule marking a change of topic within a page, or a separation between groups in a toolbar.",
+  "family": "content",
+  "alsoKnownAs": [
+    "separator",
+    "rule",
+    "hr"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "One hairline in the divider colour `theme.border.default` documents. No margin: the stack it sits in owns the space either side.",
+      "tokens": {
+        "border-block-start": "border.default solid theme.border.default",
+        "margin": "space.0 — the parent's gap places it, as with Heading",
+        "inline-size": "the full width of its container"
+      }
+    },
+    "vertical": {
+      "summary": "The same hairline on the other axis, stretching to the height of the row it divides.",
+      "tokens": {
+        "border-inline-start": "border.default solid theme.border.default",
+        "block-size": "stretched to the row by the parent's alignment",
+        "margin": "space.0"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "An `<hr>` when horizontal, a `role=\"separator\"` element when vertical, or an `aria-hidden` rule when `decorative`. No primitive: a non-focusable separator has no interaction to own.",
+    "decisions": [
+      {
+        "decision": "Most lines in a UI are not Dividers",
+        "why": "The rule between table rows is the table's, the rule between menu groups is `MenuSeparator`, the rule between a stack of Disclosures belongs to the stack, and the outline of a Card is the card's. Each of those is a border owned by the component that knows where it goes. A Divider is for the one case none of them cover: a change of topic in running content, or a group boundary in a row of controls. If you are placing a Divider between every item of a list, the list should own the border."
+      },
+      {
+        "decision": "Semantic by default, `decorative` to opt out",
+        "why": "An `<hr>` is a thematic break, announced as a separator, and it tells a screen-reader user what a sighted reader sees: the topic changed here. When the line is only visual — the gap would have done, but the design wants a line — `decorative` hides it so a reader does not hear \"separator\" between two things that are not separate. Defaulting the other way would make every semantic break silent unless the caller remembered."
+      },
+      {
+        "decision": "Vertical is a `role=\"separator\"`, not an `<hr>`",
+        "why": "An `<hr>` is horizontal by definition, and styling one vertical leaves it announcing the wrong orientation. A vertical divider between toolbar groups is a `div` with `role=\"separator\"` and `aria-orientation=\"vertical\"`, which is what the ARIA toolbar pattern expects."
+      },
+      {
+        "decision": "No label in the middle",
+        "why": "\"— or —\" between two sign-in options is a sentence, not a rule, and rendering text inside a separator makes a screen reader either skip the text or read the separator as content. Write the word as text between two decorative dividers if the design needs it. A labelled divider is not part of this gate."
+      },
+      {
+        "decision": "Web and native",
+        "why": "Web: `<hr>` horizontally; `<div role=\"separator\" aria-orientation=\"vertical\">` vertically; with `decorative`, the same element with `aria-hidden=\"true\"` (and `role=\"none\"` on the `<hr>`). React Native has no separator role: a hairline `View` that is always hidden from assistive tech with `importantForAccessibility=\"no\"` and `accessibilityElementsHidden`, whatever `decorative` says — the topic change is carried by the heading that follows it, which is the only structure native screen readers navigate by. `decorative` therefore has an effect on web only. Rata-drawn (decision N5): there is no OS separator control. The native implementation ships in the pro tier (decision N6)."
+      }
+    ]
+  },
+  "props": {
+    "orientation": {
+      "type": "\"horizontal\" | \"vertical\"",
+      "default": "\"horizontal\"",
+      "summary": "Which way the rule runs.",
+      "use": [
+        "`vertical` between groups of controls in a horizontal row, such as a toolbar."
+      ],
+      "dont": [
+        "`vertical` between two columns of a page layout. That is the layout's border, not a separator."
+      ],
+      "a11y": "`horizontal` renders an `<hr>`; `vertical` renders `role=\"separator\"` with `aria-orientation=\"vertical\"`."
+    },
+    "decorative": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Hides the rule from assistive tech when it marks no real change of topic.",
+      "use": [
+        "A line the design wants where the content does not change subject — around an \"or\" between two sign-in options."
+      ],
+      "dont": [
+        "Every divider, by habit. A real topic break should be heard as one."
+      ],
+      "a11y": "Adds `aria-hidden=\"true\"`. Web only: on React Native the rule is always hidden."
+    },
+    "className": {
+      "type": "string",
+      "summary": "Extra classes, for placement.",
+      "use": [
+        "The space the page wants either side, which this component deliberately does not own."
+      ],
+      "dont": [
+        "A thicker or coloured rule. A heavier boundary is `theme.border.strong` on the component that owns it, not a restyled divider."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "A change of topic in running content",
+      "when": "Two parts of a page about different things, where a heading alone would be too quiet.",
+      "example": "<Text>Your plan renews on 1 March.</Text>\n<Divider />\n<Heading level={2}>Danger zone</Heading>",
+      "notes": "Semantic, so it is announced as a separator. The space either side comes from the parent's stack gap, not from the divider."
+    },
+    {
+      "case": "Groups in a toolbar",
+      "when": "A row of controls in two or more groups.",
+      "example": "<div role=\"toolbar\" aria-label=\"Formatting\">\n  <Button variant=\"tertiary\">Bold</Button>\n  <Button variant=\"tertiary\">Italic</Button>\n  <Divider orientation=\"vertical\" />\n  <Button variant=\"tertiary\">Link</Button>\n</div>",
+      "notes": "Vertical renders `role=\"separator\"` with `aria-orientation`, which is what the toolbar pattern expects between groups."
+    },
+    {
+      "case": "Reaching for the wrong component",
+      "when": "A rule between every row of a list.",
+      "example": "{rows.map((row) => (\n  <>\n    <Row row={row} />\n    <Divider />\n  </>\n))}",
+      "notes": "Don't. A screen reader hears \"separator\" between every row, and the list cannot drop the last one cleanly. The list owns its row borders — a Table, or the list's own CSS with `theme.border.default`."
+    }
+  ]
+}

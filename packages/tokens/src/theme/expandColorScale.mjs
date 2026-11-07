@@ -340,6 +340,10 @@ export function expandColorScale(config) {
     "theme.bg.subtle": [NL[97], ND[15]],
     // The most recessed step — tracks, wells, skeletons.
     "theme.bg.muted": [NL[90], ND[20]],
+    // The inverted surface — dark in light, light in dark — for a small
+    // transient hint (a tooltip). 20/90 rather than the text tones so it
+    // reads as a surface, not as a block of ink.
+    "theme.bg.inverse": [NL[20], ND[90]],
 
     // ── Text
     "theme.fg.primary": [NL[textPrimaryL], ND[textPrimaryD]],
@@ -349,6 +353,9 @@ export function expandColorScale(config) {
     // system's muted role is documented for *placeholders*, which are not
     // exempt and must stay readable, so it sits a step stronger at 40/60.
     "theme.fg.muted": [NVL[40], NVD[60]],
+    // Text on theme.bg.inverse, and nowhere else — the surface tones, so the
+    // pair is a scheme flip of bg.surface + fg.primary.
+    "theme.fg.on-inverse": [NL[99], ND[10]],
 
     // ── Secondary role (outlined controls) tracks the surface ladder.
     "theme.secondary-role.bg": [NL[99], ND[10]],

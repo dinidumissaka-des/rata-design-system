@@ -1,0 +1,280 @@
+{
+  "$schema": "./schema.json",
+  "name": "landing-page",
+  "title": "Landing page",
+  "kind": "template",
+  "surface": [
+    "website"
+  ],
+  "category": "page",
+  "description": "The marketing home page: TopNav, hero, logo cloud, feature grid, testimonial, CTA band, FAQ, site footer.",
+  "alsoKnownAs": [
+    "home page",
+    "marketing page"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "na"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "header",
+    "container": "section",
+    "summary": "header → main(bands×n) → footer. No sidebar. The playground's shell minus its rail."
+  },
+  "regions": [
+    {
+      "name": "header",
+      "element": "TopNav",
+      "purpose": "Brand, primary nav, Sign in / Start free actions.",
+      "contains": [
+        "top-nav",
+        "mobile-nav",
+        "button"
+      ],
+      "budget": {
+        "narrow": "fill; nav items move into MobileNav",
+        "wide": "fill"
+      },
+      "collapse": "TopNav items → MobileNav drawer behind a trigger, at the page's own narrow query."
+    },
+    {
+      "name": "main",
+      "element": "main",
+      "purpose": "The bands, full-bleed, each centring its own content.",
+      "contains": [
+        "hero",
+        "logo-cloud",
+        "feature-grid",
+        "testimonial",
+        "cta-band",
+        "faq"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "fill (bands full-bleed; content capped per band)"
+      }
+    },
+    {
+      "name": "footer",
+      "element": "site-footer",
+      "purpose": "contentinfo.",
+      "contains": [
+        "site-footer"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "fill"
+      }
+    }
+  ],
+  "components": [
+    {
+      "name": "top-nav",
+      "for": "Banner and primary navigation.",
+      "region": "header"
+    },
+    {
+      "name": "mobile-nav",
+      "for": "Primary nav on narrow viewports.",
+      "region": "header"
+    },
+    {
+      "name": "button",
+      "for": "Header actions.",
+      "region": "header"
+    },
+    {
+      "name": "visually-hidden",
+      "for": "Skip link.",
+      "region": "header"
+    },
+    {
+      "name": "link",
+      "for": "Header CTA links.",
+      "region": "header"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "hero",
+      "region": "main",
+      "headingLevel": 1
+    },
+    {
+      "name": "logo-cloud",
+      "region": "main",
+      "optional": true
+    },
+    {
+      "name": "feature-grid",
+      "region": "main",
+      "headingLevel": 2
+    },
+    {
+      "name": "testimonial",
+      "region": "main",
+      "optional": true,
+      "headingLevel": 2
+    },
+    {
+      "name": "cta-band",
+      "region": "main",
+      "headingLevel": 2
+    },
+    {
+      "name": "faq",
+      "region": "main",
+      "optional": true,
+      "headingLevel": 2
+    },
+    {
+      "name": "site-footer",
+      "region": "footer"
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "link",
+      "for": "Hero, CTA band and footer are all blocked on it.",
+      "blocking": true
+    }
+  ],
+  "behavior": {
+    "summary": "Composition only. The template owns the outline, the landmarks and the one narrow media query that swaps TopNav items for MobileNav.",
+    "decisions": [
+      {
+        "decision": "Exactly one h1, in the hero",
+        "why": "Every other band is an h2; the template passes headingLevel explicitly so the outline is reviewable in one place."
+      },
+      {
+        "decision": "Band backgrounds alternate canvas / subtle",
+        "why": "Separates bands without rules or cards; theme.bg.subtle has its own tone for exactly this (Avatar's contract records the change)."
+      },
+      {
+        "decision": "The template owns the media query, blocks own none",
+        "why": "TopNav and MobileNav both say they do not decide when they apply; the page does, as the playground does with NARROW."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "header (TopNav)",
+        "role": "banner",
+        "label": "implicit"
+      },
+      {
+        "element": "nav (TopNav)",
+        "role": "navigation",
+        "label": "TopNav `label` (\"Main\")"
+      },
+      {
+        "element": "main",
+        "role": "main",
+        "label": "implicit; target of the skip link"
+      },
+      {
+        "element": "footer (site-footer)",
+        "role": "contentinfo",
+        "label": "implicit"
+      },
+      {
+        "element": "nav (site-footer)",
+        "role": "navigation",
+        "label": "\"Footer\""
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": 1,
+        "content": "Hero headline"
+      },
+      {
+        "level": 2,
+        "content": "Features"
+      },
+      {
+        "level": 3,
+        "content": "Each feature",
+        "repeats": true
+      },
+      {
+        "level": 2,
+        "content": "Testimonials"
+      },
+      {
+        "level": 2,
+        "content": "CTA prompt"
+      },
+      {
+        "level": 2,
+        "content": "FAQ"
+      },
+      {
+        "level": 3,
+        "content": "Each question",
+        "repeats": true
+      }
+    ],
+    "obligations": [
+      "First focusable element is a skip link to <main> — there is no skip-link component, so it is VisuallyHidden content that becomes visible on :focus-visible (open question: promote to a component).",
+      "document.title matches the h1."
+    ]
+  },
+  "responsive": {
+    "strategy": "media-query",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "TopNav items → MobileNav; bands stack internally (their own container queries)."
+      },
+      {
+        "at": "wide",
+        "change": "Full TopNav."
+      }
+    ]
+  },
+  "native": {
+    "applies": false,
+    "reason": "Website-only by decision B3 (gate-1 review, docs/decisions/2026-11-gate-1-review.md): marketing blocks and templates ship on the web only and get no native version. A marketing landing page has no native equivalent; the app opens on its own home screen."
+  },
+  "tokens": {
+    "header padding-inline": "space.page.gutter",
+    "header position": "sticky, inset-block-start space.0 (playground precedent)",
+    "band alternation": "theme.bg.canvas / theme.bg.subtle",
+    "gap between bands": "space.0 — each band owns its padding-block"
+  },
+  "tokenGaps": [
+    {
+      "need": "A page content max-inline-size (container width) for marketing bands",
+      "interim": "The band's content box is capped at calc(var(--rata-size-control-lg) * 32) and centred with auto inline margins; the playground's own column cap is a literal with a comment saying there is no measure token. The container max-width token is sent to the design-tokens interview (gate-1 review); this multiplier is the interim until it lands."
+    },
+    {
+      "need": "A section-band vertical padding step larger than space.section for marketing rhythm",
+      "interim": "padding-block uses var(--rata-space-section) top and bottom. space.section is the only page-rhythm step and was sized for docs pages, not full-bleed marketing bands."
+    },
+    {
+      "need": "Narrow / medium / wide breakpoint tokens — adopted by decision B2, names and values pending the design-tokens interview",
+      "interim": "The block is intrinsic (auto-fill grid, flex-wrap) and needs none. Where a step is unavoidable the page owns the query, as the playground owns its single 60rem NARROW query in use-media-query.ts, until the B2 tokens land."
+    },
+    {
+      "need": "A skip-link component or recipe",
+      "interim": "Composed from visually-hidden; every template needs one, which is the argument for making it a component."
+    },
+    {
+      "need": "A z-index / layer scale for the sticky header",
+      "interim": "The playground uses z-index: 1 with a comment; templates do the same until a layer token exists."
+    }
+  ]
+}

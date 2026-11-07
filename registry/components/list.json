@@ -1,0 +1,181 @@
+{
+  "name": "list",
+  "title": "List",
+  "description": "A vertical stack of rows — contacts, settings, messages, files — each a ListItem, divided and edge-to-edge.",
+  "family": "content",
+  "alsoKnownAs": [
+    "list-view",
+    "item-list",
+    "settings-list",
+    "grouped-list"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "list-item"
+  ],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "The list draws almost nothing itself. The rows own their padding, their dividers and their states; the list owns only the surface they sit on and the space they cannot clip into.",
+      "tokens": {
+        "background": "inherited — the list takes the surface it is placed on, which is what lets it sit edge-to-edge in a page or inside a Sheet",
+        "margin": "space.0",
+        "padding-inline": "space.0 — rows fill the width, for the reason SideNav's rows do: the whole row is the target",
+        "padding-block": "focus.ring-width plus focus.ring-offset — just enough that the first and last rows' focus rings are not clipped when the list is a scroll container, the device Tabs uses for the same problem",
+        "list-style": "none, with role=\"list\" restored — see the web and native decision"
+      }
+    },
+    "inset": {
+      "summary": "The grouped look: the list as a rounded surface inside the page's gutter, as in a settings screen.",
+      "tokens": {
+        "background": "theme.bg.surface",
+        "border": "border.default solid theme.border.default",
+        "border-radius": "radius.container",
+        "overflow": "clip, so the first and last rows' state layers take the container's corners — with the padding-block above, so the rings still fit inside"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "A `<ul role=\"list\">` of ListItems. No primitive and no keyboard model of its own: each interactive row is a link or a button in the normal tab order, which is what a list of rows is everywhere except inside a widget.",
+    "decisions": [
+      {
+        "decision": "It is a list, not a listbox, not a menu, not a nav",
+        "why": "Four patterns look like a column of rows and announce four different things. A listbox is a single form control with a selection, one tab stop and arrow keys — choosing a row from a set is RadioGroup, or Select, or a checkbox per row, not this. A menu is a transient list of commands behind a trigger — that is Menu. A list of destinations that is the site's navigation is SideNav. This is the remaining case, and the commonest one in an app: a stack of independent things, each of which may open its own page or carry its own control, read in order with Tab moving from row to row."
+      },
+      {
+        "decision": "Dividers are on by default, and the rows draw them",
+        "why": "Dense rows without a rule between them read as one block of text; CLAUDE.md's frame table already calls for lists that are 'edge-to-edge, divided'. Each row draws its own top rule except the first, so a list with conditional rows never shows a doubled or orphaned divider, and `dividers={false}` turns them off for a list whose rows are already separated by their own height."
+      },
+      {
+        "decision": "`appearance=\"inset\"` is the only container variant, and it is not a Card",
+        "why": "The grouped settings look — rows on a rounded surface inside the gutter — is common enough on mobile that every consumer would otherwise hand-roll it, and it is a property of the list rather than a wrapper around it. It is deliberately not a general-purpose Card: it holds rows and nothing else, and CLAUDE.md's rule against a hand-rolled `<div className=\"card\">` still stands for everything that is not a list."
+      },
+      {
+        "decision": "Children, not an items array",
+        "why": "Unlike Tabs, there is no id wiring between parts to get wrong: a row stands alone, and its text, slots and control vary from row to row in ways a data shape would have to anticipate. Children keep ListItem's props as the one place a row is described, the same split Menu and MenuItem make."
+      },
+      {
+        "decision": "Selection is out of scope",
+        "why": "A list where rows can be checked for a bulk action is a list of rows each carrying a Checkbox in `leading`, which composes from what exists. A list where exactly one row is the answer is a RadioGroup. A multi-select mode here would need `aria-multiselectable` and a listbox's keyboard model, which would turn this into the widget the first decision says it is not."
+      },
+      {
+        "decision": "No virtualization in this version",
+        "why": "Rendering only the visible rows changes what is in the DOM, which changes what find-in-page, a screen reader's list count and Tab can reach. Those are solvable — `aria-setsize` and `aria-posinset` on each row — but they are a behaviour of their own and they belong in a primitive that has been through gate 1, not in a styling component."
+      },
+      {
+        "decision": "Pull-to-refresh is not part of List, and is not a component",
+        "why": "It was proposed as a component and declined. On the web the browser already owns the gesture on the document scroller — Chrome on Android and Safari on iOS both reload the page on an overscroll — so a custom one has to disable that with `overscroll-behavior-y: contain` and replace a behaviour readers already know. It has no surface of its own beyond a Spinner, it binds to a scroll container rather than rendering anything, and on React Native it is not a component either: it is `RefreshControl`, passed to a `ScrollView` or `FlatList`'s `refreshControl` prop. Its non-gesture equivalent — a Refresh Button, or refreshing on focus — has to exist regardless, and that equivalent is what ships today. If installed PWAs (which lose the browser's gesture in standalone mode) make the gesture worth having, it is a `refreshing` / `onRefresh` pair on this component, mirroring FlatList's, backed by a new pointer-state primitive proposed through gate 1."
+      },
+      {
+        "decision": "Web and native",
+        "why": "On the web it renders `<ul role=\"list\">`, named by `aria-label` or `aria-labelledby` when given one. The explicit role is load-bearing: Safari removes list semantics from a list styled `list-style: none`, which is every list here, and without it VoiceOver stops announcing 'list, 12 items'. On React Native it renders a `View` with `accessibilityRole=\"list\"` for short static lists. A long native list should be a `FlatList` — virtualization is not optional at a few hundred rows on a phone — so the native package is expected to take `data` and `renderItem` where the web takes `children`; that divergence is an open question for the native package's own gate 1. `className` is web-only. Swipe actions live on ListItem, and this component has no gesture of its own. Rata-drawn rows inside the core list views (decision N5): `View` or `FlatList` supplies the scrolling and the list semantics, and no OS table or list styling (UITableView, RecyclerView) is used. The native implementation ships in the pro tier (decision N6)."
+      }
+    ]
+  },
+  "props": {
+    "children": {
+      "type": "ReactNode",
+      "required": true,
+      "summary": "The rows: ListItem elements, in reading order.",
+      "use": [
+        "ListItems, and nothing else at the top level."
+      ],
+      "dont": [
+        "A heading or a paragraph between rows. A `<ul>` may contain only `<li>`; a section break is two Lists with a Heading between them."
+      ],
+      "a11y": "Each ListItem is an `<li>`, so the list's item count is the number of rows a reader hears announced."
+    },
+    "label": {
+      "type": "string",
+      "summary": "Accessible name for the list, when no visible heading names it.",
+      "use": [
+        "A list with no heading above it whose purpose is not obvious from its rows."
+      ],
+      "dont": [
+        "Repeating a visible heading. Point at it with `labelledBy` instead, so the two cannot drift."
+      ],
+      "conflicts": [
+        "labelledBy"
+      ],
+      "a11y": "Becomes `aria-label` on the `<ul>`."
+    },
+    "labelledBy": {
+      "type": "string",
+      "summary": "Id of a visible element — usually the Heading above the list — that names it.",
+      "use": [
+        "Every list with a heading directly above it."
+      ],
+      "dont": [
+        "An id that is not on the page. A dangling reference names the list nothing, silently."
+      ],
+      "conflicts": [
+        "label"
+      ],
+      "a11y": "Becomes `aria-labelledby` on the `<ul>`."
+    },
+    "dividers": {
+      "type": "boolean",
+      "default": "true",
+      "summary": "Whether a rule is drawn between rows.",
+      "use": [
+        "`false` for a short list of tall rows — each with an avatar and two lines — whose height already separates them."
+      ],
+      "dont": [
+        "`false` on dense one-line rows. Without the rule they read as one paragraph."
+      ]
+    },
+    "appearance": {
+      "type": "\"plain\" | \"inset\"",
+      "default": "\"plain\"",
+      "summary": "Edge-to-edge on the page's own surface, or grouped on a rounded surface inside the gutter.",
+      "use": [
+        "`inset` for a settings screen, where each list is a group of related options under a heading."
+      ],
+      "dont": [
+        "`inset` for a long feed or a search result. The container says 'this is a small fixed group', and a feed is neither."
+      ],
+      "a11y": "Visual only."
+    },
+    "className": {
+      "type": "string",
+      "summary": "Extra classes on the `<ul>`, for placement — not for restyling it.",
+      "use": [
+        "The margin the page wants around the list."
+      ],
+      "dont": [
+        "Row padding or divider colour. Those are ListItem's, and a list that restyles its rows from outside is two places deciding one thing."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "A settings group",
+      "when": "A handful of related options on a mobile settings screen, under a heading.",
+      "example": "<Heading level={2} id=\"notifications\">Notifications</Heading>\n<List labelledBy=\"notifications\" appearance=\"inset\">\n  <ListItem trailing={<Switch label=\"Email\" labelHidden checked={email} onCheckedChange={setEmail} />}>Email</ListItem>\n  <ListItem href=\"/settings/quiet-hours\" description=\"10 pm – 7 am\">Quiet hours</ListItem>\n</List>",
+      "notes": "The heading names the list through `labelledBy`, so it is read 'Notifications, list, 2 items'. The first row holds a control and is not itself clickable; the second is a link. Both are normal rows in one list."
+    },
+    {
+      "case": "A feed of things, each opening its own page",
+      "when": "Messages, files, orders — a long column where each row leads somewhere.",
+      "example": "<List label=\"Recent orders\">\n  {orders.map((order) => (\n    <ListItem key={order.id} href={`/orders/${order.id}`} description={order.summary}>\n      {order.title}\n    </ListItem>\n  ))}\n</List>",
+      "notes": "`plain` and divided, edge-to-edge. Each row is one link, so Tab moves from order to order and a screen reader's links list reads the titles alone."
+    },
+    {
+      "case": "Reaching for the wrong component: picking one",
+      "when": "The rows are the options of a question, and the reader chooses one of them.",
+      "example": "<List label=\"Shipping speed\">\n  <ListItem onClick={() => setSpeed(\"standard\")}>Standard</ListItem>\n  <ListItem onClick={() => setSpeed(\"express\")}>Express</ListItem>\n</List>",
+      "notes": "Don't. Nothing here says which one is chosen or that only one can be. That is a RadioGroup, which announces the choice, holds the answer, and submits it with the form."
+    }
+  ]
+}

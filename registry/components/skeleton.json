@@ -1,0 +1,133 @@
+{
+  "name": "skeleton",
+  "title": "Skeleton",
+  "description": "A placeholder in the shape of content that is about to load, so the layout does not jump when it arrives.",
+  "family": "loading",
+  "alsoKnownAs": [
+    "placeholder",
+    "shimmer",
+    "loading-placeholder"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "A recessed block — the use `theme.bg.muted` documents for a skeleton — that pulses gently toward the next background step. No gradient sweep: a pulse needs only two existing tokens and degrades to a still block.",
+      "tokens": {
+        "background": "theme.bg.muted",
+        "pulse to": "theme.bg.subtle",
+        "pulse duration": "motion.duration.slow-max, alternating, with motion.easing.standard",
+        "under prefers-reduced-motion": "no animation — a still theme.bg.muted block"
+      }
+    },
+    "text": {
+      "summary": "One bar per line, sized from the type it stands in for so the paragraph that replaces it takes the same space.",
+      "tokens": {
+        "block-size": "type.body.size, centred in a line box of type.body.line-height",
+        "border-radius": "radius.inner",
+        "gap between lines": "none — the line box already carries the leading",
+        "last line inline-size": "a shorter fraction of the full width, so the block reads as a paragraph and not a wall"
+      }
+    },
+    "block": {
+      "summary": "A rectangle standing in for an image, a chart or a card's media.",
+      "tokens": {
+        "border-radius": "radius.element"
+      }
+    },
+    "circle": {
+      "summary": "A circle standing in for an avatar.",
+      "tokens": {
+        "border-radius": "radius.pill"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "An `aria-hidden` block. The region that is loading — not the skeleton — carries `aria-busy` and says what is loading. No primitive: it holds no state and takes no input.",
+    "decisions": [
+      {
+        "decision": "Skeleton when the layout is known; Spinner when it is not",
+        "why": "A skeleton promises a shape: a list of three rows, a card with a picture. When the shape is known it prevents the layout shift that makes a reader lose their place, and it lets them start reading the page's structure before the data arrives. When the shape is not known — an action in progress, a result of unknown size — a skeleton guesses, and the content that replaces it jumps anyway. That is Spinner's case. A button that is working is always a Spinner, via Button's `loading`."
+      },
+      {
+        "decision": "Every skeleton is `aria-hidden`, and the loading region owns the announcement",
+        "why": "A page of twelve skeleton rows that each said \"loading\" would read the word twelve times. The container whose content is loading sets `aria-busy=\"true\"` and holds one visually-hidden status — or a Spinner with a `label` — naming what is loading; when the content arrives, `aria-busy` comes off and the content is read normally. The skeleton itself is decoration with a layout job, and nothing more."
+      },
+      {
+        "decision": "A pulse between two background tokens, not a shimmer gradient",
+        "why": "A gradient sweep needs a highlight colour that exists nowhere in the token set and would have to be invented and contrast-checked per brand; a pulse between `theme.bg.muted` and `theme.bg.subtle` uses two documented steps and changes with the theme for free. It runs at the slow band's slowest step because a skeleton is on screen for a while, and anything faster becomes a flicker in peripheral vision. Under reduced motion it stops entirely: a still block communicates \"not yet\" perfectly well."
+      },
+      {
+        "decision": "Sizing is the caller's, by design",
+        "why": "A skeleton is only useful if it matches the content it stands in for, and only the caller knows that content. `text` sizes itself from the type scale, so a text skeleton is right by construction; `block` and `circle` take the size of whatever they replace — an Avatar's size, a media slot's aspect ratio — from the caller's layout. A `width` and `height` prop would invite exactly the bare pixel values this system has none of."
+      },
+      {
+        "decision": "Web and native",
+        "why": "Web: a `span` (so it can sit inside text or inline layout) with `aria-hidden=\"true\"`; the loading container carries `aria-busy`. React Native: a `View` with `importantForAccessibility=\"no-hide-descendants\"` and `accessibilityElementsHidden`, animated with the core `Animated` API and skipped when `AccessibilityInfo.isReduceMotionEnabled()` is true. The container's loading state is `accessibilityState={{ busy: true }}`. All props work on both. Rata-drawn (decision N5): there is no OS placeholder control. The native implementation ships in the pro tier (decision N6)."
+      }
+    ]
+  },
+  "props": {
+    "shape": {
+      "type": "\"text\" | \"block\" | \"circle\"",
+      "default": "\"text\"",
+      "summary": "What kind of content it stands in for.",
+      "use": [
+        "`text` for lines of running text — sized from the type scale.",
+        "`block` for an image, a chart or a media slot.",
+        "`circle` for an avatar."
+      ],
+      "dont": [
+        "`block` for a paragraph. A grey rectangle where text will be does not tell the reader it is text, and it will not match the paragraph's height."
+      ],
+      "a11y": "Visual only. Every shape is `aria-hidden`."
+    },
+    "lines": {
+      "type": "number",
+      "default": "1",
+      "summary": "How many lines a `text` skeleton stands in for.",
+      "use": [
+        "The usual line count of what replaces it — 3 for a summary, 1 for a title."
+      ],
+      "dont": [
+        "Passing it with `block` or `circle`. Only text has lines."
+      ]
+    },
+    "className": {
+      "type": "string",
+      "summary": "Extra classes, for the size of a `block` or `circle` and its placement.",
+      "use": [
+        "Taking the size of the thing it replaces, from the same layout rule that sizes that thing."
+      ],
+      "dont": [
+        "A bare pixel width. Size it from the same token or layout rule as the content it replaces, or the content will jump."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "A list whose shape is known",
+      "when": "Rows of a known structure are loading, and the page should not jump when they arrive.",
+      "example": "<section aria-busy={loading} aria-labelledby=\"activity-heading\">\n  <Heading level={2} id=\"activity-heading\">Activity</Heading>\n  {loading ? (\n    <>\n      <Spinner label=\"Loading activity\" />\n      <Skeleton lines={2} />\n      <Skeleton lines={2} />\n    </>\n  ) : (\n    <ActivityList items={items} />\n  )}\n</section>",
+      "notes": "The section carries `aria-busy` and the Spinner's `label` is the one announcement; the skeletons are `aria-hidden`, so the word is not read once per row."
+    },
+    {
+      "case": "Reaching for the wrong component",
+      "when": "A Save button waiting on the server.",
+      "example": "<Skeleton shape=\"block\" className=\"button-sized\" />",
+      "notes": "Don't. The control already exists and its shape is not in question — that is `<Button loading>`, which keeps the button focusable and announced while it works."
+    }
+  ]
+}

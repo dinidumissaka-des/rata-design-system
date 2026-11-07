@@ -1,0 +1,178 @@
+{
+  "$schema": "./schema.json",
+  "name": "testimonial",
+  "title": "Testimonial",
+  "kind": "block",
+  "surface": [
+    "website"
+  ],
+  "category": "marketing",
+  "description": "One customer quote with attribution, or a short grid of them.",
+  "alsoKnownAs": [
+    "quote",
+    "social proof",
+    "review"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "na"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "stacked",
+    "container": "section",
+    "summary": "A single quote is prose in a section. The multi-quote variant is a list grid; Card is only used if quotes become navigable case-study links."
+  },
+  "regions": [
+    {
+      "name": "intro",
+      "element": "header",
+      "purpose": "Optional section heading.",
+      "required": false,
+      "contains": [
+        "heading"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "min(calc(var(--rata-size-control-lg) * 20), 100%)"
+      }
+    },
+    {
+      "name": "quotes",
+      "element": "ul (or a single figure)",
+      "purpose": "figure > blockquote + figcaption per quote.",
+      "contains": [
+        "text",
+        "avatar"
+      ],
+      "budget": {
+        "narrow": "1 column",
+        "wide": "auto-fill, track minimum min(calc(var(--rata-size-control-lg) * 9), 100%)"
+      }
+    }
+  ],
+  "components": [
+    {
+      "name": "heading",
+      "for": "Optional section heading.",
+      "region": "intro",
+      "optional": true
+    },
+    {
+      "name": "text",
+      "for": "Quote body (role large for a single quote) and attribution.",
+      "region": "quotes"
+    },
+    {
+      "name": "avatar",
+      "for": "The person's photo or initials; decorative because the name is in the caption.",
+      "region": "quotes",
+      "optional": true
+    }
+  ],
+  "dependsOnFuture": [],
+  "slots": {
+    "headingLevel": {
+      "summary": "Required only when `title` is given.",
+      "type": "1 | 2 | 3 | 4 | 5 | 6",
+      "required": false,
+      "use": [
+        "The level the surrounding page gives this block — a template passes it explicitly."
+      ],
+      "dont": [
+        "Choosing a level for its visual size. Size is the Heading component's `role`, a separate decision."
+      ],
+      "a11y": "No default, for the reason Heading's `level` has none: only the caller knows the depth, and a skipped level breaks heading navigation for the whole page."
+    },
+    "title": {
+      "summary": "Optional section heading. Without it the block is a plain section with no landmark.",
+      "type": "ReactNode",
+      "required": false
+    },
+    "quotes": {
+      "summary": "One or more quotes.",
+      "type": "Array<{ quote: ReactNode; name: string; role?: string; company?: string; avatar?: string }>",
+      "required": true
+    }
+  },
+  "behavior": {
+    "summary": "Static. No carousel.",
+    "decisions": [
+      {
+        "decision": "No carousel",
+        "why": "Auto-advancing content needs pause controls (WCAG 2.2.2), hides most quotes from most readers, and this system has no carousel primitive. A grid of three shows more in less code."
+      },
+      {
+        "decision": "figure/blockquote/figcaption semantics",
+        "why": "The native pairing ties the attribution to the quote for assistive technology without ARIA."
+      },
+      {
+        "decision": "Avatar is decorative here",
+        "why": "The name is in the caption; Avatar's `decorative` prop exists for exactly this, so the name is not read twice."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "section",
+        "role": "region",
+        "label": "aria-labelledby the section heading — only when a title is given; otherwise no landmark"
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": "base",
+        "content": "Optional section heading",
+        "region": "intro"
+      }
+    ],
+    "obligations": [
+      "Quotes must be real and attributable; the block does not fabricate social proof."
+    ]
+  },
+  "responsive": {
+    "strategy": "intrinsic",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "One quote per row."
+      },
+      {
+        "at": "wide",
+        "change": "Up to three per row."
+      }
+    ]
+  },
+  "native": {
+    "applies": false,
+    "reason": "Website-only by decision B3 (gate-1 review, docs/decisions/2026-11-gate-1-review.md): marketing blocks and templates ship on the web only and get no native version. Marketing composition. A native app is reached after install, so there is nothing to persuade or convert; the equivalent content in-app is an onboarding or paywall screen, which is a different block with different obligations."
+  },
+  "tokens": {
+    "band padding-block": "space.section",
+    "grid gap": "space.gap.lg",
+    "quote → caption gap": "space.stack.md",
+    "caption avatar → name gap": "space.gap.md",
+    "single-quote measure": "min(calc(var(--rata-size-control-lg) * 20), 100%)"
+  },
+  "tokenGaps": [
+    {
+      "need": "A section-band vertical padding step larger than space.section for marketing rhythm",
+      "interim": "padding-block uses var(--rata-space-section) top and bottom. space.section is the only page-rhythm step and was sized for docs pages, not full-bleed marketing bands."
+    },
+    {
+      "need": "A grid gutter role (column and row gap between tiles)",
+      "interim": "gap: var(--rata-space-gap-lg) between tiles, var(--rata-space-stack-lg) between rows when they wrap. space.gap.* is documented for inline items, not grid gutters."
+    }
+  ]
+}

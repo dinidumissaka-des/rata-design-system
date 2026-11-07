@@ -1,0 +1,293 @@
+{
+  "$schema": "./schema.json",
+  "name": "pricing-table",
+  "title": "Pricing table",
+  "kind": "block",
+  "surface": [
+    "website"
+  ],
+  "category": "marketing",
+  "description": "Two to four plans side by side, each with a name, price, billing period, feature list and one action; an optional billing-period switch above.",
+  "alsoKnownAs": [
+    "plans",
+    "pricing cards",
+    "tiers"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "na"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "stacked",
+    "container": "card",
+    "summary": "Plans are widgets — comparable, each with its own action — which is what CLAUDE.md reserves Card for. The detailed feature comparison below the plans is a table."
+  },
+  "regions": [
+    {
+      "name": "intro",
+      "element": "header",
+      "purpose": "Heading, lede, and the billing-period SegmentedControl.",
+      "contains": [
+        "heading",
+        "text",
+        "segmented-control"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "min(calc(var(--rata-size-control-lg) * 20), 100%)"
+      }
+    },
+    {
+      "name": "plans",
+      "element": "ul",
+      "purpose": "One Card per plan.",
+      "contains": [
+        "card",
+        "heading",
+        "text",
+        "badge",
+        "button",
+        "link",
+        "list"
+      ],
+      "budget": {
+        "narrow": "1 column",
+        "medium": "2 columns (auto-fill)",
+        "wide": "one track per plan, up to 4"
+      },
+      "collapse": "auto-fill; the recommended plan keeps its source position (no reordering), so a stacked list reads in the same order as the row."
+    },
+    {
+      "name": "comparison",
+      "element": "section",
+      "purpose": "Optional full feature matrix.",
+      "required": false,
+      "contains": [
+        "table",
+        "heading"
+      ],
+      "budget": {
+        "narrow": "fill, horizontal scroll inside the table",
+        "wide": "fill"
+      },
+      "collapse": "The table scrolls in its own box; the page never scrolls sideways."
+    }
+  ],
+  "components": [
+    {
+      "name": "heading",
+      "for": "Section heading and each plan name.",
+      "region": "intro"
+    },
+    {
+      "name": "text",
+      "for": "Lede, price, period, plan description.",
+      "region": "plans"
+    },
+    {
+      "name": "segmented-control",
+      "for": "Monthly / yearly switch.",
+      "region": "intro",
+      "optional": true
+    },
+    {
+      "name": "card",
+      "for": "One plan.",
+      "region": "plans"
+    },
+    {
+      "name": "badge",
+      "for": "\"Most popular\" marker on the recommended plan.",
+      "region": "plans",
+      "optional": true
+    },
+    {
+      "name": "list",
+      "for": "A plan's included features.",
+      "region": "plans"
+    },
+    {
+      "name": "icon",
+      "for": "Check marks in feature rows (decorative; the row text says what is included).",
+      "region": "plans"
+    },
+    {
+      "name": "button",
+      "for": "Plan action when it opens a checkout flow in place.",
+      "region": "plans"
+    },
+    {
+      "name": "link",
+      "for": "Plan action when it navigates to sign-up.",
+      "region": "plans"
+    },
+    {
+      "name": "table",
+      "for": "The optional comparison matrix.",
+      "region": "comparison",
+      "optional": true
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "card",
+      "for": "Each plan's container.",
+      "blocking": true
+    },
+    {
+      "component": "list",
+      "for": "The feature rows inside a plan.",
+      "blocking": false,
+      "interim": "A plain <ul> styled only with stack tokens."
+    },
+    {
+      "component": "link",
+      "for": "Plan actions that navigate.",
+      "blocking": true
+    },
+    {
+      "component": "table",
+      "for": "The comparison matrix.",
+      "blocking": false,
+      "interim": "Ships without the comparison region."
+    }
+  ],
+  "slots": {
+    "headingLevel": {
+      "summary": "The outline level of the section heading; everything below it steps down from here.",
+      "type": "1 | 2 | 3 | 4 | 5 | 6",
+      "required": true,
+      "use": [
+        "The level the surrounding page gives this block — a template passes it explicitly."
+      ],
+      "dont": [
+        "Choosing a level for its visual size. Size is the Heading component's `role`, a separate decision."
+      ],
+      "a11y": "No default, for the reason Heading's `level` has none: only the caller knows the depth, and a skipped level breaks heading navigation for the whole page."
+    },
+    "title": {
+      "summary": "Section heading.",
+      "type": "ReactNode",
+      "required": true
+    },
+    "periods": {
+      "summary": "Billing periods for the switch; omit for a single period.",
+      "type": "Array<{ value: string; label: string }>",
+      "required": false
+    },
+    "plans": {
+      "summary": "The plans, in display order.",
+      "type": "Array<{ name: string; price: Record<string, ReactNode>; description?: ReactNode; features: ReactNode[]; action: { label: string; href: string }; recommended?: boolean }>",
+      "required": true,
+      "dont": [
+        "More than four. A fifth plan is an enterprise link under the table."
+      ]
+    },
+    "comparison": {
+      "summary": "Rows for the comparison table.",
+      "type": "Array<{ feature: string; values: Record<string, ReactNode> }>",
+      "required": false
+    }
+  },
+  "behavior": {
+    "summary": "The only state is the selected billing period, owned by SegmentedControl; switching it swaps the price text in every plan.",
+    "decisions": [
+      {
+        "decision": "The period switch is a SegmentedControl, not Tabs",
+        "why": "Tabs would imply separate panels; here the same plans stay put and only their price changes, which is a value selection."
+      },
+      {
+        "decision": "The recommended plan is marked with a Badge and stays in source order",
+        "why": "Visual reordering on narrow screens makes reading order and visual order disagree, and raising one card with elevation implies it floats."
+      },
+      {
+        "decision": "Price changes are announced politely",
+        "why": "A screen-reader user who toggles yearly needs to hear that prices changed; a polite live region on the price group does it without stealing focus."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "section",
+        "role": "region",
+        "label": "aria-labelledby the block's own heading (the section heading)"
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": "base",
+        "content": "Section heading",
+        "region": "intro"
+      },
+      {
+        "level": "base+1",
+        "content": "Plan name",
+        "region": "plans",
+        "repeats": true
+      },
+      {
+        "level": "base+1",
+        "content": "Compare plans",
+        "region": "comparison"
+      }
+    ],
+    "obligations": [
+      "Each plan action's accessible name must include the plan (\"Start Pro\", not \"Start\") — several identical link names in a row are indistinguishable in a links list.",
+      "Prices include the period in text, not just via the switch's state."
+    ]
+  },
+  "responsive": {
+    "strategy": "intrinsic",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "Plans stack; comparison table scrolls inside its own box."
+      },
+      {
+        "at": "wide",
+        "change": "Plans in one row."
+      }
+    ]
+  },
+  "native": {
+    "applies": false,
+    "reason": "Website-only by decision B3 (gate-1 review, docs/decisions/2026-11-gate-1-review.md): marketing blocks and templates ship on the web only and get no native version. Native in-app purchase screens are governed by App Store / Play billing rules and native paywall patterns; a website pricing table does not map onto them."
+  },
+  "tokens": {
+    "band padding-block": "space.section",
+    "gap intro → plans": "space.section",
+    "grid gap": "space.gap.lg",
+    "grid track minimum": "min(calc(var(--rata-size-control-lg) * 9), 100%)",
+    "plan internal stack": "space.stack.md",
+    "price type": "Heading role display-3 (as text, not a heading element)"
+  },
+  "tokenGaps": [
+    {
+      "need": "A page content max-inline-size (container width) for marketing bands",
+      "interim": "The band's content box is capped at calc(var(--rata-size-control-lg) * 32) and centred with auto inline margins; the playground's own column cap is a literal with a comment saying there is no measure token. The container max-width token is sent to the design-tokens interview (gate-1 review); this multiplier is the interim until it lands."
+    },
+    {
+      "need": "A section-band vertical padding step larger than space.section for marketing rhythm",
+      "interim": "padding-block uses var(--rata-space-section) top and bottom. space.section is the only page-rhythm step and was sized for docs pages, not full-bleed marketing bands."
+    },
+    {
+      "need": "A grid gutter role (column and row gap between tiles)",
+      "interim": "gap: var(--rata-space-gap-lg) between tiles, var(--rata-space-stack-lg) between rows when they wrap. space.gap.* is documented for inline items, not grid gutters."
+    }
+  ],
+  "openQuestions": [
+    "Is the comparison table part of this block or a separate block? It is optional here to avoid a sixth block."
+  ]
+}

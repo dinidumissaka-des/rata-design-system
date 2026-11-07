@@ -1,0 +1,220 @@
+{
+  "$schema": "./schema.json",
+  "name": "site-footer",
+  "title": "Site footer",
+  "kind": "block",
+  "surface": [
+    "website",
+    "web-app"
+  ],
+  "category": "marketing",
+  "description": "The page's contentinfo: grouped link columns, brand and legal line, optional newsletter-signup.",
+  "alsoKnownAs": [
+    "footer",
+    "fat footer"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "na"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "full-width",
+    "container": "list",
+    "summary": "Full-bleed band with a top rule; link groups in an intrinsic grid; legal line below."
+  },
+  "regions": [
+    {
+      "name": "brand",
+      "element": "div",
+      "purpose": "Logo, one-line description, optional newsletter-signup block.",
+      "contains": [
+        "text"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "1fr of 3"
+      }
+    },
+    {
+      "name": "link-groups",
+      "element": "nav",
+      "purpose": "Grouped links.",
+      "contains": [
+        "link",
+        "text"
+      ],
+      "budget": {
+        "narrow": "2 columns (auto-fill)",
+        "wide": "2fr of 3, auto-fill"
+      },
+      "collapse": "auto-fill grid; groups never collapse into disclosures (links stay one tab away)."
+    },
+    {
+      "name": "legal",
+      "element": "div",
+      "purpose": "Copyright, legal links, theme/locale controls.",
+      "contains": [
+        "text",
+        "link",
+        "select"
+      ],
+      "budget": {
+        "narrow": "fill, stacked",
+        "wide": "fill, one row"
+      }
+    }
+  ],
+  "components": [
+    {
+      "name": "text",
+      "for": "Description, group labels, copyright.",
+      "region": "brand"
+    },
+    {
+      "name": "link",
+      "for": "Every destination.",
+      "region": "link-groups"
+    },
+    {
+      "name": "select",
+      "for": "Optional locale selector.",
+      "region": "legal",
+      "optional": true
+    },
+    {
+      "name": "divider",
+      "for": "Rule between groups and legal line.",
+      "region": "legal",
+      "optional": true
+    }
+  ],
+  "blocks": [
+    {
+      "name": "newsletter-signup",
+      "region": "brand",
+      "optional": true
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "link",
+      "for": "Every footer destination.",
+      "blocking": true
+    },
+    {
+      "component": "divider",
+      "for": "The rule above the legal line.",
+      "blocking": false,
+      "interim": "border-block-start with theme.border.default."
+    }
+  ],
+  "slots": {
+    "groups": {
+      "summary": "Link groups.",
+      "type": "Array<{ label: string; links: Array<{ label: string; href: string }> }>",
+      "required": true
+    },
+    "brand": {
+      "summary": "Logo node and description.",
+      "type": "ReactNode",
+      "required": false
+    },
+    "legal": {
+      "summary": "Copyright and legal links.",
+      "type": "ReactNode",
+      "required": true
+    },
+    "label": {
+      "summary": "Accessible name of the footer nav.",
+      "type": "string",
+      "default": "\"Footer\"",
+      "required": false,
+      "a11y": "Must differ from TopNav's and SideNav's labels."
+    }
+  },
+  "behavior": {
+    "summary": "Static. Group labels name their lists the way SideNav's section labels do.",
+    "decisions": [
+      {
+        "decision": "Group labels are not headings",
+        "why": "SideNav's reasoning: a footer cannot know its heading level, and five h2s at the bottom of every page pollute the outline. Each list is aria-labelledby its label instead."
+      },
+      {
+        "decision": "It renders <footer> and is the contentinfo landmark",
+        "why": "Like TopNav renders <header> as the banner; a page has exactly one, and the template places it outside <main>."
+      },
+      {
+        "decision": "Groups never become disclosures on narrow screens",
+        "why": "Hiding links behind a toggle costs a tap per group for no gain; a two-column grid of short lists fits a phone."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "footer",
+        "role": "contentinfo",
+        "label": "implicit"
+      },
+      {
+        "element": "nav",
+        "role": "navigation",
+        "label": "aria-label from `label` (default \"Footer\")",
+        "region": "link-groups"
+      }
+    ],
+    "headingOutline": [],
+    "obligations": [
+      "Place outside <main> so the footer is contentinfo.",
+      "If newsletter-signup is included its heading level is the caller's; 2 is usual."
+    ]
+  },
+  "responsive": {
+    "strategy": "intrinsic",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "Brand above a two-column grid of groups; legal line stacks."
+      },
+      {
+        "at": "wide",
+        "change": "Brand beside groups; legal in one row."
+      }
+    ]
+  },
+  "native": {
+    "applies": false,
+    "reason": "Website-only by decision B3 (gate-1 review, docs/decisions/2026-11-gate-1-review.md): marketing blocks and templates ship on the web only and get no native version. Native apps have no page footer; legal and about links live in a settings/about screen (see the settings template)."
+  },
+  "tokens": {
+    "background": "theme.bg.subtle",
+    "top rule": "theme.border.default at border.default",
+    "padding-block": "space.section",
+    "padding-inline": "space.page.gutter",
+    "grid gap": "space.gap.lg",
+    "group label → links": "space.stack.xs",
+    "between links": "space.stack.2xs",
+    "group label type": "Text role supporting, tone muted"
+  },
+  "tokenGaps": [
+    {
+      "need": "A page content max-inline-size (container width) for marketing bands",
+      "interim": "The band's content box is capped at calc(var(--rata-size-control-lg) * 32) and centred with auto inline margins; the playground's own column cap is a literal with a comment saying there is no measure token. The container max-width token is sent to the design-tokens interview (gate-1 review); this multiplier is the interim until it lands."
+    },
+    {
+      "need": "A grid gutter role (column and row gap between tiles)",
+      "interim": "gap: var(--rata-space-gap-lg) between tiles, var(--rata-space-stack-lg) between rows when they wrap. space.gap.* is documented for inline items, not grid gutters."
+    }
+  ]
+}

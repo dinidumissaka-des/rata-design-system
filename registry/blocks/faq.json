@@ -1,0 +1,211 @@
+{
+  "$schema": "./schema.json",
+  "name": "faq",
+  "title": "FAQ",
+  "kind": "block",
+  "surface": [
+    "website",
+    "web-app"
+  ],
+  "category": "marketing",
+  "description": "A titled list of questions, each a Disclosure revealing its answer.",
+  "alsoKnownAs": [
+    "frequently asked questions",
+    "accordion",
+    "help"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "na"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "stacked",
+    "container": "list",
+    "summary": "A heading, then a stack of Disclosures at reading measure. Optionally two-column (intro left, questions right) when wide."
+  },
+  "regions": [
+    {
+      "name": "intro",
+      "element": "header",
+      "purpose": "Heading, lede, optional contact link.",
+      "contains": [
+        "heading",
+        "text",
+        "link"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "medium": "fill",
+        "wide": "1fr of 3 (when two-column)"
+      }
+    },
+    {
+      "name": "questions",
+      "element": "div",
+      "purpose": "The Disclosures.",
+      "contains": [
+        "disclosure",
+        "divider"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "min(calc(var(--rata-size-control-lg) * 20), 100%)"
+      },
+      "collapse": "Stacks below the intro."
+    }
+  ],
+  "components": [
+    {
+      "name": "heading",
+      "for": "Section heading.",
+      "region": "intro"
+    },
+    {
+      "name": "text",
+      "for": "Lede and answers.",
+      "region": "intro"
+    },
+    {
+      "name": "disclosure",
+      "for": "One per question; its headingLevel is base+1.",
+      "region": "questions"
+    },
+    {
+      "name": "divider",
+      "for": "Rules between questions, if Disclosure's set does not own them.",
+      "region": "questions",
+      "optional": true
+    },
+    {
+      "name": "link",
+      "for": "\"Still stuck? Contact us\".",
+      "region": "intro",
+      "optional": true
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "divider",
+      "for": "Rules between questions.",
+      "blocking": false,
+      "interim": "Disclosure's recipe already says the rule between stacked sections belongs to the set; until Divider exists the block draws a border-block-end with theme.border.default at border.default."
+    },
+    {
+      "component": "link",
+      "for": "Contact link.",
+      "blocking": false,
+      "interim": "Omitted."
+    }
+  ],
+  "slots": {
+    "headingLevel": {
+      "summary": "The outline level of the section heading; each question is base+1; everything below it steps down from here.",
+      "type": "1 | 2 | 3 | 4 | 5 | 6",
+      "required": true,
+      "use": [
+        "The level the surrounding page gives this block — a template passes it explicitly."
+      ],
+      "dont": [
+        "Choosing a level for its visual size. Size is the Heading component's `role`, a separate decision."
+      ],
+      "a11y": "No default, for the reason Heading's `level` has none: only the caller knows the depth, and a skipped level breaks heading navigation for the whole page."
+    },
+    "title": {
+      "summary": "Section heading.",
+      "type": "ReactNode",
+      "required": true
+    },
+    "items": {
+      "summary": "Questions and answers.",
+      "type": "Array<{ question: ReactNode; answer: ReactNode }>",
+      "required": true
+    },
+    "allowMultiple": {
+      "summary": "Whether several answers can be open at once.",
+      "type": "boolean",
+      "default": "true",
+      "required": false,
+      "dont": [
+        "false as a space saver — closing an answer the reader was comparing against is a surprise."
+      ]
+    }
+  },
+  "behavior": {
+    "summary": "Each Disclosure owns its own open state; the block adds nothing but layout.",
+    "decisions": [
+      {
+        "decision": "Built on Disclosure, not a new accordion",
+        "why": "Disclosure already implements the APG heading-plus-button pattern and requires a headingLevel; an FAQ is exactly that pattern repeated."
+      },
+      {
+        "decision": "All closed by default",
+        "why": "Find-in-page and screen-reader heading lists still reach the questions; opening all would make it a wall of text."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "section",
+        "role": "region",
+        "label": "aria-labelledby the block's own heading (the section heading)"
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": "base",
+        "content": "Section heading",
+        "region": "intro"
+      },
+      {
+        "level": "base+1",
+        "content": "Question (inside Disclosure)",
+        "region": "questions",
+        "repeats": true
+      }
+    ],
+    "obligations": [
+      "Pass headingLevel = base + 1 to every Disclosure."
+    ]
+  },
+  "responsive": {
+    "strategy": "container-query",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "Intro above questions."
+      },
+      {
+        "at": "wide",
+        "change": "Optional two-column: intro beside questions."
+      }
+    ]
+  },
+  "native": {
+    "applies": false,
+    "reason": "Website-only by decision B3 (gate-1 review, docs/decisions/2026-11-gate-1-review.md): marketing blocks and templates ship on the web only and get no native version. An in-app help screen is a native screen of the app (a settings-style grouped list), not this block."
+  },
+  "tokens": {
+    "band padding-block": "space.section",
+    "intro → questions gap": "space.stack.lg",
+    "rule between questions": "theme.border.default at border.default",
+    "two-column gap": "space.section"
+  },
+  "tokenGaps": [
+    {
+      "need": "A section-band vertical padding step larger than space.section for marketing rhythm",
+      "interim": "padding-block uses var(--rata-space-section) top and bottom. space.section is the only page-rhythm step and was sized for docs pages, not full-bleed marketing bands."
+    }
+  ]
+}

@@ -20,20 +20,38 @@ this path is the honest answer to when it last actually moved.
 |---|---|---|---|---|
 | [avatar](../docs/components/avatar.md) | `@rata/react` | content | latest / latest / future | free |
 | [badge](../docs/components/badge.md) | `@rata/react` | content | latest / latest / future | free |
+| [bottom-nav](../docs/components/bottom-nav.md) | `@rata/react` | navigation | future / future / future | free |
 | [breadcrumbs](../docs/components/breadcrumbs.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [button](../docs/components/button.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [button-group](../docs/components/button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
+| [card](../docs/components/card.md) | `@rata/react` | content | future / future / future | free |
 | [checkbox](../docs/components/checkbox.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [chip](../docs/components/chip.md) | `@rata/react` | inputs | future / future / future | free |
+| [combobox](../docs/components/combobox.md) | `@rata/react` | inputs | future / future / future | free |
+| [date-picker](../docs/components/date-picker.md) | `@rata/react` | inputs | future / future / future | free |
+| [date-range-picker](../docs/components/date-range-picker.md) | `@rata/react` | inputs | future / future / future | free |
 | [dialog](../docs/components/dialog.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [disclosure](../docs/components/disclosure.md) | `@rata/react` | content | latest / latest / future | free |
+| [divider](../docs/components/divider.md) | `@rata/react` | content | future / future / future | free |
+| [empty-state](../docs/components/empty-state.md) | `@rata/react` | feedback | future / future / future | free |
+| [fab](../docs/components/fab.md) | `@rata/react` | buttons | future / future / future | free |
 | [field](../docs/components/field.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [file-upload](../docs/components/file-upload.md) | `@rata/react` | inputs | future / future / future | free |
 | [heading](../docs/components/heading.md) | `@rata/react` | content | latest / latest / future | free |
 | [icon](../docs/components/icon.md) | `@rata/react` | content | latest / latest / future | free |
+| [link](../docs/components/link.md) | `@rata/react` | navigation | future / future / future | free |
+| [list](../docs/components/list.md) | `@rata/react` | content | future / future / future | free |
+| [list-item](../docs/components/list-item.md) | `@rata/react` | content | future / future / future | free |
 | [menu](../docs/components/menu.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [menu-item](../docs/components/menu-item.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [mobile-nav](../docs/components/mobile-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [notice](../docs/components/notice.md) | `@rata/react` | feedback | latest / latest / future | free |
+| [number-field](../docs/components/number-field.md) | `@rata/react` | inputs | future / future / future | free |
+| [pagination](../docs/components/pagination.md) | `@rata/react` | navigation | future / future / future | free |
 | [panel](../docs/components/panel.md) | `@rata/react` | content | latest / latest / future | free |
+| [pin-input](../docs/components/pin-input.md) | `@rata/react` | inputs | future / future / future | free |
+| [popover](../docs/components/popover.md) | `@rata/react` | overlays | future / future / future | free |
+| [progress](../docs/components/progress.md) | `@rata/react` | loading | future / future / future | free |
 | [radio](../docs/components/radio.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [radio-group](../docs/components/radio-group.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [search](../docs/components/search.md) | `@rata/react` | inputs | latest / latest / future | free |
@@ -41,15 +59,21 @@ this path is the honest answer to when it last actually moved.
 | [select](../docs/components/select.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [sheet](../docs/components/sheet.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [side-nav](../docs/components/side-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
+| [skeleton](../docs/components/skeleton.md) | `@rata/react` | loading | future / future / future | free |
+| [slider](../docs/components/slider.md) | `@rata/react` | inputs | future / future / future | free |
 | [spinner](../docs/components/spinner.md) | `@rata/react` | loading | latest / latest / future | free |
 | [state-layer](../docs/components/state-layer.md) | `@rata/react` | foundations | latest / na / future | free |
+| [steps](../docs/components/steps.md) | `@rata/react` | navigation | future / future / future | free |
 | [switch](../docs/components/switch.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [table](../docs/components/table.md) | `@rata/react` | content | future / future / future | free |
 | [tabs](../docs/components/tabs.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [text](../docs/components/text.md) | `@rata/react` | content | latest / latest / future | free |
 | [text-field](../docs/components/text-field.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [textarea](../docs/components/textarea.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [toast](../docs/components/toast.md) | `@rata/react` | feedback | future / future / future | free |
 | [toggle-button](../docs/components/toggle-button.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [toggle-button-group](../docs/components/toggle-button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
+| [tooltip](../docs/components/tooltip.md) | `@rata/react` | overlays | future / future / future | free |
 | [top-nav](../docs/components/top-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [visually-hidden](../docs/components/visually-hidden.md) | `@rata/react` | foundations | latest / na / na | free |
 
@@ -93,6 +117,12 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/badge.md](../docs/components/badge.md)
+
+### Bottom Nav
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/bottom-nav.md](../docs/components/bottom-nav.md)
 
 ### Breadcrumbs (`@rata/react`)
 
@@ -159,6 +189,12 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/button-group.md](../docs/components/button-group.md)
 
+### Card
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/card.md](../docs/components/card.md)
+
 ### Checkbox (`@rata/react`)
 
 Extends: `Omit<`
@@ -191,6 +227,30 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/checkbox.md](../docs/components/checkbox.md)
+
+### Chip
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/chip.md](../docs/components/chip.md)
+
+### Combobox
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/combobox.md](../docs/components/combobox.md)
+
+### Date Picker
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/date-picker.md](../docs/components/date-picker.md)
+
+### Date Range Picker
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/date-range-picker.md](../docs/components/date-range-picker.md)
 
 ### Dialog (`@rata/react`)
 
@@ -271,6 +331,24 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/disclosure.md](../docs/components/disclosure.md)
 
+### Divider
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/divider.md](../docs/components/divider.md)
+
+### Empty state
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/empty-state.md](../docs/components/empty-state.md)
+
+### FAB
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/fab.md](../docs/components/fab.md)
+
 ### Field (`@rata/react`)
 
 Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children">`
@@ -296,6 +374,12 @@ Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children">`
 - `className?: string`
 
 Contract: [docs/components/field.md](../docs/components/field.md)
+
+### File Upload
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/file-upload.md](../docs/components/file-upload.md)
 
 ### Heading (`@rata/react`)
 
@@ -332,6 +416,24 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/icon.md](../docs/components/icon.md)
+
+### Link
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/link.md](../docs/components/link.md)
+
+### List
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/list.md](../docs/components/list.md)
+
+### List Item
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/list-item.md](../docs/components/list-item.md)
 
 ### Menu (`@rata/react`)
 
@@ -453,6 +555,18 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/notice.md](../docs/components/notice.md)
 
+### Number Field
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/number-field.md](../docs/components/number-field.md)
+
+### Pagination
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/pagination.md](../docs/components/pagination.md)
+
 ### Panel (`@rata/react`)
 
 Extends: `Omit<HTMLAttributes<HTMLElement>, "title" | "children">`
@@ -486,6 +600,24 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/panel.md](../docs/components/panel.md)
+
+### Pin Input
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/pin-input.md](../docs/components/pin-input.md)
+
+### Popover
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/popover.md](../docs/components/popover.md)
+
+### Progress
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/progress.md](../docs/components/progress.md)
 
 ### Radio (`@rata/react`)
 
@@ -731,6 +863,18 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/side-nav.md](../docs/components/side-nav.md)
 
+### Skeleton
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/skeleton.md](../docs/components/skeleton.md)
+
+### Slider
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/slider.md](../docs/components/slider.md)
+
 ### Loading: Spinner (`@rata/react`)
 
 - `label?: string`
@@ -748,6 +892,12 @@ Contract: [docs/components/spinner.md](../docs/components/spinner.md)
 No standalone React component — "State layer" is CSS-only (see registry description), composed onto other components' className.
 
 Contract: [docs/components/state-layer.md](../docs/components/state-layer.md)
+
+### Steps
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/steps.md](../docs/components/steps.md)
 
 ### Switch (`@rata/react`)
 
@@ -777,6 +927,12 @@ Real usage (from `apps/`):
 ```
 
 Contract: [docs/components/switch.md](../docs/components/switch.md)
+
+### Table
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/table.md](../docs/components/table.md)
 
 ### Tabs (`@rata/react`)
 
@@ -898,6 +1054,12 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/textarea.md](../docs/components/textarea.md)
 
+### Toast
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/toast.md](../docs/components/toast.md)
+
 ### Toggle Button (`@rata/react`)
 
 Extends: `Omit<ButtonHTMLAttributes<HTMLButtonElement>, "disabled" | "onChange">`
@@ -965,6 +1127,12 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/toggle-button-group.md](../docs/components/toggle-button-group.md)
 
+### Tooltip
+
+No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+
+Contract: [docs/components/tooltip.md](../docs/components/tooltip.md)
+
 ### TopNav (`@rata/react`)
 
 Extends: `Omit<HTMLAttributes<HTMLElement>, "children">`
@@ -992,6 +1160,8 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-border-2`: `2px`
 - `--rata-border-3`: `3px`
 - `--rata-border-default`: `1px`
+- `--rata-breakpoint-medium`: `40rem`
+- `--rata-breakpoint-wide`: `60rem`
 - `--rata-color-accent-100`: `#E3EBDF`
 - `--rata-color-accent-200`: `#CEDDC9`
 - `--rata-color-accent-300`: `#AFC8A8`
@@ -1139,6 +1309,11 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-font-weight-medium`: `500`
 - `--rata-font-weight-regular`: `400`
 - `--rata-font-weight-semibold`: `600`
+- `--rata-layer-floating`: `200`
+- `--rata-layer-overlay`: `300`
+- `--rata-layer-sticky`: `100`
+- `--rata-layer-toast`: `400`
+- `--rata-motion-delay-hint`: `280ms`
 - `--rata-motion-duration-fast`: `130ms`
 - `--rata-motion-duration-fast-max`: `175ms`
 - `--rata-motion-duration-fast-min`: `100ms`
@@ -1175,6 +1350,7 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-ring-neutral-strong`: `inset 0px 0px 0px 2px rgb(223 226 229 / 0.2)`
 - `--rata-ring-success`: `inset 0px 0px 0px 2px rgb(38 167 86 / 0.3)`
 - `--rata-ring-warning`: `inset 0px 0px 0px 2px rgb(226 164 0 / 0.3)`
+- `--rata-size-container-max`: `75rem`
 - `--rata-size-control-lg`: `36px`
 - `--rata-size-control-md`: `32px`
 - `--rata-size-control-sm`: `28px`
@@ -1183,6 +1359,14 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-size-icon-sm`: `16px`
 - `--rata-size-icon-text`: `1.15em`
 - `--rata-size-icon-xs`: `12px`
+- `--rata-size-measure-compact`: `45ch`
+- `--rata-size-measure-prose`: `65ch`
+- `--rata-size-measure-tight`: `32ch`
+- `--rata-size-pane-lg`: `25rem`
+- `--rata-size-pane-md`: `20rem`
+- `--rata-size-pane-sm`: `15rem`
+- `--rata-size-target-min`: `48px`
+- `--rata-size-track`: `4px`
 - `--rata-space-0`: `0px`
 - `--rata-space-0-5`: `2px`
 - `--rata-space-1`: `4px`
@@ -1190,7 +1374,9 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-space-10`: `40px`
 - `--rata-space-11`: `44px`
 - `--rata-space-12`: `48px`
+- `--rata-space-16`: `64px`
 - `--rata-space-2`: `8px`
+- `--rata-space-24`: `96px`
 - `--rata-space-3`: `12px`
 - `--rata-space-4`: `16px`
 - `--rata-space-5`: `20px`
@@ -1198,6 +1384,8 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-space-7`: `28px`
 - `--rata-space-8`: `32px`
 - `--rata-space-9`: `36px`
+- `--rata-space-band-lg`: `96px`
+- `--rata-space-band-sm`: `64px`
 - `--rata-space-control-padding-inline-lg`: `20px`
 - `--rata-space-control-padding-inline-md`: `16px`
 - `--rata-space-control-padding-inline-sm`: `12px`
@@ -1205,6 +1393,7 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-space-gap-md`: `12px`
 - `--rata-space-gap-sm`: `8px`
 - `--rata-space-gap-xs`: `4px`
+- `--rata-space-grid-gap`: `24px`
 - `--rata-space-padding-lg`: `24px`
 - `--rata-space-padding-md`: `16px`
 - `--rata-space-padding-sm`: `12px`
@@ -1220,7 +1409,9 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-space-size-10`: `40px`
 - `--rata-space-size-11`: `44px`
 - `--rata-space-size-12`: `48px`
+- `--rata-space-size-16`: `64px`
 - `--rata-space-size-2`: `8px`
+- `--rata-space-size-24`: `96px`
 - `--rata-space-size-3`: `12px`
 - `--rata-space-size-4`: `16px`
 - `--rata-space-size-5`: `20px`
@@ -1241,6 +1432,7 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-theme-accent-role-ring`: `inset 0px 0px 0px 2px rgb(1 113 227 / 0.5)`
 - `--rata-theme-accent-role-subtle`: `#7CF9C8`
 - `--rata-theme-bg-canvas`: `#E8F3EE`
+- `--rata-theme-bg-inverse`: `#29322E`
 - `--rata-theme-bg-muted`: `#DAE5E0`
 - `--rata-theme-bg-subtle`: `#EEF9F4`
 - `--rata-theme-bg-surface`: `#F3FFF9`
@@ -1251,11 +1443,13 @@ Contract: [docs/components/visually-hidden.md](../docs/components/visually-hidde
 - `--rata-theme-danger-role-on`: `#ffffff`
 - `--rata-theme-danger-role-ring`: `inset 0px 0px 0px 2px rgb(227 25 59 / 0.3)`
 - `--rata-theme-danger-role-subtle`: `#fef2f2`
+- `--rata-theme-elevation-floating`: `0px 1px 2px rgb(0 0 0 / 0.1), 0px 2px 12px rgb(0 0 0 / 0.1)`
 - `--rata-theme-elevation-modal`: `0px 2px 2px rgb(0 0 0 / 0.1), 0px 8px 24px rgb(0 0 0 / 0.1)`
 - `--rata-theme-elevation-overlay`: `0px 1px 2px rgb(0 0 0 / 0.1), 0px 2px 12px rgb(0 0 0 / 0.1)`
 - `--rata-theme-elevation-raised`: `0px 1px 1px rgb(0 0 0 / 0.1), 0px 2px 8px rgb(0 0 0 / 0.1)`
 - `--rata-theme-fg-muted`: `#52625B`
 - `--rata-theme-fg-on-accent`: `#FFFFFF`
+- `--rata-theme-fg-on-inverse`: `#F3FFF9`
 - `--rata-theme-fg-primary`: `#151D1A`
 - `--rata-theme-fg-secondary`: `#3B4A43`
 - `--rata-theme-focus-ring`: `#008960`

@@ -1,0 +1,237 @@
+{
+  "$schema": "./schema.json",
+  "name": "settings",
+  "title": "Settings",
+  "kind": "template",
+  "surface": [
+    "web-app",
+    "native-app"
+  ],
+  "category": "page",
+  "description": "Settings area: header, a SideNav of setting categories, and a main column of settings-page-sections.",
+  "alsoKnownAs": [
+    "preferences",
+    "account settings"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "future"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "header-sidebar",
+    "container": "card",
+    "summary": "Dashboard's shell; the rail lists setting categories. Main column holds stacked settings-page-sections (Cards)."
+  },
+  "regions": [
+    {
+      "name": "header",
+      "element": "TopNav",
+      "purpose": "Banner.",
+      "contains": [
+        "top-nav",
+        "mobile-nav"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "fill"
+      }
+    },
+    {
+      "name": "rail",
+      "element": "SideNav",
+      "purpose": "Categories (Profile, Notifications, Security, Billing).",
+      "contains": [
+        "side-nav"
+      ],
+      "budget": {
+        "narrow": "hidden — categories become the root list",
+        "wide": "calc(var(--rata-size-control-lg) * 6)"
+      },
+      "collapse": "On narrow: the category list IS the page; choosing one pushes its sections (stacked navigation)."
+    },
+    {
+      "name": "main",
+      "element": "main",
+      "purpose": "h1 = category; settings sections; danger zone last.",
+      "contains": [
+        "heading",
+        "settings-page-section",
+        "breadcrumbs"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "min(calc(var(--rata-size-control-lg) * 20), 100%) … 1fr"
+      }
+    }
+  ],
+  "components": [
+    {
+      "name": "top-nav",
+      "for": "Banner.",
+      "region": "header"
+    },
+    {
+      "name": "mobile-nav",
+      "for": "Product nav on narrow.",
+      "region": "header"
+    },
+    {
+      "name": "side-nav",
+      "for": "Category rail.",
+      "region": "rail"
+    },
+    {
+      "name": "heading",
+      "for": "Category h1.",
+      "region": "main"
+    },
+    {
+      "name": "breadcrumbs",
+      "for": "Settings › Security on narrow, as the way back to the category list.",
+      "region": "main",
+      "optional": true
+    },
+    {
+      "name": "dialog",
+      "for": "Confirm destructive settings (delete account).",
+      "region": "main"
+    },
+    {
+      "name": "button",
+      "for": "Danger-zone action (variant destructive).",
+      "region": "main"
+    },
+    {
+      "name": "visually-hidden",
+      "for": "Skip link.",
+      "region": "header"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "settings-page-section",
+      "region": "main",
+      "headingLevel": 2
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "card",
+      "via": "settings-page-section",
+      "for": "Settings group containers.",
+      "blocking": true
+    }
+  ],
+  "behavior": {
+    "summary": "Each category is its own URL; the rail marks it current.",
+    "decisions": [
+      {
+        "decision": "Categories are pages, not Tabs",
+        "why": "They are destinations with URLs and a SideNav marks aria-current=\"page\"; Tabs would put every category's form in one document."
+      },
+      {
+        "decision": "Narrow collapses to stacked navigation, not to a drawer",
+        "why": "On a phone the category list is the most useful first screen, which is the native Settings idiom too; hiding it behind a drawer adds a tap."
+      },
+      {
+        "decision": "Unsaved explicit-mode changes prompt on navigation",
+        "why": "settings-page-section exposes `dirty`; only the page can intercept routing."
+      },
+      {
+        "decision": "Danger zone is the last section and uses Dialog to confirm",
+        "why": "Destructive Button + Dialog role=alertdialog, per Dialog's contract; never a Switch."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "header (TopNav)",
+        "role": "banner",
+        "label": "implicit"
+      },
+      {
+        "element": "nav (TopNav)",
+        "role": "navigation",
+        "label": "TopNav `label` (\"Main\")"
+      },
+      {
+        "element": "nav (SideNav)",
+        "role": "navigation",
+        "label": "\"Settings\"",
+        "region": "rail"
+      },
+      {
+        "element": "main",
+        "role": "main",
+        "label": "implicit; target of the skip link"
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": 1,
+        "content": "Category (\"Security\")"
+      },
+      {
+        "level": 2,
+        "content": "Each settings section",
+        "repeats": true
+      }
+    ],
+    "obligations": [
+      "First focusable element is a skip link to <main> — there is no skip-link component, so it is VisuallyHidden content that becomes visible on :focus-visible (open question: promote to a component).",
+      "document.title matches the h1.",
+      "On narrow, the category list screen has its own h1 (\"Settings\")."
+    ]
+  },
+  "responsive": {
+    "strategy": "media-query",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "Root: category list (SideNav rendered as the page content). Child: sections with a back link/breadcrumbs."
+      },
+      {
+        "at": "wide",
+        "change": "Rail + main."
+      }
+    ]
+  },
+  "native": {
+    "applies": true,
+    "reason": "App template: gets a native version by decision B3. Native is pro tier (decision N6) while the web version stays free; the registry field for that is proposed in docs/platforms.md §3.",
+    "mapping": "Root screen: grouped list of categories; each pushes a screen of grouped sections (settings-page-section → list sections).",
+    "ios": "NavigationStack with List(.insetGrouped).",
+    "android": "PreferenceScreen hierarchy / Compose list with category headers."
+  },
+  "tokens": {
+    "rail inline-size": "calc(var(--rata-size-control-lg) * 6)",
+    "main padding": "space.page.block-start space.page.gutter space.page.block-end",
+    "between sections": "space.section"
+  },
+  "tokenGaps": [
+    {
+      "need": "Narrow / medium / wide breakpoint tokens — adopted by decision B2, names and values pending the design-tokens interview",
+      "interim": "The block is intrinsic (auto-fill grid, flex-wrap) and needs none. Where a step is unavoidable the page owns the query, as the playground owns its single 60rem NARROW query in use-media-query.ts, until the B2 tokens land."
+    },
+    {
+      "need": "A skip-link component or recipe",
+      "interim": "Composed from visually-hidden; every template needs one, which is the argument for making it a component."
+    },
+    {
+      "need": "A z-index / layer scale for the sticky header",
+      "interim": "The playground uses z-index: 1 with a comment; templates do the same until a layer token exists."
+    }
+  ]
+}

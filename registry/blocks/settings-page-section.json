@@ -1,0 +1,313 @@
+{
+  "$schema": "./schema.json",
+  "name": "settings-page-section",
+  "title": "Settings section",
+  "kind": "block",
+  "surface": [
+    "web-app",
+    "native-app"
+  ],
+  "category": "settings",
+  "description": "One titled group of settings: a heading and description on one side, a stack of labelled controls on the other, with an optional save row.",
+  "alsoKnownAs": [
+    "settings group",
+    "preferences section",
+    "form section"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "future"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "split",
+    "container": "card",
+    "summary": "CLAUDE.md lists settings groups under Card. Intro beside the group when wide; stacked when narrow."
+  },
+  "regions": [
+    {
+      "name": "intro",
+      "element": "header",
+      "purpose": "Group heading and what these settings affect.",
+      "contains": [
+        "heading",
+        "text"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "medium": "fill",
+        "wide": "1fr of 3"
+      }
+    },
+    {
+      "name": "group",
+      "element": "Card > form or fieldset",
+      "purpose": "The controls, one row each, divided.",
+      "contains": [
+        "card",
+        "text-field",
+        "select",
+        "switch",
+        "checkbox",
+        "radio-group",
+        "segmented-control",
+        "textarea",
+        "divider",
+        "list"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "2fr of 3"
+      }
+    },
+    {
+      "name": "actions",
+      "element": "footer (inside the card)",
+      "purpose": "Save / cancel when the group saves explicitly.",
+      "required": false,
+      "contains": [
+        "button-group",
+        "button"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "end-aligned"
+      }
+    }
+  ],
+  "components": [
+    {
+      "name": "heading",
+      "for": "Group heading.",
+      "region": "intro"
+    },
+    {
+      "name": "text",
+      "for": "Group description.",
+      "region": "intro"
+    },
+    {
+      "name": "card",
+      "for": "The group's container.",
+      "region": "group"
+    },
+    {
+      "name": "switch",
+      "for": "Immediate on/off settings.",
+      "region": "group"
+    },
+    {
+      "name": "text-field",
+      "for": "Text settings.",
+      "region": "group"
+    },
+    {
+      "name": "select",
+      "for": "Choice from many.",
+      "region": "group"
+    },
+    {
+      "name": "radio-group",
+      "for": "Choice from few, all visible.",
+      "region": "group"
+    },
+    {
+      "name": "checkbox",
+      "for": "Independent opt-ins.",
+      "region": "group"
+    },
+    {
+      "name": "segmented-control",
+      "for": "Two to four mutually exclusive modes (theme: light/dark/system).",
+      "region": "group"
+    },
+    {
+      "name": "textarea",
+      "for": "Long text (bio).",
+      "region": "group"
+    },
+    {
+      "name": "divider",
+      "for": "Rules between rows.",
+      "region": "group"
+    },
+    {
+      "name": "list",
+      "for": "Row structure: label + description at start, control at end.",
+      "region": "group"
+    },
+    {
+      "name": "button",
+      "for": "Save / cancel.",
+      "region": "actions"
+    },
+    {
+      "name": "button-group",
+      "for": "Holds save and cancel.",
+      "region": "actions"
+    },
+    {
+      "name": "notice",
+      "for": "Save failure.",
+      "region": "actions",
+      "optional": true
+    },
+    {
+      "name": "toast",
+      "for": "Save confirmation for auto-saving groups.",
+      "region": "actions",
+      "optional": true
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "card",
+      "for": "The group container.",
+      "blocking": true
+    },
+    {
+      "component": "divider",
+      "for": "Rules between rows.",
+      "blocking": false,
+      "interim": "border-block-end with theme.border.default on each row."
+    },
+    {
+      "component": "list",
+      "for": "Label/description/control row layout.",
+      "blocking": false,
+      "interim": "Rows laid out by the block's own grid using Field."
+    },
+    {
+      "component": "toast",
+      "for": "\"Saved\" confirmation for auto-save groups.",
+      "blocking": false,
+      "interim": "Inline status text next to the control (\"Saved\")."
+    }
+  ],
+  "slots": {
+    "headingLevel": {
+      "summary": "The outline level of the group heading (2 under the settings page's h1); everything below it steps down from here.",
+      "type": "1 | 2 | 3 | 4 | 5 | 6",
+      "required": true,
+      "use": [
+        "The level the surrounding page gives this block — a template passes it explicitly."
+      ],
+      "dont": [
+        "Choosing a level for its visual size. Size is the Heading component's `role`, a separate decision."
+      ],
+      "a11y": "No default, for the reason Heading's `level` has none: only the caller knows the depth, and a skipped level breaks heading navigation for the whole page."
+    },
+    "title": {
+      "summary": "Group heading.",
+      "type": "ReactNode",
+      "required": true
+    },
+    "description": {
+      "summary": "What these settings affect.",
+      "type": "ReactNode",
+      "required": false
+    },
+    "children": {
+      "summary": "The rows.",
+      "type": "ReactNode",
+      "required": true
+    },
+    "saveMode": {
+      "summary": "Whether changes apply immediately or on Save.",
+      "type": "\"immediate\" | \"explicit\"",
+      "required": true,
+      "use": [
+        "`immediate` for groups of Switches.",
+        "`explicit` for groups with text fields, where a half-typed value must not apply."
+      ],
+      "dont": [
+        "Mixing both in one group. Split the group instead."
+      ]
+    },
+    "onSave": {
+      "summary": "Explicit mode only.",
+      "type": "() => Promise<void>",
+      "required": false
+    }
+  },
+  "behavior": {
+    "summary": "Explicit mode tracks dirty state and enables Save only then (aria-disabled otherwise); immediate mode saves per control.",
+    "decisions": [
+      {
+        "decision": "saveMode is required, not defaulted",
+        "why": "Switches that need a Save, or text fields that save mid-word, are both common failures; making the caller choose prevents the default being wrong for half the groups."
+      },
+      {
+        "decision": "The group is a <fieldset> with a <legend> when it holds related radios/checkboxes, otherwise a labelled section",
+        "why": "fieldset/legend is how a control set gets its group name read; a section of unrelated settings is not a fieldset."
+      },
+      {
+        "decision": "Leaving with unsaved changes is the template's concern",
+        "why": "Only the page knows about routing; the block exposes `dirty` for it."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "section",
+        "role": "region",
+        "label": "aria-labelledby the block's own heading (the group heading)"
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": "base",
+        "content": "Group heading",
+        "region": "intro"
+      }
+    ],
+    "obligations": [
+      "Every control has a visible label; Switch's description explains the effect.",
+      "A destructive setting (delete account) is a separate danger group with a confirming Dialog, not a row here."
+    ]
+  },
+  "responsive": {
+    "strategy": "container-query",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "Intro above the card; rows stack label over control."
+      },
+      {
+        "at": "wide",
+        "change": "Intro beside the card; rows put the control at the inline end."
+      }
+    ]
+  },
+  "native": {
+    "applies": true,
+    "reason": "App block: gets a native version by decision B3. Native is pro tier (decision N6) while the web version stays free; the registry field for that is proposed in docs/platforms.md §3.",
+    "mapping": "A grouped list section: section header = title, footer = description, rows = controls (switch rows, disclosure rows that push a picker for Select).",
+    "ios": "Form / List with .insetGrouped style; Section header/footer.",
+    "android": "Preference category with preference rows."
+  },
+  "tokens": {
+    "intro ↔ card gap": "space.section (wide) / space.stack.md (narrow)",
+    "card padding": "space.padding.lg",
+    "row padding-block": "space.padding.sm",
+    "row label ↔ control gap": "space.gap.lg",
+    "between groups": "space.section"
+  },
+  "tokenGaps": [
+    {
+      "need": "Narrow / medium / wide breakpoint tokens — adopted by decision B2, names and values pending the design-tokens interview",
+      "interim": "The block is intrinsic (auto-fill grid, flex-wrap) and needs none. Where a step is unavoidable the page owns the query, as the playground owns its single 60rem NARROW query in use-media-query.ts, until the B2 tokens land."
+    }
+  ]
+}

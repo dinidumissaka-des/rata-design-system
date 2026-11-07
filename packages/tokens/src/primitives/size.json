@@ -10,5 +10,22 @@
     "sm": "16px",
     "md": "20px",
     "lg": "24px"
+  },
+  "target": {
+    "min": "48px"
+  },
+  "track": "4px",
+  "measure": {
+    "tight": "32ch",
+    "compact": "45ch",
+    "prose": "65ch"
+  },
+  "container": {
+    "max": "75rem"
+  },
+  "pane": {
+    "sm": "15rem",
+    "md": "20rem",
+    "lg": "25rem"
   }
 }

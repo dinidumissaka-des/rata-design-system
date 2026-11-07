@@ -298,6 +298,8 @@ const GROUP_TITLES = {
   motion: "Motion",
   elevation: "Elevation (box-shadow scale)",
   ring: "Ring — inset validation/selection strokes",
+  breakpoint: "Breakpoints — viewport widths where a page changes layout",
+  layer: "Layer — page-level stacking order (z-index)",
   opacity: "Opacity — raw values behind the state scale",
   state: "Interaction-state opacities",
   focus: "Focus-ring geometry",

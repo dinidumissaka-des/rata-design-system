@@ -1,0 +1,182 @@
+{
+  "$schema": "./schema.json",
+  "name": "empty-state-page",
+  "title": "Empty state page",
+  "kind": "block",
+  "surface": [
+    "web-app",
+    "native-app"
+  ],
+  "category": "app",
+  "description": "A whole content area with nothing in it yet (first use), nothing matching (no results), or nothing reachable (error / no access): an EmptyState with a page-level action.",
+  "alsoKnownAs": [
+    "zero state",
+    "blank slate",
+    "no results page"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "future"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "centered",
+    "container": "section",
+    "summary": "Centred in the content region (not the viewport — the shell stays). A thin layout wrapper around the EmptyState component."
+  },
+  "regions": [
+    {
+      "name": "content",
+      "element": "section",
+      "purpose": "The EmptyState: illustration/icon, heading, text, actions.",
+      "contains": [
+        "empty-state",
+        "button",
+        "link"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "min(calc(var(--rata-size-control-lg) * 20), 100%)"
+      }
+    }
+  ],
+  "components": [
+    {
+      "name": "empty-state",
+      "for": "The whole message.",
+      "region": "content"
+    },
+    {
+      "name": "button",
+      "for": "Create-first-item action.",
+      "region": "content"
+    },
+    {
+      "name": "link",
+      "for": "Docs / import / contact links.",
+      "region": "content",
+      "optional": true
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "empty-state",
+      "for": "The message itself — this block is a page-level placement of it.",
+      "blocking": true
+    },
+    {
+      "component": "link",
+      "for": "Secondary links.",
+      "blocking": false,
+      "interim": "Omitted."
+    }
+  ],
+  "slots": {
+    "headingLevel": {
+      "summary": "The outline level of the empty-state heading — 1 when it replaces the page's whole content, else the next level down; everything below it steps down from here.",
+      "type": "1 | 2 | 3 | 4 | 5 | 6",
+      "required": true,
+      "use": [
+        "The level the surrounding page gives this block — a template passes it explicitly."
+      ],
+      "dont": [
+        "Choosing a level for its visual size. Size is the Heading component's `role`, a separate decision."
+      ],
+      "a11y": "No default, for the reason Heading's `level` has none: only the caller knows the depth, and a skipped level breaks heading navigation for the whole page."
+    },
+    "reason": {
+      "summary": "Why it is empty; drives copy and action defaults.",
+      "type": "\"first-use\" | \"no-results\" | \"error\" | \"no-access\"",
+      "required": true
+    },
+    "title": {
+      "summary": "Heading.",
+      "type": "ReactNode",
+      "required": true
+    },
+    "description": {
+      "summary": "What to do next.",
+      "type": "ReactNode",
+      "required": true
+    },
+    "action": {
+      "summary": "The primary way out.",
+      "type": "ReactNode",
+      "required": false,
+      "dont": [
+        "A \"Retry\" button for no-access — nothing will change."
+      ]
+    }
+  },
+  "behavior": {
+    "summary": "Static. The distinction from the empty-state component is placement: this owns centring in the content area and the page-level heading level.",
+    "decisions": [
+      {
+        "decision": "`reason` is required",
+        "why": "A no-results state must offer to clear the query; a first-use state offers to create. Getting the action wrong is the common failure, and the reason is what decides it."
+      },
+      {
+        "decision": "The shell stays",
+        "why": "Nav and header remain, so the reader can still go elsewhere; an empty state is never a dead end."
+      },
+      {
+        "decision": "No-results is announced, first-use is not",
+        "why": "No-results follows an action (a search) and needs a polite status; first-use is the page's initial content and is read in order."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "section",
+        "role": "region",
+        "label": "aria-labelledby the block's own heading (the empty-state heading)"
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": "base",
+        "content": "Empty-state heading",
+        "region": "content"
+      }
+    ],
+    "obligations": [
+      "Illustration is decorative (alt=\"\").",
+      "no-results: polite live announcement of the title."
+    ]
+  },
+  "responsive": {
+    "strategy": "intrinsic",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "Actions stack full-width."
+      }
+    ]
+  },
+  "native": {
+    "applies": true,
+    "reason": "App block: gets a native version by decision B3. Native is pro tier (decision N6) while the web version stays free; the registry field for that is proposed in docs/platforms.md §3.",
+    "mapping": "Platform content-unavailable view centred in the screen; primary action as a prominent button.",
+    "ios": "ContentUnavailableView.",
+    "android": "Centred column in the screen's content slot."
+  },
+  "tokens": {
+    "padding-block": "space.section",
+    "content measure": "min(calc(var(--rata-size-control-lg) * 20), 100%)"
+  },
+  "tokenGaps": [],
+  "openQuestions": [
+    "Fold into the empty-state component as a `size=\"page\"` variant instead of a block?"
+  ]
+}

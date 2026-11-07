@@ -1,0 +1,429 @@
+{
+  "name": "date-range-picker",
+  "title": "Date Range Picker",
+  "description": "A labelled field for a start and an end date: each typed in the page's locale, or both chosen on one calendar grid.",
+  "family": "inputs",
+  "alsoKnownAs": [
+    "date-range",
+    "daterangepicker",
+    "date-range-input",
+    "date-range-selector",
+    "period-picker"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "field",
+    "state-layer",
+    "icon",
+    "visually-hidden"
+  ],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "Two date inputs in one box, matching the date picker's step for step, with a separator between them and the calendar button's well at the end. Field owns the label, helper text, message and disabled dimming.",
+      "tokens": {
+        "font-family": "font.family.sans",
+        "font-size": "type.control.size.md",
+        "font-variant": "tabular-nums, so a typed date does not shift as digits change",
+        "background": "theme.bg.surface",
+        "color": "theme.fg.primary",
+        "placeholder colour": "theme.fg.muted",
+        "border": "border.default solid theme.border.strong",
+        "border-radius": "radius.element",
+        "block-size": "size.control.md — and size.control.sm / size.control.lg at the other sizes",
+        "padding-inline-start": "space.control.padding-inline.md — and the sm / lg steps",
+        "padding-inline-end": "space.control.padding-inline.md plus size.control.sm, for the calendar button",
+        "focus border-color": "theme.fg.primary",
+        "focus outline": "focus.ring-width solid theme.fg.primary at space.0 offset — the text field's departure",
+        "hover inner band": "theme.bg.muted at border.2 as an inset shadow, idle only",
+        "validating ring": "theme.accent-role.ring",
+        "valid ring": "theme.success-role.ring",
+        "invalid ring": "theme.danger-role.ring",
+        "separator colour": "theme.fg.secondary — an en dash, aria-hidden; the two inputs' own labels carry the meaning",
+        "gap around the separator": "space.gap.xs"
+      }
+    },
+    "trigger": {
+      "summary": "The one calendar button at the field's end, opening the calendar on whichever end is empty — the start if both are. A tab stop with the system ring, as in DatePicker, because it opens a dialog the keyboard has no other way to reach.",
+      "tokens": {
+        "inline-size / block-size": "size.control.sm, inset space.0-5 from the end edge",
+        "glyph size": "size.icon.text",
+        "colour": "theme.fg.secondary",
+        "border-radius": "radius.inner",
+        "hover / press": "compose the .rata-state-layer class",
+        "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible"
+      }
+    },
+    "calendar": {
+      "summary": "The dialog surface on wide screens, DatePicker's unchanged. One month at a time — two side by side would need a second grid and a second focus model, and a range across a month boundary is reached with PageDown.",
+      "tokens": {
+        "background": "theme.bg.surface",
+        "border": "border.default solid theme.border.default",
+        "border-radius": "radius.container",
+        "box-shadow": "theme.elevation.overlay",
+        "padding": "space.padding.sm",
+        "gap from the field": "space.gap.xs",
+        "backdrop": "theme.scrim",
+        "month title font-size": "type.control.size.md",
+        "month title font-weight": "type.control.weight",
+        "month title colour": "theme.fg.primary",
+        "month navigation buttons": "size.control.sm square, radius.inner, compose the .rata-state-layer class, theme.focus-ring on :focus-visible",
+        "weekday header colour": "theme.fg.secondary",
+        "weekday header font-size": "type.supporting.size",
+        "gap between header and grid": "space.stack.2xs",
+        "enter transition": "motion.overlay.duration with motion.easing.enter",
+        "selection hint colour": "theme.fg.secondary",
+        "selection hint font-size": "type.supporting.size"
+      }
+    },
+    "calendar-narrow": {
+      "summary": "The same dialog below the breakpoint, at the bottom edge. Sheet-level radius and modal elevation, because here it does take over the screen.",
+      "tokens": {
+        "border-radius": "radius.page on the top corners only",
+        "box-shadow": "theme.elevation.modal",
+        "padding": "space.padding.lg",
+        "day cell size": "size.control.lg"
+      }
+    },
+    "day": {
+      "summary": "One day, DatePicker's, plus the three range states. The ends are the filled accent; the days between are a continuous tint, so the stay reads as one band.",
+      "tokens": {
+        "inline-size / block-size": "size.control.md",
+        "border-radius": "radius.pill",
+        "font-size": "type.control.size.sm",
+        "font-variant": "tabular-nums",
+        "colour": "theme.fg.primary",
+        "outside the month": "theme.fg.muted — shown so the rows are whole weeks, and still choosable",
+        "today": "theme.accent-role.fg at type.control.weight — marked by tone and weight rather than a ring, since a ring is the selection and validation stroke",
+        "hover / press": "compose the .rata-state-layer class",
+        "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible — kept on the ends, where offset 0 on a filled accent would vanish",
+        "unavailable": "state.disabled-opacity and a line-through, so the state is not carried by dimming alone",
+        "start / end background": "theme.accent-role.bg",
+        "start / end colour": "theme.fg.on-accent — the only foreground permitted on that fill",
+        "in-range background": "theme.accent-role.subtle",
+        "in-range colour": "theme.fg.primary — verified at AA-text on theme.accent-role.subtle",
+        "in-range border-radius": "radius.none, so consecutive days join into one band; the start and end keep radius.pill on their outer side",
+        "preview (start chosen, end not yet)": "theme.accent-role.ring at border.default as an inset stroke from the start to the focused or hovered day — a selection stroke, distinct from the focus ring"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "Two text inputs — start and end — inside one Field, beside one button opening the same modal calendar dialog DatePicker uses, where the first day chosen is the start and the second the end. Its own contract rather than a mode of DatePicker (decision C10, docs/decisions/2026-11-gate-1-review.md), built on the same calendar-grid primitive. The value is a pair of ISO calendar dates.",
+    "decisions": [
+      {
+        "decision": "Its own component, not a `range` prop on DatePicker",
+        "why": "A range changes the value's type, adds a second input with its own name, a preview between the ends, a rule about what an end before the start means, and an announcement for each end. A boolean on DatePicker would change what `value` is depending on another prop — the shape this system refuses everywhere else. The two share the calendar-grid primitive instead, so the date arithmetic, keyboard model and `aria-disabled` handling exist once (decision C10, docs/decisions/2026-11-gate-1-review.md)."
+      },
+      {
+        "decision": "The value is `{ start, end }`, each an ISO calendar date or `null`",
+        "why": "DatePicker's reason for ISO strings applies twice over: a stay stored as two `Date`s can lose a night when a server and a browser disagree about the zone. Each end can be `null` on its own, because a reader fills one end before the other and a form needs to see that state to say what is missing. A one-day range — start equal to end — is valid."
+      },
+      {
+        "decision": "Two inputs, each labelled, typing first",
+        "why": "Someone reading dates off a booking types them faster than they can page a calendar. So each end is its own text input with its own visible label (`startLabel`, `endLabel`), parsing the page locale's numeric format on blur and Enter as DatePicker does, and the group is labelled by `label`. One input holding \"1/11/2026 – 7/11/2026\" would need a parser for the separator and announce as one value nobody can edit half of."
+      },
+      {
+        "decision": "In the calendar, the first choice is the start and the second the end",
+        "why": "Choosing a day with no start, or with both ends set, starts a new range and clears the end; the next choice sets the end and closes the dialog. Choosing a day before the start makes that day the new start rather than an end — reordering behind the reader's back would put the cursor's meaning in the wrong place. After the start is chosen, moving focus or the pointer previews the range up to that day, and the dialog's live hint says \"Choose end date\"."
+      },
+      {
+        "decision": "Typed ends are passed through, never silently reordered",
+        "why": "An end typed before the start is reported as typed: `onValueChange` fires with both values, and the caller's validation reports it through `status` and `message` — the same path a typed unavailable date takes in DatePicker. Swapping them would change a value the reader can see they did not enter."
+      },
+      {
+        "decision": "A range cannot span an unavailable day",
+        "why": "Once a start is chosen, every day after the next unavailable one is unavailable as an end, because a booking across a booked night is not a booking. Those days stay focusable and are announced as unavailable, so the grid's geometry does not lie — DatePicker's rule, unchanged."
+      },
+      {
+        "decision": "Each day's name says where it sits in the range",
+        "why": "Fill and tint are invisible to a screen reader, so the start, the end and the days between append \"start date\", \"end date\" and \"in range\" to their accessible name, and the chosen ends use `aria-selected`. The days between are not `aria-selected`: they were not chosen, and announcing six selected days for one choice of two ends misstates what the reader did."
+      },
+      {
+        "decision": "Disabled is `aria-disabled` plus `readOnly`, inherited from Field",
+        "why": "The system rule, on both inputs and the calendar button. And the text field's consequence with it: both values still submit."
+      },
+      {
+        "decision": "Proposed primitive: `getDateRangePickerProps`, over the shared `getCalendarGridProps`",
+        "why": "Neither exists yet. The range primitive adds what the grid lacks — which end the next choice sets, the preview span, the unavailable-span rule and the range-position names — and delegates date arithmetic, the keyboard model and locale handling to the grid DatePicker proposes. Both work on ISO strings only."
+      },
+      {
+        "decision": "Web and native",
+        "why": "Web: a `role=\"group\"` labelled by `label`, holding two text inputs with their own labels, a calendar `<button>` with a click guard, two hidden inputs carrying `startName` and `endName`, and a modal `<dialog>` holding a `<table role=\"grid\">` whose day cells are buttons with `aria-selected` on the ends, `aria-current=\"date\"` on today and `aria-disabled` on unavailable days. Touch, pointer and keyboard share it; only placement changes with width. React Native: the two ends are `Pressable` fields with `accessibilityRole=\"button\"` and the formatted date as `accessibilityValue={{ text }}`, opening one calendar through the core `Modal` as a sheet. Rata-drawn, not the OS control (decision N5): iOS's date picker has no range mode and Android's range picker belongs to the Material library rather than the OS, so native draws the calendar from the same grid primitive and recipe as the web — which is also why the grid is a primitive. Typed entry, `placeholder`, `startName`, `endName` and `size` are web-only. The native implementation ships in the pro tier (decision N6)."
+      }
+    ]
+  },
+  "props": {
+    "label": {
+      "type": "ReactNode",
+      "required": true,
+      "summary": "What the range is. Always required — `labelHidden` hides it, nothing removes it.",
+      "use": [
+        "The thing the dates bound: \"Stay\", \"Reporting period\"."
+      ],
+      "dont": [
+        "\"Dates\". Every range picker holds dates; the label says which."
+      ],
+      "a11y": "Labels the group, so each input is announced as \"Stay, Check-in\". The calendar dialog is labelled by it too, with the visible month as its description."
+    },
+    "startLabel": {
+      "type": "string",
+      "default": "\"Start date\"",
+      "summary": "The visible label on the start input.",
+      "use": [
+        "Naming the end in the domain's words: \"Check-in\", \"From\"."
+      ],
+      "dont": [
+        "An empty string. Each input needs its own name, or both are announced as the group's."
+      ]
+    },
+    "endLabel": {
+      "type": "string",
+      "default": "\"End date\"",
+      "summary": "The visible label on the end input.",
+      "use": [
+        "\"Check-out\", \"To\"."
+      ]
+    },
+    "value": {
+      "type": "DateRange",
+      "summary": "Controls the range from outside: `{ start, end }`, each an ISO calendar date or `null`.",
+      "use": [
+        "A form library, or a search whose range is in the URL."
+      ],
+      "dont": [
+        "Passing `Date`s or timestamps. A calendar date is not an instant.",
+        "Passing it alongside `defaultValue`. One of them owns the state."
+      ],
+      "conflicts": [
+        "defaultValue"
+      ]
+    },
+    "defaultValue": {
+      "type": "DateRange",
+      "default": "{ start: null, end: null }",
+      "summary": "The starting range when the component owns the state.",
+      "use": [
+        "A genuine default, such as the current month for a report."
+      ],
+      "conflicts": [
+        "value"
+      ]
+    },
+    "onValueChange": {
+      "type": "(value: DateRange) => void",
+      "summary": "Fires with both ends whenever either changes: a day chosen in the calendar, or typed text that parses on blur or Enter.",
+      "use": [
+        "Validating the pair — an end before the start, a range too long — and setting `status`."
+      ],
+      "dont": [
+        "Expecting both ends to be set. A reader fills one before the other; `null` is how the half-filled state arrives."
+      ]
+    },
+    "min": {
+      "type": "string",
+      "summary": "The earliest choosable date for either end, as ISO.",
+      "use": [
+        "A booking that cannot start in the past: today's date."
+      ],
+      "a11y": "Days before it stay in the grid, focusable, `aria-disabled` and announced as unavailable — the system's disabled rule, applied to a day."
+    },
+    "max": {
+      "type": "string",
+      "summary": "The latest choosable date for either end, as ISO.",
+      "use": [
+        "A report that cannot run past today."
+      ]
+    },
+    "isDateUnavailable": {
+      "type": "(date: string) => boolean",
+      "summary": "Marks individual dates unchoosable — weekends, holidays, fully booked days.",
+      "use": [
+        "Availability that `min` and `max` cannot express."
+      ],
+      "dont": [
+        "A slow function. It runs for every visible day on every render of the grid; precompute a set.",
+        "Relying on it alone. Typed entry can still reach an unavailable date, which the component reports through `status` and `message` rather than silently accepting."
+      ],
+      "a11y": "Unavailable days are `aria-disabled` and say so in their accessible name, and keep their place in the grid. Once a start is chosen, days past the next unavailable one are unavailable as an end too."
+    },
+    "firstDayOfWeek": {
+      "type": "0 | 1 | 2 | 3 | 4 | 5 | 6",
+      "summary": "Which weekday starts each row of the calendar, 0 being Sunday. Defaults to the page locale's.",
+      "use": [
+        "A product whose week is a business rule rather than a locale convention."
+      ],
+      "dont": [
+        "Setting it to match your own locale. The default already reads the reader's."
+      ]
+    },
+    "calendarLabel": {
+      "type": "string",
+      "default": "\"Choose dates\"",
+      "summary": "Accessible name for the button that opens the calendar.",
+      "use": [
+        "Translating it."
+      ],
+      "dont": [
+        "An empty string. The button is icon-only."
+      ],
+      "a11y": "Once a range is chosen, the primitive appends it: \"Choose dates, 1 to 7 November 2026\", so the button says what it will change."
+    },
+    "placeholder": {
+      "type": "string",
+      "summary": "Shown in each empty input. Defaults to the expected format for the page locale.",
+      "use": [
+        "Leaving the default. It is generated from the same format the parser accepts, so the hint cannot disagree with the parser."
+      ],
+      "dont": [
+        "The label, or an example date that is not in the accepted format."
+      ]
+    },
+    "startName": {
+      "type": "string",
+      "summary": "Form field name for the start. Submits the ISO date, not the displayed text.",
+      "use": [
+        "A native form post: `startName=\"checkin\"`."
+      ],
+      "a11y": "Carried by a hidden input; the visible one holds the formatted text."
+    },
+    "endName": {
+      "type": "string",
+      "summary": "Form field name for the end. Submits the ISO date.",
+      "use": [
+        "`endName=\"checkout\"`, beside `startName`."
+      ]
+    },
+    "size": {
+      "type": "\"sm\" | \"md\" | \"lg\"",
+      "default": "\"md\"",
+      "summary": "Control height and inline padding. Text size does not change with it.",
+      "use": [
+        "Matching whatever the control sits beside."
+      ]
+    },
+    "labelHidden": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Takes the label off screen while leaving it in the accessibility tree.",
+      "use": [
+        "A control whose meaning is already carried by a heading or column header directly above it."
+      ],
+      "dont": [
+        "Pairing it with a placeholder standing in for the name. The placeholder is gone on the first keystroke."
+      ],
+      "a11y": "Field's, unchanged: the group label is still rendered and still bound. `startLabel` and `endLabel` stay visible."
+    },
+    "id": {
+      "type": "string",
+      "summary": "Stable id for the range field, when something outside needs to point at it.",
+      "use": [
+        "A form library that addresses fields by id, or an error summary linking to the field it names."
+      ],
+      "dont": [
+        "Reusing one across two fields. Every id under it — description, message, popup — is derived from this."
+      ]
+    },
+    "status": {
+      "type": "FieldStatus",
+      "default": "\"idle\"",
+      "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
+      "use": [
+        "`invalid` with a `message` saying what to do about it."
+      ],
+      "dont": [
+        "`invalid` with no message. The ring says something is wrong; only the message says what."
+      ],
+      "a11y": "Field's, unchanged."
+    },
+    "description": {
+      "type": "ReactNode",
+      "summary": "Persistent helper text under the control.",
+      "use": [
+        "The rule before the reader picks: \"Up to 14 nights.\""
+      ],
+      "dont": [
+        "Repeating the label in a sentence. It is read out after the name, so a restatement is heard twice."
+      ],
+      "a11y": "Joins `aria-describedby` ahead of the message, so a constraint is heard before a failure."
+    },
+    "message": {
+      "type": "ReactNode",
+      "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
+      "use": [
+        "What to do about an `invalid` status, in the imperative."
+      ],
+      "dont": [
+        "Putting the permanent constraint here. It leaves the description chain whenever the status returns to idle — that is `description`."
+      ],
+      "a11y": "Announced politely rather than as an alert, because it is already in `aria-describedby`."
+    },
+    "required": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Marks both ends required, in the label and to assistive technology.",
+      "use": [
+        "Fields that genuinely block submission."
+      ],
+      "dont": [
+        "Pairing it with a hand-written asterisk in `label`. Field renders one."
+      ],
+      "a11y": "`aria-required` on the control; the rendered marker is `aria-hidden`."
+    },
+    "disabled": {
+      "type": "boolean",
+      "default": "false",
+      "summary": "Blocks typing and opening the calendar while keeping both inputs focusable, readable and announced.",
+      "use": [
+        "A range fixed by an earlier choice that should still be readable."
+      ],
+      "dont": [
+        "Assuming the values are withheld. Both hidden inputs still submit."
+      ],
+      "a11y": "`aria-disabled` plus `readOnly` on both inputs from Field, and `aria-disabled` on the calendar button, whose click guard refuses to open."
+    },
+    "className": {
+      "type": "string",
+      "summary": "Class for the wrapper — the width the form wants, not a restyle.",
+      "use": [
+        "A measure that fits two formatted dates and the separator."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "A stay",
+      "when": "A booking with a check-in and a check-out.",
+      "example": "<DateRangePicker\n  label=\"Stay\"\n  startLabel=\"Check-in\"\n  endLabel=\"Check-out\"\n  min={today}\n  isDateUnavailable={(d) => booked.has(d)}\n  startName=\"checkin\"\n  endName=\"checkout\"\n  required\n/>",
+      "notes": "Once a check-in is chosen, no check-out past the next booked night can be picked, and those days are announced as unavailable."
+    },
+    {
+      "case": "A reporting period",
+      "when": "A filter over past data.",
+      "example": "<DateRangePicker\n  label=\"Period\"\n  startLabel=\"From\"\n  endLabel=\"To\"\n  max={today}\n  value={range}\n  onValueChange={setRange}\n/>",
+      "notes": "Readers will often type these. `range` arrives with one end `null` while the other is being filled."
+    },
+    {
+      "case": "An end before the start",
+      "when": "Typed entry produced a range that runs backwards.",
+      "example": "<DateRangePicker\n  label=\"Stay\"\n  value={range}\n  onValueChange={setRange}\n  status=\"invalid\"\n  message=\"Check-out must be after check-in.\"\n/>",
+      "notes": "The component passes typed values through rather than swapping them, so the caller says what is wrong."
+    },
+    {
+      "case": "Reaching for the wrong component",
+      "when": "One date, such as a delivery day.",
+      "example": "<DateRangePicker label=\"Delivery\" />",
+      "notes": "A single date is DatePicker. A range picker with equal ends is a valid value, but asking for two inputs to get one date is the wrong question."
+    }
+  ]
+}

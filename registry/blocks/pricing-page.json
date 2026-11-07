@@ -1,0 +1,234 @@
+{
+  "$schema": "./schema.json",
+  "name": "pricing-page",
+  "title": "Pricing page",
+  "kind": "template",
+  "surface": [
+    "website"
+  ],
+  "category": "page",
+  "description": "TopNav, a short page intro, pricing-table with comparison, FAQ about billing, CTA band, site footer.",
+  "alsoKnownAs": [
+    "plans page"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "na"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "header",
+    "container": "section",
+    "summary": "Same shell as landing-page; the h1 is the pricing-table's heading."
+  },
+  "regions": [
+    {
+      "name": "header",
+      "element": "TopNav",
+      "purpose": "Banner; Pricing is aria-current.",
+      "contains": [
+        "top-nav",
+        "mobile-nav"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "fill"
+      }
+    },
+    {
+      "name": "main",
+      "element": "main",
+      "purpose": "Pricing, FAQ, CTA.",
+      "contains": [
+        "pricing-table",
+        "faq",
+        "cta-band"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "fill"
+      }
+    },
+    {
+      "name": "footer",
+      "element": "site-footer",
+      "purpose": "contentinfo.",
+      "contains": [
+        "site-footer"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "fill"
+      }
+    }
+  ],
+  "components": [
+    {
+      "name": "top-nav",
+      "for": "Banner.",
+      "region": "header"
+    },
+    {
+      "name": "mobile-nav",
+      "for": "Narrow nav.",
+      "region": "header"
+    },
+    {
+      "name": "visually-hidden",
+      "for": "Skip link.",
+      "region": "header"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "pricing-table",
+      "region": "main",
+      "headingLevel": 1
+    },
+    {
+      "name": "faq",
+      "region": "main",
+      "headingLevel": 2
+    },
+    {
+      "name": "cta-band",
+      "region": "main",
+      "optional": true,
+      "headingLevel": 2
+    },
+    {
+      "name": "site-footer",
+      "region": "footer"
+    }
+  ],
+  "dependsOnFuture": [
+    {
+      "component": "card",
+      "via": "pricing-table",
+      "for": "Plan containers.",
+      "blocking": true
+    },
+    {
+      "component": "link",
+      "via": "pricing-table, cta-band, site-footer",
+      "for": "Every navigating action.",
+      "blocking": true
+    },
+    {
+      "component": "table",
+      "via": "pricing-table",
+      "for": "Comparison matrix.",
+      "blocking": false,
+      "interim": "Page ships without the comparison."
+    }
+  ],
+  "behavior": {
+    "summary": "Composition only.",
+    "decisions": [
+      {
+        "decision": "No separate hero",
+        "why": "The pricing table's heading is the h1; a hero above it pushes the plans below the fold for a page whose readers came for the plans."
+      },
+      {
+        "decision": "The billing period is in the URL query",
+        "why": "So a shared link shows yearly prices if that is what was shared; pricing-table reports the change, the page writes the URL."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "header (TopNav)",
+        "role": "banner",
+        "label": "implicit"
+      },
+      {
+        "element": "nav (TopNav)",
+        "role": "navigation",
+        "label": "TopNav `label` (\"Main\")"
+      },
+      {
+        "element": "main",
+        "role": "main",
+        "label": "implicit; target of the skip link"
+      },
+      {
+        "element": "footer (site-footer)",
+        "role": "contentinfo",
+        "label": "implicit"
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": 1,
+        "content": "Pricing"
+      },
+      {
+        "level": 2,
+        "content": "Each plan",
+        "repeats": true
+      },
+      {
+        "level": 2,
+        "content": "Compare plans"
+      },
+      {
+        "level": 2,
+        "content": "Billing FAQ"
+      },
+      {
+        "level": 3,
+        "content": "Each question",
+        "repeats": true
+      }
+    ],
+    "obligations": [
+      "First focusable element is a skip link to <main> — there is no skip-link component, so it is VisuallyHidden content that becomes visible on :focus-visible (open question: promote to a component).",
+      "document.title matches the h1."
+    ]
+  },
+  "responsive": {
+    "strategy": "media-query",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "MobileNav; plans stack."
+      }
+    ]
+  },
+  "native": {
+    "applies": false,
+    "reason": "Website-only by decision B3 (gate-1 review, docs/decisions/2026-11-gate-1-review.md): marketing blocks and templates ship on the web only and get no native version. See pricing-table: native purchase flows follow store billing rules."
+  },
+  "tokens": {
+    "header padding-inline": "space.page.gutter",
+    "main padding-block-start": "space.page.block-start"
+  },
+  "tokenGaps": [
+    {
+      "need": "A page content max-inline-size (container width) for marketing bands",
+      "interim": "The band's content box is capped at calc(var(--rata-size-control-lg) * 32) and centred with auto inline margins; the playground's own column cap is a literal with a comment saying there is no measure token. The container max-width token is sent to the design-tokens interview (gate-1 review); this multiplier is the interim until it lands."
+    },
+    {
+      "need": "A skip-link component or recipe",
+      "interim": "Composed from visually-hidden; every template needs one, which is the argument for making it a component."
+    },
+    {
+      "need": "A z-index / layer scale for the sticky header",
+      "interim": "The playground uses z-index: 1 with a comment; templates do the same until a layer token exists."
+    }
+  ],
+  "openQuestions": [
+    "Pricing-table's plan headings are h2 here (base+1 with base 1) and the comparison is also h2 — confirm that plans and comparison are siblings in the outline."
+  ]
+}

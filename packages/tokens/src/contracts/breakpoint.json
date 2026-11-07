@@ -1,0 +1,26 @@
+{
+  "$contract": "breakpoint",
+  "$summary": "Viewport widths at which a page's layout changes. Three classes: narrow (below medium — the default, no token), medium, wide.",
+  "tokens": {
+    "breakpoint": {
+      "layer": "base",
+      "summary": "The viewport widths where a page or template changes layout: narrow below breakpoint.medium, medium from it, wide from breakpoint.wide.",
+      "use": [
+        "A page or template's region budget — when a rail becomes a drawer, when list-detail stops stacking.",
+        "JavaScript media queries (useMediaQuery) and the native build, which read the value directly.",
+        "CSS through the @custom-media names (--rata-medium, --rata-wide), expanded at build time — var() cannot appear inside @media."
+      ],
+      "dont": [
+        "A component's internal layout. A component can sit in a sidebar as well as full width, so it responds to its own width with a container query, not to the viewport.",
+        "Hand-written rem or px in a media query — every layout breakpoint is one of these two."
+      ],
+      "scale": {
+        "medium": "40rem (640px). Below it is narrow: one column, drawers instead of rails, bottom-nav on app surfaces.",
+        "wide": "60rem (960px). The breakpoint the playground already used, now named. Panes sit beside the content from here."
+      },
+      "notes": [
+        "Two tokens for three classes: narrow is the default, so it has no threshold of its own. wide is medium × 1.5. Values are in rem so a reader who enlarges their root font size gets the narrower layout their text now needs."
+      ]
+    }
+  }
+}

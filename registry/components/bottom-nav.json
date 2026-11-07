@@ -1,0 +1,199 @@
+{
+  "name": "bottom-nav",
+  "title": "Bottom Nav",
+  "description": "Three to five top-level destinations in a bar held to the bottom of a narrow viewport.",
+  "family": "navigation",
+  "alsoKnownAs": [
+    "bottom-navigation",
+    "bottom-bar",
+    "navigation-bar",
+    "bottom-tabs",
+    "tab-bar"
+  ],
+  "status": {
+    "css": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    }
+  },
+  "dependencies": [
+    "state-layer",
+    "icon"
+  ],
+  "files": [],
+  "tier": "free",
+  "tokens": {
+    "base": {
+      "summary": "The bar. Separated from the content by a rule rather than a shadow: it is part of the page's frame, in the same plane as the content it sits under, and theme.elevation.raised documents a border as the way to separate two things in one plane.",
+      "tokens": {
+        "background": "theme.bg.surface",
+        "border-block-start": "border.default solid theme.border.default",
+        "box-shadow": "none — see the summary",
+        "position": "sticky, inset-block-end space.0 — see the decision on sticky rather than fixed",
+        "padding-block-end": "max(space.1, env(safe-area-inset-bottom)) — the home indicator's inset on a notched phone, and a step of air everywhere else",
+        "padding-inline": "max(space.0, env(safe-area-inset-left)) and max(space.0, env(safe-area-inset-right)) — a phone in landscape puts the notch on an inline edge",
+        "item layout": "one row; every item takes an equal share of the inline size, so the targets do not resize with their labels"
+      }
+    },
+    "item": {
+      "summary": "One destination: an icon over a visible label, the whole column the target.",
+      "tokens": {
+        "color": "theme.fg.secondary",
+        "min-block-size": "size.target.min",
+        "padding-block": "space.1",
+        "gap between icon and label": "space.gap.xs",
+        "icon size": "size.icon.lg — a standalone glyph at the scale's largest step, the size at which it renders unscaled",
+        "label font-size": "type.supporting.size",
+        "label line-height": "type.supporting.line-height",
+        "label font-weight": "type.label.weight",
+        "hover / press": "compose the .rata-state-layer class",
+        "focus ring": "theme.focus-ring at focus.ring-width, offset focus.ring-offset, on :focus-visible"
+      }
+    },
+    "current": {
+      "summary": "The page you are on. Marked by a shape as well as a colour, and announced by aria-current — so no single cue carries it alone.",
+      "tokens": {
+        "color": "theme.accent-role.fg — verified against theme.bg.surface for text",
+        "indicator behind the icon": "theme.accent-role.subtle, radius.pill, padding-inline space.padding.sm — the shape is the cue a reader who cannot tell the two foregrounds apart still gets",
+        "icon colour inside the indicator": "theme.accent-role.fg — verified on theme.accent-role.subtle",
+        "label font-weight": "type.control.weight"
+      }
+    },
+    "badge": {
+      "summary": "A count or a dot on a destination's icon. A count is text, so it takes the accent fill with its own label token; a dot is a non-text indicator and takes the fill alone.",
+      "tokens": {
+        "count background": "theme.accent-role.bg",
+        "count color": "theme.fg.on-accent — the one label token that belongs on theme.accent-role.bg",
+        "count block-size": "size.icon.sm",
+        "count padding-inline": "space.1",
+        "count font-size": "type.supporting.size",
+        "count font-weight": "type.control.weight",
+        "dot size": "space.gap.sm — Badge's dot, for the reason Badge gives: a dot is a mark, not a glyph",
+        "dot background": "theme.accent-role.bg",
+        "border-radius": "radius.pill",
+        "separation from the icon": "a ring of theme.bg.surface at border.2, so the mark stays legible where it overlaps the glyph"
+      }
+    }
+  },
+  "behavior": {
+    "summary": "A `<nav>` landmark holding a list of links, each with an icon and a visible label, held to the bottom of the viewport. No primitive: links need no keyboard model beyond Tab, which is the point of rendering them as links.",
+    "decisions": [
+      {
+        "decision": "It is navigation, not tabs — on the web",
+        "why": "iOS calls this a tab bar and that name is why `tab-bar` resolves ambiguously here. But on the web each destination is a page with an address: following one changes the URL, the back button undoes it, and it can be opened in a new tab. That is a link, and a row of links is a `<nav>`. `role=\"tablist\"` would promise a panel on the same page and arrow-key movement between tabs, neither of which exists — the same mistake TopNav's contract names for `role=\"menu\"`. If choosing an item reveals a panel rather than loading a page, it is Tabs, which can be drawn at the bottom of the screen and is still a tablist. `tab-bar` stays an alias of both BottomNav and Tabs, so the lookup commands report it as ambiguous and refuse to guess (decision C12, docs/decisions/2026-11-gate-1-review.md)."
+      },
+      {
+        "decision": "Three to five items, and no 'More' overflow item",
+        "why": "Fewer than three is not a navigation bar — two destinations are a SegmentedControl or a link. More than five shrinks every target below a usable width on a 320px viewport and turns the labels into ellipses. A 'More' item that opens a sheet of the rest hides the overflow behind a destination that is not a destination, and the reader's current page can end up inside it with nothing in the bar marked current. Past five, the app has outgrown this pattern and the answer is MobileNav, which holds a SideNav. The type cannot count an array, so the React component warns in development when the count is outside 3–5 rather than truncating."
+      },
+      {
+        "decision": "Every item has an icon and a visible label, always",
+        "why": "`icon` and `label` are both required, and there is no option to hide labels on the items that are not current — Material's 'shifting' mode. A glyph alone has to be learned, and on touch there is no hover to learn it from; this system has no Tooltip, and SideNav's contract already declined to ship an icon-only rail for exactly that reason. The label is also the link's accessible name, so it cannot be optional without the name becoming an `aria-label` that a sighted reader never sees and a translator might forget."
+      },
+      {
+        "decision": "The current page is stated per item, as in TopNav and SideNav",
+        "why": "Only the caller's router knows whether /inbox/42 counts as being on /inbox. `current` on the item renders `aria-current=\"page\"` and the current treatment; nothing here matches paths. Rows carry an optional `onClick` for client-side routing and still require a real `href`, for the reason TopNav's contract gives: it is what makes the item a link."
+      },
+      {
+        "decision": "Sticky to the bottom of the page, not fixed",
+        "why": "A `position: fixed` bar is lifted out of the flow, so the last screenful of content scrolls under it and every page has to reserve padding equal to a height it does not know — which changes with the safe-area inset. `position: sticky` with `inset-block-end: 0`, rendered as the last child of the page's scrolling column, holds the bar to the bottom of the viewport while the page scrolls and still occupies its own space in the flow, so nothing is ever hidden under it. The cost is a placement rule: it must be the last child of a column that is at least the viewport's height (`min-block-size: 100dvh` — dynamic viewport units, because `vh` is the large viewport and would push the bar below a visible mobile address bar)."
+      },
+      {
+        "decision": "It never hides on scroll",
+        "why": "A bar that slides away when the reader scrolls down moves its targets out from under the thumb that was about to use them, and brings them back at an unpredictable moment. It also makes the navigation landmark appear and disappear for a screen-reader user whose virtual cursor never scrolled at all. The vertical space it saves is a few percent of a phone screen."
+      },
+      {
+        "decision": "It does not decide when it applies",
+        "why": "MobileNav's rule, for the same reason: the breakpoint at which a layout swaps a rail or a TopNav for this bar is the layout's decision, and a component that hid itself with its own media query would fight the page's. When both this and a TopNav carry the same destinations at different widths, the hidden one must be `display: none` — not merely off-screen — so the page does not expose two navigation landmarks with the same name. `label` exists so the two can be told apart when both are genuinely visible."
+      },
+      {
+        "decision": "Safe-area insets are read from `env()`, not from a token",
+        "why": "`env(safe-area-inset-bottom)` is a measurement of the device — where the home indicator is — not a design decision, so there is no value a token could hold and nothing a theme could change. What IS a decision is the minimum air when the inset is zero, and that is `space.1`, through `max()`. The page owes one thing in return: `<meta name=\"viewport\" content=\"…, viewport-fit=cover\">`, without which every inset reads as zero and the bar sits under the home indicator's gesture area on a notched phone."
+      },
+      {
+        "decision": "Touch target: size.target.min",
+        "why": "The hit area is size.target.min, 48px, on every platform — Material's minimum, which also clears Apple's 44pt and WCAG 2.5.5. It sizes where the control can be tapped, never the drawn box. Settled by the token interview (docs/decisions/2026-11-gate-1-review.md)."
+      },
+      {
+        "decision": "A badge carries its own words",
+        "why": "A count of 3 next to 'Inbox' tells a sighted reader 'three unread'; a screen reader reading the link would hear 'Inbox 3', which says nothing about what the three are. So an item's `badge` is `{ count?: number; label: string }`, where `label` is the full phrase — '3 unread messages' — appended to the link's accessible name through visually hidden text, and the visible count is `aria-hidden`. With no `count` it renders a dot, which is the same mark with no number to show; `label` is still required, because a dot that means nothing to a screen reader means nothing at all. A count over 99 renders `99+`, and `label` is where the real number goes."
+      },
+      {
+        "decision": "Web and native",
+        "why": "On the web it renders `<nav aria-label={label}>` holding a `<ul role=\"list\">` of `<li>`, each with an `<a href>` that carries `aria-current=\"page\"` when current. (`role=\"list\"` is explicit because Safari drops list semantics from a list styled `list-style: none`.) On React Native there is no address bar and no link, and the platform convention is the one VoiceOver and TalkBack announce for UITabBar and BottomNavigationView: a `View` with `accessibilityRole=\"tablist\"` holding a `Pressable` per item with `accessibilityRole=\"tab\"` and `accessibilityState={{ selected: current }}`, so it is read 'Inbox, tab, 1 of 4, selected'. That divergence is deliberate — each platform gets the role its readers already know. Web-only: `href`, `onClick` (a DOM `MouseEvent`), and `className`. Native-only, when that package exists: `onPress` on the item in place of `href`, and the safe-area inset read from `useSafeAreaInsets()` rather than `env()`. There is no gesture in this component, so nothing needs a non-gesture equivalent. Rata-drawn, not the OS tab bar (decision N5): `UITabBar` and `BottomNavigationView` belong to a navigator, and `@rata/native` does not couple to one (decision N3), so the bar is a drawn `View` driven by each item's `onPress` and `current`, carrying the tab roles those OS bars announce. The native implementation ships in the pro tier (decision N6)."
+      }
+    ]
+  },
+  "props": {
+    "items": {
+      "type": "BottomNavItem[]",
+      "required": true,
+      "summary": "The destinations, in the order they are read: each `{ label: string; href: string; icon: LucideIcon; current?: boolean; badge?: { count?: number; label: string }; onClick?: (event) => void }`.",
+      "use": [
+        "Three to five top-level sections of the app — the places a reader moves between constantly, from anywhere.",
+        "`current: true` on exactly one item, the section the reader is in, including when they are on a page inside it.",
+        "`onClick` to route client-side; `href` is still required, so the item is still a link."
+      ],
+      "dont": [
+        "Actions. 'Compose' or 'New post' is not a place — it is a FAB, or a Button in the TopNav's actions.",
+        "A sixth item, or a 'More' item. Past five, use MobileNav.",
+        "A badge as decoration. If the number is not something the reader acts on, leave it out — a badge on every item is the same as a badge on none."
+      ],
+      "a11y": "Each item's `label` is its link's accessible name, and the badge's `label` is appended to it. `current` becomes `aria-current=\"page\"`, which is the only cue that is not visual."
+    },
+    "label": {
+      "type": "string",
+      "default": "\"Main\"",
+      "summary": "Accessible name for the navigation landmark.",
+      "use": [
+        "A different name from any other `<nav>` on the page that is visible at the same time."
+      ],
+      "dont": [
+        "The word 'navigation'. The landmark already announces itself as navigation, so 'Main navigation' is read as 'Main navigation navigation'."
+      ],
+      "a11y": "Becomes `aria-label` on the `<nav>`. The default matches TopNav's, on the expectation that only one of the two is displayed at any width — if both are visible together, name them apart."
+    },
+    "className": {
+      "type": "string",
+      "summary": "Extra classes on the `<nav>`, for placement — not for restyling it.",
+      "use": [
+        "Hiding it at the widths where the layout shows a rail or a TopNav instead, with `display: none`."
+      ],
+      "dont": [
+        "`position: fixed`. The bar is sticky so it reserves its own space; fixing it puts the page's last screenful under it.",
+        "Shrinking the items' block size. The target height is the one thing this component exists to guarantee."
+      ]
+    }
+  },
+  "usage": [
+    {
+      "case": "An app's four top-level sections on a phone",
+      "when": "The common case: a handful of places the reader moves between from anywhere in the app, at widths too narrow for a rail.",
+      "example": "<BottomNav\n  items={[\n    { label: \"Home\", href: \"/\", icon: Home, current: true },\n    { label: \"Search\", href: \"/search\", icon: Search },\n    { label: \"Inbox\", href: \"/inbox\", icon: Inbox, badge: { count: 3, label: \"3 unread messages\" } },\n    { label: \"Profile\", href: \"/me\", icon: User },\n  ]}\n/>",
+      "notes": "Rendered as the last child of the page's column so it sticks to the bottom without covering anything. The badge's `label` is what a screen reader hears; the `3` is only what a sighted reader sees."
+    },
+    {
+      "case": "The same destinations as a TopNav, at a different width",
+      "when": "A responsive app whose banner carries its navigation on a wide viewport and moves it to the bottom on a narrow one.",
+      "example": "<TopNav items={sections} className=\"app-top-nav\" />\n<main>{children}</main>\n<BottomNav items={sections} className=\"app-bottom-nav\" />",
+      "notes": "The page's own media query sets `display: none` on whichever is not in use. Both carry the default name `Main`, which is correct only because they are never displayed together — `visibility: hidden` or an off-screen position would leave two landmarks with the same name in the accessibility tree."
+    },
+    {
+      "case": "Reaching for the wrong component: switching panels",
+      "when": "The bar's buttons swap what is shown in one region of a single page, and the URL does not change.",
+      "example": "<BottomNav items={[{ label: \"Map\", href: \"#\", icon: Map }, { label: \"List\", href: \"#\", icon: List }]} />",
+      "notes": "Don't. `href=\"#\"` is the giveaway: nothing is being navigated to. Choosing which content is shown is Tabs, and two views of the same data is a SegmentedControl."
+    },
+    {
+      "case": "Reaching for the wrong component: seven sections",
+      "when": "An app with more top-level destinations than fit in a thumb's width.",
+      "example": "<BottomNav items={sevenSections} />",
+      "notes": "Don't, and don't add a 'More' item either. That is MobileNav, whose drawer holds a SideNav with as many grouped sections as the app needs."
+    }
+  ]
+}

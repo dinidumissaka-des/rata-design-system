@@ -1,0 +1,241 @@
+{
+  "$schema": "./schema.json",
+  "name": "profile-header",
+  "title": "Profile header",
+  "kind": "block",
+  "surface": [
+    "web-app",
+    "native-app"
+  ],
+  "category": "app",
+  "description": "The top of a person or organisation page: avatar, name, meta (role, location, status), actions, and optional tabs for the sections below.",
+  "alsoKnownAs": [
+    "user header",
+    "account header",
+    "entity header",
+    "page header"
+  ],
+  "status": {
+    "layout": {
+      "state": "future"
+    },
+    "react": {
+      "state": "future"
+    },
+    "figma": {
+      "state": "future"
+    },
+    "native": {
+      "state": "future"
+    }
+  },
+  "precedent": "apps/playground/src/app.tsx",
+  "frame": {
+    "shell": "stacked",
+    "container": "section",
+    "summary": "Identity row (avatar + text + actions), then Tabs flush below. A section, not a Card."
+  },
+  "regions": [
+    {
+      "name": "identity",
+      "element": "header",
+      "purpose": "Avatar, name, meta.",
+      "contains": [
+        "avatar",
+        "heading",
+        "text",
+        "badge"
+      ],
+      "budget": {
+        "narrow": "fill",
+        "wide": "1fr"
+      }
+    },
+    {
+      "name": "actions",
+      "element": "div",
+      "purpose": "Follow / Message / Edit and an overflow Menu.",
+      "required": false,
+      "contains": [
+        "button-group",
+        "button",
+        "menu"
+      ],
+      "budget": {
+        "narrow": "fill, below identity",
+        "wide": "auto, inline end"
+      },
+      "collapse": "Secondary actions move into the overflow Menu."
+    },
+    {
+      "name": "tabs",
+      "element": "Tabs",
+      "purpose": "Sections of the profile.",
+      "required": false,
+      "contains": [
+        "tabs"
+      ],
+      "budget": {
+        "narrow": "fill, scrolls",
+        "wide": "fill"
+      }
+    }
+  ],
+  "components": [
+    {
+      "name": "avatar",
+      "for": "Photo or initials, size lg, decorative (the name is the heading).",
+      "region": "identity"
+    },
+    {
+      "name": "heading",
+      "for": "Name.",
+      "region": "identity"
+    },
+    {
+      "name": "text",
+      "for": "Role, location, meta.",
+      "region": "identity"
+    },
+    {
+      "name": "badge",
+      "for": "Status (\"Admin\", \"Suspended\").",
+      "region": "identity",
+      "optional": true
+    },
+    {
+      "name": "breadcrumbs",
+      "for": "Where this profile sits (Team › People › Ada).",
+      "region": "identity",
+      "optional": true
+    },
+    {
+      "name": "button",
+      "for": "Actions.",
+      "region": "actions"
+    },
+    {
+      "name": "button-group",
+      "for": "Actions row.",
+      "region": "actions"
+    },
+    {
+      "name": "menu",
+      "for": "Overflow actions.",
+      "region": "actions",
+      "optional": true
+    },
+    {
+      "name": "tabs",
+      "for": "Profile sections.",
+      "region": "tabs",
+      "optional": true
+    }
+  ],
+  "dependsOnFuture": [],
+  "slots": {
+    "headingLevel": {
+      "summary": "The outline level of the name (1 on a profile page); everything below it steps down from here.",
+      "type": "1 | 2 | 3 | 4 | 5 | 6",
+      "required": true,
+      "use": [
+        "The level the surrounding page gives this block — a template passes it explicitly."
+      ],
+      "dont": [
+        "Choosing a level for its visual size. Size is the Heading component's `role`, a separate decision."
+      ],
+      "a11y": "No default, for the reason Heading's `level` has none: only the caller knows the depth, and a skipped level breaks heading navigation for the whole page."
+    },
+    "name": {
+      "summary": "Person or organisation name.",
+      "type": "string",
+      "required": true
+    },
+    "avatar": {
+      "summary": "Image URL; initials fallback comes from Avatar.",
+      "type": "string",
+      "required": false
+    },
+    "meta": {
+      "summary": "Secondary lines.",
+      "type": "ReactNode[]",
+      "required": false
+    },
+    "actions": {
+      "summary": "Action buttons.",
+      "type": "ReactNode",
+      "required": false
+    },
+    "tabs": {
+      "summary": "Tabs items, if the page has sections.",
+      "type": "TabItem[]",
+      "required": false,
+      "dont": [
+        "Tabs that navigate between URLs — use a nav of links; Tabs is for panels on one page."
+      ]
+    }
+  },
+  "behavior": {
+    "summary": "Static apart from Tabs, which owns its state.",
+    "decisions": [
+      {
+        "decision": "The avatar is decorative",
+        "why": "Avatar's own contract: when the name is beside it, the image would announce the name twice."
+      },
+      {
+        "decision": "Tabs only when sections are panels on one page",
+        "why": "If each section is its own URL it is navigation and needs links with aria-current, not role=\"tablist\"."
+      },
+      {
+        "decision": "No cover image",
+        "why": "A banner image adds no information and has no contrast guarantee for anything over it; if wanted, it is decoration above the block."
+      }
+    ]
+  },
+  "a11y": {
+    "landmarks": [
+      {
+        "element": "header",
+        "role": "none",
+        "label": "A <header> inside <main> is not a banner landmark"
+      }
+    ],
+    "headingOutline": [
+      {
+        "level": "base",
+        "content": "Name",
+        "region": "identity"
+      }
+    ],
+    "obligations": [
+      "Action names include the person where ambiguous (\"Message Ada\")."
+    ]
+  },
+  "responsive": {
+    "strategy": "container-query",
+    "steps": [
+      {
+        "at": "narrow",
+        "change": "Avatar above or beside a stacked name/meta; actions below, full width; Tabs scroll horizontally."
+      },
+      {
+        "at": "wide",
+        "change": "One row: avatar, text, actions at inline end."
+      }
+    ]
+  },
+  "native": {
+    "applies": true,
+    "reason": "App block: gets a native version by decision B3. Native is pro tier (decision N6) while the web version stays free; the registry field for that is proposed in docs/platforms.md §3.",
+    "mapping": "A large-title header at the top of a scrolling profile screen; actions as a toolbar or buttons under the name; tabs as a segmented control under it.",
+    "ios": "Large title collapses into the nav bar on scroll.",
+    "android": "Collapsing top app bar."
+  },
+  "tokens": {
+    "avatar ↔ text gap": "space.gap.lg",
+    "name → meta gap": "space.stack.2xs",
+    "identity → tabs gap": "space.stack.lg",
+    "padding-block-start": "space.page.block-start"
+  },
+  "tokenGaps": []
+}

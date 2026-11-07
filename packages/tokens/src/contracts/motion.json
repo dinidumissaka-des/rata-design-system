@@ -6,7 +6,8 @@
       "layer": "base",
       "summary": "Duration and easing. The duration bands are generated from the theme's {fast, medium, slow, ratio} seed; the roles below name which band a transition belongs to.",
       "use": [
-        "transition-duration / transition-timing-function, via a role (motion.interactive.*, motion.overlay.*, motion.modal.*) rather than a raw duration when one names the situation."
+        "transition-duration / transition-timing-function, via a role (motion.interactive.*, motion.overlay.*, motion.modal.*) rather than a raw duration when one names the situation.",
+        "transition-delay / an open timer for a hover-triggered hint, via motion.delay.hint."
       ],
       "scale": {
         "duration.fast-min": "Fastest step of the fast band.",
@@ -28,7 +29,8 @@
         "overlay.duration": "Menus, popovers, tooltips.",
         "overlay.easing": "Curve for overlay transitions.",
         "modal.duration": "Dialogs, sheets, drawers.",
-        "modal.easing": "Curve for modal transitions."
+        "modal.easing": "Curve for modal transitions.",
+        "delay.hint": "How long the pointer rests on a trigger before a hint (a tooltip) opens. Points at duration.medium-max, so it follows the motion seed. Keyboard focus opens a tooltip immediately — the delay exists to stop a passing pointer from setting off every hint it crosses, and focus is never passing. Not an animation length: that is motion.duration.*."
       }
     }
   }
