@@ -111,6 +111,23 @@ export type {
   CalendarGridProps,
   CalendarKeyEvent,
 } from "./date-picker.js";
+export {
+  getDateRangePickerProps,
+  chooseRangeDate,
+  nextRangeEnd,
+  nextUnavailableAfter,
+  formatDateRange,
+} from "./date-range-picker.js";
+export type {
+  DateRange,
+  DateRangeEnd,
+  DateRangeCellProps,
+  DateRangeInputProps,
+  DateRangePickerOptions,
+  DateRangePickerProps,
+  DateRangePickerKeyEvent,
+  DateRangePickerCloseReason,
+} from "./date-range-picker.js";
 export { getSearchProps } from "./search.js";
 export type { SearchOptions, SearchProps, SearchKeyEvent } from "./search.js";
 export { getTabsProps } from "./tabs.js";

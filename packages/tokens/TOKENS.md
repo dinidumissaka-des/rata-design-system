@@ -1726,7 +1726,7 @@ One day, DatePicker's, plus the three range states. The ends are the filled acce
 | in-range background | `theme.accent-role.subtle` |
 | in-range colour | `theme.fg.primary` — verified at AA-text on `theme.accent-role.subtle` |
 | in-range border-radius | `radius.none`, so consecutive days join into one band; the start and end keep `radius.pill` on their outer side |
-| preview (start chosen, end not yet) | `theme.accent-role.ring` at `border.default` as an inset stroke from the start to the focused or hovered day — a selection stroke, distinct from the focus ring |
+| preview (start chosen, end not yet) | `theme.accent-role.ring` as-is (2px) — a complete inset stroke on each day from the start to the focused or hovered day; a selection stroke, distinct from the focus ring |
 
 ### dialog
 

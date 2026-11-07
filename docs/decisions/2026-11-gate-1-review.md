@@ -130,3 +130,4 @@ Steps (gate 3): collapses by measuring overflow (ResizeObserver), not a containe
 
 Pagination (gate 3): buttons get size.target.min hit areas — owner amendment.
 List/ListItem (gate 3): a row's focus ring is drawn inside the row (negative offset), so a clipped inset List never cuts it.
+DateRangePicker (gate 3): the range preview uses theme.accent-role.ring as-is (2px) — the token is a complete inset stroke, so a 1px width was not buildable.

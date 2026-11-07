@@ -165,6 +165,29 @@ export function formatLongDate(iso: string, locale: string): string {
   return formatter(locale, { day: "numeric", month: "long", year: "numeric" }).format(toUTC(iso));
 }
 
+/**
+ * A range as the locale writes it, with the separator spoken as "to":
+ * "1 to 7 November 2026" in en-GB, "November 1 to 7, 2026" in en-US. The
+ * shared parts come from `formatRangeToParts`, so the month and year are not
+ * repeated where the locale would not repeat them; only the dash between the
+ * ends is replaced, because a screen reader may voice "–" as "dash" or not
+ * at all. A one-day range is the date alone.
+ */
+export function formatDateRange(start: string, end: string, locale: string): string {
+  const parts = formatter(locale, { day: "numeric", month: "long", year: "numeric" }).formatRangeToParts(
+    toUTC(start),
+    toUTC(end)
+  );
+  const firstEnd = parts.findIndex((part) => part.source === "endRange");
+  return parts
+    .map((part, i) =>
+      i === firstEnd - 1 && part.type === "literal" && part.source === "shared"
+        ? part.value.replace(/\s*[-–—~～]\s*/, " to ")
+        : part.value
+    )
+    .join("");
+}
+
 /** "November 2026" — the visible month's title. */
 export function formatMonthYear(iso: string, locale: string): string {
   return formatter(locale, { month: "long", year: "numeric" }).format(toUTC(iso));

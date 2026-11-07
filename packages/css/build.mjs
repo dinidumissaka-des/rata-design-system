@@ -102,6 +102,8 @@ const ORDER = [
   "combobox.css",
   // After combobox: the same field box beside an overlay, read with it.
   "date-picker.css",
+  // After date-picker: the same box and calendar, with the range states.
+  "date-range-picker.css",
   "dialog.css",
   // After dialog: Sheet is the same native-modal construction with different
   // geometry, and its rules are written to replace dialog.css's where they

@@ -95,7 +95,9 @@ function parseDefaults(source, componentName) {
   const closeIndex = findMatchingBrace(source, openIndex);
   const body = source.slice(openIndex + 1, closeIndex);
   const defaults = {};
-  for (const match of body.matchAll(/(\w+)\s*=\s*("(?:[^"\\]|\\.)*"|[^,\n]+)/g)) {
+  // An object literal default (`defaultValue = { start: null, end: null }`)
+  // is read whole: splitting it at its first comma documents half of it.
+  for (const match of body.matchAll(/(\w+)\s*=\s*("(?:[^"\\]|\\.)*"|\{[^{}\n]*\}|[^,\n]+)/g)) {
     defaults[match[1]] = match[2].trim();
   }
   return defaults;

@@ -29,7 +29,7 @@ this path is the honest answer to when it last actually moved.
 | [chip](../docs/components/chip.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [combobox](../docs/components/combobox.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [date-picker](../docs/components/date-picker.md) | `@rata/react` | inputs | latest / latest / future | free |
-| [date-range-picker](../docs/components/date-range-picker.md) | `@rata/react` | inputs | future / future / future | free |
+| [date-range-picker](../docs/components/date-range-picker.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [dialog](../docs/components/dialog.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [disclosure](../docs/components/disclosure.md) | `@rata/react` | content | latest / latest / future | free |
 | [divider](../docs/components/divider.md) | `@rata/react` | content | latest / latest / future | free |
@@ -387,9 +387,66 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/date-picker.md](../docs/components/date-picker.md)
 
-### Date Range Picker
+### Date Range Picker (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `label: ReactNode`
+  What the range is. Always required — `labelHidden` hides it, nothing removes it.
+- `startLabel?: string` — default: `"Start date"`
+  The visible label on the start input.
+- `endLabel?: string` — default: `"End date"`
+  The visible label on the end input.
+- `value?: DateRange`
+  Controls the range from outside: `{ start, end }`, each an ISO calendar date or `null`.
+- `defaultValue?: DateRange` — default: `{ start: null, end: null }`
+  The starting range when the component owns the state.
+- `onValueChange?: (value: DateRange) => void`
+  Fires with both ends whenever either changes.
+- `min?: string`
+  The earliest choosable date for either end, as ISO.
+- `max?: string`
+  The latest choosable date for either end, as ISO.
+- `isDateUnavailable?: (date: string) => boolean`
+  Marks individual dates unchoosable. Runs for every visible day; precompute a set.
+- `firstDayOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6`
+  Which weekday starts each row, 0 being Sunday. Defaults to the page locale's.
+- `calendarLabel?: string` — default: `"Choose dates"`
+  Accessible name for the calendar button. The chosen range is appended to it.
+- `placeholder?: string`
+  Shown in each empty input. Defaults to the expected format for the page locale.
+- `startName?: string`
+  Form field name for the start. Submits the ISO date.
+- `endName?: string`
+  Form field name for the end. Submits the ISO date.
+- `size?: DateRangePickerSize` — default: `"md"`
+  Control height and inline padding. Text size does not change with it.
+- `labelHidden?: boolean` — default: `false`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the range field. Defaults to a generated one.
+- `status?: FieldStatus` — default: `"idle"`
+  Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `message?: ReactNode`
+  Status-dependent message under the control.
+- `required?: boolean` — default: `false`
+  Marks both ends required to assistive technology and in the label.
+- `disabled?: boolean` — default: `false`
+  Blocks typing and opening the calendar while keeping both inputs focusable and announced.
+- `className?: string`
+  Class for the wrapper — the width the form wants, not a restyle.
+
+Real usage (from `apps/`):
+```tsx
+<DateRangePicker
+        label="Period"
+        startLabel="From"
+        endLabel="To"
+        max={todayISO()}
+        value={range}
+        onValueChange={setRange}
+      />
+```
 
 Contract: [docs/components/date-range-picker.md](../docs/components/date-range-picker.md)
 

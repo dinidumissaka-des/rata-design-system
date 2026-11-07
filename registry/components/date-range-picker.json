@@ -12,10 +12,12 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
@@ -27,7 +29,40 @@
     "icon",
     "visually-hidden"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/date-range-picker.css",
+      "target": "styles/date-range-picker.css"
+    },
+    {
+      "source": "packages/react/src/date-range-picker.tsx",
+      "target": "components/date-range-picker.tsx"
+    },
+    {
+      "source": "packages/primitives/src/date-range-picker.ts",
+      "target": "lib/date-range-picker.ts"
+    },
+    {
+      "source": "packages/primitives/src/date-picker.ts",
+      "target": "lib/date-picker.ts"
+    },
+    {
+      "source": "packages/primitives/src/calendar-grid.ts",
+      "target": "lib/calendar-grid.ts"
+    },
+    {
+      "source": "packages/react/src/modal-dialog.ts",
+      "target": "lib/modal-dialog.ts"
+    },
+    {
+      "source": "packages/react/src/scroll-lock.ts",
+      "target": "lib/scroll-lock.ts"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -114,11 +149,12 @@
         "in-range background": "theme.accent-role.subtle",
         "in-range colour": "theme.fg.primary — verified at AA-text on theme.accent-role.subtle",
         "in-range border-radius": "radius.none, so consecutive days join into one band; the start and end keep radius.pill on their outer side",
-        "preview (start chosen, end not yet)": "theme.accent-role.ring at border.default as an inset stroke from the start to the focused or hovered day — a selection stroke, distinct from the focus ring"
+        "preview (start chosen, end not yet)": "theme.accent-role.ring as-is (2px) — a complete inset stroke on each day from the start to the focused or hovered day; a selection stroke, distinct from the focus ring"
       }
     }
   },
   "behavior": {
+    "primitive": "getDateRangePickerProps",
     "summary": "Two text inputs — start and end — inside one Field, beside one button opening the same modal calendar dialog DatePicker uses, where the first day chosen is the start and the second the end. Its own contract rather than a mode of DatePicker (decision C10, docs/decisions/2026-11-gate-1-review.md), built on the same calendar-grid primitive. The value is a pair of ISO calendar dates.",
     "decisions": [
       {
@@ -147,7 +183,11 @@
       },
       {
         "decision": "Each day's name says where it sits in the range",
-        "why": "Fill and tint are invisible to a screen reader, so the start, the end and the days between append \"start date\", \"end date\" and \"in range\" to their accessible name, and the chosen ends use `aria-selected`. The days between are not `aria-selected`: they were not chosen, and announcing six selected days for one choice of two ends misstates what the reader did."
+        "why": "Fill and tint are invisible to a screen reader, so the start, the end and the days between append \"start date\", \"end date\" and \"in range\" to their accessible name, and the chosen ends' grid cells carry `aria-selected`. The days between are not `aria-selected`: they were not chosen, and announcing six selected days for one choice of two ends misstates what the reader did."
+      },
+      {
+        "decision": "The range preview uses `theme.accent-role.ring` as-is",
+        "why": "The gate-2 recipe asked for the ring \"at border.default\", but the token is a complete 2px inset box-shadow rather than a colour, so a 1px width was not buildable without a new token. The preview draws the token unchanged on each day from the start to the focused or hovered day: still the selection stroke, still distinct from the focus ring, which is an outline (gate 3, owner decision, docs/decisions/2026-11-gate-1-review.md)."
       },
       {
         "decision": "Disabled is `aria-disabled` plus `readOnly`, inherited from Field",
@@ -159,14 +199,12 @@
       },
       {
         "decision": "Web and native",
-        "why": "Web: a `role=\"group\"` labelled by `label`, holding two text inputs with their own labels, a calendar `<button>` with a click guard, two hidden inputs carrying `startName` and `endName`, and a modal `<dialog>` holding a `<table role=\"grid\">` whose day cells are buttons with `aria-selected` on the ends, `aria-current=\"date\"` on today and `aria-disabled` on unavailable days. Touch, pointer and keyboard share it; only placement changes with width. React Native: the two ends are `Pressable` fields with `accessibilityRole=\"button\"` and the formatted date as `accessibilityValue={{ text }}`, opening one calendar through the core `Modal` as a sheet. Rata-drawn, not the OS control (decision N5): iOS's date picker has no range mode and Android's range picker belongs to the Material library rather than the OS, so native draws the calendar from the same grid primitive and recipe as the web — which is also why the grid is a primitive. Typed entry, `placeholder`, `startName`, `endName` and `size` are web-only. The native implementation ships in the pro tier (decision N6)."
+        "why": "Web: a `role=\"group\"` labelled by `label`, holding two text inputs with their own labels, a calendar `<button>` with a click guard, two hidden inputs carrying `startName` and `endName`, and a modal `<dialog>` holding a `<table role=\"grid\">` whose day cells are `role=\"gridcell\"` cells each holding a day button, with `aria-selected` on the ends' cells (ARIA does not support it on `button`), `aria-current=\"date\"` on today and `aria-disabled` on unavailable days. Touch, pointer and keyboard share it; only placement changes with width. React Native: the two ends are `Pressable` fields with `accessibilityRole=\"button\"` and the formatted date as `accessibilityValue={{ text }}`, opening one calendar through the core `Modal` as a sheet. Rata-drawn, not the OS control (decision N5): iOS's date picker has no range mode and Android's range picker belongs to the Material library rather than the OS, so native draws the calendar from the same grid primitive and recipe as the web — which is also why the grid is a primitive. Typed entry, `placeholder`, `startName`, `endName` and `size` are web-only. The native implementation ships in the pro tier (decision N6)."
       }
     ]
   },
   "props": {
     "label": {
-      "type": "ReactNode",
-      "required": true,
       "summary": "What the range is. Always required — `labelHidden` hides it, nothing removes it.",
       "use": [
         "The thing the dates bound: \"Stay\", \"Reporting period\"."
@@ -177,8 +215,6 @@
       "a11y": "Labels the group, so each input is announced as \"Stay, Check-in\". The calendar dialog is labelled by it too, with the visible month as its description."
     },
     "startLabel": {
-      "type": "string",
-      "default": "\"Start date\"",
       "summary": "The visible label on the start input.",
       "use": [
         "Naming the end in the domain's words: \"Check-in\", \"From\"."
@@ -188,15 +224,12 @@
       ]
     },
     "endLabel": {
-      "type": "string",
-      "default": "\"End date\"",
       "summary": "The visible label on the end input.",
       "use": [
         "\"Check-out\", \"To\"."
       ]
     },
     "value": {
-      "type": "DateRange",
       "summary": "Controls the range from outside: `{ start, end }`, each an ISO calendar date or `null`.",
       "use": [
         "A form library, or a search whose range is in the URL."
@@ -210,8 +243,6 @@
       ]
     },
     "defaultValue": {
-      "type": "DateRange",
-      "default": "{ start: null, end: null }",
       "summary": "The starting range when the component owns the state.",
       "use": [
         "A genuine default, such as the current month for a report."
@@ -221,7 +252,6 @@
       ]
     },
     "onValueChange": {
-      "type": "(value: DateRange) => void",
       "summary": "Fires with both ends whenever either changes: a day chosen in the calendar, or typed text that parses on blur or Enter.",
       "use": [
         "Validating the pair — an end before the start, a range too long — and setting `status`."
@@ -231,7 +261,6 @@
       ]
     },
     "min": {
-      "type": "string",
       "summary": "The earliest choosable date for either end, as ISO.",
       "use": [
         "A booking that cannot start in the past: today's date."
@@ -239,14 +268,12 @@
       "a11y": "Days before it stay in the grid, focusable, `aria-disabled` and announced as unavailable — the system's disabled rule, applied to a day."
     },
     "max": {
-      "type": "string",
       "summary": "The latest choosable date for either end, as ISO.",
       "use": [
         "A report that cannot run past today."
       ]
     },
     "isDateUnavailable": {
-      "type": "(date: string) => boolean",
       "summary": "Marks individual dates unchoosable — weekends, holidays, fully booked days.",
       "use": [
         "Availability that `min` and `max` cannot express."
@@ -258,7 +285,6 @@
       "a11y": "Unavailable days are `aria-disabled` and say so in their accessible name, and keep their place in the grid. Once a start is chosen, days past the next unavailable one are unavailable as an end too."
     },
     "firstDayOfWeek": {
-      "type": "0 | 1 | 2 | 3 | 4 | 5 | 6",
       "summary": "Which weekday starts each row of the calendar, 0 being Sunday. Defaults to the page locale's.",
       "use": [
         "A product whose week is a business rule rather than a locale convention."
@@ -268,8 +294,6 @@
       ]
     },
     "calendarLabel": {
-      "type": "string",
-      "default": "\"Choose dates\"",
       "summary": "Accessible name for the button that opens the calendar.",
       "use": [
         "Translating it."
@@ -280,7 +304,6 @@
       "a11y": "Once a range is chosen, the primitive appends it: \"Choose dates, 1 to 7 November 2026\", so the button says what it will change."
     },
     "placeholder": {
-      "type": "string",
       "summary": "Shown in each empty input. Defaults to the expected format for the page locale.",
       "use": [
         "Leaving the default. It is generated from the same format the parser accepts, so the hint cannot disagree with the parser."
@@ -290,7 +313,6 @@
       ]
     },
     "startName": {
-      "type": "string",
       "summary": "Form field name for the start. Submits the ISO date, not the displayed text.",
       "use": [
         "A native form post: `startName=\"checkin\"`."
@@ -298,23 +320,18 @@
       "a11y": "Carried by a hidden input; the visible one holds the formatted text."
     },
     "endName": {
-      "type": "string",
       "summary": "Form field name for the end. Submits the ISO date.",
       "use": [
         "`endName=\"checkout\"`, beside `startName`."
       ]
     },
     "size": {
-      "type": "\"sm\" | \"md\" | \"lg\"",
-      "default": "\"md\"",
       "summary": "Control height and inline padding. Text size does not change with it.",
       "use": [
         "Matching whatever the control sits beside."
       ]
     },
     "labelHidden": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Takes the label off screen while leaving it in the accessibility tree.",
       "use": [
         "A control whose meaning is already carried by a heading or column header directly above it."
@@ -325,7 +342,6 @@
       "a11y": "Field's, unchanged: the group label is still rendered and still bound. `startLabel` and `endLabel` stay visible."
     },
     "id": {
-      "type": "string",
       "summary": "Stable id for the range field, when something outside needs to point at it.",
       "use": [
         "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -335,8 +351,6 @@
       ]
     },
     "status": {
-      "type": "FieldStatus",
-      "default": "\"idle\"",
       "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
       "use": [
         "`invalid` with a `message` saying what to do about it."
@@ -347,7 +361,6 @@
       "a11y": "Field's, unchanged."
     },
     "description": {
-      "type": "ReactNode",
       "summary": "Persistent helper text under the control.",
       "use": [
         "The rule before the reader picks: \"Up to 14 nights.\""
@@ -358,7 +371,6 @@
       "a11y": "Joins `aria-describedby` ahead of the message, so a constraint is heard before a failure."
     },
     "message": {
-      "type": "ReactNode",
       "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
       "use": [
         "What to do about an `invalid` status, in the imperative."
@@ -369,8 +381,6 @@
       "a11y": "Announced politely rather than as an alert, because it is already in `aria-describedby`."
     },
     "required": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Marks both ends required, in the label and to assistive technology.",
       "use": [
         "Fields that genuinely block submission."
@@ -381,8 +391,6 @@
       "a11y": "`aria-required` on the control; the rendered marker is `aria-hidden`."
     },
     "disabled": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Blocks typing and opening the calendar while keeping both inputs focusable, readable and announced.",
       "use": [
         "A range fixed by an earlier choice that should still be readable."
@@ -393,7 +401,6 @@
       "a11y": "`aria-disabled` plus `readOnly` on both inputs from Field, and `aria-disabled` on the calendar button, whose click guard refuses to open."
     },
     "className": {
-      "type": "string",
       "summary": "Class for the wrapper — the width the form wants, not a restyle.",
       "use": [
         "A measure that fits two formatted dates and the separator."
