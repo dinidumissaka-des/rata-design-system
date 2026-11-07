@@ -46,7 +46,7 @@ this path is the honest answer to when it last actually moved.
 | [menu-item](../docs/components/menu-item.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [mobile-nav](../docs/components/mobile-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [notice](../docs/components/notice.md) | `@rata/react` | feedback | latest / latest / future | free |
-| [number-field](../docs/components/number-field.md) | `@rata/react` | inputs | future / future / future | free |
+| [number-field](../docs/components/number-field.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [pagination](../docs/components/pagination.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [panel](../docs/components/panel.md) | `@rata/react` | content | latest / latest / future | free |
 | [pin-input](../docs/components/pin-input.md) | `@rata/react` | inputs | latest / latest / future | free |
@@ -60,7 +60,7 @@ this path is the honest answer to when it last actually moved.
 | [sheet](../docs/components/sheet.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [side-nav](../docs/components/side-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [skeleton](../docs/components/skeleton.md) | `@rata/react` | loading | latest / latest / future | free |
-| [slider](../docs/components/slider.md) | `@rata/react` | inputs | future / future / future | free |
+| [slider](../docs/components/slider.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [spinner](../docs/components/spinner.md) | `@rata/react` | loading | latest / latest / future | free |
 | [state-layer](../docs/components/state-layer.md) | `@rata/react` | foundations | latest / na / future | free |
 | [steps](../docs/components/steps.md) | `@rata/react` | navigation | future / future / future | free |
@@ -787,9 +787,64 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/notice.md](../docs/components/notice.md)
 
-### Number Field
+### Number Field (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `label: ReactNode`
+  The quantity's name. Always required — `labelHidden` hides it, nothing removes it.
+- `value?: number | null`
+  Controls the value from outside. `null` is empty, which is different from zero.
+- `defaultValue?: number | null` — default: `null`
+  The starting value when the component owns the state.
+- `onValueChange?: (value: number | null) => void`
+  Fires with the parsed number when the value changes.
+- `min?: number`
+  The lowest allowed value. Typed values below it are clamped on blur.
+- `max?: number`
+  The highest allowed value. Typed values above it are clamped on blur.
+- `step?: number` — default: `1`
+  How far ArrowUp, ArrowDown and the buttons move. PageUp and PageDown move ten steps.
+- `formatOptions?: Intl.NumberFormatOptions`
+  How the value is displayed when the field is not being edited.
+- `stepButtons?: boolean` — default: `true`
+  Renders the decrement and increment buttons at either end.
+- `incrementLabel?: string` — default: `"Increase"`
+  Accessible name for the increment button.
+- `decrementLabel?: string` — default: `"Decrease"`
+  Accessible name for the decrement button.
+- `placeholder?: string`
+  A hint shown while the field is empty.
+- `name?: string`
+  Form field name. Submits the unformatted number as a plain decimal string.
+- `size?: NumberFieldSize` — default: `"md"`
+  Control height and inline padding. Text size does not change with it.
+- `labelHidden?: boolean` — default: `false`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the input. Defaults to a generated one.
+- `status?: FieldStatus` — default: `"idle"`
+  Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `message?: ReactNode`
+  Status-dependent message under the control.
+- `required?: boolean` — default: `false`
+  Marks the field required to assistive technology and in the label.
+- `disabled?: boolean` — default: `false`
+  Blocks editing and stepping while keeping the field focusable, readable and announced.
+- `className?: string`
+  Class for the wrapper — the width the form wants, not a restyle.
+
+Real usage (from `apps/`):
+```tsx
+<NumberField
+        className="pg-field"
+        label="Team size"
+        defaultValue={12}
+        min={1}
+        status="invalid"
+        message="Teams on this plan have at most 10 people."
+      />
+```
 
 Contract: [docs/components/number-field.md](../docs/components/number-field.md)
 
@@ -1217,9 +1272,42 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/skeleton.md](../docs/components/skeleton.md)
 
-### Slider
+### Slider (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `label: ReactNode`
+  What the value measures. Always required — `labelHidden` hides it, nothing removes it.
+- `value?: number | [number, number]`
+  Controls the value from outside. A two-element tuple renders two thumbs.
+- `defaultValue?: number | [number, number]` — default: `min`
+  The starting value when the component owns the state. Its shape decides one thumb or two.
+- `onValueChange?: (value: number | [number, number]) => void`
+  Fires continuously while the thumb moves.
+- `onValueCommit?: (value: number | [number, number]) => void`
+  Fires once when an interaction ends: pointer release, a key press, or an assistive-technology adjustment.
+- `min?: number` — default: `0`
+  The lowest value.
+- `max?: number` — default: `100`
+  The highest value.
+- `step?: number` — default: `1`
+  The grid values snap to. Arrow keys move one step, PageUp and PageDown ten.
+- `thumbLabels?: [string, string]`
+  Names for the two thumbs of a range. Required when the value is a tuple.
+- `formatValue?: (value: number) => string`
+  Turns a value into the text shown in the output and announced as `aria-valuetext`.
+- `showValue?: boolean` — default: `true`
+  Renders the current value as visible text beside the label.
+- `name?: string`
+  Form field name. A range submits two values under the same name, lower first.
+- `labelHidden?: boolean` — default: `false`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the slider. Defaults to a generated one.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `disabled?: boolean` — default: `false`
+  Blocks adjustment while keeping the slider focusable, readable and announced.
+- `className?: string`
+  Class for the wrapper — the width the layout wants, not a restyle.
 
 Contract: [docs/components/slider.md](../docs/components/slider.md)
 

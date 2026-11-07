@@ -41,7 +41,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [MenuItem](menu-item.md) | `menu-item` | overlays | latest / latest | documented | free |
 | [MobileNav](mobile-nav.md) | `mobile-nav` | navigation | latest / latest | documented | free |
 | [Notice](notice.md) | `notice` | feedback | latest / latest | documented | free |
-| [Number Field](number-field.md) | `number-field` | inputs | future / future | spec | free |
+| [Number Field](number-field.md) | `number-field` | inputs | latest / latest | documented | free |
 | [Pagination](pagination.md) | `pagination` | navigation | latest / latest | documented | free |
 | [Panel](panel.md) | `panel` | content | latest / latest | documented | free |
 | [Pin Input](pin-input.md) | `pin-input` | inputs | latest / latest | documented | free |
@@ -55,7 +55,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Sheet](sheet.md) | `sheet` | overlays | latest / latest | documented | free |
 | [SideNav](side-nav.md) | `side-nav` | navigation | latest / latest | documented | free |
 | [Skeleton](skeleton.md) | `skeleton` | loading | latest / latest | documented | free |
-| [Slider](slider.md) | `slider` | inputs | future / future | spec | free |
+| [Slider](slider.md) | `slider` | inputs | latest / latest | documented | free |
 | [Loading: Spinner](spinner.md) | `spinner` | loading | latest / latest | documented | free |
 | [State layer](state-layer.md) | `state-layer` | foundations | latest / na | css-only | free |
 | [Steps](steps.md) | `steps` | navigation | future / future | spec | free |

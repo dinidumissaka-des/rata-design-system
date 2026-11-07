@@ -13,6 +13,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import {
   Avatar,
+  FileUpload,
   DatePicker,
   Combobox,
   Fab,
@@ -66,6 +67,7 @@ import {
 } from "@rata/react";
 import type {
   AvatarSize,
+  PickedFile,
   ComboboxOption,
   BadgeVariant,
   ButtonGroupOrientation,
@@ -1236,6 +1238,24 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
       </div>
     ),
     "A typed date that is not allowed": () => <DeliveryDateStage />,
+  },
+
+  "file-upload": {
+    "One required document": () => (
+      <FileUpload
+        label="Proof of address"
+        description="PDF or photo, up to 10 MB."
+        accept="application/pdf,image/*"
+        maxSize={10_000_000}
+        name="proof"
+        required
+      />
+    ),
+    "A refused file": () => <FileUploadRefusedStage />,
+    "Uploads in flight": () => <FileUploadInFlightStage />,
+    "A compact attachment control": () => (
+      <FileUpload label="Attachments" labelHidden multiple dropzone={false} buttonLabel="Attach files" />
+    ),
   },
 
   spinner: {
@@ -3730,4 +3750,60 @@ function DeliveryDateStage() {
       </Text>
     </div>
   );
+}
+
+/**
+ * The refused-file case: `onReject` writes the message, Field shows it.
+ * A component for the reason `RadioStage` gives: it needs useState.
+ */
+function FileUploadRefusedStage() {
+  const [error, setError] = useState<string | undefined>(undefined);
+  return (
+    <FileUpload
+      label="Photos"
+      multiple
+      accept="image/*"
+      onValueChange={() => setError(undefined)}
+      onReject={(r) => setError(`${r[0]?.file.name} is not an image.`)}
+      status={error ? "invalid" : "idle"}
+      message={error}
+    />
+  );
+}
+
+/**
+ * Uploads in flight. The component uploads nothing (decision C11), so this
+ * stage plays the app's part with a timer: each new file's `progress` climbs
+ * to 100, and a file named with "fail" in it gets an `error` instead.
+ */
+function FileUploadInFlightStage() {
+  const [files, setFiles] = useState<PickedFile[]>([]);
+  const timers = useRef<number[]>([]);
+  useEffect(() => () => timers.current.forEach((t) => window.clearInterval(t)), []);
+
+  const startUploads = (next: PickedFile[]) => {
+    const known = new Set(files.map((f) => f.file ?? f.name));
+    const fresh = next.filter((f) => !known.has(f.file ?? f.name));
+    setFiles(next.map((f) => (fresh.includes(f) ? { ...f, progress: 0 } : f)));
+    for (const picked of fresh) {
+      const key = picked.file ?? picked.name;
+      const timer = window.setInterval(() => {
+        setFiles((current) =>
+          current.map((f) => {
+            if ((f.file ?? f.name) !== key || f.progress === undefined) return f;
+            if (/fail/i.test(f.name) && f.progress >= 40) {
+              window.clearInterval(timer);
+              return { ...f, progress: undefined, error: "Upload failed. Try again." };
+            }
+            const progress = Math.min(100, f.progress + 20);
+            if (progress === 100) window.clearInterval(timer);
+            return { ...f, progress };
+          })
+        );
+      }, 400);
+      timers.current.push(timer);
+    }
+  };
+
+  return <FileUpload label="Attachments" multiple value={files} onValueChange={startUploads} />;
 }
