@@ -177,7 +177,7 @@ Don't. The link cannot live in a tooltip — it would be visible and unreachable
 
 ### base
 
-A small transient chip on an inverse surface, so it reads as a passing hint rather than as a menu or a popover. The inverse surface and its foreground do not exist yet, so the colour lines below are the closest existing tokens and are stand-ins; the measurements, shadow and motion are final.
+A small transient chip on the inverse surface (theme.bg.inverse with theme.fg.on-inverse), so it reads as a passing hint rather than as a menu or a popover.
 
 | Property | Token |
 |---|---|
