@@ -1796,10 +1796,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -1814,16 +1816,16 @@
       "popover"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "label",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The control's name. Always required — `labelHidden` hides it, nothing removes it.",
+        "declared": true,
         "summary": "The control's name. Always required — `labelHidden` hides it, nothing removes it.",
         "use": [
           "A short noun phrase naming what is being chosen: \"Assignee\", not \"Search for an assignee\"."
@@ -1836,10 +1838,10 @@
       },
       {
         "name": "options",
-        "type": "ComboboxOption[]",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ComboboxOption[]",
+        "description": "The choices, in the order they are read.",
+        "declared": true,
         "summary": "The choices, as `{ value, label, description?, disabled? }`, in the order they are read.",
         "use": [
           "Every option when the list is local; the current page of results when the server filters (with `filter=\"none\"`).",
@@ -1854,10 +1856,10 @@
       },
       {
         "name": "value",
-        "type": "string | null",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string | null",
+        "description": "Controls the chosen option's `value` from outside. `null` means nothing is chosen.",
+        "declared": true,
         "summary": "Controls the chosen option's `value` from outside. `null` means nothing is chosen.",
         "use": [
           "A form library, or a field whose options depend on another field's answer."
@@ -1872,11 +1874,11 @@
       },
       {
         "name": "defaultValue",
-        "type": "string | null",
         "optional": true,
+        "type": "string | null",
+        "description": "The starting choice when the component owns the state.",
         "default": "null",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The starting choice when the component owns the state.",
         "use": [
           "A genuine default the reader usually wants."
@@ -1891,10 +1893,10 @@
       },
       {
         "name": "onValueChange",
-        "type": "(value: string | null) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(value: string | null) => void",
+        "description": "Fires with the chosen option's value when a choice is committed.",
+        "declared": true,
         "summary": "Fires with the chosen option's value when a choice is committed — Enter, a click, or clearing the text.",
         "use": [
           "Reading the answer, which is the option's `value`, never the text in the box."
@@ -1907,10 +1909,10 @@
       },
       {
         "name": "onInputChange",
-        "type": "(text: string) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(text: string) => void",
+        "description": "Fires with the text in the box on every edit.",
+        "declared": true,
         "summary": "Fires with the text in the box on every edit.",
         "use": [
           "Fetching the next page of options when the server does the filtering — debounce it on your side, the component does not."
@@ -1923,16 +1925,16 @@
       },
       {
         "name": "filter",
-        "type": "\"contains\" | \"starts-with\" | \"none\"",
+        "optional": true,
+        "type": "ComboboxFilter",
+        "description": "How typed text narrows `options` locally.",
+        "default": "\"contains\"",
         "values": [
           "contains",
           "starts-with",
           "none"
         ],
-        "optional": true,
-        "default": "\"contains\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "How typed text narrows `options` locally.",
         "use": [
           "`none` when `options` is already the server's answer to the current text — filtering it again would hide results the server matched on fields the reader cannot see.",
@@ -1946,11 +1948,11 @@
       },
       {
         "name": "allowCustomValue",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Accepts text that matches no option as the answer.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accepts text that matches no option as the answer.",
         "use": [
           "Suggestions over an open answer: a tag that may not exist yet, a city the list does not know."
@@ -1964,11 +1966,11 @@
       },
       {
         "name": "loading",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Options are being fetched. The popup shows a spinner row and the field is busy.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Options are being fetched. The popup shows a spinner row and the field is busy.",
         "use": [
           "Between an `onInputChange` that went to the network and its answer."
@@ -1981,11 +1983,11 @@
       },
       {
         "name": "emptyMessage",
-        "type": "ReactNode",
         "optional": true,
+        "type": "ReactNode",
+        "description": "What the popup says when nothing matches.",
         "default": "\"No matches\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "What the popup says when nothing matches.",
         "use": [
           "Translating it, or saying what to try: \"No people match — check the spelling or invite them.\""
@@ -1998,10 +2000,10 @@
       },
       {
         "name": "placeholder",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "A hint shown while the box is empty.",
+        "declared": true,
         "summary": "A hint shown while the box is empty.",
         "use": [
           "Naming the act: \"Type a name\"."
@@ -2014,10 +2016,10 @@
       },
       {
         "name": "name",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Form field name. Submits the chosen option's `value`, not the text.",
+        "declared": true,
         "summary": "Form field name. The submitted value is the chosen option's `value`, not the text in the box.",
         "use": [
           "A native form post, where the server needs the id rather than the display label."
@@ -2030,16 +2032,16 @@
       },
       {
         "name": "size",
-        "type": "\"sm\" | \"md\" | \"lg\"",
+        "optional": true,
+        "type": "ComboboxSize",
+        "description": "Control height and inline padding. Text size does not change with it.",
+        "default": "\"md\"",
         "values": [
           "sm",
           "md",
           "lg"
         ],
-        "optional": true,
-        "default": "\"md\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Control height and inline padding. Text size does not change with it.",
         "use": [
           "Matching whatever the control sits beside — a combobox and a button in one row should be the same height."
@@ -2052,11 +2054,11 @@
       },
       {
         "name": "labelHidden",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Takes the label off screen while leaving it in the accessibility tree.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Takes the label off screen while leaving it in the accessibility tree.",
         "use": [
           "A control whose meaning is already carried by a heading or column header directly above it."
@@ -2069,10 +2071,10 @@
       },
       {
         "name": "id",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Stable id for the combobox. Defaults to a generated one.",
+        "declared": true,
         "summary": "Stable id for the combobox, when something outside needs to point at it.",
         "use": [
           "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -2085,11 +2087,11 @@
       },
       {
         "name": "status",
-        "type": "FieldStatus",
         "optional": true,
+        "type": "FieldStatus",
+        "description": "Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.",
         "default": "\"idle\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
         "use": [
           "`invalid` with a `message` saying what to do about it."
@@ -2102,10 +2104,10 @@
       },
       {
         "name": "description",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Persistent helper text under the control.",
+        "declared": true,
         "summary": "Persistent helper text under the control.",
         "use": [
           "A constraint the reader needs before they answer."
@@ -2118,10 +2120,10 @@
       },
       {
         "name": "message",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Status-dependent message under the control.",
+        "declared": true,
         "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
         "use": [
           "What to do about an `invalid` status, in the imperative."
@@ -2134,11 +2136,11 @@
       },
       {
         "name": "required",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Marks the field required to assistive technology and in the label.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Marks the field required, in the label and to assistive technology.",
         "use": [
           "Fields that genuinely block submission."
@@ -2151,11 +2153,11 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Blocks choosing while keeping the field focusable, readable and announced.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Blocks choosing while keeping the field focusable, readable and announced.",
         "use": [
           "A choice that depends on an answer nobody has given yet."
@@ -2168,10 +2170,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Class for the wrapper — the width the form wants, not a restyle.",
+        "declared": true,
         "summary": "Class for the wrapper — the width the form wants, not a restyle.",
         "use": [
           "The measure or grid placement the form decides."
@@ -2210,6 +2212,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getComboboxProps",
       "summary": "An APG combobox: a text input that keeps focus while `aria-activedescendant` walks a popup listbox, composed with Field for its label, helper text and validation. The answer is an option's value; the text is only how the reader finds it.",
       "decisions": [
         {
@@ -2328,7 +2331,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Combobox\n          label=\"Time zone\"\n          placeholder=\"Type a city\"\n          options={TIME_ZONES}\n          name=\"tz\"\n          required\n        />"
   },
   {
     "name": "date-picker",

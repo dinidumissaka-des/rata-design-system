@@ -81,6 +81,9 @@ const ORDER = [
   "popover.css",
   // After popover: the same top-layer anchoring, on an inverse chip instead.
   "tooltip.css",
+  // After popover: the listbox popup composes .rata-popover and overrides its
+  // padding, width and height.
+  "combobox.css",
   "dialog.css",
   // After dialog: Sheet is the same native-modal construction with different
   // geometry, and its rules are written to replace dialog.css's where they

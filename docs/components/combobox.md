@@ -5,19 +5,23 @@
 
 A text input that filters a popup list of options, for choices too many to scan or too rich for a native select.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Combobox } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `combobox` |
 | Family | inputs |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | `field`, `state-layer`, `icon`, `spinner`, `visually-hidden`, `popover` |
 
 ## Behavior
 
 An APG combobox: a text input that keeps focus while `aria-activedescendant` walks a popup listbox, composed with Field for its label, helper text and validation. The answer is an option's value; the text is only how the reader finds it.
+
+Headless contract: `getComboboxProps` in `packages/primitives/src/combobox.ts` — importable from `@rata/primitives` without the React wrapper or any CSS.
 
 - **This is not Select, and the line between them is the native picker** — `Select` is a native `<select>`: the phone's own wheel or sheet, the platform's typeahead, correct accessibility by construction — and options that are strings and nothing else. Reach for Select when the reader can scan the list, which in practice means it fits on a screen and its options are plain text. Reach for Combobox when the reader has to type to find the answer: the list is long, the options come from a server, or each one needs a second line. Combobox costs a popup, a focus model and an announcement policy that Select gets free, so it is the wrong default — it is the component a list grows into, not the one it starts as. The alias `combo` points here, not at Select: someone who says "combo box" means a field they can type into, which a native `<select>` is not (decision C7, docs/decisions/2026-11-gate-1-review.md).
 - **It follows the WAI-ARIA APG combobox pattern with a listbox popup, list autocomplete, manual selection** — The input keeps DOM focus the whole time and `aria-activedescendant` points at the highlighted option. Arrow keys move the highlight; only Enter or a click commits it. Automatic selection — where arrowing onto an option makes it the value — means a reader browsing the list with a screen reader changes the answer as they listen, which is a value change nobody asked for. APG's list-autocomplete variant with manual selection is the one that keeps browsing and choosing separate.
@@ -42,13 +46,13 @@ An APG combobox: a text input that keeps focus while `aria-activedescendant` wal
 | `defaultValue?` | `string \| null` | `null` | The starting choice when the component owns the state. |
 | `onValueChange?` | `(value: string \| null) => void` | — | Fires with the chosen option's value when a choice is committed — Enter, a click, or clearing the text. |
 | `onInputChange?` | `(text: string) => void` | — | Fires with the text in the box on every edit. |
-| `filter?` | `"contains" \| "starts-with" \| "none"` | `"contains"` | How typed text narrows `options` locally. |
+| `filter?` | `ComboboxFilter` | `"contains"` | How typed text narrows `options` locally. |
 | `allowCustomValue?` | `boolean` | `false` | Accepts text that matches no option as the answer. |
 | `loading?` | `boolean` | `false` | Options are being fetched. The popup shows a spinner row and the field is busy. |
 | `emptyMessage?` | `ReactNode` | `"No matches"` | What the popup says when nothing matches. |
 | `placeholder?` | `string` | — | A hint shown while the box is empty. |
 | `name?` | `string` | — | Form field name. The submitted value is the chosen option's `value`, not the text in the box. |
-| `size?` | `"sm" \| "md" \| "lg"` | `"md"` | Control height and inline padding. Text size does not change with it. |
+| `size?` | `ComboboxSize` | `"md"` | Control height and inline padding. Text size does not change with it. |
 | `labelHidden?` | `boolean` | `false` | Takes the label off screen while leaving it in the accessibility tree. |
 | `id?` | `string` | — | Stable id for the combobox, when something outside needs to point at it. |
 | `status?` | `FieldStatus` | `"idle"` | Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring. |
@@ -83,6 +87,8 @@ options: ComboboxOption[]
 ```
 
 The choices, as `{ value, label, description?, disabled? }`, in the order they are read.
+
+Source doc: The choices, in the order they are read.
 
 **Use when**
 
@@ -140,6 +146,8 @@ onValueChange?: (value: string | null) => void
 
 Fires with the chosen option's value when a choice is committed — Enter, a click, or clearing the text.
 
+Source doc: Fires with the chosen option's value when a choice is committed.
+
 **Use when**
 
 - Reading the answer, which is the option's `value`, never the text in the box.
@@ -167,7 +175,7 @@ Fires with the text in the box on every edit.
 ### `filter`
 
 ```ts
-filter?: "contains" | "starts-with" | "none" = "contains"
+filter?: ComboboxFilter = "contains"
 ```
 
 How typed text narrows `options` locally.
@@ -262,6 +270,8 @@ name?: string
 
 Form field name. The submitted value is the chosen option's `value`, not the text in the box.
 
+Source doc: Form field name. Submits the chosen option's `value`, not the text.
+
 **Use when**
 
 - A native form post, where the server needs the id rather than the display label.
@@ -275,7 +285,7 @@ Form field name. The submitted value is the chosen option's `value`, not the tex
 ### `size`
 
 ```ts
-size?: "sm" | "md" | "lg" = "md"
+size?: ComboboxSize = "md"
 ```
 
 Control height and inline padding. Text size does not change with it.
@@ -314,6 +324,8 @@ id?: string
 
 Stable id for the combobox, when something outside needs to point at it.
 
+Source doc: Stable id for the combobox. Defaults to a generated one.
+
 **Use when**
 
 - A form library that addresses fields by id, or an error summary linking to the field it names.
@@ -329,6 +341,8 @@ status?: FieldStatus = "idle"
 ```
 
 Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.
+
+Source doc: Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.
 
 **Use when**
 
@@ -366,6 +380,8 @@ message?: ReactNode
 
 The status-dependent line: the error, the confirmation, or the in-flight note.
 
+Source doc: Status-dependent message under the control.
+
 **Use when**
 
 - What to do about an `invalid` status, in the imperative.
@@ -383,6 +399,8 @@ required?: boolean = false
 ```
 
 Marks the field required, in the label and to assistive technology.
+
+Source doc: Marks the field required to assistive technology and in the label.
 
 **Use when**
 
@@ -493,6 +511,18 @@ Five environments, plain labels, nothing to type.
 ```
 
 Don't. A reader can see all of these at once, and `Select` gives them the platform's own picker, which on a phone is better than any popup this component can draw.
+
+## Real usage in this repo
+
+```tsx
+<Combobox
+          label="Time zone"
+          placeholder="Type a city"
+          options={TIME_ZONES}
+          name="tz"
+          required
+        />
+```
 
 ## Token recipe
 

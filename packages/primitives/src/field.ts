@@ -49,6 +49,11 @@ export interface FieldParts {
   };
   label: {
     htmlFor: string;
+    /**
+     * `<id>-label`, so something besides the control can be named by the
+     * same element — a combobox's listbox, a date picker's calendar dialog.
+     */
+    id: string;
   };
   input: FieldControlProps;
   description: {
@@ -98,6 +103,7 @@ export function getFieldProps(options: FieldOptions): FieldParts {
     },
     label: {
       htmlFor: id,
+      id: `${id}-label`,
     },
     input: {
       id,

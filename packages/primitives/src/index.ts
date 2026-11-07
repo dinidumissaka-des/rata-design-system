@@ -50,6 +50,27 @@ export type {
   PopoverFocusDestination,
   PopoverKeyEvent,
 } from "./popover.js";
+export {
+  getComboboxProps,
+  filterComboboxOptions,
+  findComboboxOptionByLabel,
+  resolveComboboxText,
+  comboboxCountMessage,
+} from "./combobox.js";
+export type {
+  ComboboxOptions,
+  ComboboxProps,
+  ComboboxOptionDescriptor,
+  ComboboxFilter,
+  ComboboxOpenReason,
+  ComboboxCloseReason,
+  ComboboxKeyEvent,
+  ComboboxResolution,
+  ComboboxInputProps,
+  ComboboxToggleProps,
+  ComboboxListboxProps,
+  ComboboxOptionProps,
+} from "./combobox.js";
 export { getSearchProps } from "./search.js";
 export type { SearchOptions, SearchProps, SearchKeyEvent } from "./search.js";
 export { getTabsProps } from "./tabs.js";

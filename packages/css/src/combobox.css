@@ -1,0 +1,228 @@
+/* rata-allow: missing-focus-ring — the input's focus indicator is the text
+   field's documented departure (theme.fg.primary at focus.ring-width, flush),
+   so that every text box in one form focuses alike; text-field.css records
+   the reasoning. The highlighted option below does draw theme.focus-ring,
+   because it is the keyboard's position in the list. */
+
+/* Combobox — THE BOX, the toggle and the popup listbox. The label, helper
+   text, message and disabled dimming come from field.css, which this
+   composes; every selector reading `.rata-combobox[data-status=…]` is matching
+   the Field root, which carries both classes.
+
+   The popup BUILDS ON popover.css (decision C6): the listbox's surface
+   carries `.rata-popover`, so the top layer, the per-instance anchor, the
+   flip fallbacks, the enter animation and the no-anchor fallback are
+   Popover's. What follows overrides only what the recipe states differently
+   — the padding, the width and the height. */
+
+/* ---- The box: .rata-text-field-input step for step ---------------------- */
+
+/* The positioned well the toggle sits in, and the anchor the popup is placed
+   against. The anchor is the well rather than the input so the popup spans
+   the whole box, toggle included. */
+.rata-combobox-well {
+  position: relative;
+  display: flex;
+}
+
+.rata-combobox-input {
+  font-family: var(--rata-font-family-sans);
+  /* Constant across sizes: `size` changes the box, not the text. */
+  font-size: var(--rata-type-control-size-md);
+  line-height: var(--rata-type-control-line-height-md);
+  border: var(--rata-border-default) solid var(--rata-theme-border-strong);
+  border-radius: var(--rata-radius-element);
+  background: var(--rata-theme-bg-surface);
+  color: var(--rata-theme-fg-primary);
+  box-sizing: border-box;
+  inline-size: 100%;
+  transition:
+    border-color var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing),
+    box-shadow var(--rata-motion-interactive-duration) var(--rata-motion-interactive-easing);
+}
+
+/* The end padding reserves the toggle's target, so text never runs under it. */
+.rata-combobox-input--sm {
+  block-size: var(--rata-size-control-sm);
+  padding-inline-start: var(--rata-space-control-padding-inline-sm);
+  padding-inline-end: calc(var(--rata-space-control-padding-inline-sm) + var(--rata-size-control-sm));
+}
+
+.rata-combobox-input--md {
+  block-size: var(--rata-size-control-md);
+  padding-inline-start: var(--rata-space-control-padding-inline-md);
+  padding-inline-end: calc(var(--rata-space-control-padding-inline-md) + var(--rata-size-control-sm));
+}
+
+.rata-combobox-input--lg {
+  block-size: var(--rata-size-control-lg);
+  padding-inline-start: var(--rata-space-control-padding-inline-lg);
+  padding-inline-end: calc(var(--rata-space-control-padding-inline-lg) + var(--rata-size-control-sm));
+}
+
+.rata-combobox-input::placeholder {
+  color: var(--rata-theme-fg-muted);
+}
+
+/* Idle only, for the reason text-field.css gives: the rings below occupy the
+   same inset 2px, and the ring carries meaning where hover carries none. */
+.rata-combobox[data-status="idle"]:not([data-disabled]) .rata-combobox-input:hover {
+  box-shadow: inset 0 0 0 var(--rata-border-2) var(--rata-theme-bg-muted);
+}
+
+/* The text field's departure: theme.fg.primary, flush, with the border
+   darkened to match so the two read as one stroke. */
+.rata-combobox-input:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-fg-primary);
+  outline-offset: var(--rata-space-0);
+  border-color: var(--rata-theme-fg-primary);
+}
+
+.rata-combobox[data-status="validating"] .rata-combobox-input {
+  box-shadow: var(--rata-theme-accent-role-ring);
+}
+
+.rata-combobox[data-status="valid"] .rata-combobox-input {
+  box-shadow: var(--rata-theme-success-role-ring);
+}
+
+.rata-combobox[data-status="invalid"] .rata-combobox-input {
+  border-color: var(--rata-theme-danger-role-fg);
+  box-shadow: var(--rata-theme-danger-role-ring);
+}
+
+.rata-combobox[data-disabled] .rata-combobox-input {
+  cursor: not-allowed;
+}
+
+/* ---- The toggle ----------------------------------------------------------
+   Pointer and touch only: it is tabindex="-1" and a press on it keeps focus
+   in the input, so it never takes focus and draws no ring of its own. */
+.rata-combobox-toggle {
+  position: absolute;
+  inset-block-start: 50%;
+  translate: 0 -50%;
+  inset-inline-end: var(--rata-space-0-5);
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--rata-size-control-sm);
+  block-size: var(--rata-size-control-sm);
+  padding: var(--rata-space-0);
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-inner);
+  background: transparent;
+  color: var(--rata-theme-fg-secondary);
+  cursor: pointer;
+}
+
+.rata-combobox-toggle .rata-icon {
+  inline-size: var(--rata-size-icon-text);
+  block-size: var(--rata-size-icon-text);
+}
+
+.rata-combobox-toggle[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+/* ---- The popup: Popover's surface, with the recipe's own geometry -------- */
+
+/* rata-allow: unknown-token — anchor-size() reads the anchor's box, which is
+   the "input's own" width the recipe asks for; there is no token for it. */
+.rata-combobox-popup {
+  padding: var(--rata-space-1);
+  /* Never narrower than the field it belongs to: the well's own width, read
+     from the anchor. Popover's compact-measure cap does not apply here. */
+  inline-size: anchor-size(inline);
+  min-inline-size: anchor-size(inline);
+  max-inline-size: none;
+  /* Eight rows, then it scrolls — enough to scan, short enough to stay above
+     a phone keyboard. The padding is added so the eighth row is whole. */
+  max-block-size: calc(var(--rata-size-control-sm) * 8 + var(--rata-space-1) * 2);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  font-size: var(--rata-type-control-size-sm);
+}
+
+/* No anchor to read a width from: Popover's centred fallback, at the width
+   Menu's own fallback takes, since there is no field to match. */
+@supports not (anchor-name: --rata-popover-anchor) {
+  .rata-combobox-popup {
+    inline-size: auto;
+    min-inline-size: calc(var(--rata-size-control-lg) * 5);
+  }
+}
+
+.rata-combobox-listbox {
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+  list-style: none;
+}
+
+/* ---- One option ----------------------------------------------------------
+   The highlight is VIRTUAL focus — DOM focus never leaves the input — so it
+   cannot be left to :focus-visible and is drawn from data-highlighted. */
+.rata-combobox-option {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  /* The selected menu-item's construction, check glyph included. */
+  gap: var(--rata-space-gap-sm);
+  /* A min, so an option with a description grows instead of clipping. */
+  min-block-size: var(--rata-size-control-sm);
+  padding-inline: var(--rata-space-control-padding-inline-sm);
+  border-radius: var(--rata-radius-inner);
+  color: var(--rata-theme-fg-primary);
+  font-size: var(--rata-type-control-size-sm);
+  cursor: pointer;
+}
+
+.rata-combobox-option-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.rata-combobox-option-description {
+  color: var(--rata-theme-fg-secondary);
+  font-size: var(--rata-type-supporting-size);
+  line-height: var(--rata-type-supporting-line-height);
+}
+
+/* The keyboard's position. Inset by its own width, so the popup's scroll
+   container cannot clip it; the system ring, because that is what it is.
+   :focus-visible never matches here — the option is never focused — so the
+   ring is keyed to the attribute aria-activedescendant follows. */
+.rata-combobox-option[data-highlighted],
+.rata-combobox-option:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style) var(--rata-theme-focus-ring);
+  outline-offset: calc(-1 * var(--rata-focus-ring-width));
+}
+
+.rata-combobox-option[aria-selected="true"] {
+  background: var(--rata-theme-accent-role-subtle);
+}
+
+.rata-combobox-option-check {
+  color: var(--rata-theme-accent-role-fg);
+}
+
+.rata-combobox-option[aria-disabled="true"] {
+  opacity: var(--rata-state-disabled-opacity);
+  cursor: default;
+}
+
+/* The empty and loading rows: outside the listbox's options, so they are
+   never arrowed onto, and announced by the count region instead. */
+.rata-combobox-empty,
+.rata-combobox-loading {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--rata-space-gap-sm);
+  min-block-size: var(--rata-size-control-sm);
+  padding-inline: var(--rata-space-control-padding-inline-sm);
+  color: var(--rata-theme-fg-secondary);
+}
