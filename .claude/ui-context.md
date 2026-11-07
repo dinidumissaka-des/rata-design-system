@@ -34,7 +34,7 @@ this path is the honest answer to when it last actually moved.
 | [disclosure](../docs/components/disclosure.md) | `@rata/react` | content | latest / latest / future | free |
 | [divider](../docs/components/divider.md) | `@rata/react` | content | latest / latest / future | free |
 | [empty-state](../docs/components/empty-state.md) | `@rata/react` | feedback | latest / latest / future | free |
-| [fab](../docs/components/fab.md) | `@rata/react` | buttons | future / future / future | free |
+| [fab](../docs/components/fab.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [field](../docs/components/field.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [file-upload](../docs/components/file-upload.md) | `@rata/react` | inputs | future / future / future | free |
 | [heading](../docs/components/heading.md) | `@rata/react` | content | latest / latest / future | free |
@@ -413,9 +413,28 @@ Extends: `Omit<HTMLAttributes<HTMLDivElement>, "title" | "role" | "children">`
 
 Contract: [docs/components/empty-state.md](../docs/components/empty-state.md)
 
-### FAB
+### FAB (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<ButtonHTMLAttributes<HTMLButtonElement>, "disabled" | "children">`
+
+- `label: string`
+  What the action does, as a verb phrase — shown beside the icon, or used as the accessible name when hidden.
+- `icon: LucideIcon`
+  The glyph, which is always shown.
+- `labelHidden?: boolean` — default: `false`
+  Shows the icon alone, as a circle, with `label` as the accessible name.
+- `placement?: FabPlacement` — default: `"end"`
+  Which bottom corner it floats at — inline-end, or centred.
+- `loading?: boolean`
+  Shows a Spinner in place of the icon and blocks activation, while staying focusable.
+- `disabled?: boolean`
+  Blocks activation while keeping it focusable and announced.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<Fab label="Add" icon={Plus} />
+```
 
 Contract: [docs/components/fab.md](../docs/components/fab.md)
 
@@ -538,17 +557,7 @@ Extends: `Omit<`
 
 Real usage (from `apps/`):
 ```tsx
-<Menu
-            label="Account"
-            trigger={
-              <Button iconOnly aria-label="Account" variant="tertiary">
-                <Icon icon={User} />
-              </Button>
-            }
-          >
-            <MenuItem icon={Settings} onSelect={() => {}}>Settings</MenuItem>
-            <MenuItem onSelect={() => {}}>Sign out</MenuItem>
-          </Menu>
+<Menu label="Add" trigger={<Fab label="Add" icon={Plus} />
 ```
 
 Contract: [docs/components/menu.md](../docs/components/menu.md)
@@ -571,7 +580,7 @@ Extends: `Omit<ButtonHTMLAttributes<HTMLButtonElement>, "disabled" | "role" | "o
 
 Real usage (from `apps/`):
 ```tsx
-<MenuItem onSelect={() => {}}>Sign out</MenuItem>
+<MenuItem onSelect={() => {}}>Note</MenuItem>
 ```
 
 Contract: [docs/components/menu-item.md](../docs/components/menu-item.md)

@@ -29,7 +29,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Disclosure](disclosure.md) | `disclosure` | content | latest / latest | documented | free |
 | [Divider](divider.md) | `divider` | content | latest / latest | documented | free |
 | [Empty state](empty-state.md) | `empty-state` | feedback | latest / latest | documented | free |
-| [FAB](fab.md) | `fab` | buttons | future / future | spec | free |
+| [FAB](fab.md) | `fab` | buttons | latest / latest | documented | free |
 | [Field](field.md) | `field` | inputs | latest / latest | documented | free |
 | [File Upload](file-upload.md) | `file-upload` | inputs | future / future | spec | free |
 | [Heading](heading.md) | `heading` | content | latest / latest | documented | free |

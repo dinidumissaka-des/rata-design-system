@@ -13,19 +13,19 @@ import { useEffect, useId, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import {
   Avatar,
-  Badge,
+  Fab,
+  Chip,
   BottomNav,
+  Badge,
   Breadcrumbs,
   Button,
   ButtonGroup,
   Card,
   Checkbox,
-  Chip,
   Dialog,
   Disclosure,
   Divider,
   EmptyState,
-  Fab,
   Heading,
   Link,
   Panel,
@@ -88,11 +88,11 @@ import {
   User,
   X,
   Trash2,
+  Search as SearchGlyph,
+  Star,
+  Plus,
   Ellipsis,
   Pencil,
-  Plus,
-  Star,
-  Search as SearchGlyph,
   Copy,
   Upload,
   Download,
@@ -680,6 +680,7 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     "The active filters above a result list": () => <ChipFilterStage />,
   },
 
+
   avatar: {
     "A photo with its name beside it": () => (
       <span className="pg-example-inline">
@@ -844,6 +845,7 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
       <BottomNavResponsiveStage />
     ),
   },
+
 
   "top-nav": {
     "An application banner": () => (
@@ -1100,6 +1102,9 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
         <Skeleton lines={2} />
         <Skeleton lines={2} />
       </section>
+    ),
+  },
+
   // Each stage is a containing block for `position: fixed` (see .pg-fab-stage),
   // so the FAB floats in the specimen's corner rather than the page's.
   fab: {
@@ -1123,6 +1128,7 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
       </div>
     ),
   },
+
 
   spinner: {
     "Standalone region loading": () => <Spinner label="Loading results" />,
@@ -1782,88 +1788,6 @@ function PaginationRouterStage() {
           resultsRef.current?.focus();
         }}
       />
-const BOTTOM_NAV_SECTIONS = [
-  { label: "Home", href: "#", icon: Star, current: true },
-  { label: "Search", href: "#", icon: SearchGlyph },
-  { label: "Inbox", href: "#", icon: Settings, badge: { count: 3, label: "3 unread messages" } },
-  { label: "Profile", href: "#", icon: User },
-];
-
-/**
- * The page decides which bar applies, not either component: below
- * `breakpoint.wide` only the BottomNav is rendered, above it only the TopNav,
- * so the two landmarks named "Main" are never in the tree together.
- */
-function BottomNavResponsiveStage() {
-  const narrow = useMediaQuery(NARROW);
-  const sections = BOTTOM_NAV_SECTIONS.map(({ label, href, current }) => ({ label, href, current }));
-  return (
-    <div className="pg-bottom-nav-stage">
-      {!narrow && <TopNav items={sections} brand={<strong className="pg-brand">Ratā</strong>} />}
-      <Text tone="secondary">
-        {narrow ? "Narrow viewport: the BottomNav carries the sections." : "Wide viewport: the TopNav carries them. Narrow the window to swap."}
-      </Text>
-      {narrow && <BottomNav items={BOTTOM_NAV_SECTIONS} />}
-    </div>
-  );
-}
-
-/**
- * Removing a chip removes the focused button, so the handler moves focus
- * first — to the next chip's button, or the previous one when the last goes,
- * or the reset button when none are left. That obligation is the caller's,
- * per the contract, which is why the stage owns it rather than Chip.
- */
-function ChipRecipientsStage() {
-  const initial = ["Ada Lovelace", "Bo Nakamura", "Chidi Okonkwo"];
-  const [recipients, setRecipients] = useState(initial);
-  const listRef = useRef<HTMLUListElement>(null);
-  const resetRef = useRef<HTMLButtonElement>(null);
-  const remove = (index: number) => {
-    const buttons = listRef.current?.querySelectorAll<HTMLButtonElement>("button") ?? [];
-    const next = buttons[index + 1] ?? buttons[index - 1] ?? resetRef.current;
-    next?.focus();
-    setRecipients((current) => current.filter((_, i) => i !== index));
-  };
-  return (
-    <div className="pg-block-stack">
-      <ul ref={listRef} role="list" aria-label="Recipients" className="pg-chip-list">
-        {recipients.map((name, i) => (
-          <li key={name}>
-            <Chip onRemove={() => remove(i)}>{name}</Chip>
-          </li>
-        ))}
-      </ul>
-      <Button ref={resetRef} variant="tertiary" size="sm" onClick={() => setRecipients(initial)}>
-        Reset recipients
-      </Button>
-    </div>
-  );
-}
-
-function ChipFilterStage() {
-  const [colour, setColour] = useState<string | null>("Blue");
-  const resetRef = useRef<HTMLButtonElement>(null);
-  return (
-    <div className="pg-block-stack">
-      {colour !== null && (
-        <ul role="list" aria-label="Active filters" className="pg-chip-list">
-          <li>
-            <Chip
-              onRemove={() => {
-                resetRef.current?.focus();
-                setColour(null);
-              }}
-              removeLabel={`Clear colour filter: ${colour}`}
-            >
-              {colour}
-            </Chip>
-          </li>
-        </ul>
-      )}
-      <Button ref={resetRef} variant="tertiary" size="sm" onClick={() => setColour("Blue")}>
-        Reset filters
-      </Button>
     </div>
   );
 }
@@ -3483,4 +3407,90 @@ function ComponentThumbnail({ name, status }: { name: string; status?: string })
     );
   }
   return <>{first()}</>;
+}
+
+const BOTTOM_NAV_SECTIONS = [
+  { label: "Home", href: "#", icon: Star, current: true },
+  { label: "Search", href: "#", icon: SearchGlyph },
+  { label: "Inbox", href: "#", icon: Settings, badge: { count: 3, label: "3 unread messages" } },
+  { label: "Profile", href: "#", icon: User },
+];
+
+/**
+ * The page decides which bar applies, not either component: below
+ * `breakpoint.wide` only the BottomNav is rendered, above it only the TopNav,
+ * so the two landmarks named "Main" are never in the tree together.
+ */
+function BottomNavResponsiveStage() {
+  const narrow = useMediaQuery(NARROW);
+  const sections = BOTTOM_NAV_SECTIONS.map(({ label, href, current }) => ({ label, href, current }));
+  return (
+    <div className="pg-bottom-nav-stage">
+      {!narrow && <TopNav items={sections} brand={<strong className="pg-brand">Ratā</strong>} />}
+      <Text tone="secondary">
+        {narrow ? "Narrow viewport: the BottomNav carries the sections." : "Wide viewport: the TopNav carries them. Narrow the window to swap."}
+      </Text>
+      {narrow && <BottomNav items={BOTTOM_NAV_SECTIONS} />}
+    </div>
+  );
+}
+
+/**
+ * Removing a chip removes the focused button, so the handler moves focus
+ * first — to the next chip's button, or the previous one when the last goes,
+ * or the reset button when none are left. That obligation is the caller's,
+ * per the contract, which is why the stage owns it rather than Chip.
+ */
+function ChipRecipientsStage() {
+  const initial = ["Ada Lovelace", "Bo Nakamura", "Chidi Okonkwo"];
+  const [recipients, setRecipients] = useState(initial);
+  const listRef = useRef<HTMLUListElement>(null);
+  const resetRef = useRef<HTMLButtonElement>(null);
+  const remove = (index: number) => {
+    const buttons = listRef.current?.querySelectorAll<HTMLButtonElement>("button") ?? [];
+    const next = buttons[index + 1] ?? buttons[index - 1] ?? resetRef.current;
+    next?.focus();
+    setRecipients((current) => current.filter((_, i) => i !== index));
+  };
+  return (
+    <div className="pg-block-stack">
+      <ul ref={listRef} role="list" aria-label="Recipients" className="pg-chip-list">
+        {recipients.map((name, i) => (
+          <li key={name}>
+            <Chip onRemove={() => remove(i)}>{name}</Chip>
+          </li>
+        ))}
+      </ul>
+      <Button ref={resetRef} variant="tertiary" size="sm" onClick={() => setRecipients(initial)}>
+        Reset recipients
+      </Button>
+    </div>
+  );
+}
+
+function ChipFilterStage() {
+  const [colour, setColour] = useState<string | null>("Blue");
+  const resetRef = useRef<HTMLButtonElement>(null);
+  return (
+    <div className="pg-block-stack">
+      {colour !== null && (
+        <ul role="list" aria-label="Active filters" className="pg-chip-list">
+          <li>
+            <Chip
+              onRemove={() => {
+                resetRef.current?.focus();
+                setColour(null);
+              }}
+              removeLabel={`Clear colour filter: ${colour}`}
+            >
+              {colour}
+            </Chip>
+          </li>
+        </ul>
+      )}
+      <Button ref={resetRef} variant="tertiary" size="sm" onClick={() => setColour("Blue")}>
+        Reset filters
+      </Button>
+    </div>
+  );
 }
