@@ -65,7 +65,7 @@ this path is the honest answer to when it last actually moved.
 | [state-layer](../docs/components/state-layer.md) | `@rata/react` | foundations | latest / na / future | free |
 | [steps](../docs/components/steps.md) | `@rata/react` | navigation | future / future / future | free |
 | [switch](../docs/components/switch.md) | `@rata/react` | inputs | latest / latest / future | free |
-| [table](../docs/components/table.md) | `@rata/react` | content | future / future / future | free |
+| [table](../docs/components/table.md) | `@rata/react` | content | latest / latest / future | free |
 | [tabs](../docs/components/tabs.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [text](../docs/components/text.md) | `@rata/react` | content | latest / latest / future | free |
 | [text-field](../docs/components/text-field.md) | `@rata/react` | inputs | latest / latest / future | free |
@@ -416,7 +416,7 @@ Extends: `Omit<HTMLAttributes<HTMLHeadingElement>, "role">`
 
 Real usage (from `apps/`):
 ```tsx
-<Heading level={4}>Known gaps</Heading>
+<Heading level={3}>Deploys</Heading>
 ```
 
 Contract: [docs/components/heading.md](../docs/components/heading.md)
@@ -1006,9 +1006,30 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/switch.md](../docs/components/switch.md)
 
-### Table
+### Table (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<HTMLAttributes<HTMLDivElement>, "children" | "role" | "tabIndex">`
+
+- `caption: string`
+  The table's name. Required.
+- `hideCaption?: boolean` — default: `false`
+  Keeps the caption as the accessible name but hides it visually.
+- `columns: TableColumn<Row>[]`
+  The columns, in reading order.
+- `rows: Row[]`
+  The records, in the order they are shown.
+- `getRowKey: (row: Row) => string`
+  A stable identity for each row.
+- `sort?: TableSort | null` — default: `null`
+  Which column the rows are currently sorted by, if any.
+- `onSortChange?: (sort: TableSort) => void`
+  Called when the reader asks to sort by a column.
+- `density?: TableDensity` — default: `"comfortable"`
+  How tall each row is.
+- `empty?: ReactNode`
+  What to show in place of the rows when there are none.
+- `className?: string`
+  Extra classes on the scroll region, for placement.
 
 Contract: [docs/components/table.md](../docs/components/table.md)
 

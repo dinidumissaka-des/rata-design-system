@@ -39,6 +39,9 @@ const ORDER = [
   // After typography, which a card holds but never restyles; before the
   // controls that sit inside one, so their own rules win any tie.
   "card.css",
+  // Same reasoning as card: after typography and state-layer, before the
+  // badges, links and buttons its cells hold, so their own rules win.
+  "table.css",
   "badge.css",
   "avatar.css",
   "disclosure.css",

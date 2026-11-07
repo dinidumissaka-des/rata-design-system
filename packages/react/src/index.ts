@@ -85,3 +85,12 @@ export type { SpinnerProps } from "./spinner.js";
 export { cx } from "./cx.js";
 export { Pagination } from "./pagination.js";
 export type { PaginationProps } from "./pagination.js";
+export { Table } from "./table.js";
+export type {
+  TableProps,
+  TableColumn,
+  TableAlign,
+  TableDensity,
+  TableSort,
+  TableSortDirection,
+} from "./table.js";

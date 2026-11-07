@@ -5595,7 +5595,7 @@
         }
       }
     },
-    "example": "<Heading level={4}>Known gaps</Heading>"
+    "example": "<Heading level={3}>Deploys</Heading>"
   },
   {
     "name": "icon",
@@ -12446,10 +12446,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -12461,16 +12463,16 @@
       "visually-hidden"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLDivElement>, \"children\" | \"role\" | \"tabIndex\">",
     "props": [
       {
         "name": "caption",
-        "type": "string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "The table's name. Required.",
+        "declared": true,
         "summary": "The table's name. Required.",
         "use": [
           "A noun phrase naming the data: \"Open invoices\", \"Deploys in the last 24 hours\"."
@@ -12483,11 +12485,11 @@
       },
       {
         "name": "hideCaption",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Keeps the caption as the accessible name but hides it visually.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Keeps the caption as the accessible name but hides it visually.",
         "use": [
           "A table directly under a heading that already says the same thing."
@@ -12500,10 +12502,10 @@
       },
       {
         "name": "columns",
-        "type": "TableColumn<Row>[]",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "TableColumn<Row>[]",
+        "description": "The columns, in reading order.",
+        "declared": true,
         "summary": "The columns, in reading order: each with a `key`, a `header`, and optionally a `cell` renderer, `align`, `sortable` and `rowHeader`.",
         "use": [
           "`rowHeader: true` on the column that identifies each record — usually the first — so every cell in the row is announced with it.",
@@ -12519,10 +12521,10 @@
       },
       {
         "name": "rows",
-        "type": "Row[]",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "Row[]",
+        "description": "The records, in the order they are shown.",
+        "declared": true,
         "summary": "The records, in the order they are shown.",
         "use": [
           "Already sorted to match `sort`. The table renders the order it is given."
@@ -12535,10 +12537,10 @@
       },
       {
         "name": "getRowKey",
-        "type": "(row: Row) => string",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "(row: Row) => string",
+        "description": "A stable identity for each row.",
+        "declared": true,
         "summary": "A stable identity for each row.",
         "use": [
           "The record's own id."
@@ -12551,11 +12553,11 @@
       },
       {
         "name": "sort",
-        "type": "{ key: string; direction: \"ascending\" | \"descending\" } | null",
         "optional": true,
+        "type": "TableSort | null",
+        "description": "Which column the rows are currently sorted by, if any.",
         "default": "null",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Which column the rows are currently sorted by, if any.",
         "use": [
           "Reflecting the order the caller actually applied — from memory, from the server, from the URL."
@@ -12568,10 +12570,10 @@
       },
       {
         "name": "onSortChange",
-        "type": "(sort: { key: string; direction: \"ascending\" | \"descending\" }) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(sort: TableSort) => void",
+        "description": "Called when the reader asks to sort by a column.",
+        "declared": true,
         "summary": "Called when the reader asks to sort by a column. Required for any column marked `sortable` to render a control.",
         "use": [
           "Updating `sort` and re-ordering, or re-fetching, the rows."
@@ -12584,15 +12586,15 @@
       },
       {
         "name": "density",
-        "type": "\"comfortable\" | \"compact\"",
+        "optional": true,
+        "type": "TableDensity",
+        "description": "How tall each row is.",
+        "default": "\"comfortable\"",
         "values": [
           "comfortable",
           "compact"
         ],
-        "optional": true,
-        "default": "\"comfortable\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "How tall each row is.",
         "use": [
           "`compact` for a dense operational table read by people who live in it."
@@ -12605,10 +12607,10 @@
       },
       {
         "name": "empty",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "What to show in place of the rows when there are none.",
+        "declared": true,
         "summary": "What to show in place of the rows when there are none.",
         "use": [
           "An EmptyState saying why there is nothing here and what to do about it."
@@ -12621,10 +12623,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Extra classes on the scroll region, for placement.",
+        "declared": true,
         "summary": "Extra classes on the scroll region, for placement.",
         "use": [
           "Placing the table in the page's layout."
@@ -12657,6 +12659,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getTableProps",
       "summary": "A real `<table>` with a `<caption>`, `<thead>`, `<th scope>` headers and `aria-sort` on the sorted column, inside a focusable scroll region. Data-driven — `columns` and `rows` — like Breadcrumbs and SideNav, because hand-assembled `<tr>`/`<td>` markup is where scope, header association and sort state go missing. Proposed primitive: `getTableProps` in `packages/primitives/src/table.ts`, owning the sort cycle and the header and cell attributes; it is a proposal, not yet a commitment.",
       "decisions": [
         {

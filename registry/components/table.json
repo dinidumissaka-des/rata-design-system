@@ -10,10 +10,12 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
@@ -24,7 +26,24 @@
     "icon",
     "visually-hidden"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/table.css",
+      "target": "styles/table.css"
+    },
+    {
+      "source": "packages/react/src/table.tsx",
+      "target": "components/table.tsx"
+    },
+    {
+      "source": "packages/primitives/src/table.ts",
+      "target": "lib/table.ts"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -79,6 +98,7 @@
     }
   },
   "behavior": {
+    "primitive": "getTableProps",
     "summary": "A real `<table>` with a `<caption>`, `<thead>`, `<th scope>` headers and `aria-sort` on the sorted column, inside a focusable scroll region. Data-driven — `columns` and `rows` — like Breadcrumbs and SideNav, because hand-assembled `<tr>`/`<td>` markup is where scope, header association and sort state go missing. Proposed primitive: `getTableProps` in `packages/primitives/src/table.ts`, owning the sort cycle and the header and cell attributes; it is a proposal, not yet a commitment.",
     "decisions": [
       {
@@ -117,8 +137,6 @@
   },
   "props": {
     "caption": {
-      "type": "string",
-      "required": true,
       "summary": "The table's name. Required.",
       "use": [
         "A noun phrase naming the data: \"Open invoices\", \"Deploys in the last 24 hours\"."
@@ -129,8 +147,6 @@
       "a11y": "Rendered as `<caption>`, which names the table and its scroll region. Without it a reader who lands on the table hears only its dimensions."
     },
     "hideCaption": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Keeps the caption as the accessible name but hides it visually.",
       "use": [
         "A table directly under a heading that already says the same thing."
@@ -141,8 +157,6 @@
       "a11y": "The caption is visually hidden, not removed, so the table is still named. Web only."
     },
     "columns": {
-      "type": "TableColumn<Row>[]",
-      "required": true,
       "summary": "The columns, in reading order: each with a `key`, a `header`, and optionally a `cell` renderer, `align`, `sortable` and `rowHeader`.",
       "use": [
         "`rowHeader: true` on the column that identifies each record — usually the first — so every cell in the row is announced with it.",
@@ -156,8 +170,6 @@
       "a11y": "`header` becomes a `<th scope=\"col\">`; the `rowHeader` column's cells become `<th scope=\"row\">`, which is what lets a screen reader announce \"INV-204, Amount, 120.00\" instead of a bare number."
     },
     "rows": {
-      "type": "Row[]",
-      "required": true,
       "summary": "The records, in the order they are shown.",
       "use": [
         "Already sorted to match `sort`. The table renders the order it is given."
@@ -167,8 +179,6 @@
       ]
     },
     "getRowKey": {
-      "type": "(row: Row) => string",
-      "required": true,
       "summary": "A stable identity for each row.",
       "use": [
         "The record's own id."
@@ -178,8 +188,6 @@
       ]
     },
     "sort": {
-      "type": "{ key: string; direction: \"ascending\" | \"descending\" } | null",
-      "default": "null",
       "summary": "Which column the rows are currently sorted by, if any.",
       "use": [
         "Reflecting the order the caller actually applied — from memory, from the server, from the URL."
@@ -190,7 +198,6 @@
       "a11y": "Becomes `aria-sort` on that column's header, and only that one."
     },
     "onSortChange": {
-      "type": "(sort: { key: string; direction: \"ascending\" | \"descending\" }) => void",
       "summary": "Called when the reader asks to sort by a column. Required for any column marked `sortable` to render a control.",
       "use": [
         "Updating `sort` and re-ordering, or re-fetching, the rows."
@@ -201,8 +208,6 @@
       "a11y": "The sort control is a `<button>` inside the header cell, named by the header text, so it is reachable by Tab and announced as a button."
     },
     "density": {
-      "type": "\"comfortable\" | \"compact\"",
-      "default": "\"comfortable\"",
       "summary": "How tall each row is.",
       "use": [
         "`compact` for a dense operational table read by people who live in it."
@@ -213,7 +218,6 @@
       "a11y": "Visual only. Interactive content in a compact row still needs a target the size of a control."
     },
     "empty": {
-      "type": "ReactNode",
       "summary": "What to show in place of the rows when there are none.",
       "use": [
         "An EmptyState saying why there is nothing here and what to do about it."
@@ -224,7 +228,6 @@
       "a11y": "Rendered in a single row spanning every column, so the table's structure stays valid and the message is read as part of it."
     },
     "className": {
-      "type": "string",
       "summary": "Extra classes on the scroll region, for placement.",
       "use": [
         "Placing the table in the page's layout."

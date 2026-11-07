@@ -1,0 +1,127 @@
+/* Table — rows of records compared column by column.
+   Gate-2 recipe (base / header / compact / sort-control / scroll-region),
+   registry/components/table.json.
+
+   Edge to edge and divided, with no box of its own: the table takes the
+   surface it sits on, and rows are separated by rules rather than stripes or
+   cards. This is the playground's `.pg-table` construction, promoted. */
+
+/* scroll-region — scrolls horizontally when the columns do not fit, rather
+   than reflowing rows into cards (WCAG 1.4.10 exempts data tables for exactly
+   this). Focusable, so it carries the ring like any other tab stop; the radius
+   is only there so the ring has corners. */
+.rata-table-scroll {
+  overflow-x: auto;
+  border-radius: var(--rata-radius-inner);
+}
+
+.rata-table-scroll:focus-visible {
+  outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* base */
+.rata-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  background: transparent;
+  color: var(--rata-theme-fg-primary);
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-body-size);
+  line-height: var(--rata-type-body-line-height);
+}
+
+.rata-table-caption {
+  caption-side: top;
+  text-align: start;
+}
+
+.rata-table-header,
+.rata-table-cell {
+  padding-block: var(--rata-space-padding-xs);
+  padding-inline: var(--rata-space-padding-sm);
+  text-align: start;
+}
+
+/* Row rules on each row's block-end edge. */
+.rata-table-cell {
+  border-block-end: var(--rata-border-default) solid var(--rata-theme-border-default);
+}
+
+/* A row-header cell is a <th scope="row"> for assistive technology; to the eye
+   it is data like the rest of its row. */
+th.rata-table-cell {
+  font-weight: inherit;
+}
+
+/* Numeric columns: end-aligned, with tabular figures so digits line up. */
+.rata-table-header--end,
+.rata-table-cell--end {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+/* header — set as labels: smaller and quieter than the data. The heavier rule
+   below it marks the boundary of the data. */
+.rata-table-header {
+  color: var(--rata-theme-fg-muted);
+  font-size: var(--rata-type-label-size);
+  font-weight: var(--rata-type-label-weight);
+  text-transform: var(--rata-type-label-text-transform);
+  letter-spacing: var(--rata-type-label-letter-spacing);
+  border-block-end: var(--rata-border-default) solid var(--rata-theme-border-strong);
+}
+
+/* compact — only the padding moves; type does not shrink. */
+.rata-table--compact .rata-table-header,
+.rata-table--compact .rata-table-cell {
+  padding-block: var(--rata-space-1);
+  padding-inline: var(--rata-space-padding-xs);
+}
+
+/* sort-control — a real <button> inside the <th>. It fills the header cell so
+   the whole label is the target: the cell gives up its padding and the button
+   takes it on. */
+.rata-table-header--sortable,
+.rata-table--compact .rata-table-header--sortable {
+  padding: var(--rata-space-0);
+}
+
+.rata-table-sort {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--rata-space-gap-xs);
+  inline-size: 100%;
+  margin: var(--rata-space-0);
+  padding-block: var(--rata-space-padding-xs);
+  padding-inline: var(--rata-space-padding-sm);
+  border: none;
+  border-radius: var(--rata-radius-inner);
+  background: none;
+  color: currentColor;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+.rata-table--compact .rata-table-sort {
+  padding-block: var(--rata-space-1);
+  padding-inline: var(--rata-space-padding-xs);
+}
+
+.rata-table-header--end .rata-table-sort {
+  justify-content: flex-end;
+}
+
+.rata-table-sort:focus-visible {
+  outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* The empty message spans every column, inside the table's own structure. */
+.rata-table-empty {
+  text-align: start;
+}

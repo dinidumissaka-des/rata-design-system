@@ -60,7 +60,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [State layer](state-layer.md) | `state-layer` | foundations | latest / na | css-only | free |
 | [Steps](steps.md) | `steps` | navigation | future / future | spec | free |
 | [Switch](switch.md) | `switch` | inputs | latest / latest | documented | free |
-| [Table](table.md) | `table` | content | future / future | spec | free |
+| [Table](table.md) | `table` | content | latest / latest | documented | free |
 | [Tabs](tabs.md) | `tabs` | navigation | latest / latest | documented | free |
 | [Text](text.md) | `text` | content | latest / latest | documented | free |
 | [Input: Text field](text-field.md) | `text-field` | inputs | latest / latest | documented | free |

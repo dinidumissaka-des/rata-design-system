@@ -80,3 +80,14 @@ export { getTextFieldProps } from "./field.js";
 export type { TextFieldOptions, TextFieldProps, TextFieldStatus } from "./field.js";
 export { getPaginationItems } from "./pagination.js";
 export type { PaginationItem, PaginationOptions } from "./pagination.js";
+export { getTableProps, nextTableSort } from "./table.js";
+export type {
+  TableOptions,
+  TableProps,
+  TableSort,
+  TableSortDirection,
+  TableColumnDescriptor,
+  TableHeaderProps,
+  TableSortButtonProps,
+  TableCellProps,
+} from "./table.js";

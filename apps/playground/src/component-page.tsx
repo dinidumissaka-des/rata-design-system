@@ -42,6 +42,7 @@ import {
   TopNav,
   Spinner,
   Switch,
+  Table,
   Text,
   Textarea,
   TextField,
@@ -66,6 +67,7 @@ import type {
   ButtonVariant,
   ToggleButtonSize,
   ToggleButtonVariant,
+  TableSort,
 } from "@rata/react";
 import type { TabsActivation, TabsOrientation } from "@rata/primitives";
 import type { SegmentedControlSize } from "@rata/react";
@@ -923,6 +925,26 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     "A dismissible confirmation, with focus handled": () => <InvitesExample />,
   },
 
+  table: {
+    "A sortable list of records": () => <TableSortStage />,
+    "A table under a heading that already names it": () => (
+      <div className="pg-block-stack">
+        <Heading level={3}>Deploys</Heading>
+        <Table
+          caption="Deploys"
+          hideCaption
+          columns={[
+            { key: "service", header: "Service", rowHeader: true },
+            { key: "when", header: "When" },
+          ]}
+          rows={[] as Array<{ id: string; service: string; when: string }>}
+          getRowKey={(d) => d.id}
+          empty={<Text tone="muted">No deploys yet. They appear here as soon as one starts.</Text>}
+        />
+      </div>
+    ),
+  },
+
   pagination: {
     "Paging a table of results": () => <PaginationHashStage />,
     "With a client-side router": () => <PaginationRouterStage />,
@@ -1465,6 +1487,65 @@ function MenuItemStage({
  * worth trying: the trigger still reports, and the state above it still owns
  * the answer.
  */
+interface DemoInvoice {
+  id: string;
+  number: string;
+  due: string;
+  amount: number;
+  status: string;
+  overdue: boolean;
+}
+
+const DEMO_INVOICES: DemoInvoice[] = [
+  { id: "204", number: "INV-204", due: "2026-10-28", amount: 120, status: "Overdue", overdue: true },
+  { id: "205", number: "INV-205", due: "2026-11-14", amount: 1840.5, status: "Open", overdue: false },
+  { id: "206", number: "INV-206", due: "2026-11-21", amount: 64.2, status: "Open", overdue: false },
+  { id: "207", number: "INV-207", due: "2026-11-02", amount: 310, status: "Overdue", overdue: true },
+];
+
+/** The caller sorts; the table only reports the request and renders the order it is given. */
+function TableSortStage() {
+  const [sort, setSort] = useState<TableSort | null>({ key: "due", direction: "ascending" });
+  const sorted = [...DEMO_INVOICES].sort((a, b) => {
+    if (sort === null) return 0;
+    const key = sort.key as "due" | "amount";
+    const order = a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0;
+    return sort.direction === "ascending" ? order : -order;
+  });
+  return (
+    <Table
+      caption="Open invoices"
+      columns={[
+        {
+          key: "number",
+          header: "Invoice",
+          rowHeader: true,
+          cell: (inv: DemoInvoice) => <Link href={`#invoice-${inv.id}`}>{inv.number}</Link>,
+        },
+        { key: "due", header: "Due", sortable: true },
+        {
+          key: "amount",
+          header: "Amount",
+          align: "end",
+          sortable: true,
+          cell: (inv: DemoInvoice) => inv.amount.toFixed(2),
+        },
+        {
+          key: "status",
+          header: "Status",
+          cell: (inv: DemoInvoice) => (
+            <Badge variant={inv.overdue ? "danger" : "neutral"}>{inv.status}</Badge>
+          ),
+        },
+      ]}
+      rows={sorted}
+      getRowKey={(inv) => inv.id}
+      sort={sort}
+      onSortChange={setSort}
+    />
+  );
+}
+
 /**
  * The page lives in the address, as the contract asks: each link is a real
  * href (a hash here, so the playground's own route is untouched) and the

@@ -5,19 +5,23 @@
 
 Rows of records compared column by column, with a caption, optional sorting and a horizontal scroll that keyboard users can reach.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Table } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `table` |
 | Family | content |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | `state-layer`, `icon`, `visually-hidden` |
 
 ## Behavior
 
 A real `<table>` with a `<caption>`, `<thead>`, `<th scope>` headers and `aria-sort` on the sorted column, inside a focusable scroll region. Data-driven — `columns` and `rows` — like Breadcrumbs and SideNav, because hand-assembled `<tr>`/`<td>` markup is where scope, header association and sort state go missing. Proposed primitive: `getTableProps` in `packages/primitives/src/table.ts`, owning the sort cycle and the header and cell attributes; it is a proposal, not yet a commitment.
+
+Headless contract: `getTableProps` in `packages/primitives/src/table.ts` — importable from `@rata/primitives` without the React wrapper or any CSS.
 
 - **A Table is for rows compared by column, and nothing else** — The test from Card's contract, from the other side: if the reader's question is "which of these is larger, older, failing", the answer lives in a column, and only a table keeps the column. A list of things each read on its own is a list or a gallery of Cards. A layout grid is CSS grid. A `<table>` used for layout is announced as a data table, row and column counts included, which is noise at best.
 - **`caption` is required** — A table's accessible name is how a reader who lands on it — or lists the page's tables — knows which one it is. A `<caption>` is the one naming mechanism every screen reader supports for tables. When the heading above the table already says the same thing, `hideCaption` keeps the name and drops the visible duplicate; the name itself is not optional.
@@ -30,6 +34,8 @@ A real `<table>` with a `<caption>`, `<thead>`, `<th scope>` headers and `aria-s
 
 ## Props
 
+Extends `Omit<HTMLAttributes<HTMLDivElement>, "children" | "role" | "tabIndex">`.
+
 | Prop | Type | Default | Summary |
 |---|---|---|---|
 | `caption` | `string` | — | The table's name. Required. |
@@ -37,9 +43,9 @@ A real `<table>` with a `<caption>`, `<thead>`, `<th scope>` headers and `aria-s
 | `columns` | `TableColumn<Row>[]` | — | The columns, in reading order: each with a `key`, a `header`, and optionally a `cell` renderer, `align`, `sortable` and `rowHeader`. |
 | `rows` | `Row[]` | — | The records, in the order they are shown. |
 | `getRowKey` | `(row: Row) => string` | — | A stable identity for each row. |
-| `sort?` | `{ key: string; direction: "ascending" \| "descending" } \| null` | `null` | Which column the rows are currently sorted by, if any. |
-| `onSortChange?` | `(sort: { key: string; direction: "ascending" \| "descending" }) => void` | — | Called when the reader asks to sort by a column. Required for any column marked `sortable` to render a control. |
-| `density?` | `"comfortable" \| "compact"` | `"comfortable"` | How tall each row is. |
+| `sort?` | `TableSort \| null` | `null` | Which column the rows are currently sorted by, if any. |
+| `onSortChange?` | `(sort: TableSort) => void` | — | Called when the reader asks to sort by a column. Required for any column marked `sortable` to render a control. |
+| `density?` | `TableDensity` | `"comfortable"` | How tall each row is. |
 | `empty?` | `ReactNode` | — | What to show in place of the rows when there are none. |
 | `className?` | `string` | — | Extra classes on the scroll region, for placement. |
 
@@ -86,6 +92,8 @@ columns: TableColumn<Row>[]
 ```
 
 The columns, in reading order: each with a `key`, a `header`, and optionally a `cell` renderer, `align`, `sortable` and `rowHeader`.
+
+Source doc: The columns, in reading order.
 
 **Use when**
 
@@ -135,7 +143,7 @@ A stable identity for each row.
 ### `sort`
 
 ```ts
-sort?: { key: string; direction: "ascending" | "descending" } | null = null
+sort?: TableSort | null = null
 ```
 
 Which column the rows are currently sorted by, if any.
@@ -153,10 +161,12 @@ Which column the rows are currently sorted by, if any.
 ### `onSortChange`
 
 ```ts
-onSortChange?: (sort: { key: string; direction: "ascending" | "descending" }) => void
+onSortChange?: (sort: TableSort) => void
 ```
 
 Called when the reader asks to sort by a column. Required for any column marked `sortable` to render a control.
+
+Source doc: Called when the reader asks to sort by a column.
 
 **Use when**
 
@@ -171,7 +181,7 @@ Called when the reader asks to sort by a column. Required for any column marked 
 ### `density`
 
 ```ts
-density?: "comfortable" | "compact" = "comfortable"
+density?: TableDensity = "comfortable"
 ```
 
 How tall each row is.
