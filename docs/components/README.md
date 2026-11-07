@@ -22,8 +22,8 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Card](card.md) | `card` | content | latest / latest | documented | free |
 | [Checkbox](checkbox.md) | `checkbox` | inputs | latest / latest | documented | free |
 | [Chip](chip.md) | `chip` | inputs | latest / latest | documented | free |
-| [Combobox](combobox.md) | `combobox` | inputs | future / future | spec | free |
-| [Date Picker](date-picker.md) | `date-picker` | inputs | future / future | spec | free |
+| [Combobox](combobox.md) | `combobox` | inputs | latest / latest | documented | free |
+| [Date Picker](date-picker.md) | `date-picker` | inputs | latest / latest | documented | free |
 | [Date Range Picker](date-range-picker.md) | `date-range-picker` | inputs | future / future | spec | free |
 | [Dialog](dialog.md) | `dialog` | overlays | latest / latest | documented | free |
 | [Disclosure](disclosure.md) | `disclosure` | content | latest / latest | documented | free |

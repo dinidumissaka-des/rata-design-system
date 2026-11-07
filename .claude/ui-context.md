@@ -27,8 +27,8 @@ this path is the honest answer to when it last actually moved.
 | [card](../docs/components/card.md) | `@rata/react` | content | latest / latest / future | free |
 | [checkbox](../docs/components/checkbox.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [chip](../docs/components/chip.md) | `@rata/react` | inputs | latest / latest / future | free |
-| [combobox](../docs/components/combobox.md) | `@rata/react` | inputs | future / future / future | free |
-| [date-picker](../docs/components/date-picker.md) | `@rata/react` | inputs | future / future / future | free |
+| [combobox](../docs/components/combobox.md) | `@rata/react` | inputs | latest / latest / future | free |
+| [date-picker](../docs/components/date-picker.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [date-range-picker](../docs/components/date-range-picker.md) | `@rata/react` | inputs | future / future / future | free |
 | [dialog](../docs/components/dialog.md) | `@rata/react` | overlays | latest / latest / future | free |
 | [disclosure](../docs/components/disclosure.md) | `@rata/react` | content | latest / latest / future | free |
@@ -279,15 +279,111 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/chip.md](../docs/components/chip.md)
 
-### Combobox
+### Combobox (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `label: ReactNode`
+  The control's name. Always required — `labelHidden` hides it, nothing removes it.
+- `options: ComboboxOption[]`
+  The choices, in the order they are read.
+- `value?: string | null`
+  Controls the chosen option's `value` from outside. `null` means nothing is chosen.
+- `defaultValue?: string | null` — default: `null`
+  The starting choice when the component owns the state.
+- `onValueChange?: (value: string | null) => void`
+  Fires with the chosen option's value when a choice is committed.
+- `onInputChange?: (text: string) => void`
+  Fires with the text in the box on every edit.
+- `filter?: ComboboxFilter` — default: `"contains"`
+  How typed text narrows `options` locally.
+- `allowCustomValue?: boolean` — default: `false`
+  Accepts text that matches no option as the answer.
+- `loading?: boolean` — default: `false`
+  Options are being fetched. The popup shows a spinner row and the field is busy.
+- `emptyMessage?: ReactNode` — default: `"No matches"`
+  What the popup says when nothing matches.
+- `placeholder?: string`
+  A hint shown while the box is empty.
+- `name?: string`
+  Form field name. Submits the chosen option's `value`, not the text.
+- `size?: ComboboxSize` — default: `"md"`
+  Control height and inline padding. Text size does not change with it.
+- `labelHidden?: boolean` — default: `false`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the combobox. Defaults to a generated one.
+- `status?: FieldStatus` — default: `"idle"`
+  Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `message?: ReactNode`
+  Status-dependent message under the control.
+- `required?: boolean` — default: `false`
+  Marks the field required to assistive technology and in the label.
+- `disabled?: boolean` — default: `false`
+  Blocks choosing while keeping the field focusable, readable and announced.
+- `className?: string`
+  Class for the wrapper — the width the form wants, not a restyle.
+
+Real usage (from `apps/`):
+```tsx
+<Combobox
+          label="Time zone"
+          placeholder="Type a city"
+          options={TIME_ZONES}
+          name="tz"
+          required
+        />
+```
 
 Contract: [docs/components/combobox.md](../docs/components/combobox.md)
 
-### Date Picker
+### Date Picker (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `label: ReactNode`
+  What the date is. Always required — `labelHidden` hides it, nothing removes it.
+- `value?: string | null`
+  Controls the chosen date from outside, as an ISO calendar date. `null` is empty.
+- `defaultValue?: string | null` — default: `null`
+  The starting date when the component owns the state.
+- `onValueChange?: (value: string | null) => void`
+  Fires with the ISO date when a day is chosen, or typed text parses on blur or Enter.
+- `min?: string`
+  The earliest choosable date, as ISO.
+- `max?: string`
+  The latest choosable date, as ISO.
+- `isDateUnavailable?: (date: string) => boolean`
+  Marks individual dates unchoosable. Runs for every visible day; precompute a set.
+- `firstDayOfWeek?: 0 | 1 | 2 | 3 | 4 | 5 | 6`
+  Which weekday starts each row, 0 being Sunday. Defaults to the page locale's.
+- `calendarLabel?: string` — default: `"Choose date"`
+  Accessible name for the calendar button. The chosen date is appended to it.
+- `placeholder?: string`
+  Shown while empty. Defaults to the expected format for the page locale.
+- `name?: string`
+  Form field name. Submits the ISO date, not the displayed text.
+- `size?: DatePickerSize` — default: `"md"`
+  Control height and inline padding. Text size does not change with it.
+- `labelHidden?: boolean` — default: `false`
+  Takes the label off screen while leaving it in the accessibility tree.
+- `id?: string`
+  Stable id for the date field. Defaults to a generated one.
+- `status?: FieldStatus` — default: `"idle"`
+  Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.
+- `description?: ReactNode`
+  Persistent helper text under the control.
+- `message?: ReactNode`
+  Status-dependent message under the control.
+- `required?: boolean` — default: `false`
+  Marks the field required to assistive technology and in the label.
+- `disabled?: boolean` — default: `false`
+  Blocks typing and opening the calendar while keeping the field focusable and announced.
+- `className?: string`
+  Class for the wrapper — the width the form wants, not a restyle.
+
+Real usage (from `apps/`):
+```tsx
+<DatePicker label="Date of birth" max={todayISO()} description="As it appears on your passport." />
+```
 
 Contract: [docs/components/date-picker.md](../docs/components/date-picker.md)
 

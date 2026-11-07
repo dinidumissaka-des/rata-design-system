@@ -13,6 +13,8 @@ import { useEffect, useId, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import {
   Avatar,
+  DatePicker,
+  Combobox,
   Fab,
   Chip,
   BottomNav,
@@ -61,6 +63,7 @@ import {
 } from "@rata/react";
 import type {
   AvatarSize,
+  ComboboxOption,
   BadgeVariant,
   ButtonGroupOrientation,
   DialogSize,
@@ -79,6 +82,7 @@ import type {
   ToggleButtonVariant,
   TableSort,
 } from "@rata/react";
+import { addDays, dayOfWeek, todayISO } from "@rata/primitives";
 import type { TabsActivation, TabsOrientation } from "@rata/primitives";
 import type { SegmentedControlSize } from "@rata/react";
 import type { IconSize, LucideIcon } from "@rata/icons";
@@ -1129,6 +1133,42 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     ),
   },
 
+
+  combobox: {
+    "Choosing one of many from a local list": () => (
+      <div className="pg-block-stack">
+        <Combobox
+          label="Time zone"
+          placeholder="Type a city"
+          options={TIME_ZONES}
+          name="tz"
+          required
+        />
+      </div>
+    ),
+    "Options fetched as the reader types": () => <ComboboxServerStage />,
+    "Suggestions over an open answer": () => <ComboboxTagStage />,
+  },
+
+  "date-picker": {
+    "A date in the near future": () => (
+      <div className="pg-block-stack">
+        <DatePicker
+          label="Check-in"
+          min={todayISO()}
+          isDateUnavailable={(d) => BOOKED.has(d)}
+          name="checkin"
+          required
+        />
+      </div>
+    ),
+    "A date far in the past": () => (
+      <div className="pg-block-stack">
+        <DatePicker label="Date of birth" max={todayISO()} description="As it appears on your passport." />
+      </div>
+    ),
+    "A typed date that is not allowed": () => <DeliveryDateStage />,
+  },
 
   spinner: {
     "Standalone region loading": () => <Spinner label="Loading results" />,
@@ -3491,6 +3531,116 @@ function ChipFilterStage() {
       <Button ref={resetRef} variant="tertiary" size="sm" onClick={() => setColour("Blue")}>
         Reset filters
       </Button>
+    </div>
+  );
+}
+
+const TIME_ZONES: ComboboxOption[] = [
+  { value: "Pacific/Honolulu", label: "Honolulu" },
+  { value: "America/Los_Angeles", label: "Los Angeles" },
+  { value: "America/Denver", label: "Denver" },
+  { value: "America/Chicago", label: "Chicago" },
+  { value: "America/New_York", label: "New York" },
+  { value: "America/Sao_Paulo", label: "São Paulo" },
+  { value: "Europe/London", label: "London" },
+  { value: "Europe/Lisbon", label: "Lisbon" },
+  { value: "Europe/Paris", label: "Paris" },
+  { value: "Africa/Nairobi", label: "Nairobi" },
+  { value: "Asia/Dubai", label: "Dubai" },
+  { value: "Asia/Colombo", label: "Colombo" },
+  { value: "Asia/Singapore", label: "Singapore" },
+  { value: "Asia/Tokyo", label: "Tokyo" },
+  { value: "Australia/Sydney", label: "Sydney" },
+];
+
+const PEOPLE: ComboboxOption[] = [
+  { value: "u1", label: "Amaya Perera", description: "amaya@example.com" },
+  { value: "u2", label: "Brian Okafor", description: "brian@example.com" },
+  { value: "u3", label: "Chen Wei", description: "wei.chen@example.com" },
+  { value: "u4", label: "Dana Silva", description: "dana@example.com" },
+  { value: "u5", label: "Elif Kaya", description: "elif@example.com", disabled: true },
+];
+
+/** A stand-in server: matches on name or email, answers after a short delay. */
+function ComboboxServerStage() {
+  const [people, setPeople] = useState<ComboboxOption[]>(PEOPLE);
+  const [pending, setPending] = useState(false);
+  const [assignee, setAssignee] = useState<string | null>(null);
+  const request = useRef(0);
+  const fetchPeople = (text: string) => {
+    const ticket = ++request.current;
+    setPending(true);
+    window.setTimeout(() => {
+      if (ticket !== request.current) return;
+      const needle = text.trim().toLowerCase();
+      setPeople(
+        PEOPLE.filter(
+          (p) =>
+            p.label.toLowerCase().includes(needle) ||
+            String(p.description).toLowerCase().includes(needle)
+        )
+      );
+      setPending(false);
+    }, 400);
+  };
+  return (
+    <div className="pg-block-stack">
+      <Combobox
+        label="Assignee"
+        options={people}
+        filter="none"
+        loading={pending}
+        onInputChange={fetchPeople}
+        onValueChange={setAssignee}
+      />
+      <Text role="supporting" tone="muted">
+        Value: {assignee ?? "none"} — try typing an email domain.
+      </Text>
+    </div>
+  );
+}
+
+function ComboboxTagStage() {
+  const [tag, setTag] = useState<string | null>(null);
+  return (
+    <div className="pg-block-stack">
+      <Combobox
+        label="Tag"
+        options={[
+          { value: "design", label: "design" },
+          { value: "tokens", label: "tokens" },
+          { value: "accessibility", label: "accessibility" },
+        ]}
+        allowCustomValue
+        onValueChange={setTag}
+      />
+      <Text role="supporting" tone="muted">
+        Value: {tag ?? "none"}
+      </Text>
+    </div>
+  );
+}
+
+/** Three booked nights from today, as ISO strings like every other date here. */
+const BOOKED = new Set([2, 3, 9].map((days) => addDays(todayISO(), days)));
+
+/** The caller's validation: Sundays are not delivery days, typed or chosen. */
+function DeliveryDateStage() {
+  const [date, setDate] = useState<string | null>(null);
+  const sunday = date !== null && dayOfWeek(date) === 0;
+  return (
+    <div className="pg-block-stack">
+      <DatePicker
+        label="Delivery"
+        value={date}
+        onValueChange={setDate}
+        isDateUnavailable={(d) => dayOfWeek(d) === 0}
+        status={sunday ? "invalid" : "idle"}
+        message={sunday ? "We do not deliver on Sundays. Choose another day." : undefined}
+      />
+      <Text role="supporting" tone="muted">
+        Type a Sunday to see the message; the calendar refuses one.
+      </Text>
     </div>
   );
 }
