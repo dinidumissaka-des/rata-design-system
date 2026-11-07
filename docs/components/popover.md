@@ -268,7 +268,7 @@ Don't. A list of actions is a Menu — arrow keys, typeahead, focus returned aft
         }
       >
         <Text>Invoices and receipts go here, not to your login email.</Text>
-        <a href="#billing">Learn more</a>
+        <Link href="#billing">Learn more</Link>
       </Popover>
 ```
 

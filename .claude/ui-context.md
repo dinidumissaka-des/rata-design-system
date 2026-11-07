@@ -433,7 +433,7 @@ Extends: `Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href" | "children">`
 
 Real usage (from `apps/`):
 ```tsx
-<Link href="#contrast-report">contrast report</Link>
+<Link href="#billing">Learn more</Link>
 ```
 
 Contract: [docs/components/link.md](../docs/components/link.md)
@@ -651,7 +651,7 @@ Real usage (from `apps/`):
         }
       >
         <Text>Invoices and receipts go here, not to your login email.</Text>
-        <a href="#billing">Learn more</a>
+        <Link href="#billing">Learn more</Link>
       </Popover>
 ```
 

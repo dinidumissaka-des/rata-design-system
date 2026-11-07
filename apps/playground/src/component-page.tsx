@@ -874,7 +874,7 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
         }
       >
         <Text>Invoices and receipts go here, not to your login email.</Text>
-        <a href="#billing">Learn more</a>
+        <Link href="#billing">Learn more</Link>
       </Popover>
     ),
     "A small filter, controlled": () => <PopoverFilterStage />,

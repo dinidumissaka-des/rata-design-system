@@ -176,7 +176,7 @@ Don't. Nothing is navigated to, so it is a button: `<Button variant="tertiary" o
 ## Real usage in this repo
 
 ```tsx
-<Link href="#contrast-report">contrast report</Link>
+<Link href="#billing">Learn more</Link>
 ```
 
 ## Token recipe

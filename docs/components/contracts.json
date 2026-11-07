@@ -5934,7 +5934,7 @@
         }
       }
     },
-    "example": "<Link href=\"#contrast-report\">contrast report</Link>"
+    "example": "<Link href=\"#billing\">Learn more</Link>"
   },
   {
     "name": "list",
@@ -9124,7 +9124,7 @@
         }
       }
     },
-    "example": "<Popover\n        title=\"Billing email\"\n        trigger={\n          <Button variant=\"tertiary\" iconOnly aria-label=\"About billing email\">\n            <Icon icon={Info} />\n          </Button>\n        }\n      >\n        <Text>Invoices and receipts go here, not to your login email.</Text>\n        <a href=\"#billing\">Learn more</a>\n      </Popover>"
+    "example": "<Popover\n        title=\"Billing email\"\n        trigger={\n          <Button variant=\"tertiary\" iconOnly aria-label=\"About billing email\">\n            <Icon icon={Info} />\n          </Button>\n        }\n      >\n        <Text>Invoices and receipts go here, not to your login email.</Text>\n        <Link href=\"#billing\">Learn more</Link>\n      </Popover>"
   },
   {
     "name": "progress",
