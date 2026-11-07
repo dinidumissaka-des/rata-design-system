@@ -20,7 +20,7 @@ this path is the honest answer to when it last actually moved.
 |---|---|---|---|---|
 | [avatar](../docs/components/avatar.md) | `@rata/react` | content | latest / latest / future | free |
 | [badge](../docs/components/badge.md) | `@rata/react` | content | latest / latest / future | free |
-| [bottom-nav](../docs/components/bottom-nav.md) | `@rata/react` | navigation | future / future / future | free |
+| [bottom-nav](../docs/components/bottom-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [breadcrumbs](../docs/components/breadcrumbs.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [button](../docs/components/button.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [button-group](../docs/components/button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
@@ -118,9 +118,18 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/badge.md](../docs/components/badge.md)
 
-### Bottom Nav
+### Bottom Nav (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `items: BottomNavItem[]`
+  The destinations, in the order they are read.
+- `label?: string` — default: `"Main"`
+  Accessible name for the navigation landmark.
+- `className?: string`
+
+Real usage (from `apps/`):
+```tsx
+<BottomNav items={BOTTOM_NAV_SECTIONS} />
+```
 
 Contract: [docs/components/bottom-nav.md](../docs/components/bottom-nav.md)
 

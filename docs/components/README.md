@@ -15,7 +15,7 @@ behind it yet, and `css-only` when there is no props API by design.
 |---|---|---|---|---|---|
 | [Avatar](avatar.md) | `avatar` | content | latest / latest | documented | free |
 | [Badge](badge.md) | `badge` | content | latest / latest | documented | free |
-| [Bottom Nav](bottom-nav.md) | `bottom-nav` | navigation | future / future | spec | free |
+| [Bottom Nav](bottom-nav.md) | `bottom-nav` | navigation | latest / latest | documented | free |
 | [Breadcrumbs](breadcrumbs.md) | `breadcrumbs` | navigation | latest / latest | documented | free |
 | [Button](button.md) | `button` | buttons | latest / latest | documented | free |
 | [Button Group](button-group.md) | `button-group` | buttons | latest / latest | documented | free |

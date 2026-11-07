@@ -1,0 +1,157 @@
+/* BottomNav — three to five top-level destinations in a bar held to the
+   bottom of a narrow viewport.
+
+   Every value below is the gate-2 recipe in registry/components/bottom-nav.json
+   (batch approval, docs/decisions/2026-11-gate-1-review.md). It does not
+   decide when it applies: the page's own layout hides it, with display: none,
+   at the widths where a rail or a TopNav carries the same destinations. */
+
+/* base — part of the page's frame, separated from the content by a rule,
+   not a shadow. Sticky, not fixed, so it occupies its own space in the flow
+   and nothing scrolls under it: it must be the last child of a column at
+   least the viewport's height (min-block-size: 100dvh). */
+.rata-bottom-nav {
+  position: sticky;
+  inset-block-end: var(--rata-space-0);
+  box-sizing: border-box;
+  background: var(--rata-theme-bg-surface);
+  border-block-start: var(--rata-border-default) solid var(--rata-theme-border-default);
+  box-shadow: none;
+  /* The home indicator's inset on a notched phone, and a step of air
+     everywhere else. Every inset reads as zero without the page's
+     `viewport-fit=cover`. */
+  padding-block-start: var(--rata-space-0);
+  padding-block-end: max(var(--rata-space-1), env(safe-area-inset-bottom));
+  padding-inline-start: max(var(--rata-space-0), env(safe-area-inset-left));
+  padding-inline-end: max(var(--rata-space-0), env(safe-area-inset-right));
+  font-family: var(--rata-font-family-sans);
+}
+
+/* The bar's block size, published for the FAB's clearance (fab.json,
+   placement): its top rule, one item — size.target.min, or the item's
+   padding, icon, gap and label line where those are taller — and its
+   safe-area end padding. The same tokens the rules below draw the bar with,
+   summed, so nothing is measured at runtime. */
+:root:has(.rata-bottom-nav) {
+  --rata-bottom-nav-block-size: calc(
+    var(--rata-border-default) +
+      max(
+        var(--rata-size-target-min),
+        calc(
+          var(--rata-space-1) * 2 + var(--rata-size-icon-lg) + var(--rata-space-gap-xs) +
+            var(--rata-type-supporting-size) * var(--rata-type-supporting-line-height)
+        )
+      ) +
+      max(var(--rata-space-1), env(safe-area-inset-bottom))
+  );
+}
+
+/* One row; every item takes an equal share of the inline size, so the
+   targets do not resize with their labels. role="list" is restored in the
+   markup, because Safari drops list semantics from a list without markers. */
+.rata-bottom-nav-list {
+  display: flex;
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+  list-style: none;
+}
+
+.rata-bottom-nav-list > li {
+  display: flex;
+  flex: 1 1 var(--rata-space-0);
+  min-inline-size: var(--rata-space-0);
+}
+
+/* item — an icon over a visible label; the whole column is the target.
+   Hover and press come from .rata-state-layer, composed in the markup. */
+.rata-bottom-nav-item {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rata-space-gap-xs);
+  box-sizing: border-box;
+  min-inline-size: var(--rata-space-0);
+  min-block-size: var(--rata-size-target-min);
+  padding-block: var(--rata-space-1);
+  padding-inline: var(--rata-space-0);
+  color: var(--rata-theme-fg-secondary);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.rata-bottom-nav-item:focus-visible {
+  outline: var(--rata-focus-ring-width) solid var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* The shape behind the icon. Its padding is there in every state, so the
+   current item's indicator appears without moving anything; only the current
+   item fills it. Positioned, so the badge is placed against the icon. */
+.rata-bottom-nav-indicator {
+  position: relative;
+  display: inline-flex;
+  padding-inline: var(--rata-space-padding-sm);
+  border-radius: var(--rata-radius-pill);
+}
+
+.rata-bottom-nav-label {
+  max-inline-size: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--rata-type-supporting-size);
+  line-height: var(--rata-type-supporting-line-height);
+  font-weight: var(--rata-type-label-weight);
+}
+
+/* current — marked by a shape as well as a colour, and announced by
+   aria-current, so no single cue carries it alone. */
+.rata-bottom-nav-item[aria-current="page"] {
+  color: var(--rata-theme-accent-role-fg);
+}
+
+.rata-bottom-nav-item[aria-current="page"] .rata-bottom-nav-indicator {
+  background: var(--rata-theme-accent-role-subtle);
+  color: var(--rata-theme-accent-role-fg);
+}
+
+.rata-bottom-nav-item[aria-current="page"] .rata-bottom-nav-label {
+  font-weight: var(--rata-type-control-weight);
+}
+
+/* badge — on the icon's top edge, starting at its centre. A ring of the bar's
+   surface keeps it legible where it overlaps the glyph. The visible mark is
+   aria-hidden; the item's name carries the badge's words. */
+.rata-bottom-nav-badge {
+  position: absolute;
+  inset-block-start: var(--rata-space-0);
+  inset-inline-start: 50%;
+  border-radius: var(--rata-radius-pill);
+  box-shadow: var(--rata-space-0) var(--rata-space-0) var(--rata-space-0) var(--rata-border-2)
+    var(--rata-theme-bg-surface);
+}
+
+/* A count is text: the accent fill with its own label token. */
+.rata-bottom-nav-badge--count {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  block-size: var(--rata-size-icon-sm);
+  padding-inline: var(--rata-space-1);
+  background: var(--rata-theme-accent-role-bg);
+  color: var(--rata-theme-fg-on-accent);
+  font-size: var(--rata-type-supporting-size);
+  font-weight: var(--rata-type-control-weight);
+  /* The line is the badge's own height, so the digits centre in it. */
+  line-height: var(--rata-size-icon-sm);
+  white-space: nowrap;
+}
+
+/* A dot is a non-text indicator: the fill alone, at Badge's dot size. */
+.rata-bottom-nav-badge--dot {
+  inline-size: var(--rata-space-gap-sm);
+  block-size: var(--rata-space-gap-sm);
+  background: var(--rata-theme-accent-role-bg);
+}

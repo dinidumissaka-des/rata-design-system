@@ -14,6 +14,7 @@ import type { ReactNode } from "react";
 import {
   Avatar,
   Badge,
+  BottomNav,
   Breadcrumbs,
   Button,
   ButtonGroup,
@@ -90,6 +91,8 @@ import {
   Ellipsis,
   Pencil,
   Plus,
+  Star,
+  Search as SearchGlyph,
   Copy,
   Upload,
   Download,
@@ -107,6 +110,7 @@ import {
 import { COMPONENT_TABS, componentPage } from "./routing.js";
 import type { ComponentTab, Page } from "./routing.js";
 import { TableScroll } from "./table-scroll.js";
+import { NARROW, useMediaQuery } from "./use-media-query.js";
 import contractsJson from "../../../docs/components/contracts.json";
 
 export interface ContractProp {
@@ -827,6 +831,18 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
       />
     ),
     "Panels that cost something to open": () => <TabsManualStage />,
+  },
+
+  "bottom-nav": {
+    "An app's four top-level sections on a phone": () => (
+      <div className="pg-bottom-nav-stage">
+        <Text tone="secondary">The page's content scrolls above the bar.</Text>
+        <BottomNav items={BOTTOM_NAV_SECTIONS} />
+      </div>
+    ),
+    "The same destinations as a TopNav, at a different width": () => (
+      <BottomNavResponsiveStage />
+    ),
   },
 
   "top-nav": {
@@ -1766,6 +1782,32 @@ function PaginationRouterStage() {
           resultsRef.current?.focus();
         }}
       />
+const BOTTOM_NAV_SECTIONS = [
+  { label: "Home", href: "#", icon: Star, current: true },
+  { label: "Search", href: "#", icon: SearchGlyph },
+  { label: "Inbox", href: "#", icon: Settings, badge: { count: 3, label: "3 unread messages" } },
+  { label: "Profile", href: "#", icon: User },
+];
+
+/**
+ * The page decides which bar applies, not either component: below
+ * `breakpoint.wide` only the BottomNav is rendered, above it only the TopNav,
+ * so the two landmarks named "Main" are never in the tree together.
+ */
+function BottomNavResponsiveStage() {
+  const narrow = useMediaQuery(NARROW);
+  const sections = BOTTOM_NAV_SECTIONS.map(({ label, href, current }) => ({ label, href, current }));
+  return (
+    <div className="pg-bottom-nav-stage">
+      {!narrow && <TopNav items={sections} brand={<strong className="pg-brand">Ratā</strong>} />}
+      <Text tone="secondary">
+        {narrow ? "Narrow viewport: the BottomNav carries the sections." : "Wide viewport: the TopNav carries them. Narrow the window to swap."}
+      </Text>
+      {narrow && <BottomNav items={BOTTOM_NAV_SECTIONS} />}
+    </div>
+  );
+}
+
 /**
  * Removing a chip removes the focused button, so the handler moves focus
  * first — to the next chip's button, or the previous one when the last goes,

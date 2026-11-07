@@ -64,6 +64,9 @@ const ORDER = [
   "side-nav.css",
   // After side-nav: the drawer renders one and overrides its scrolling.
   "mobile-nav.css",
+  // With the other navigation: a bar of links that composes the state layer
+  // and overrides nothing loaded before it.
+  "bottom-nav.css",
   "tabs.css",
   "segmented-control.css",
   "notice.css",

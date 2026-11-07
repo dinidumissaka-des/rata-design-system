@@ -1718,3 +1718,16 @@ code {
   border: var(--rata-border-default) dashed var(--rata-theme-border-default);
   border-radius: var(--rata-radius-container);
 }
+
+/* A BottomNav specimen's column, standing in for the page's. The bar is
+   sticky, so it is the column's last child. No overflow clipping and no
+   radius: the items' focus rings sit outside them, at the bar's edges. */
+.pg-bottom-nav-stage {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--rata-space-stack-sm);
+  inline-size: 100%;
+  min-block-size: calc(var(--rata-size-target-min) * 3);
+  border: var(--rata-border-default) dashed var(--rata-theme-border-default);
+}

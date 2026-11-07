@@ -339,10 +339,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -350,19 +352,20 @@
     },
     "dependencies": [
       "state-layer",
-      "icon"
+      "icon",
+      "visually-hidden"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "items",
-        "type": "BottomNavItem[]",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "BottomNavItem[]",
+        "description": "The destinations, in the order they are read.",
+        "declared": true,
         "summary": "The destinations, in the order they are read: each `{ label: string; href: string; icon: LucideIcon; current?: boolean; badge?: { count?: number; label: string }; onClick?: (event) => void }`.",
         "use": [
           "Three to five top-level sections of the app — the places a reader moves between constantly, from anywhere.",
@@ -379,11 +382,11 @@
       },
       {
         "name": "label",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "Accessible name for the navigation landmark.",
         "default": "\"Main\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accessible name for the navigation landmark.",
         "use": [
           "A different name from any other `<nav>` on the page that is visible at the same time."
@@ -396,10 +399,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
+        "type": "string",
         "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Extra classes on the `<nav>`, for placement — not for restyling it.",
         "use": [
           "Hiding it at the widths where the layout shows a rail or a TopNav instead, with `display: none`."
@@ -540,7 +543,7 @@
         }
       }
     },
-    "example": null
+    "example": "<BottomNav items={BOTTOM_NAV_SECTIONS} />"
   },
   {
     "name": "breadcrumbs",

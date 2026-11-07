@@ -44,6 +44,8 @@ export { Badge } from "./badge.js";
 export type { BadgeProps, BadgeVariant } from "./badge.js";
 export { Chip } from "./chip.js";
 export type { ChipProps } from "./chip.js";
+export { BottomNav } from "./bottom-nav.js";
+export type { BottomNavProps, BottomNavItem, BottomNavBadge } from "./bottom-nav.js";
 export { Breadcrumbs } from "./breadcrumbs.js";
 export type { BreadcrumbsProps, BreadcrumbsItem } from "./breadcrumbs.js";
 export { Checkbox } from "./checkbox.js";
