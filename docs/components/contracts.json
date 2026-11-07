@@ -5826,7 +5826,7 @@
           "Every external link, by habit. Opening a new tab takes Back away; the reader can choose a new tab themselves."
         ],
         "conflicts": [],
-        "a11y": "Adds a glyph and visually-hidden \"(opens in a new tab)\", plus `target=\"_blank\"` and `rel=\"noopener noreferrer\"`. Web only."
+        "a11y": "Adds a glyph and visually-hidden \"(opens in new tab)\", plus `target=\"_blank\"` and `rel=\"noopener noreferrer\"`. Web only."
       },
       {
         "name": "className",
@@ -5882,7 +5882,7 @@
         },
         {
           "decision": "`newTab` exists so the warning cannot be forgotten",
-          "why": "WCAG 3.2.5 asks that a change of context be predictable, and a link that silently opens a new tab breaks Back for the reader who did not expect it. `newTab` sets `target=\"_blank\"` and `rel=\"noopener noreferrer\"` together, and adds a glyph plus visually-hidden \"(opens in a new tab)\" so it is announced. Passing `target=\"_blank\"` by hand gets none of that, which is the reason this is a prop rather than an attribute the caller remembers."
+          "why": "WCAG 3.2.5 asks that a change of context be predictable, and a link that silently opens a new tab breaks Back for the reader who did not expect it. `newTab` sets `target=\"_blank\"` and `rel=\"noopener noreferrer\"` together, and adds a glyph plus visually-hidden \"(opens in new tab)\" so it is announced. Passing `target=\"_blank\"` by hand gets none of that, which is the reason this is a prop rather than an attribute the caller remembers."
         },
         {
           "decision": "No visited colour",
