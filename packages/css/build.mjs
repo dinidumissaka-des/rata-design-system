@@ -65,6 +65,8 @@ const ORDER = [
   // After notice: the same feedback family, drawn on the content's surface; it
   // only colours the Icon it holds, so it follows icon.css.
   "empty-state.css",
+  // After notice, whose frame it copies; after button, whose margin it trims.
+  "toast.css",
   // After notice: both are surfaces, and the menu sits above one.
   "menu.css",
   // After menu: the same top-layer surface and anchoring, read beside it.

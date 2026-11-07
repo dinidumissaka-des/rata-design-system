@@ -13860,10 +13860,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -13871,19 +13873,20 @@
     },
     "dependencies": [
       "state-layer",
-      "icon"
+      "icon",
+      "button"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "children",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The message — one short sentence about what just happened.",
+        "declared": true,
         "summary": "The message — one short sentence about what just happened.",
         "use": [
           "Past tense, naming the thing: \"Invoice sent\", \"3 tokens copied\"."
@@ -13897,16 +13900,16 @@
       },
       {
         "name": "variant",
-        "type": "\"neutral\" | \"success\" | \"danger\"",
+        "optional": true,
+        "type": "ToastVariant",
+        "description": "Whether the outcome says anything about health.",
+        "default": "\"neutral\"",
         "values": [
           "neutral",
           "success",
           "danger"
         ],
-        "optional": true,
-        "default": "\"neutral\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Whether the outcome says anything about health.",
         "use": [
           "`neutral` for almost everything — a confirmation is not a celebration.",
@@ -13921,10 +13924,10 @@
       },
       {
         "name": "action",
-        "type": "{ label: string; onAction: () => void }",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "{ label: string; onAction: () => void }",
+        "description": "One optional action — Undo, View — offered alongside the message.",
+        "declared": true,
         "summary": "One optional action — Undo, View — offered alongside the message.",
         "use": [
           "Undo for a reversible action the reader may have done by mistake."
@@ -13938,11 +13941,11 @@
       },
       {
         "name": "duration",
-        "type": "number | null",
         "optional": true,
+        "type": "number | null",
+        "description": "Milliseconds before the toast leaves on its own, or `null` to stay until dismissed.",
         "default": "6000",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Milliseconds before the toast leaves on its own, or `null` to stay until dismissed.",
         "use": [
           "The default for almost everything.",
@@ -13956,10 +13959,10 @@
       },
       {
         "name": "onDismiss",
-        "type": "() => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "() => void",
+        "description": "Called when the toast leaves — by its timer, its dismiss button, its action, or the stack making room.",
+        "declared": true,
         "summary": "Called when the toast leaves — by timer, by the dismiss button, or by a swipe on native.",
         "use": [
           "Cleaning up state that should not outlive the message."
@@ -13972,11 +13975,11 @@
       },
       {
         "name": "dismissLabel",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "Accessible name for the dismiss button.",
         "default": "\"Dismiss\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accessible name for the dismiss button.",
         "use": [
           "A translated label."
@@ -14102,7 +14105,7 @@
         }
       }
     },
-    "example": null
+    "example": "<Toast>Token path copied</Toast>"
   },
   {
     "name": "toggle-button",

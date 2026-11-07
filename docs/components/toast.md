@@ -5,15 +5,17 @@
 
 A brief, polite confirmation of something the reader just did, shown away from the content and gone on its own.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Toast } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `toast` |
 | Family | feedback |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
-| Depends on | `state-layer`, `icon` |
+| Status (css / react / figma) | latest / latest / future |
+| Depends on | `state-layer`, `icon`, `button` |
 
 ## Behavior
 
@@ -33,7 +35,7 @@ A message rendered into one app-level toast region, announced politely, never ta
 | Prop | Type | Default | Summary |
 |---|---|---|---|
 | `children` | `ReactNode` | — | The message — one short sentence about what just happened. |
-| `variant?` | `"neutral" \| "success" \| "danger"` | `"neutral"` | Whether the outcome says anything about health. |
+| `variant?` | `ToastVariant` | `"neutral"` | Whether the outcome says anything about health. |
 | `action?` | `{ label: string; onAction: () => void }` | — | One optional action — Undo, View — offered alongside the message. |
 | `duration?` | `number \| null` | `6000` | Milliseconds before the toast leaves on its own, or `null` to stay until dismissed. |
 | `onDismiss?` | `() => void` | — | Called when the toast leaves — by timer, by the dismiss button, or by a swipe on native. |
@@ -61,7 +63,7 @@ The message — one short sentence about what just happened.
 ### `variant`
 
 ```ts
-variant?: "neutral" | "success" | "danger" = "neutral"
+variant?: ToastVariant = "neutral"
 ```
 
 Whether the outcome says anything about health.
@@ -123,6 +125,8 @@ onDismiss?: () => void
 ```
 
 Called when the toast leaves — by timer, by the dismiss button, or by a swipe on native.
+
+Source doc: Called when the toast leaves — by its timer, its dismiss button, its action, or the stack making room.
 
 **Use when**
 
@@ -189,6 +193,12 @@ toast.show(<Toast variant="danger">Check the highlighted fields</Toast>);
 ```
 
 Don't. The reader has to act, and the problem is in the form, not in the corner of the screen. That is a Notice at the top of the form with `live="assertive"`, and the fields' own invalid status.
+
+## Real usage in this repo
+
+```tsx
+<Toast>Token path copied</Toast>
+```
 
 ## Token recipe
 

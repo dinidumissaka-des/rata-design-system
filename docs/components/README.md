@@ -65,7 +65,7 @@ behind it yet, and `css-only` when there is no props API by design.
 | [Text](text.md) | `text` | content | latest / latest | documented | free |
 | [Input: Text field](text-field.md) | `text-field` | inputs | latest / latest | documented | free |
 | [Textarea](textarea.md) | `textarea` | inputs | latest / latest | documented | free |
-| [Toast](toast.md) | `toast` | feedback | future / future | spec | free |
+| [Toast](toast.md) | `toast` | feedback | latest / latest | documented | free |
 | [Toggle Button](toggle-button.md) | `toggle-button` | buttons | latest / latest | documented | free |
 | [Toggle Button Group](toggle-button-group.md) | `toggle-button-group` | buttons | latest / latest | documented | free |
 | [Tooltip](tooltip.md) | `tooltip` | overlays | latest / latest | documented | free |

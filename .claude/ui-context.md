@@ -70,7 +70,7 @@ this path is the honest answer to when it last actually moved.
 | [text](../docs/components/text.md) | `@rata/react` | content | latest / latest / future | free |
 | [text-field](../docs/components/text-field.md) | `@rata/react` | inputs | latest / latest / future | free |
 | [textarea](../docs/components/textarea.md) | `@rata/react` | inputs | latest / latest / future | free |
-| [toast](../docs/components/toast.md) | `@rata/react` | feedback | future / future / future | free |
+| [toast](../docs/components/toast.md) | `@rata/react` | feedback | latest / latest / future | free |
 | [toggle-button](../docs/components/toggle-button.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [toggle-button-group](../docs/components/toggle-button-group.md) | `@rata/react` | buttons | latest / latest / future | free |
 | [tooltip](../docs/components/tooltip.md) | `@rata/react` | overlays | latest / latest / future | free |
@@ -1212,9 +1212,25 @@ Real usage (from `apps/`):
 
 Contract: [docs/components/textarea.md](../docs/components/textarea.md)
 
-### Toast
+### Toast (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+- `children: ReactNode`
+  The message — one short sentence about what just happened.
+- `variant?: ToastVariant` — default: `"neutral"`
+  Whether the outcome says anything about health.
+- `action?: { label: string; onAction: () => void }`
+  One optional action — Undo, View — offered alongside the message.
+- `duration?: number | null` — default: `6000`
+  Milliseconds before the toast leaves on its own, or `null` to stay until dismissed.
+- `onDismiss?: () => void`
+  Called when the toast leaves — by its timer, its dismiss button, its action, or the stack making room.
+- `dismissLabel?: string` — default: `"Dismiss"`
+  Accessible name for the dismiss button.
+
+Real usage (from `apps/`):
+```tsx
+<Toast>Token path copied</Toast>
+```
 
 Contract: [docs/components/toast.md](../docs/components/toast.md)
 

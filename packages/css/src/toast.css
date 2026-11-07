@@ -1,0 +1,173 @@
+/* Toast — a brief, polite confirmation, shown away from the content and gone
+   on its own.
+
+   Notice's frame on a floating surface: the text, icon and dismiss are built
+   exactly as notice.css builds them, so a toast and a notice saying the same
+   thing look like the same message. What differs is the shadow, the border
+   and where it sits.
+
+   STACKING. The region is one `popover="manual"` element, shown once when it
+   mounts, so it lives in the top layer and needs no z-index — `layer.toast`
+   is for things that are NOT in the top layer, and nothing here is. */
+
+/* Region — fixed to the viewport's block-end edge, inset by the page gutter. */
+.rata-toast-region {
+  box-sizing: border-box;
+  /* The popover attribute's UA styles — centred with inset:0 and auto
+     margins, a border, padding, Canvas colours and overflow:auto (which
+     would clip every toast's shadow) — are replaced, not added to. */
+  position: fixed;
+  inset: auto;
+  inset-block-end: var(--rata-space-page-gutter);
+  inset-inline-end: var(--rata-space-page-gutter);
+  margin: var(--rata-space-0);
+  padding: var(--rata-space-0);
+  border: var(--rata-space-0);
+  background: transparent;
+  color: inherit;
+  overflow: visible;
+  /* Layout on the base rule, not on :popover-open — the trap dialog.css
+     records. */
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--rata-space-stack-xs);
+  /* The region is a box around the stack; only the toasts take the pointer,
+     so the gaps between them never swallow a click meant for the page. */
+  pointer-events: none;
+}
+
+.rata-toast-region:popover-open {
+  display: flex;
+}
+
+/* The toast — Notice's frame. */
+.rata-toast {
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rata-space-gap-sm);
+  padding: var(--rata-space-padding-sm) var(--rata-space-padding-md);
+  border: var(--rata-border-default) solid var(--rata-theme-border-default);
+  border-radius: var(--rata-radius-element);
+  box-shadow: var(--rata-theme-elevation-overlay);
+  font-family: var(--rata-font-family-sans);
+  font-size: var(--rata-type-body-size);
+  line-height: var(--rata-type-body-line-height);
+  /* The text is bounded by the compact measure, so the box is that plus its
+     padding — and never wider than the viewport less twice the gutter. */
+  max-inline-size: min(
+    calc(var(--rata-size-measure-compact) + var(--rata-space-padding-md) * 2),
+    calc(100vw - var(--rata-space-page-gutter) * 2)
+  );
+  pointer-events: auto;
+}
+
+/* neutral — the default and the commonest: a plain surface, because most
+   confirmations say nothing about health. */
+.rata-toast--neutral {
+  background: var(--rata-theme-bg-surface);
+  color: var(--rata-theme-fg-primary);
+}
+
+/* success and danger — the role's subtle tint with its own foreground, the
+   same pairing Notice uses. Never the saturated fill: text on it is a
+   recorded contrast gap. */
+.rata-toast--success {
+  background: var(--rata-theme-success-role-subtle);
+  color: var(--rata-theme-success-role-fg);
+}
+
+.rata-toast--danger {
+  background: var(--rata-theme-danger-role-subtle);
+  color: var(--rata-theme-danger-role-fg);
+}
+
+/* Notice's icon: the text step of the icon scale, nudged so its optical
+   centre sits on the first line rather than on its box. */
+.rata-toast-icon {
+  flex-shrink: 0;
+  margin-block-start: calc(
+    (1em * var(--rata-type-body-line-height) - var(--rata-size-icon-text)) / 2
+  );
+}
+
+.rata-toast-message {
+  flex: 1;
+  min-inline-size: 0;
+  margin: var(--rata-space-0);
+}
+
+/* The action is a secondary Button, as Notice's contract asks of its
+   actions. Pulled back into the frame's padding the same way as the dismiss
+   control, so a control-height button does not make a one-line toast taller
+   than its text. */
+.rata-toast-action {
+  flex-shrink: 0;
+  margin-block: calc(-1 * var(--rata-space-stack-2xs));
+}
+
+/* Notice's dismiss control, unchanged: currentColor, so the glyph always
+   matches the variant's foreground, and not a Button, because a tertiary
+   Button would bring its own colour onto a tinted surface. size.control.sm
+   is under 2.5.8's 44px and conforms through the spacing exception. */
+.rata-toast-dismiss {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--rata-size-control-sm);
+  block-size: var(--rata-size-control-sm);
+  padding: var(--rata-space-0);
+  border: var(--rata-space-0);
+  border-radius: var(--rata-radius-inner);
+  background: transparent;
+  color: currentColor;
+  cursor: pointer;
+  margin-block: calc(-1 * var(--rata-space-stack-2xs));
+  margin-inline-end: calc(-1 * var(--rata-space-stack-2xs));
+}
+
+.rata-toast-dismiss:focus-visible {
+  outline: var(--rata-focus-ring-width) var(--rata-focus-ring-style)
+    var(--rata-theme-focus-ring);
+  outline-offset: var(--rata-focus-ring-offset);
+}
+
+/* A leaving toast is on its way out: it must not catch the pointer, or the
+   hover that pauses timers would hold a toast that is already going. */
+.rata-toast--leaving {
+  pointer-events: none;
+}
+
+/* Enter and exit, both motion.overlay.duration, only for readers who have
+   not asked for less motion. Keyframes, because a toast is mounted and
+   unmounted rather than toggled: there is no from-state to transition from,
+   and the component waits for the exit animation to finish before removing
+   it. With reduced motion there is no animation and it is removed at once.
+   A short rise from the edge it is pinned to, and a fade. */
+@media (prefers-reduced-motion: no-preference) {
+  .rata-toast {
+    animation: rata-toast-enter var(--rata-motion-overlay-duration)
+      var(--rata-motion-easing-enter);
+  }
+
+  .rata-toast--leaving {
+    animation: rata-toast-exit var(--rata-motion-overlay-duration)
+      var(--rata-motion-easing-exit) forwards;
+  }
+}
+
+@keyframes rata-toast-enter {
+  from {
+    opacity: 0;
+    translate: 0 var(--rata-space-2);
+  }
+}
+
+@keyframes rata-toast-exit {
+  to {
+    opacity: 0;
+    translate: 0 var(--rata-space-2);
+  }
+}

@@ -52,7 +52,9 @@ import {
   TextField,
   ToggleButton,
   ToggleButtonGroup,
+  Toast,
   Tooltip,
+  useToast,
 } from "@rata/react";
 import type {
   AvatarSize,
@@ -976,6 +978,11 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     ),
   },
 
+  toast: {
+    "A confirmation that can safely be missed": () => <CopyPathToastExample />,
+    "Undo for something reversible": () => <ArchiveToastExample />,
+  },
+
   notice: {
     "A page-level message that is there when the page loads": () => (
       <Notice variant="warning">This project is read-only while the migration runs.</Notice>
@@ -1091,6 +1098,56 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     ),
   },
 };
+
+/**
+ * Raised from the click handler and handed to the app's one `ToastRegion`
+ * (mounted in main.tsx). Focus stays on the button.
+ */
+function CopyPathToastExample() {
+  const toast = useToast();
+  return (
+    <Button
+      variant="secondary"
+      onClick={() => {
+        void navigator.clipboard?.writeText("color.accent.600").catch(() => {});
+        toast.show(<Toast>Token path copied</Toast>);
+      }}
+    >
+      Copy path
+    </Button>
+  );
+}
+
+/**
+ * The row stays restorable from the list itself, so the toast's Undo is a
+ * shortcut, not the only way back — which is why the default duration holds.
+ */
+function ArchiveToastExample() {
+  const toast = useToast();
+  const [archived, setArchived] = useState(false);
+  return (
+    <span className="pg-example-inline">
+      <Text as="span">{archived ? "Q3 revenue — archived" : "Q3 revenue"}</Text>
+      <Button
+        variant="secondary"
+        onClick={() => {
+          if (archived) {
+            setArchived(false);
+            return;
+          }
+          setArchived(true);
+          toast.show(
+            <Toast action={{ label: "Undo", onAction: () => setArchived(false) }}>
+              Row archived
+            </Toast>
+          );
+        }}
+      >
+        {archived ? "Restore" : "Archive"}
+      </Button>
+    </span>
+  );
+}
 
 /**
  * `loading` is the whole point of this example, and a button frozen in the

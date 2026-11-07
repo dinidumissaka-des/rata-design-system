@@ -10,10 +10,12 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
@@ -21,9 +23,23 @@
   },
   "dependencies": [
     "state-layer",
-    "icon"
+    "icon",
+    "button"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/toast.css",
+      "target": "styles/toast.css"
+    },
+    {
+      "source": "packages/react/src/toast.tsx",
+      "target": "components/toast.tsx"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -121,8 +137,6 @@
   },
   "props": {
     "children": {
-      "type": "ReactNode",
-      "required": true,
       "summary": "The message — one short sentence about what just happened.",
       "use": [
         "Past tense, naming the thing: \"Invoice sent\", \"3 tokens copied\"."
@@ -134,8 +148,6 @@
       "a11y": "Announced politely through the region's live region when the toast appears."
     },
     "variant": {
-      "type": "\"neutral\" | \"success\" | \"danger\"",
-      "default": "\"neutral\"",
       "summary": "Whether the outcome says anything about health.",
       "use": [
         "`neutral` for almost everything — a confirmation is not a celebration.",
@@ -148,7 +160,6 @@
       "a11y": "Colour is not the only signal: the success and danger variants carry an icon, as Notice does, which is `aria-hidden` because the text already says it."
     },
     "action": {
-      "type": "{ label: string; onAction: () => void }",
       "summary": "One optional action — Undo, View — offered alongside the message.",
       "use": [
         "Undo for a reversible action the reader may have done by mistake."
@@ -160,8 +171,6 @@
       "a11y": "Rendered as a real button. The timer pauses while focus is inside the toast, so a keyboard user reaching for it does not lose it."
     },
     "duration": {
-      "type": "number | null",
-      "default": "6000",
       "summary": "Milliseconds before the toast leaves on its own, or `null` to stay until dismissed.",
       "use": [
         "The default for almost everything.",
@@ -173,7 +182,6 @@
       "a11y": "Paused while hovered, while focus is inside, and while the tab is hidden — the adjustment WCAG 2.2.1 requires for timed content."
     },
     "onDismiss": {
-      "type": "() => void",
       "summary": "Called when the toast leaves — by timer, by the dismiss button, or by a swipe on native.",
       "use": [
         "Cleaning up state that should not outlive the message."
@@ -183,8 +191,6 @@
       ]
     },
     "dismissLabel": {
-      "type": "string",
-      "default": "\"Dismiss\"",
       "summary": "Accessible name for the dismiss button.",
       "use": [
         "A translated label."

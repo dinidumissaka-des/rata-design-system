@@ -10,10 +10,14 @@ import "@rata/theme-rust/theme.css";
 import "@rata/theme-ink/theme.css";
 import "@rata/theme-cobalt/theme.css";
 import "./playground.css";
+import { ToastRegion } from "@rata/react";
 import { App } from "./app.js";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    {/* Once, at the root: every toast in the app lands here. */}
+    <ToastRegion>
+      <App />
+    </ToastRegion>
   </StrictMode>
 );
