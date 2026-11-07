@@ -47,7 +47,7 @@ this path is the honest answer to when it last actually moved.
 | [mobile-nav](../docs/components/mobile-nav.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [notice](../docs/components/notice.md) | `@rata/react` | feedback | latest / latest / future | free |
 | [number-field](../docs/components/number-field.md) | `@rata/react` | inputs | future / future / future | free |
-| [pagination](../docs/components/pagination.md) | `@rata/react` | navigation | future / future / future | free |
+| [pagination](../docs/components/pagination.md) | `@rata/react` | navigation | latest / latest / future | free |
 | [panel](../docs/components/panel.md) | `@rata/react` | content | latest / latest / future | free |
 | [pin-input](../docs/components/pin-input.md) | `@rata/react` | inputs | future / future / future | free |
 | [popover](../docs/components/popover.md) | `@rata/react` | overlays | latest / latest / future | free |
@@ -597,9 +597,22 @@ No React implementation yet (status: future). There is nothing to look up — do
 
 Contract: [docs/components/number-field.md](../docs/components/number-field.md)
 
-### Pagination
+### Pagination (`@rata/react`)
 
-No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.
+Extends: `Omit<HTMLAttributes<HTMLElement>, "aria-label" | "children">`
+
+- `page: number`
+  The current page, counting from 1.
+- `pageCount: number`
+  How many pages there are.
+- `href?: (page: number) => string`
+  Builds the URL for a page. Web only.
+- `onPageChange?: (page: number, event: { preventDefault(): void }) => void`
+  Called when the reader picks a page. Intercepts the link for a client-side router.
+- `label?: string` — default: `"Pagination"`
+  Accessible name for the navigation landmark.
+- `className?: string`
+  Extra classes, for placement.
 
 Contract: [docs/components/pagination.md](../docs/components/pagination.md)
 

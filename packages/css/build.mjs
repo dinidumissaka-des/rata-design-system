@@ -43,6 +43,9 @@ const ORDER = [
   "avatar.css",
   "disclosure.css",
   "breadcrumbs.css",
+  // After state-layer and beside breadcrumbs: a nav row that composes the
+  // layer and must win its own current tint over nothing but itself.
+  "pagination.css",
   "top-nav.css",
   "side-nav.css",
   // After side-nav: the drawer renders one and overrides its scrolling.

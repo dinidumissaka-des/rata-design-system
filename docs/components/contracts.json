@@ -8006,10 +8006,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -8020,16 +8022,16 @@
       "icon"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
-    "extends": null,
+    "mode": "documented",
+    "note": null,
+    "extends": "Omit<HTMLAttributes<HTMLElement>, \"aria-label\" | \"children\">",
     "props": [
       {
         "name": "page",
-        "type": "number",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "number",
+        "description": "The current page, counting from 1.",
+        "declared": true,
         "summary": "The current page, counting from 1.",
         "use": [
           "Read from the URL, so the page and the address bar cannot disagree."
@@ -8042,10 +8044,10 @@
       },
       {
         "name": "pageCount",
-        "type": "number",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "number",
+        "description": "How many pages there are.",
+        "declared": true,
         "summary": "How many pages there are.",
         "use": [
           "The real total, from the result count."
@@ -8058,10 +8060,10 @@
       },
       {
         "name": "href",
-        "type": "(page: number) => string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(page: number) => string",
+        "description": "Builds the URL for a page. Web only.",
+        "declared": true,
         "summary": "Builds the URL for a page. Web only.",
         "use": [
           "Every web use — a function of the page number that keeps the address's other query parameters intact."
@@ -8074,10 +8076,10 @@
       },
       {
         "name": "onPageChange",
-        "type": "(page: number, event: { preventDefault(): void }) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(page: number, event: { preventDefault(): void }) => void",
+        "description": "Called when the reader picks a page. Intercepts the link for a client-side router.",
+        "declared": true,
         "summary": "Called when the reader picks a page. Intercepts the link for a client-side router; required on React Native.",
         "use": [
           "Calling the router's navigate and `event.preventDefault()`, so the link stays a link but the page does not reload."
@@ -8090,11 +8092,11 @@
       },
       {
         "name": "label",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "Accessible name for the navigation landmark.",
         "default": "\"Pagination\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accessible name for the navigation landmark.",
         "use": [
           "Naming what is paged when a page has more than one: \"Invoice pages\"."
@@ -8107,10 +8109,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Extra classes, for placement.",
+        "declared": true,
         "summary": "Extra classes, for placement.",
         "use": [
           "Aligning the row in the page's layout."
@@ -8143,6 +8145,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getPaginationItems",
       "summary": "A `<nav>` landmark holding a list of links: Previous, a window of page numbers with ellipses, Next. Every page is a real `href`, and a client-side router intercepts through `onPageChange` — the same bargain TopNav and SideNav make with `onClick`. Proposed primitive: `getPaginationItems` in `packages/primitives/src/pagination.ts`, a pure function from `page` and `pageCount` to the list of items; it is a proposal, not yet a commitment.",
       "decisions": [
         {

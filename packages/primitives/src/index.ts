@@ -78,3 +78,5 @@ export type { FieldOptions, FieldParts, FieldControlProps, FieldStatus } from ".
 // The names this primitive had while TextField was its only consumer.
 export { getTextFieldProps } from "./field.js";
 export type { TextFieldOptions, TextFieldProps, TextFieldStatus } from "./field.js";
+export { getPaginationItems } from "./pagination.js";
+export type { PaginationItem, PaginationOptions } from "./pagination.js";

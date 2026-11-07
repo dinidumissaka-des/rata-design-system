@@ -9,7 +9,7 @@
 // The live demos are the one thing this file adds, and they are deliberately
 // the only hand-written part: a contract can say `loading` shows a spinner and
 // refuses clicks, but only a real button can be clicked.
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import {
   Avatar,
@@ -30,6 +30,7 @@ import {
   MenuItem,
   MenuSeparator,
   Notice,
+  Pagination,
   Radio,
   RadioGroup,
   MobileNav,
@@ -922,6 +923,11 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
     "A dismissible confirmation, with focus handled": () => <InvitesExample />,
   },
 
+  pagination: {
+    "Paging a table of results": () => <PaginationHashStage />,
+    "With a client-side router": () => <PaginationRouterStage />,
+  },
+
   breadcrumbs: {
     "A page three levels deep": () => (
       <Breadcrumbs
@@ -1459,6 +1465,60 @@ function MenuItemStage({
  * worth trying: the trigger still reports, and the state above it still owns
  * the answer.
  */
+/**
+ * The page lives in the address, as the contract asks: each link is a real
+ * href (a hash here, so the playground's own route is untouched) and the
+ * stage reads the page back from it. No onPageChange.
+ */
+function readInvoicePage(): number {
+  const match = /^#invoices-page-(\d+)$/.exec(window.location.hash);
+  return match ? Number(match[1]) : 1;
+}
+
+function PaginationHashStage() {
+  const [page, setPage] = useState(readInvoicePage);
+  useEffect(() => {
+    const sync = () => setPage(readInvoicePage());
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
+  return (
+    <Pagination
+      label="Invoice pages"
+      page={page}
+      pageCount={12}
+      href={(p) => `#invoices-page-${p}`}
+    />
+  );
+}
+
+/**
+ * A router intercepts: the href stays real, the default is prevented, and
+ * focus moves to the top of the results so a keyboard user is not left on the
+ * row.
+ */
+function PaginationRouterStage() {
+  const [page, setPage] = useState(5);
+  const resultsRef = useRef<HTMLDivElement>(null);
+  return (
+    <div className="pg-block-stack">
+      <div ref={resultsRef} tabIndex={-1}>
+        <Text>Results, page {page} of 20</Text>
+      </div>
+      <Pagination
+        page={page}
+        pageCount={20}
+        href={(p) => `?page=${p}`}
+        onPageChange={(p, event) => {
+          event.preventDefault();
+          setPage(p);
+          resultsRef.current?.focus();
+        }}
+      />
+    </div>
+  );
+}
+
 function PopoverFilterStage() {
   const [filtering, setFiltering] = useState(false);
   const [status, setStatus] = useState<string | null>("open");

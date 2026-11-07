@@ -5,19 +5,23 @@
 
 Links to the pages of a long, ordered result set, with previous, next and the current page marked.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { Pagination } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `pagination` |
 | Family | navigation |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | `state-layer`, `icon` |
 
 ## Behavior
 
 A `<nav>` landmark holding a list of links: Previous, a window of page numbers with ellipses, Next. Every page is a real `href`, and a client-side router intercepts through `onPageChange` — the same bargain TopNav and SideNav make with `onClick`. Proposed primitive: `getPaginationItems` in `packages/primitives/src/pagination.ts`, a pure function from `page` and `pageCount` to the list of items; it is a proposal, not yet a commitment.
+
+Headless contract: `getPaginationItems` in `packages/primitives/src/pagination.ts` — importable from `@rata/primitives` without the React wrapper or any CSS.
 
 - **Links with real URLs, not buttons with state** — A page of results the reader cannot bookmark, share or return to with Back is a page they lose. Every item is an `<a href>` built by `href(page)`, so middle-click, copy-link and the Back button all work, and a router that wants to stay client-side intercepts through `onPageChange` without the link stopping being a link. The precedent is TopNav and SideNav, which keep `href` real and let the caller intercept.
 - **The window is fixed: first, last, the current page and one either side** — "1 … 4 5 6 … 20" is the shape every reader already knows, and it is at most seven items wide whatever `pageCount` is, so the row cannot overflow a phone. A `siblingCount` prop would let every page pick its own width and gain nothing. The ellipsis is `aria-hidden` punctuation, and is not a control; jumping to a page in the gap is what the neighbouring numbers are for.
@@ -27,6 +31,8 @@ A `<nav>` landmark holding a list of links: Previous, a window of page numbers w
 - **Web and native** — Web: `<nav aria-label>` around a `<ul>` of `<a>` elements, `aria-current="page"` on the current one, `aria-disabled` on an unavailable Previous or Next. React Native has no URLs to link to, so `href` is web-only and `onPageChange` is what drives navigation; it is required there. Each item is a `Pressable` with `accessibilityRole="button"` — on native, changing a page is an action rather than a link — with `accessibilityLabel` "Page 4" and `accessibilityState` carrying `selected` for the current page and `disabled` for an unavailable Previous or Next. The row wraps in a `View` with `accessibilityLabel` set from `label`. Rata-drawn (decision N5): there is no OS page-selector control, so each item is a drawn `Pressable`. The native implementation ships in the pro tier (decision N6).
 
 ## Props
+
+Extends `Omit<HTMLAttributes<HTMLElement>, "aria-label" | "children">`.
 
 | Prop | Type | Default | Summary |
 |---|---|---|---|
@@ -98,6 +104,8 @@ onPageChange?: (page: number, event: { preventDefault(): void }) => void
 ```
 
 Called when the reader picks a page. Intercepts the link for a client-side router; required on React Native.
+
+Source doc: Called when the reader picks a page. Intercepts the link for a client-side router.
 
 **Use when**
 
