@@ -116,3 +116,5 @@ export type {
   TableSort,
   TableSortDirection,
 } from "./table.js";
+export { NumberField } from "./number-field.js";
+export type { NumberFieldProps, NumberFieldSize } from "./number-field.js";

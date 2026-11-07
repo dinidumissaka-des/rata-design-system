@@ -5,19 +5,23 @@
 
 A labelled input for a numeric quantity, with keyboard and button stepping, locale-aware formatting, and bounds.
 
-**Not implemented yet.** This page is the *approved intent* — the props API signed off at gate 1 of the build order, before any React exists. Do not import it; there is nothing to import.
+```tsx
+import { NumberField } from "@rata/react";
+```
 
 | | |
 |---|---|
 | Registry name | `number-field` |
 | Family | inputs |
 | Tier | free |
-| Status (css / react / figma) | future / future / future |
+| Status (css / react / figma) | latest / latest / future |
 | Depends on | `field`, `state-layer`, `icon`, `visually-hidden` |
 
 ## Behavior
 
 An APG spinbutton built on a text input, so the value is parsed rather than trusted to `type="number"`. Composed with Field for label, helper text and validation; formatting and parsing follow the page's locale.
+
+Headless contract: `getNumberFieldProps` in `packages/primitives/src/number-field.ts` — importable from `@rata/primitives` without the React wrapper or any CSS.
 
 - **It is `<input type="text" inputmode="decimal" role="spinbutton">`, not `type="number"`** — The native number input fails readers in ways that are hard to see in a demo: the scroll wheel changes the value of a focused field while the page scrolls past it; it accepts `e`, so "1e5" is valid; its `value` is an empty string both for an empty field and for "1.2.3", so a caller cannot tell blank from broken; it does not accept a decimal comma in most locales; and its spin buttons are too small to touch and cannot be styled. A text input with `inputmode` keeps the right on-screen keyboard and gives the primitive the raw text to parse. The APG Spinbutton pattern supplies the ARIA: `aria-valuenow`, `aria-valuemin`, `aria-valuemax`, `aria-valuetext`.
 - **Parse on blur and Enter, not on every keystroke** — "-", "1." and "0.0" are all on the way to a valid number. Reformatting or clamping while someone types moves the caret and rewrites their input under them. So typing changes the text only; the value, the clamp to `min`/`max` and the formatting all happen when the reader commits.
@@ -46,7 +50,7 @@ An APG spinbutton built on a text input, so the value is parsed rather than trus
 | `decrementLabel?` | `string` | `"Decrease"` | Accessible name for the decrement button. |
 | `placeholder?` | `string` | — | A hint shown while the field is empty. |
 | `name?` | `string` | — | Form field name. Submits the unformatted number as a plain decimal string. |
-| `size?` | `"sm" \| "md" \| "lg"` | `"md"` | Control height and inline padding. Text size does not change with it. |
+| `size?` | `NumberFieldSize` | `"md"` | Control height and inline padding. Text size does not change with it. |
 | `labelHidden?` | `boolean` | `false` | Takes the label off screen while leaving it in the accessibility tree. |
 | `id?` | `string` | — | Stable id for the number field, when something outside needs to point at it. |
 | `status?` | `FieldStatus` | `"idle"` | Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring. |
@@ -115,6 +119,8 @@ onValueChange?: (value: number | null) => void
 
 Fires with the parsed number when the value changes: a step, or text that parses on blur or Enter.
 
+Source doc: Fires with the parsed number when the value changes.
+
 **Use when**
 
 - Reading a number without parsing a string, which is the whole point of the component.
@@ -178,6 +184,8 @@ formatOptions?: Intl.NumberFormatOptions
 ```
 
 How the value is displayed when the field is not being edited — currency, percent, units, fraction digits.
+
+Source doc: How the value is displayed when the field is not being edited.
 
 **Use when**
 
@@ -272,7 +280,7 @@ Form field name. Submits the unformatted number as a plain decimal string.
 ### `size`
 
 ```ts
-size?: "sm" | "md" | "lg" = "md"
+size?: NumberFieldSize = "md"
 ```
 
 Control height and inline padding. Text size does not change with it.
@@ -311,6 +319,8 @@ id?: string
 
 Stable id for the number field, when something outside needs to point at it.
 
+Source doc: Stable id for the input. Defaults to a generated one.
+
 **Use when**
 
 - A form library that addresses fields by id, or an error summary linking to the field it names.
@@ -326,6 +336,8 @@ status?: FieldStatus = "idle"
 ```
 
 Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.
+
+Source doc: Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.
 
 **Use when**
 
@@ -363,6 +375,8 @@ message?: ReactNode
 
 The status-dependent line: the error, the confirmation, or the in-flight note.
 
+Source doc: Status-dependent message under the control.
+
 **Use when**
 
 - What to do about an `invalid` status, in the imperative.
@@ -380,6 +394,8 @@ required?: boolean = false
 ```
 
 Marks the field required, in the label and to assistive technology.
+
+Source doc: Marks the field required to assistive technology and in the label.
 
 **Use when**
 
@@ -473,6 +489,19 @@ Digits that are an identifier rather than an amount.
 ```
 
 Don't. A postcode can start with zero, is never incremented, and grouping separators would corrupt it. It is `<TextField label="Postcode" inputMode="numeric" />`.
+
+## Real usage in this repo
+
+```tsx
+<NumberField
+        className="pg-field"
+        label="Team size"
+        defaultValue={12}
+        min={1}
+        status="invalid"
+        message="Teams on this plan have at most 10 people."
+      />
+```
 
 ## Token recipe
 

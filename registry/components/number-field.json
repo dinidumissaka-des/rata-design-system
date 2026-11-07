@@ -12,10 +12,12 @@
   ],
   "status": {
     "css": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "react": {
-      "state": "future"
+      "state": "latest",
+      "version": "0.1.0"
     },
     "figma": {
       "state": "future"
@@ -27,7 +29,24 @@
     "icon",
     "visually-hidden"
   ],
-  "files": [],
+  "files": [
+    {
+      "source": "packages/css/src/number-field.css",
+      "target": "styles/number-field.css"
+    },
+    {
+      "source": "packages/react/src/number-field.tsx",
+      "target": "components/number-field.tsx"
+    },
+    {
+      "source": "packages/primitives/src/number-field.ts",
+      "target": "lib/number-field.ts"
+    },
+    {
+      "source": "packages/react/src/cx.ts",
+      "target": "lib/cx.ts"
+    }
+  ],
   "tier": "free",
   "tokens": {
     "base": {
@@ -65,6 +84,7 @@
     }
   },
   "behavior": {
+    "primitive": "getNumberFieldProps",
     "summary": "An APG spinbutton built on a text input, so the value is parsed rather than trusted to `type=\"number\"`. Composed with Field for label, helper text and validation; formatting and parsing follow the page's locale.",
     "decisions": [
       {
@@ -107,8 +127,6 @@
   },
   "props": {
     "label": {
-      "type": "ReactNode",
-      "required": true,
       "summary": "The quantity's name. Always required — `labelHidden` hides it, nothing removes it.",
       "use": [
         "A noun phrase with the unit when `formatOptions` does not show one: \"Seats\", \"Weight (kg)\"."
@@ -119,7 +137,6 @@
       "a11y": "Bound to the input by Field, so it is the spinbutton's accessible name."
     },
     "value": {
-      "type": "number | null",
       "summary": "Controls the value from outside. `null` is empty, which is different from zero.",
       "use": [
         "A form library, or a quantity another control also writes to."
@@ -133,8 +150,6 @@
       ]
     },
     "defaultValue": {
-      "type": "number | null",
-      "default": "null",
       "summary": "The starting value when the component owns the state.",
       "use": [
         "A genuine default — one seat, one unit."
@@ -144,7 +159,6 @@
       ]
     },
     "onValueChange": {
-      "type": "(value: number | null) => void",
       "summary": "Fires with the parsed number when the value changes: a step, or text that parses on blur or Enter.",
       "use": [
         "Reading a number without parsing a string, which is the whole point of the component."
@@ -154,7 +168,6 @@
       ]
     },
     "min": {
-      "type": "number",
       "summary": "The lowest allowed value. Typed values below it are clamped on blur.",
       "use": [
         "A real floor: zero items, one seat."
@@ -165,7 +178,6 @@
       "a11y": "Becomes `aria-valuemin`. Decrement at the floor is refused and the button is `aria-disabled`, not removed."
     },
     "max": {
-      "type": "number",
       "summary": "The highest allowed value. Typed values above it are clamped on blur.",
       "use": [
         "A real ceiling, such as stock on hand."
@@ -173,8 +185,6 @@
       "a11y": "Becomes `aria-valuemax`."
     },
     "step": {
-      "type": "number",
-      "default": "1",
       "summary": "How far ArrowUp, ArrowDown and the buttons move. PageUp and PageDown move ten steps.",
       "use": [
         "`0.01` for currency, `0.5` for half-units."
@@ -184,7 +194,6 @@
       ]
     },
     "formatOptions": {
-      "type": "Intl.NumberFormatOptions",
       "summary": "How the value is displayed when the field is not being edited — currency, percent, units, fraction digits.",
       "use": [
         "`{ style: \"currency\", currency: \"EUR\" }` for money, so the reader sees \"€12.50\" and edits \"12.50\"."
@@ -195,8 +204,6 @@
       "a11y": "The formatted text is `aria-valuetext`, so \"12.50 euros\" is what is announced rather than \"12.5\"."
     },
     "stepButtons": {
-      "type": "boolean",
-      "default": "true",
       "summary": "Renders the decrement and increment buttons at either end.",
       "use": [
         "Small adjustments a reader makes by touch — quantities in a cart, guests on a booking."
@@ -207,8 +214,6 @@
       "a11y": "The buttons are `tabindex=\"-1\"`, as APG's spinbutton pattern specifies: the keyboard already has the arrow keys, and two extra tab stops per field would triple a form's length."
     },
     "incrementLabel": {
-      "type": "string",
-      "default": "\"Increase\"",
       "summary": "Accessible name for the increment button.",
       "use": [
         "Translating it."
@@ -218,8 +223,6 @@
       ]
     },
     "decrementLabel": {
-      "type": "string",
-      "default": "\"Decrease\"",
       "summary": "Accessible name for the decrement button.",
       "use": [
         "Translating it."
@@ -229,7 +232,6 @@
       ]
     },
     "placeholder": {
-      "type": "string",
       "summary": "A hint shown while the field is empty.",
       "use": [
         "An example in the expected format: \"0.00\"."
@@ -239,7 +241,6 @@
       ]
     },
     "name": {
-      "type": "string",
       "summary": "Form field name. Submits the unformatted number as a plain decimal string.",
       "use": [
         "A native form post, where the server should receive \"1234.5\" and not \"1.234,50 €\"."
@@ -247,8 +248,6 @@
       "a11y": "Carried by a hidden input; the visible one holds the formatted text."
     },
     "size": {
-      "type": "\"sm\" | \"md\" | \"lg\"",
-      "default": "\"md\"",
       "summary": "Control height and inline padding. Text size does not change with it.",
       "use": [
         "Matching whatever the control sits beside."
@@ -258,8 +257,6 @@
       ]
     },
     "labelHidden": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Takes the label off screen while leaving it in the accessibility tree.",
       "use": [
         "A control whose meaning is already carried by a heading or column header directly above it."
@@ -270,7 +267,6 @@
       "a11y": "Field's, unchanged: the label element is still rendered and still bound. Only the pixels go."
     },
     "id": {
-      "type": "string",
       "summary": "Stable id for the number field, when something outside needs to point at it.",
       "use": [
         "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -280,8 +276,6 @@
       ]
     },
     "status": {
-      "type": "FieldStatus",
-      "default": "\"idle\"",
       "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
       "use": [
         "`invalid` with a `message` saying what to do about it."
@@ -292,7 +286,6 @@
       "a11y": "Field's, unchanged."
     },
     "description": {
-      "type": "ReactNode",
       "summary": "Persistent helper text under the control.",
       "use": [
         "A constraint the reader needs before they answer."
@@ -303,7 +296,6 @@
       "a11y": "Joins `aria-describedby` ahead of the message, so a constraint is heard before a failure."
     },
     "message": {
-      "type": "ReactNode",
       "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
       "use": [
         "What to do about an `invalid` status, in the imperative."
@@ -314,8 +306,6 @@
       "a11y": "Announced politely rather than as an alert, because it is already in `aria-describedby`."
     },
     "required": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Marks the field required, in the label and to assistive technology.",
       "use": [
         "Fields that genuinely block submission."
@@ -326,8 +316,6 @@
       "a11y": "`aria-required` on the control; the rendered marker is `aria-hidden`."
     },
     "disabled": {
-      "type": "boolean",
-      "default": "false",
       "summary": "Blocks editing and stepping while keeping the field focusable, readable and announced.",
       "use": [
         "A quantity fixed by an earlier choice that should still be readable."
@@ -338,7 +326,6 @@
       "a11y": "`aria-disabled` plus `readOnly` from Field. Arrow keys and both buttons are refused; the buttons are `aria-disabled` too."
     },
     "className": {
-      "type": "string",
       "summary": "Class for the wrapper — the width the form wants, not a restyle.",
       "use": [
         "A narrow measure. A quantity rarely needs a full-width field, and a short box hints at a short answer."

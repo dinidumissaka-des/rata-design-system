@@ -43,6 +43,7 @@ import {
   Radio,
   RadioGroup,
   MobileNav,
+  NumberField,
   Search,
   SegmentedControl,
   Select,
@@ -620,6 +621,33 @@ const EXAMPLES: Record<string, Record<string, () => ReactNode>> = {
           ]}
         />
       </div>
+    ),
+  },
+
+  "number-field": {
+    "A quantity in a cart": () => (
+      <NumberField className="pg-field" label="Quantity" defaultValue={1} min={1} max={12} />
+    ),
+    Money: () => (
+      <NumberField
+        className="pg-field"
+        label="Budget"
+        defaultValue={1250}
+        formatOptions={{ style: "currency", currency: "EUR" }}
+        step={0.01}
+        stepButtons={false}
+        name="budget"
+      />
+    ),
+    "A value that failed validation": () => (
+      <NumberField
+        className="pg-field"
+        label="Team size"
+        defaultValue={12}
+        min={1}
+        status="invalid"
+        message="Teams on this plan have at most 10 people."
+      />
     ),
   },
 

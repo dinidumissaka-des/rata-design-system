@@ -172,3 +172,19 @@ export type {
   TooltipState,
   TooltipKeyEvent,
 } from "./tooltip.js";
+export {
+  getNumberFieldProps,
+  parseNumber,
+  formatNumber,
+  formatForEditing,
+  stepValue,
+  clamp,
+  separators,
+  NUMBER_FIELD_REPEAT,
+} from "./number-field.js";
+export type {
+  NumberFieldOptions,
+  NumberFieldProps,
+  NumberFieldStepButtonProps,
+  NumberFieldKeyEvent,
+} from "./number-field.js";

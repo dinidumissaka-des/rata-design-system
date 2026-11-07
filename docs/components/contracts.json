@@ -7531,10 +7531,12 @@
     "tier": "free",
     "status": {
       "css": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "react": {
-        "state": "future"
+        "state": "latest",
+        "version": "0.1.0"
       },
       "figma": {
         "state": "future"
@@ -7547,16 +7549,16 @@
       "visually-hidden"
     ],
     "importPath": "@rata/react",
-    "mode": "spec",
-    "note": "No React implementation yet (status: future). There is nothing to look up — don't invent props for this one.",
+    "mode": "documented",
+    "note": null,
     "extends": null,
     "props": [
       {
         "name": "label",
-        "type": "ReactNode",
         "optional": false,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "The quantity's name. Always required — `labelHidden` hides it, nothing removes it.",
+        "declared": true,
         "summary": "The quantity's name. Always required — `labelHidden` hides it, nothing removes it.",
         "use": [
           "A noun phrase with the unit when `formatOptions` does not show one: \"Seats\", \"Weight (kg)\"."
@@ -7569,10 +7571,10 @@
       },
       {
         "name": "value",
-        "type": "number | null",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "number | null",
+        "description": "Controls the value from outside. `null` is empty, which is different from zero.",
+        "declared": true,
         "summary": "Controls the value from outside. `null` is empty, which is different from zero.",
         "use": [
           "A form library, or a quantity another control also writes to."
@@ -7588,11 +7590,11 @@
       },
       {
         "name": "defaultValue",
-        "type": "number | null",
         "optional": true,
+        "type": "number | null",
+        "description": "The starting value when the component owns the state.",
         "default": "null",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "The starting value when the component owns the state.",
         "use": [
           "A genuine default — one seat, one unit."
@@ -7605,10 +7607,10 @@
       },
       {
         "name": "onValueChange",
-        "type": "(value: number | null) => void",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "(value: number | null) => void",
+        "description": "Fires with the parsed number when the value changes.",
+        "declared": true,
         "summary": "Fires with the parsed number when the value changes: a step, or text that parses on blur or Enter.",
         "use": [
           "Reading a number without parsing a string, which is the whole point of the component."
@@ -7621,10 +7623,10 @@
       },
       {
         "name": "min",
-        "type": "number",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "number",
+        "description": "The lowest allowed value. Typed values below it are clamped on blur.",
+        "declared": true,
         "summary": "The lowest allowed value. Typed values below it are clamped on blur.",
         "use": [
           "A real floor: zero items, one seat."
@@ -7637,10 +7639,10 @@
       },
       {
         "name": "max",
-        "type": "number",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "number",
+        "description": "The highest allowed value. Typed values above it are clamped on blur.",
+        "declared": true,
         "summary": "The highest allowed value. Typed values above it are clamped on blur.",
         "use": [
           "A real ceiling, such as stock on hand."
@@ -7651,11 +7653,11 @@
       },
       {
         "name": "step",
-        "type": "number",
         "optional": true,
+        "type": "number",
+        "description": "How far ArrowUp, ArrowDown and the buttons move. PageUp and PageDown move ten steps.",
         "default": "1",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "How far ArrowUp, ArrowDown and the buttons move. PageUp and PageDown move ten steps.",
         "use": [
           "`0.01` for currency, `0.5` for half-units."
@@ -7668,10 +7670,10 @@
       },
       {
         "name": "formatOptions",
-        "type": "Intl.NumberFormatOptions",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "Intl.NumberFormatOptions",
+        "description": "How the value is displayed when the field is not being edited.",
+        "declared": true,
         "summary": "How the value is displayed when the field is not being edited — currency, percent, units, fraction digits.",
         "use": [
           "`{ style: \"currency\", currency: \"EUR\" }` for money, so the reader sees \"€12.50\" and edits \"12.50\"."
@@ -7684,11 +7686,11 @@
       },
       {
         "name": "stepButtons",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Renders the decrement and increment buttons at either end.",
         "default": "true",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Renders the decrement and increment buttons at either end.",
         "use": [
           "Small adjustments a reader makes by touch — quantities in a cart, guests on a booking."
@@ -7701,11 +7703,11 @@
       },
       {
         "name": "incrementLabel",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "Accessible name for the increment button.",
         "default": "\"Increase\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accessible name for the increment button.",
         "use": [
           "Translating it."
@@ -7718,11 +7720,11 @@
       },
       {
         "name": "decrementLabel",
-        "type": "string",
         "optional": true,
+        "type": "string",
+        "description": "Accessible name for the decrement button.",
         "default": "\"Decrease\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Accessible name for the decrement button.",
         "use": [
           "Translating it."
@@ -7735,10 +7737,10 @@
       },
       {
         "name": "placeholder",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "A hint shown while the field is empty.",
+        "declared": true,
         "summary": "A hint shown while the field is empty.",
         "use": [
           "An example in the expected format: \"0.00\"."
@@ -7751,10 +7753,10 @@
       },
       {
         "name": "name",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Form field name. Submits the unformatted number as a plain decimal string.",
+        "declared": true,
         "summary": "Form field name. Submits the unformatted number as a plain decimal string.",
         "use": [
           "A native form post, where the server should receive \"1234.5\" and not \"1.234,50 €\"."
@@ -7765,16 +7767,16 @@
       },
       {
         "name": "size",
-        "type": "\"sm\" | \"md\" | \"lg\"",
+        "optional": true,
+        "type": "NumberFieldSize",
+        "description": "Control height and inline padding. Text size does not change with it.",
+        "default": "\"md\"",
         "values": [
           "sm",
           "md",
           "lg"
         ],
-        "optional": true,
-        "default": "\"md\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Control height and inline padding. Text size does not change with it.",
         "use": [
           "Matching whatever the control sits beside."
@@ -7787,11 +7789,11 @@
       },
       {
         "name": "labelHidden",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Takes the label off screen while leaving it in the accessibility tree.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Takes the label off screen while leaving it in the accessibility tree.",
         "use": [
           "A control whose meaning is already carried by a heading or column header directly above it."
@@ -7804,10 +7806,10 @@
       },
       {
         "name": "id",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Stable id for the input. Defaults to a generated one.",
+        "declared": true,
         "summary": "Stable id for the number field, when something outside needs to point at it.",
         "use": [
           "A form library that addresses fields by id, or an error summary linking to the field it names."
@@ -7820,11 +7822,11 @@
       },
       {
         "name": "status",
-        "type": "FieldStatus",
         "optional": true,
+        "type": "FieldStatus",
+        "description": "Validation lifecycle. Drives `aria-invalid`, `aria-busy`, and the ring.",
         "default": "\"idle\"",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Validation lifecycle, driving the message tone, `aria-invalid`, `aria-busy` and the ring.",
         "use": [
           "`invalid` with a `message` saying what to do about it."
@@ -7837,10 +7839,10 @@
       },
       {
         "name": "description",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Persistent helper text under the control.",
+        "declared": true,
         "summary": "Persistent helper text under the control.",
         "use": [
           "A constraint the reader needs before they answer."
@@ -7853,10 +7855,10 @@
       },
       {
         "name": "message",
-        "type": "ReactNode",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "ReactNode",
+        "description": "Status-dependent message under the control.",
+        "declared": true,
         "summary": "The status-dependent line: the error, the confirmation, or the in-flight note.",
         "use": [
           "What to do about an `invalid` status, in the imperative."
@@ -7869,11 +7871,11 @@
       },
       {
         "name": "required",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Marks the field required to assistive technology and in the label.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Marks the field required, in the label and to assistive technology.",
         "use": [
           "Fields that genuinely block submission."
@@ -7886,11 +7888,11 @@
       },
       {
         "name": "disabled",
-        "type": "boolean",
         "optional": true,
+        "type": "boolean",
+        "description": "Blocks editing and stepping while keeping the field focusable, readable and announced.",
         "default": "false",
-        "description": null,
-        "declared": false,
+        "declared": true,
         "summary": "Blocks editing and stepping while keeping the field focusable, readable and announced.",
         "use": [
           "A quantity fixed by an earlier choice that should still be readable."
@@ -7903,10 +7905,10 @@
       },
       {
         "name": "className",
-        "type": "string",
         "optional": true,
-        "description": null,
-        "declared": false,
+        "type": "string",
+        "description": "Class for the wrapper — the width the form wants, not a restyle.",
+        "declared": true,
         "summary": "Class for the wrapper — the width the form wants, not a restyle.",
         "use": [
           "A narrow measure. A quantity rarely needs a full-width field, and a short box hints at a short answer."
@@ -7943,6 +7945,7 @@
       }
     ],
     "behavior": {
+      "primitive": "getNumberFieldProps",
       "summary": "An APG spinbutton built on a text input, so the value is parsed rather than trusted to `type=\"number\"`. Composed with Field for label, helper text and validation; formatting and parsing follow the page's locale.",
       "decisions": [
         {
@@ -8018,7 +8021,7 @@
         }
       }
     },
-    "example": null
+    "example": "<NumberField\n        className=\"pg-field\"\n        label=\"Team size\"\n        defaultValue={12}\n        min={1}\n        status=\"invalid\"\n        message=\"Teams on this plan have at most 10 people.\"\n      />"
   },
   {
     "name": "pagination",

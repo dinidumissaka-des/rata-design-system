@@ -32,6 +32,8 @@ const ORDER = [
   // After text-field: all three borrow its look and its focus treatment.
   "textarea.css",
   "select.css",
+  // After text-field: composes Field and redraws the text field's box, with two step wells.
+  "number-field.css",
   "search.css",
   "checkbox.css",
   // After checkbox: radio shares its construction and overrides the shape.

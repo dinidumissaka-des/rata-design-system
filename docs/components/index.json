@@ -142,7 +142,7 @@
   {
     "name": "number-field",
     "title": "Number Field",
-    "status": "future"
+    "status": "latest"
   },
   {
     "name": "pagination",
